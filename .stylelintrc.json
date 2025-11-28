@@ -1,0 +1,11 @@
+{
+	"extends": "stylelint-config-standard-scss",
+	"rules": {
+		"indentation": ["tab"],
+		"selector-class-pattern": null,
+		"comment-no-empty": true,
+		"string-quotes": null,
+		"declaration-colon-newline-after": null,
+		"number-leading-zero": "always"
+	}
+}
