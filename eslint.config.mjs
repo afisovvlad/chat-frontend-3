@@ -16,6 +16,7 @@ const eslintConfig = defineConfig([
 		rules: {
 			...prettier.configs.recommended.rules,
 			'prettier/prettier': ['warn', { endOfLine: 'auto' }],
+			endOfLine: 'auto',
 			'no-var': 'error',
 			'prefer-const': 'warn',
 			'no-console': 'warn',
