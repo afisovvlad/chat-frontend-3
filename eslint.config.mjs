@@ -3,11 +3,13 @@ import nextTs from 'eslint-config-next/typescript';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import prettier from 'eslint-plugin-prettier';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import tseslint from 'typescript-eslint';
 
 const eslintConfig = defineConfig([
 	...nextVitals,
 	...nextTs,
 	eslintConfigPrettier,
+	tseslint.configs.recommended,
 	globalIgnores(['.next/', 'out/', 'build/', 'next-env.d.ts']),
 	{
 		plugins: {
@@ -15,14 +17,21 @@ const eslintConfig = defineConfig([
 		},
 		rules: {
 			...prettier.configs.recommended.rules,
-			'prettier/prettier': ['warn', { endOfLine: 'auto' }],
-			endOfLine: 'auto',
 			'no-var': 'error',
 			'prefer-const': 'warn',
 			'no-console': 'warn',
 			eqeqeq: 'warn',
 			curly: 'warn',
-			'import/no-anonymous-default-export': 'off'
+			'import/no-anonymous-default-export': 'off',
+			'no-unused-vars': 'off',
+			'@typescript-eslint/no-unused-vars': [
+				'warn',
+				{
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_',
+					caughtErrorsIgnorePattern: '^_'
+				}
+			]
 		}
 	}
 ]);
