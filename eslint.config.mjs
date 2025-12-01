@@ -12,8 +12,15 @@ const eslintConfig = defineConfig([
 	tseslint.configs.recommended,
 	globalIgnores(['.next/', 'out/', 'build/', 'next-env.d.ts']),
 	{
+		files: ['**/*.{ts,tsx,js,jsx}'],
 		plugins: {
 			prettier
+		},
+		languageOptions: {    // Чтобы @typescript-eslint точно понимал типы
+			parserOptions: {
+				project: true,
+				tsconfigRootDir: import.meta.dirname
+			}
 		},
 		rules: {
 			...prettier.configs.recommended.rules,
