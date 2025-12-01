@@ -1,1 +1,10 @@
-npm run lint:fix
+#npm run lint:fix
+
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx lint-staged
+
+
+
+
