@@ -16,11 +16,23 @@
 		"prepare": "husky"
 	},
 	"lint-staged": {
-    "*.ts?(x)": "eslint --fix && prettier --write",
-    "*.js?(x)": "eslint --fix && prettier --write",
-    "*.scss": "stylelint --fix && prettier --write",
-    "*.css": "stylelint --fix && prettier --write"
-  },
+		"*.{ts,tsx}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{js,jsx}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.scss": [
+			"stylelint --fix",
+			"prettier --write"
+		],
+		"*.css": [
+			"stylelint --fix",
+			"prettier --write"
+		]
+	},
 	"dependencies": {
 		"next": "16.0.5",
 		"react": "19.2.0",
