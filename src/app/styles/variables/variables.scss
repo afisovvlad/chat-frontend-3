@@ -1,0 +1,42 @@
+// width
+$width-md: 768px;
+$width-lg: 1200px;
+$width-xl: 1440px;
+
+// colors
+
+$white-color: #fff;
+$color-red: #f00;
+$color-violet-50: #f5f6f8;
+$color-violet-500: #7769e1;
+
+// используется в выбранном чате
+$color-violet-600: #e4e4e4;
+$color-violet-800: #615aa399;
+
+// используется в сообщении от себя
+$color-green-100: #d8f5f0;
+
+// используется для кнопки при поступающем звонке
+$color-green-300: #34c759;
+
+// используется при текущем звонке в шапке
+$color-green-500: #27c840;
+
+// используется в основном для границ
+$color-gray-50: #eee;
+
+// используется в основном для кнопок
+$color-gray-100: #e4e4e4;
+
+// используется в основном для шрифта
+$color-gray-500: #747474;
+
+// используется в основном для заголовков
+$color-black: #1c1c1e;
+
+$color-primary: $color-violet-500;
+$header-background: $color-violet-50;
+$background-primary: $color-violet-50;
+$foreground-primary: $color-black; // цвет заголовков
+$foreground-secondary: $color-gray-500; // цвет текста
