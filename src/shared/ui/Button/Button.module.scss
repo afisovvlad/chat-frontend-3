@@ -1,4 +1,64 @@
-.isActive {
-	// заглушка
-	opacity: 1;
+.Button {
+	cursor: pointer;
+}
+
+.clear {
+	background: none;
+	outline: none;
+
+	&.primary {
+		color: $primary-color;
+	}
+
+	&.danger {
+		color: $danger-color;
+	}
+
+	&.green {
+		color: $green-color;
+	}
+}
+
+.outline {
+	border: 2px solid;
+
+	&.primary {
+		border-color: $primary-color;
+	}
+
+	&.danger {
+		border-color: $danger-color;
+	}
+
+	&.green {
+		border-color: $green-color;
+	}
+}
+
+.background {
+	padding: 15px;
+
+	&.primary {
+		background-color: $primary-color;
+	}
+
+	&.danger {
+		background-color: $danger-color;
+	}
+
+	&.green {
+		background-color: $green-color;
+	}
+}
+
+.size_s {
+	width: fit-content;
+}
+
+.size_m {
+	width: fit-content;
+}
+
+.size_l {
+	width: 100%;
 }
