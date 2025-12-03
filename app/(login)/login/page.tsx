@@ -1,4 +1,4 @@
-import { Login } from '@/pages/login/ui/Login';
+import { Login } from '@/pages/Login/ui/Login';
 
 interface pageProps {
 	className?: string;
