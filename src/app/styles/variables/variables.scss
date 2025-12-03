@@ -1,34 +1,56 @@
-$primary-color: #7769e1;
-$danger-color: #f00;
+:root {
+	// width
+	--width-md: 768px;
+	--width-lg: 1200px;
+	--width-xl: 1440px;
 
-// используется в выбранном чате
-$primary-bleak-color: #615aa399;
+	// colors
 
-// используется для кнопки при поступающем звонке
-$green-color: #34c759;
+	--white-color: #fff;
+	--color-red: #f00;
+	--color-gray-50: ##f5f6f880;
+	--color-violet-500: #7769e1;
 
-// используется при текущем звонке в шапке
-$green-light-color: #27c840;
+	// используется в выбранном чате
+	--color-violet-600: #e4e4e4;
+	--color-violet-800: #615aa399;
 
-// используется в сообщении от себя
-$green-pale-color: #d8f5f0;
+	// используется в сообщении от себя
+	--color-green-100: #d8f5f0;
 
-// используется в основном для шрифта
-$gray-color: #747474;
+	// используется для кнопки при поступающем звонке
+	--color-green-300: #34c759;
 
-// используется в основном для шрифта
-$black-color: #1c1c1e;
+	// используется при текущем звонке в шапке
+	--color-green-500: #27c840;
 
-// используется в основном для кнопок
-$disabled-light-color: #e4e4e4;
-$disabled-dark-color: #c5c5c5;
+	// используется в основном для границ
+	--color-gray-50: #eee;
 
-$white-color: #fff;
+	// используется в основном для кнопок
+	--color-gray-100: #e4e4e4;
 
-// переменные для текста
-$font-size-14: 14px;
-$font-size-18: 18px;
-$font-size-16: 16px;
-$font-size-24: 24px;
-$font-size-32: 32px;
-$font-size-34: 34px;
+	// используется в основном для шрифта
+	--color-gray-500: #747474;
+
+	// используется в основном для заголовков
+	--color-black: #1c1c1e;
+
+	--color-primary: --color-violet-500;
+	--header-background: --color-violet-50;
+	--background-primary: --color-violet-50;
+	--foreground-primary: --color-black; // цвет заголовков
+	--foreground-secondary: --color-gray-500; // цвет текста
+
+	// font
+	--font-size-14: 14px;
+	--font-size-18: 18px;
+	--font-size-16: 16px;
+	--font-size-24: 24px;
+	--font-size-32: 32px;
+	--font-size-34: 34px;
+
+	//
+	--sidebar-width: 48px;
+	--header-height: 60px;
+}
