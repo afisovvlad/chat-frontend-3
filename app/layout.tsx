@@ -1,12 +1,14 @@
-interface IChildren {
+export default function RootLayout({
+	children
+}: {
 	children: React.ReactNode;
-}
-
-export default function Layout({ children }: IChildren) {
+}) {
 	return (
-		<html lang='ru'>
+		<html
+			lang='ru'
+			// className={`${roboto.variable} ${openSans.variable} ${montserrat.variable} ${alumniSans.variable}`}
+		>
 			<head></head>
-
 			<body>
 				<main className='main'>{children}</main>
 			</body>
