@@ -1,7 +1,7 @@
 import '@/app/styles/index.scss';
 import Container from '@/shared/ui/Container/Container';
 import { Header } from '@/shared/ui/Header/Header';
-import { Sidebar } from '@/widgets/Sidebar';
+import { Sidebar } from '@/widgets/sidebar';
 
 export default function RootLayout({
 	children
