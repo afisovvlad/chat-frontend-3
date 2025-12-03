@@ -7,6 +7,8 @@
 		"string-quotes": null,
 		"declaration-colon-newline-after": null,
 		"number-leading-zero": "always",
+		"color-function-notation": null,
+		"scss/dollar-variable-empty-line-before": null,
 		"custom-property-empty-line-before": null
 	}
 }
