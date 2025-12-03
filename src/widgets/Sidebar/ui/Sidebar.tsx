@@ -13,7 +13,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
 				className
 			])}
 		>
-			<Button isActive={true} disabled={false}></Button>
+			<Button disabled={false}></Button>
 		</div>
 	);
 };
