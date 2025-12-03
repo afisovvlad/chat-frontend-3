@@ -24,11 +24,7 @@
 			"eslint --fix",
 			"prettier --write"
 		],
-		"*.scss": [
-			"stylelint --fix",
-			"prettier --write"
-		],
-		"*.css": [
+		"*.{scss,css}": [
 			"stylelint --fix",
 			"prettier --write"
 		]

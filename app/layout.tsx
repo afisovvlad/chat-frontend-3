@@ -1,4 +1,5 @@
 import '@/app/styles/index.scss';
+import { roboto, sfPro } from '@/shared/fonts/index';
 
 interface IChildren {
 	children: React.ReactNode;
@@ -6,10 +7,7 @@ interface IChildren {
 
 export default function RootLayout({ children }: IChildren) {
 	return (
-		<html
-			lang='ru'
-			// className={`${roboto.variable} ${openSans.variable} ${montserrat.variable} ${alumniSans.variable}`}
-		>
+		<html lang='ru' className={`${roboto.variable} ${sfPro.variable} `}>
 			<head></head>
 			<body>
 				<main>{children}</main>

@@ -1,6 +1,9 @@
 @import './reset';
 @import './variables/variables';
 
-.main {
-	border: none; // удалить потом
+body {
+	font-family:
+		var(--primary-text-font),
+		-apple-system,
+		sans-serif;
 }
