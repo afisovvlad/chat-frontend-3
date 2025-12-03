@@ -1,54 +1,106 @@
 .Button {
 	cursor: pointer;
+	text-align: center;
+
+	&.fs_16 {
+		font-size: var(--font-size-16);
+	}
+
+	&.fs_18 {
+		font-size: var(--font-size-18);
+	}
 }
 
 .clear {
-	background: none;
+	background: transparent;
 	outline: none;
+	border: none;
+	width: fit-content;
 
 	&.primary {
-		color: $primary-color;
+		color: var(--color-violet-500);
 	}
 
 	&.danger {
-		color: $danger-color;
+		color: var(--color-red);
 	}
 
 	&.green {
-		color: $green-color;
+		color: var(--color-green-300);
 	}
 }
 
 .outline {
 	border: 2px solid;
+	background: transparent;
+	border-radius: 8px;
+	padding: 16px 8px;
 
 	&.primary {
-		border-color: $primary-color;
+		border-color: var(--color-violet-500);
+		color: var(--color-violet-500);
 	}
 
 	&.danger {
-		border-color: $danger-color;
+		border-color: var(--color-red);
+		color: var(--color-red);
 	}
 
 	&.green {
-		border-color: $green-color;
+		border-color: var(--color-green-300);
+		color: var(--color-green-300);
 	}
 }
 
 .background {
-	padding: 15px;
+	border-radius: 8px;
+	padding: 16px 8px;
+	color: var(--white-color);
 
 	&.primary {
-		background-color: $primary-color;
+		background-color: var(--color-violet-500);
 	}
 
 	&.danger {
-		background-color: $danger-color;
+		background-color: var(--color-red);
 	}
 
 	&.green {
-		background-color: $green-color;
+		background-color: var(--color-green-300);
 	}
+
+	&.callBtn {
+		border-radius: 16px;
+	}
+
+	&.disabled {
+		background-color: var(--color-gray-100);
+		color: var(--disabled-dark-color);
+	}
+
+	&.size_s {
+		border-radius: 4px;
+	}
+}
+
+.circle {
+	border-radius: 50% !important;
+
+	&.primary {
+		background: var(--color-violet-500);
+	}
+
+	&.danger {
+		background: var(--color-red);
+	}
+
+	&.green {
+		background: var(--color-green-300);
+	}
+}
+
+.transparent {
+	background: transparent;
 }
 
 .size_s {
