@@ -1,16 +1,14 @@
-@use '@/app/styles/variables/variables.scss' as v;
-
 .container {
 	width: 100%;
 	margin: 0 auto;
 	padding: 0 16px;
 
-	@media (min-width: v.$width-md) {
+	@media (min-width: 728px) {
 		padding: 0 20px;
 	}
 
-	@media (min-width: v.$width-lg) {
-		max-width: v.$width-lg;
+	@media (min-width: 1200px) {
+		max-width: var(--width-lg);
 		padding: 0;
 	}
 }
