@@ -1,3 +1,6 @@
+import '@/app/styles/index.scss';
+import styles from './layout.module.scss';
+
 export default function RootLayout({
 	children
 }: {
@@ -10,7 +13,7 @@ export default function RootLayout({
 		>
 			<head></head>
 			<body>
-				<main className='main'>{children}</main>
+				<main className={styles.main}>{children}</main>
 			</body>
 		</html>
 	);
