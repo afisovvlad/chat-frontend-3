@@ -30,6 +30,12 @@ export enum ButtonFontSize {
 	M = 'fs_18'
 }
 
+export enum ButtonType {
+	BUTTON = 'button',
+	SUBMIT = 'submit',
+	RESET = 'reset'
+}
+
 interface ButtonProps {
 	className?: string;
 	color?: ButtonColor;
@@ -38,6 +44,7 @@ interface ButtonProps {
 	fontSize?: ButtonFontSize;
 	disabled?: boolean;
 	callBtn?: boolean;
+	btnType?: ButtonType;
 	widthDesktop?: string;
 	heightDesktop?: string;
 	widthMobile?: string;
@@ -54,6 +61,7 @@ export const Button = (props: ButtonProps) => {
 		fontSize = ButtonFontSize.S,
 		disabled = false,
 		callBtn = false,
+		btnType = ButtonType.BUTTON,
 		widthDesktop,
 		heightDesktop,
 		widthMobile,
@@ -83,6 +91,8 @@ export const Button = (props: ButtonProps) => {
 		<button
 			className={classNames(cls.Button, mods, [className])}
 			style={buttonStyles}
+			disabled={disabled}
+			type={btnType}
 		>
 			{children}
 		</button>

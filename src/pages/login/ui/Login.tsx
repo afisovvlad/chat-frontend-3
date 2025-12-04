@@ -26,6 +26,14 @@ export const Login = ({ className, children }: LoginProps) => {
 			</Button>
 			<Button
 				theme={ButtonTheme.BACKGROUND}
+				color={ButtonColor.PRIMARY}
+				size={ButtonSize.L}
+				disabled
+			>
+				background + primary + disabled
+			</Button>
+			<Button
+				theme={ButtonTheme.BACKGROUND}
 				color={ButtonColor.DANGER}
 				size={ButtonSize.L}
 				callBtn
@@ -39,6 +47,13 @@ export const Login = ({ className, children }: LoginProps) => {
 				callBtn
 			>
 				background + green
+			</Button>
+			<Button
+				theme={ButtonTheme.BACKGROUND}
+				color={ButtonColor.PRIMARY}
+				size={ButtonSize.S}
+			>
+				background + size_s
 			</Button>
 			<Button
 				theme={ButtonTheme.OUTLINE}
