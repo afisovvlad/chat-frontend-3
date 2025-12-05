@@ -42,7 +42,11 @@
 	--foreground-primary: var(--color-black); // цвет заголовков
 	--foreground-secondary: var(--color-gray-500); // цвет текста
 
-	// font
+	// fonts-family
+	--primary-text-font: roboto;
+	--secondary-text-font: sfprodisplay;
+
+	// font-sizes
 	--font-size-14: 14px;
 	--font-size-18: 18px;
 	--font-size-16: 16px;
@@ -51,4 +55,11 @@
 	--font-size-34: 34px;
 	--sidebar-width: 48px;
 	--header-height: 60px;
+
+	// font-weight
+	--font-weight-regular: 400;
+	--font-weight-medium: 500;
+	--font-weight-semi-bold: 600;
+	--font-weight-bold: 700;
+	--font-weight-extra-bold: 800;
 }
