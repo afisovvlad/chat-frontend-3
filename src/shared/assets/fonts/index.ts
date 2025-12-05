@@ -23,6 +23,16 @@ export const roboto = localFont({
 			style: 'normal'
 		},
 		{
+			path: './Roboto-Semi-bold.woff2',
+			weight: '600',
+			style: 'normal'
+		},
+		{
+			path: './Roboto-Semi-bold.woff',
+			weight: '600',
+			style: 'normal'
+		},
+		{
 			path: './Roboto-Bold.woff2',
 			weight: '700',
 			style: 'normal'
@@ -30,6 +40,16 @@ export const roboto = localFont({
 		{
 			path: './Roboto-Bold.woff',
 			weight: '700',
+			style: 'normal'
+		},
+		{
+			path: './Roboto-Extra-Bold.woff2',
+			weight: '800',
+			style: 'normal'
+		},
+		{
+			path: './Roboto-Extra-Bold.woff',
+			weight: '800',
 			style: 'normal'
 		}
 	],

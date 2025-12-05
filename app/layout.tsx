@@ -1,5 +1,5 @@
 import '@/app/styles/index.scss';
-import { roboto, sfPro } from '@/shared/fonts/index';
+import { roboto, sfPro } from '@/shared/assets/fonts/index';
 
 interface IChildren {
 	children: React.ReactNode;

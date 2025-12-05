@@ -1,6 +1,8 @@
-export default function page() {
+import styles from './page.module.scss';
+
+export default function HomePage() {
 	return (
-		<section>
+		<section className={styles.homePage}>
 			<p>Main Page</p>
 		</section>
 	);

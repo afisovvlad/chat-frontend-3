@@ -5,5 +5,5 @@ interface IChildren {
 }
 
 export default function AuthLayout({ children }: IChildren) {
-	return <section className={styles.main}>{children}</section>;
+	return <div className={styles.authLayout}>{children}</div>;
 }
