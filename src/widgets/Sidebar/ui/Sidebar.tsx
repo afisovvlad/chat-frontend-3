@@ -1,6 +1,6 @@
 import { classNames } from '@/shared/lib/classNames/classNames';
+import { Button } from '@/shared/ui/Button';
 import Image from 'next/image';
-// import { Button } from '@/shared/ui/Button/Button';
 import cls from './Sidebar.module.scss';
 import { menuItems } from '../model/const/menuItems';
 
@@ -11,7 +11,7 @@ interface SidebarProps {
 export const Sidebar = ({ className }: SidebarProps) => {
 	return (
 		<ul
-			className={classNames(cls.Sidebar, { isActive: true, disabled: false }, [
+			className={classNames(cls.Sidebar, {}, [
 				className
 			])}
 		>
@@ -22,8 +22,6 @@ export const Sidebar = ({ className }: SidebarProps) => {
 					</a>
 				</li>
 			))}
-
-			{/* <Button isActive={true} disabled={false}></Button> */}
 		</ul>
 	);
 };
