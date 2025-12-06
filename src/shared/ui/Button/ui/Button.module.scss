@@ -1,0 +1,146 @@
+.Button {
+	cursor: pointer;
+	text-align: center;
+	transition: 0.15s ease all;
+	padding: 16px 8px;
+
+	&.fs_16 {
+		font-size: var(--font-size-16);
+	}
+
+	&.fs_18 {
+		font-size: var(--font-size-18);
+	}
+}
+
+@media (max-width: 768px) {
+	.Button {
+		padding: 16px 6px;
+	}
+}
+
+.clear {
+	background: transparent;
+	outline: none;
+	border: none;
+	width: fit-content;
+
+	&.primary {
+		color: var(--color-violet-500);
+	}
+
+	&.danger {
+		color: var(--color-red);
+	}
+
+	&.green {
+		color: var(--color-green-300);
+	}
+
+	&:hover {
+		opacity: 0.6;
+	}
+
+	&:active {
+		opacity: 1;
+	}
+}
+
+.outline {
+	border: 2px solid;
+	background: transparent;
+	border-radius: 8px;
+	padding: 16px 8px;
+
+	&.primary {
+		border-color: var(--color-violet-500);
+		color: var(--color-violet-500);
+	}
+
+	&.danger {
+		border-color: var(--color-red);
+		color: var(--color-red);
+	}
+
+	&.green {
+		border-color: var(--color-green-300);
+		color: var(--color-green-300);
+	}
+}
+
+.background {
+	border-radius: 8px;
+	color: var(--white-color);
+
+	&.primary {
+		background-color: var(--color-violet-500);
+
+		&.size_s {
+			&:hover {
+				background-color: var(--color-violet-100);
+				color: var(--color-violet-500);
+			}
+
+			&:active {
+				background-color: var(--color-violet-700);
+				color: var(--white-color);
+			}
+		}
+	}
+
+	&.danger {
+		background-color: var(--color-red);
+	}
+
+	&.green {
+		background-color: var(--color-green-300);
+	}
+
+	&.callBtn {
+		border-radius: 16px;
+		padding: 16px 10px;
+	}
+
+	&.disabled {
+		background-color: var(--color-gray-100);
+		color: var(--color-gray-200);
+		cursor: not-allowed;
+	}
+
+	&.size_s {
+		border-radius: 4px;
+	}
+}
+
+.circle {
+	padding: 0;
+	border-radius: 50% !important;
+
+	&.primary {
+		background: var(--color-violet-500);
+	}
+
+	&.danger {
+		background: var(--color-red);
+	}
+
+	&.green {
+		background: var(--color-green-300);
+	}
+}
+
+.transparent {
+	background: transparent;
+}
+
+.size_s {
+	width: fit-content;
+}
+
+.size_m {
+	flex: 1;
+}
+
+.size_l {
+	width: 100%;
+}
