@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
 	compiler: {
 		styledComponents: true
 	},
+
 	turbopack: {
 		rules: {
 			'*.svg': {
