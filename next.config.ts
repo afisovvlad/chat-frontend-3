@@ -2,7 +2,34 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
 	compiler: {
-		styledComponents: true
+	styledComponents: true
+	reactStrictMode: true,
+
+	turbopack: {
+		rules: {
+			'*.svg': {
+				loaders: [
+					{
+						loader: '@svgr/webpack',
+						options: {
+							icon: true,
+							svgo: true,
+							svgoConfig: {
+								plugins: [
+									{
+										name: 'preset-default',
+										params: {
+											overrides: { removeViewBox: false }
+										}
+									}
+								]
+							}
+						}
+					}
+				],
+				as: '*.js'
+			}
+		}
 	}
 };
 
