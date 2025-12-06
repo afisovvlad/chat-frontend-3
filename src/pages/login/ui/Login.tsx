@@ -3,7 +3,7 @@ import {
 	ButtonColor,
 	ButtonSize,
 	ButtonTheme
-} from '@/shared/ui/Button/Button';
+} from '@/shared/ui/Button';
 import { ReactNode } from 'react';
 import cls from './Login.module.scss';
 
@@ -87,6 +87,17 @@ export const Login = ({ className, children }: LoginProps) => {
 				theme={ButtonTheme.CIRCLE}
 				color={ButtonColor.TRANSPARENT}
 				size={ButtonSize.S}
+			>
+				icn
+			</Button>
+			<Button
+				theme={ButtonTheme.CIRCLE}
+				color={ButtonColor.PRIMARY}
+				size={ButtonSize.S}
+				widthDesktop='100px'
+				heightDesktop='100px'
+				widthMobile='50px'
+				heightMobile='50px'
 			>
 				icn
 			</Button>

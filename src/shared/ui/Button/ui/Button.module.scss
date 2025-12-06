@@ -2,6 +2,7 @@
 	cursor: pointer;
 	text-align: center;
 	transition: 0.15s ease all;
+	padding: 16px 8px;
 
 	&.fs_16 {
 		font-size: var(--font-size-16);
@@ -9,6 +10,12 @@
 
 	&.fs_18 {
 		font-size: var(--font-size-18);
+	}
+}
+
+@media (max-width: 768px) {
+	.Button {
+		padding: 16px 6px;
 	}
 }
 
@@ -63,7 +70,6 @@
 
 .background {
 	border-radius: 8px;
-	padding: 16px 8px;
 	color: var(--white-color);
 
 	&.primary {
@@ -92,6 +98,7 @@
 
 	&.callBtn {
 		border-radius: 16px;
+		padding: 16px 10px;
 	}
 
 	&.disabled {
@@ -106,6 +113,7 @@
 }
 
 .circle {
+	padding: 0;
 	border-radius: 50% !important;
 
 	&.primary {
@@ -130,7 +138,7 @@
 }
 
 .size_m {
-	width: fit-content;
+	flex: 1;
 }
 
 .size_l {
