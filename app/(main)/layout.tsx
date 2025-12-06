@@ -1,7 +1,7 @@
-import { Container } from '@/shared/ui/Container/ui/Container';
-import { Header } from '@/shared/ui/Header/Header';
-import { Sidebar } from '@/widgets/Sidebar';
 import styles from './layout.module.scss';
+import { Container } from '@/shared/ui/Container/ui/Container';
+import { Sidebar } from '@/widgets/Sidebar';
+import { Header } from '@/widgets/header';
 
 interface IChildren {
 	children: React.ReactNode;
