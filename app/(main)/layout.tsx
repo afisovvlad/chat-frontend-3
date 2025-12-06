@@ -1,5 +1,5 @@
 import styles from './layout.module.scss';
-import { Header } from '@/shared/ui/Header/Header';
+import { Header } from '@/widgets/header/ui/Header';
 import { Sidebar } from '@/widgets/Sidebar';
 import Container from '@/shared/ui/Container/Container';
 

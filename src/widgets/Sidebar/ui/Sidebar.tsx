@@ -1,8 +1,8 @@
 import { classNames } from '@/shared/lib/classNames/classNames';
 import Image from 'next/image';
 // import { Button } from '@/shared/ui/Button/Button';
-import cls from './Sidebar.module.scss';
 import { menuItems } from '../model/const/menuItems';
+import cls from './Sidebar.module.scss';
 
 interface SidebarProps {
 	className?: string;
