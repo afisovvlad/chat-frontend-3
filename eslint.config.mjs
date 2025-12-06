@@ -16,7 +16,8 @@ const eslintConfig = defineConfig([
 		plugins: {
 			prettier
 		},
-		languageOptions: {    // Чтобы @typescript-eslint точно понимал типы
+		languageOptions: {
+			// Чтобы @typescript-eslint точно понимал типы
 			parserOptions: {
 				project: true,
 				tsconfigRootDir: import.meta.dirname
