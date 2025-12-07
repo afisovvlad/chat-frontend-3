@@ -1,38 +1,15 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+	reactStrictMode: true,
+
 	compiler: {
 		styledComponents: true
-	}
+	},
 
-	// Отключите Turbopack для статики или настройте правильно
-	// experimental: {
-	//   turbo: {
-	//     resolveAlias: {
-	//       '@': path.resolve(__dirname, 'src'),
-	//       '~': path.resolve(__dirname, 'node_modules')
-	//     }
-	//   }
-	// },
-
-	// // Самый важный параметр для CSS URL
-	// sassOptions: {
-	//   includePaths: [path.join(__dirname, 'src')],
-	//   // Это позволит использовать относительные пути
-	//   prependData: @use "sass:math";
-	// },
-
-	// // Или используйте кастомный webpack
-	// webpack: config => {
-	//   // Алиасы
-	//   config.resolve.alias = {
-	//     ...config.resolve.alias,
-	//     '@': path.resolve(__dirname, 'src'),
-	//     '@/shared': path.resolve(__dirname, 'src/shared')
-	//   };
-
-	//   return config;
-	// }
+	// Турбопак включён по умолчанию — просто добавляем пустой объект,
+	// чтобы убрать ошибки о "webpack config detected".
+	turbopack: {}
 };
 
 export default nextConfig;
@@ -46,31 +23,31 @@ export default nextConfig;
 // 	reactStrictMode: true,
 
 // 	turbopack: {
-// 		rules: {
-// 			'*.svg': {
-// 				loaders: [
-// 					{
-// 						loader: '@svgr/webpack',
-// 						options: {
-// 							icon: true,
-// 							svgo: true,
-// 							svgoConfig: {
-// 								plugins: [
-// 									{
-// 										name: 'preset-default',
-// 										params: {
-// 											overrides: { removeViewBox: false }
-// 										}
+// 	rules: {
+// 		'*.svg': {
+// 			loaders: [
+// 				{
+// 					loader: '@svgr/webpack',
+// 					options: {
+// 						icon: true,
+// 						svgo: true,
+// 						svgoConfig: {
+// 							plugins: [
+// 								{
+// 									name: 'preset-default',
+// 									params: {
+// 										overrides: { removeViewBox: false }
 // 									}
-// 								]
-// 							}
+// 								}
+// 							]
 // 						}
 // 					}
-// 				],
-// 				as: '*.js'
-// 			}
+// 				}
+// 			],
+// 			as: '*.js'
 // 		}
 // 	}
+// }
 // };
 
 // export default nextConfig;
