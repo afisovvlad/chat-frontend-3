@@ -40,7 +40,8 @@ const eslintConfig = defineConfig([
 					caughtErrorsIgnorePattern: '^_'
 				}
 			],
-			'react/jsx-props-no-spreading': 'warn'
+			'react/jsx-props-no-spreading': 'warn',
+			'react-hooks/refs': 'warn'
 		}
 	}
 ]);
