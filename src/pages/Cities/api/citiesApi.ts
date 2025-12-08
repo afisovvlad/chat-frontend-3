@@ -5,7 +5,7 @@ const citiesApi = rtkApi.injectEndpoints({
 		getCities: build.query({
 			query: () => ({
 				// здесь почему-то если в конце убрать "/" то запрос не работает
-				url: '/api/v1/auth/profile/cities/'
+				url: '/auth/profile/cities/'
 			})
 		})
 	})

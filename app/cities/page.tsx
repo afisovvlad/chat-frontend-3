@@ -5,7 +5,7 @@ interface pageProps {
 }
 
 const LoginPage = ({}: pageProps) => {
-	return <Cities></Cities>;
+	return <Cities />;
 };
 
 export default LoginPage;
