@@ -17,8 +17,7 @@ export const makeStore = (initialState?: StateSchema) => {
 		reducer: rootReducer,
 		preloadedState: initialState,
 		middleware: getDefaultMiddleware =>
-			getDefaultMiddleware().concat(rtkApi.middleware),
-		devTools: process.env.NODE_ENV !== 'production'
+			getDefaultMiddleware().concat(rtkApi.middleware)
 	});
 };
 
