@@ -1,3 +1,22 @@
+.text_title {
+	font-size: var(--font-size-24);
+	font-weight: 600;
+	color: var(--foreground-primary);
+}
+
+.text_text {
+	font-size: var(--font-size-16);
+	font-weight: 400;
+	color: var(--foreground-secondary);
+}
+
+// Обрезка: однострочная
+.text_truncate {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 .text {
 	&.clamp-2,
 	&.clamp-3 {
