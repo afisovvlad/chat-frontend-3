@@ -27,7 +27,7 @@ export interface TitleTextProps {
 }
 
 export interface BodyTextProps {
-	type?: TextType.TEXT; // необязательный, по умолчанию TEXT
+	type?: TextType.TEXT;
 	tag?: TextTag;
 	children: ReactNode;
 	color?: TextColor;
