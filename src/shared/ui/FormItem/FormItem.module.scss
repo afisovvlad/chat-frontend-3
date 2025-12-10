@@ -1,0 +1,115 @@
+.inputWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	width: 100%;
+	background-color: transparent;
+}
+
+.label {
+	color: var(--foreground-secondary);
+	font-family: inherit;
+	font-weight: inherit;
+	font-size: var(--font-size-14);
+	line-height: 120%;
+	letter-spacing: 1%;
+	vertical-align: middle;
+	background-color: transparent;
+
+	&.hasError {
+		color: #e53e3e;
+		margin-left: 2px;
+	}
+}
+
+.labelSpan {
+	color: inherit;
+	font-family: inherit;
+	font-weight: inherit;
+	font-size: inherit;
+}
+
+// .inputWrapper {
+//   position: relative;
+//   display: flex;
+//   align-items: center;
+//   border: 1px solid #e0e0e0;
+//   border-radius: 12px;
+//   background: #fff;
+//   transition: all 0.2s ease;
+
+//   &:focus-within {
+//     border-color: #6b59cc;
+//     box-shadow: 0 0 0 3px rgb(107 89 204 / 10%);
+//   }
+
+//   &.hasError {
+//     border-color: #e53e3e;
+
+//     &:focus-within {
+//       box-shadow: 0 0 0 3px rgb(229 62 62 / 10%);
+//     }
+//   }
+
+//   &.disabled {
+//     background: #f5f5f5;
+//     cursor: not-allowed;
+//   }
+// }
+
+.input {
+	flex: 1;
+	padding: 16.5px 20px;
+	font-family: inherit;
+	font-weight: inherit;
+	font-size: 16px;
+	color: var(--foreground-primary);
+	background-color: var(--color-white);
+	border: 1px solid var(--foreground-secondary);
+	border-radius: 8px;
+	outline: none;
+
+	&::placeholder {
+		color: var(--foreground-secondary);
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		color: var(--color-gray-200);
+	}
+
+	&.hasError {
+		outline: 2px solid var(--color-red);
+
+		/* красивый акцент */
+		outline-offset: 0;
+	}
+
+	&:focus {
+		outline: 2px solid var(--color-primary);
+
+		/* красивый акцент */
+		outline-offset: 0;
+
+		// box-shadow: 0 0 0 3px rgb(229 62 62 / 10%);
+	}
+}
+
+// .icon {
+//   display: flex;
+//   align-items: center;
+//   padding-right: 12px;
+//   color: #6b59cc;
+// }
+
+// .errorText {
+//   font-size: 12px;
+//   color: #e53e3e;
+//   margin-top: -4px;
+// }
+
+// .helperText {
+//   font-size: 12px;
+//   color: #757575;
+//   margin-top: -4px;
+// }
