@@ -10,9 +10,7 @@ import {
 	TitleTag
 } from './enums';
 
-export interface TitleTextProps {
-	type: TextType.TITLE;
-	tag?: TitleTag;
+interface BaseTextProps {
 	children: ReactNode;
 	color?: TextColor;
 	fontSize?: TextSize;
@@ -26,20 +24,14 @@ export interface TitleTextProps {
 	className?: string;
 }
 
-export interface BodyTextProps {
+export interface TitleTextProps extends BaseTextProps {
+	type: TextType.TITLE;
+	tag?: TitleTag;
+}
+
+export interface BodyTextProps extends BaseTextProps {
 	type?: TextType.TEXT;
 	tag?: TextTag;
-	children: ReactNode;
-	color?: TextColor;
-	fontSize?: TextSize;
-	fontWeight?: FontWeight;
-	lineHeight?: string | number;
-	textAlign?: TextAlign;
-	margin?: string;
-	uppercase?: boolean;
-	truncate?: boolean;
-	maxLines?: TextClamp;
-	className?: string;
 }
 
 export type TextProps = TitleTextProps | BodyTextProps;

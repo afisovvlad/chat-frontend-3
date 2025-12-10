@@ -17,7 +17,8 @@ import {
 } from '@/shared/ui/Text';
 import { ReactNode } from 'react';
 import cls from './Login.module.scss';
-import { VolumeOff } from '@icons/index';
+
+import { Logo, VolumeOff } from '@icons/index';
 
 interface LoginProps {
 	className?: string;
@@ -114,6 +115,7 @@ export const Login = ({ className, children }: LoginProps) => {
 				icn
 			</Button>
 			<div className={cls.container}>
+				<Logo className={cls.logo} />
 				<h1 className={cls.heading}>Компонент Text</h1>
 
 				<section className={cls.section}>
@@ -143,7 +145,7 @@ export const Login = ({ className, children }: LoginProps) => {
 					<Text color={TextColor.BLACK}>Чёрный (BLACK)</Text>
 					<Text color={TextColor.GRAY}>Серый (GRAY)</Text>
 					<Text color={TextColor.ERROR}>Ошибка (ERROR)</Text>
-					<Text color={TextColor.WARNING}>Предупреждение (WARNING)</Text>
+					<Text color={TextColor.ACCENT}>Предупреждение (WARNING)</Text>
 					<Text color={TextColor.WHITE} className={cls.whiteBg}>
 						Белый текст (WHITE) — на чёрном фоне
 					</Text>
@@ -224,7 +226,7 @@ export const Login = ({ className, children }: LoginProps) => {
 						tag={TitleTag.H2}
 						fontSize={TextSize.XL}
 						fontWeight={FontWeight.SEMI_BOLD}
-						color={TextColor.WARNING}
+						color={TextColor.ACCENT}
 						textAlign={TextAlign.CENTER}
 						uppercase
 					>
@@ -266,6 +268,33 @@ export const Login = ({ className, children }: LoginProps) => {
 							Привет. Я оставил две стремянки и два шуруповёрта. Один в кейсе, а
 							другой просто так. Одна батарейка может кончиться, тогда будете
 							одним добивать. Воды с собой возьмите, там ничего уже не осталось.
+						</Text>
+						<Text
+							type={TextType.TEXT}
+							tag={TextTag.SPAN}
+							fontSize={TextSize.XL}
+							color={TextColor.ACCENT}
+							maxLines={TextClamp.LINES_3}
+							margin='25px'
+						>
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+							eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+							enim ad minim veniam, quis nostrud exercitation ullamco laboris
+							nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+							reprehenderit in voluptate velit esse cillum dolore eu fugiat
+							nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+							sunt in culpa qui officia deserunt mollit anim id est laborum. Sed
+							ut perspiciatis unde omnis iste natus error sit voluptatem
+							accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+							quae ab illo inventore veritatis et quasi architecto beatae vitae
+							dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
+							aspernatur aut odit aut fugit, sed quia consequuntur magni dolores
+							eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam
+							est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci
+							velit, sed quia non numquam eius modi tempora incidunt ut labore
+							et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima
+							veniam, quis nostrum exercitationem ullam corporis suscipit
+							laboriosam, nisi ut aliquid ex ea commodi consequatur?
 						</Text>
 					</div>
 				</section>

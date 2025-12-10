@@ -7,6 +7,6 @@ export {
 	TextClamp,
 	TextColor,
 	TitleTag
-} from './model/enums';
+} from './model/types/enums';
 
 export { Text } from './ui/Text';

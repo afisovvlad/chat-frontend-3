@@ -1,13 +1,12 @@
 import { JSX } from 'react';
-import { TextTag, TextType, TitleTag } from '../model/enums';
+import { TextTag, TextType, TitleTag } from '../model/types/enums';
 import { classNames } from '@/shared/lib/classNames/classNames';
+import { TextProps, AllowedTag } from '../model/types/types';
 import cls from './Text.module.scss';
-import { TextProps, AllowedTag } from '../model/type';
 
 export const Text = (props: TextProps) => {
-	const isTitle = props.type === TextType.TITLE;
-
 	const {
+		type = TextType.TEXT,
 		children,
 		color,
 		fontSize,
@@ -22,6 +21,7 @@ export const Text = (props: TextProps) => {
 		tag
 	} = props;
 
+	const isTitle = type === TextType.TITLE;
 	const defaultTag = isTitle ? TitleTag.H3 : TextTag.P;
 	const resolvedTag = (tag ?? defaultTag) as AllowedTag;
 	const typeClass = isTitle ? cls.text_title : cls.text_text;
