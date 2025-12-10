@@ -1,4 +1,4 @@
-import { Login } from '@/pages/Login/ui/Login';
+// import { Login } from '@/pages/Login/ui/Login';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ interface pageProps {
 }
 
 const LoginPage = ({}: pageProps) => {
-	return <Login />;
+	// return <Login />;
 };
 
 export default LoginPage;
