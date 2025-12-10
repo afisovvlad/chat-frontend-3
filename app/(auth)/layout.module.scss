@@ -1,6 +1,6 @@
 .authLayout {
 	padding: 1px 0; // обябзательно
-	background-image: url('../../src/shared/assets/images/bg.svg');
+	background-image: url('/images/bg/bg.svg');
 	background-size: cover;
 	background-repeat: no-repeat;
 	min-height: 100vh;
@@ -14,7 +14,7 @@
 	height: 760px;
 	margin: 120px auto 144px;
 	background-color: var(--color-primary);
-	background-image: url('../../src/shared/assets/images/auth-bg.svg');
+	background-image: url('/images/bg/auth-bg.svg');
 	background-size: cover;
 	background-repeat: no-repeat;
 	border-radius: 18px;
