@@ -1,41 +1,36 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  compiler: {
-    styledComponents: true
-  },
+	compiler: {
+		styledComponents: true
+	},
 
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: [
-          {
-            loader: '@svgr/webpack',
-            options: {
-              icon: true,
-              svgo: true,
-              svgoConfig: {
-                plugins: [
-                  {
-                    name: 'preset-default',
-                    params: {
-                      overrides: { removeViewBox: false }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        as: '*.js'
-      }
-    }
-  }
+	turbopack: {
+		rules: {
+			'*.svg': {
+				loaders: [
+					{
+						loader: '@svgr/webpack',
+						options: {
+							icon: true,
+							svgo: true,
+							svgoConfig: {
+								plugins: [
+									{
+										name: 'preset-default',
+										params: {
+											overrides: { removeViewBox: false }
+										}
+									}
+								]
+							}
+						}
+					}
+				],
+				as: '*.js'
+			}
+		}
+	}
 };
 
 export default nextConfig;
-в ts.config.ts  надо расширить алиас
-    "paths": {
-      "@/*": ["./src/*"],
-      "@icons/*": ["./public/assets/icons/*"]
-    }
