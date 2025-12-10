@@ -1,5 +1,5 @@
-import { Metadata } from 'next';
 import { Login } from '@/pages/Login/ui/Login';
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
 	title: 'Вход/Регистрация',
