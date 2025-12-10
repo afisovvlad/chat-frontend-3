@@ -1,9 +1,15 @@
-.Login {
-	margin: auto;
-	max-width: 400px;
+.login {
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	padding: 72px 64px 80px;
+}
+
+.title {
+	margin-bottom: 24px;
 }
 
 .container {
