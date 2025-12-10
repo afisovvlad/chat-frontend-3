@@ -1,15 +1,39 @@
 'use client';
 
+import { Back, Logo } from '@/shared/assets/icons';
+import {
+	Button,
+	ButtonColor,
+	ButtonTheme,
+	ButtonType
+} from '@/shared/ui/Button';
 import { Form } from '@/shared/ui/Form/Form';
 import FormItem from '@/shared/ui/FormItem/FormItem';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { SubmitHandler } from 'react-hook-form';
-import { InputsTypes } from '../types';
+import { useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import styles from './LoginPhone.module.scss';
 
+interface LoginPhoneForm {
+	phone: string;
+}
+
 export const LoginPhone = () => {
+	const [disabled, setDisabled] = useState(true);
+	// const [phone, setPhone] = useState('');
 	const router = useRouter();
+	const methods = useForm<LoginPhoneForm>();
+
+	const phone = methods.watch('phone', '');
+
+	useEffect(() => {
+		if (phone.length === 16) {
+			setDisabled(false);
+		} else {
+			setDisabled(true);
+		}
+	}, [phone]);
 
 	const formItem = [
 		// {
@@ -67,7 +91,7 @@ export const LoginPhone = () => {
 					message: 'Минимум 12 знаков'
 				},
 				pattern: {
-					value: /^\+[0-9]+$/,
+					value: /^\+7 \d{3} \d{3} \d{2} \d{2}$/,
 					message: 'Допускаются только цифры'
 				}
 			}
@@ -90,16 +114,28 @@ export const LoginPhone = () => {
 		// }
 	];
 
-	const onSubmit: SubmitHandler<InputsTypes> = data => {
+	const onSubmit: SubmitHandler<LoginPhoneForm> = data => {
 		console.log(data);
-		router.push('/login/code');
+		console.log(data.phone);
+
+		if (data.phone) {
+			setDisabled(false);
+			router.push('/login/code');
+		}
 	};
 
 	return (
-		<div className={styles.loginSlug}>
-			<Link href='/login'>Назад</Link>
+		<div className={styles.loginPhone}>
+			<Logo style={{ fontSize: '70px' }} className={styles.logo} />
+			<Link href='/login' title='Назад' className={styles.linkBack}>
+				<Back style={{ fontSize: '20px' }} className={styles.back} />
+			</Link>
 			<h1 className={styles.title}>Вход/регистрация</h1>
-			<Form onSubmit={onSubmit}>
+			<Form<LoginPhoneForm>
+				methods={methods}
+				onSubmit={onSubmit}
+				className={styles.form}
+			>
 				{formItem.map(item => (
 					<FormItem
 						key={item.name}
@@ -112,28 +148,19 @@ export const LoginPhone = () => {
 						// error={item.error}
 						isRequired={item.isRequired}
 						rules={item.rules}
+						classNamesInput={styles.formItem}
 					/>
 				))}
-				<button type='submit'>Далее</button>
+				<Button
+					btnType={ButtonType.SUBMIT}
+					disabled={disabled}
+					theme={ButtonTheme.BACKGROUND}
+					color={ButtonColor.PRIMARY}
+				>
+					Далее
+				</Button>
+				{/* <button type='submit'>Далее</button> */}
 			</Form>
 		</div>
 	);
 };
-
-// import Link from 'next/link';
-// import styles from './LoginPhone.module.scss';
-
-// export const LoginPhone = () => {
-// 	return (
-// 		<div className={styles.loginSlug}>
-// 			<Link href='/login'>Назад</Link>
-// 			<h1 className={styles.title}>Вход/регистрация</h1>
-// 			<form action=''>
-// 				<label htmlFor='phone'>Введите номер телефона</label>
-// 				<input type='text' id='phone' />
-// 			</form>
-
-// 			<Link href='/login/code'>Далее</Link>
-// 		</div>
-// 	);
-// };

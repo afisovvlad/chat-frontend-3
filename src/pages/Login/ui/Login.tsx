@@ -1,13 +1,19 @@
+import { Logo } from '@/shared/assets/icons';
 import Link from 'next/link';
 import styles from './Login.module.scss';
+const logo = '@/shared/assets/images/logo.svg';
 
 export const Login = () => {
 	return (
 		<section className={styles.login}>
-			{/* <Image src={} width={179} height={161} alt='Логотип' /> */}
+			<Logo style={{ fontSize: '161px' }} className={styles.logo} />
 			<h1 className={styles.title}>А-Чат</h1>
+			<p>Привет!</p>
+			<p className={styles.text}>Давай знакомиться</p>
 
-			<Link href={`/login/phone`}>Начать</Link>
+			<Link href={`/login/phone`} className={styles.link}>
+				Начать
+			</Link>
 		</section>
 	);
 };

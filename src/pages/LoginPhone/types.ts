@@ -1,3 +1,3 @@
-export type InputsTypes = {
+export type InputType = {
 	name: 'phone' | 'name';
 };

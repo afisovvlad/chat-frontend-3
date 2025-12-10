@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
 import styles from './CodeInput.module.scss';
 
 interface CodeInputProps {
@@ -10,7 +11,7 @@ interface CodeInputProps {
 }
 
 export const CodeInput = forwardRef<HTMLInputElement, CodeInputProps>(
-	({ length = 4, value, onChange, error, disabled }, ref) => {
+	({ length = 5, value, onChange, error, disabled }, ref) => {
 		const localInputRef = useRef<HTMLInputElement>(null);
 
 		useImperativeHandle(ref, () => localInputRef.current as HTMLInputElement);

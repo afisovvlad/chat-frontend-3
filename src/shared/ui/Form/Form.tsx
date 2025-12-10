@@ -1,30 +1,39 @@
 'use client';
-import styles from './Form.module.scss';
+import clsx from 'clsx';
 import { ReactNode } from 'react';
 import {
 	FieldValues,
 	FormProvider,
 	SubmitHandler,
 	useForm,
-	UseFormProps
+	UseFormProps,
+	UseFormReturn
 } from 'react-hook-form';
+import styles from './Form.module.scss';
 
 interface FormProps<T extends FieldValues> {
 	children: ReactNode;
 	onSubmit: SubmitHandler<T>;
 	options?: UseFormProps<T>;
+	className?: string;
+	methods: UseFormReturn<T>;
 }
 
 export const Form = <T extends FieldValues>({
 	children,
 	onSubmit,
-	options
+	options,
+	className,
+	methods
 }: FormProps<T>) => {
-	const methods = useForm<T>(options);
+	// const methods = useForm<T>(options);
 
 	return (
 		<FormProvider {...methods}>
-			<form onSubmit={methods.handleSubmit(onSubmit)} className={styles.form}>
+			<form
+				onSubmit={methods.handleSubmit(onSubmit)}
+				className={clsx(styles.form, className)}
+			>
 				{children}
 			</form>
 		</FormProvider>
