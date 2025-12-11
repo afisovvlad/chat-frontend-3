@@ -5,7 +5,6 @@ import {
 	FieldValues,
 	FormProvider,
 	SubmitHandler,
-	useForm,
 	UseFormProps,
 	UseFormReturn
 } from 'react-hook-form';
@@ -22,12 +21,10 @@ interface FormProps<T extends FieldValues> {
 export const Form = <T extends FieldValues>({
 	children,
 	onSubmit,
-	options,
+	// options,
 	className,
 	methods
 }: FormProps<T>) => {
-	// const methods = useForm<T>(options);
-
 	return (
 		<FormProvider {...methods}>
 			<form

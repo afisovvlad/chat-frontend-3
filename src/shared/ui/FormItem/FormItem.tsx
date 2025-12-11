@@ -1,19 +1,25 @@
 'use client';
 import clsx from 'clsx';
-import { Controller, FieldValues, useFormContext } from 'react-hook-form';
-import { CodeInput } from '../CodeInput/CodeInput';
+import { useEffect, useRef } from 'react';
+import {
+	Controller,
+	FieldValues,
+	Path,
+	RegisterOptions,
+	useFormContext
+} from 'react-hook-form';
 import styles from './FormItem.module.scss';
 
 interface FormInputProps<T extends FieldValues> {
-	key: string;
 	type: string;
-	itemName: string;
+	itemName: Path<T>;
 	placeholder: string;
 	autocomplete: string;
 	label: string;
 	disabled: boolean;
+	length?: number;
 	isRequired: boolean;
-	rules: { required: string };
+	rules?: RegisterOptions<T, Path<T>>;
 	classNamesWrapper?: string;
 	classNamesLabel?: string;
 	classNamesTextarea?: string;
@@ -32,35 +38,124 @@ export default function FormItem<TFormValues extends FieldValues>({
 	classNamesWrapper,
 	classNamesLabel,
 	classNamesTextarea,
-	classNamesInput
+	classNamesInput,
+	length
 }: FormInputProps<TFormValues>) {
+	const inputRefs = useRef<Record<string, HTMLElement | null>>({});
 	let inputElement;
 	const {
-		register,
+		control,
 		formState: { errors }
 	} = useFormContext<TFormValues>();
 	const errorMessage = errors?.[itemName]?.message as string | undefined;
 
+	// console.log(errors);
+
+	const handleClick = () => {
+		if (!disabled) {
+			inputRefs.current[itemName]?.focus();
+		}
+	};
+
+	useEffect(() => {
+		for (const name in inputRefs.current) {
+			const input = inputRefs.current[name] as
+				| HTMLInputElement
+				| HTMLTextAreaElement
+				| null;
+			if (!disabled && input?.value === '') {
+				input.focus();
+				break;
+			}
+		}
+	}, [disabled]);
+
 	switch (type) {
 		case 'code':
 			inputElement = (
-				<CodeInput value={''} key={itemName} {...register(itemName, rules)} />
+				<Controller
+					name={itemName}
+					control={control}
+					rules={rules}
+					render={({ field }) => {
+						const cells = Array.from(
+							{ length: length ?? 5 },
+							(_, index) => (field.value ?? '')[index] || ''
+						);
+
+						return (
+							<>
+								<div
+									className={clsx(styles.container, {
+										[styles.error]: errors?.[itemName]?.message,
+										[styles.disabled]: disabled
+									})}
+									onClick={handleClick}
+									role='button'
+									tabIndex={-1}
+								>
+									<>
+										<div className={styles.cells}>
+											{cells.map((char, index) => (
+												<span
+													key={index}
+													className={clsx(styles.cell, {
+														[styles.active]:
+															!disabled && index === (field.value?.length ?? 0),
+														[styles.filled]: !!char
+													})}
+												>
+													{char}
+												</span>
+											))}
+										</div>
+
+										<input
+											name={itemName}
+											id={itemName}
+											ref={el => void (inputRefs.current[itemName] = el)}
+											className={styles.hiddenInput}
+											value={field.value ?? ''} // never undefined
+											onChange={e => {
+												const formatted = e.target.value
+													.replace(/\D/g, '')
+													.slice(0, length);
+												field.onChange(formatted);
+											}}
+											type='text'
+											autoComplete='one-time-code'
+											disabled={disabled}
+										/>
+									</>
+								</div>
+							</>
+						);
+					}}
+				/>
 			);
 			break;
 
 		case 'textarea':
 			inputElement = (
-				<textarea
-					key={itemName}
-					{...register(itemName, rules)}
+				<Controller
 					name={itemName}
-					id={itemName}
-					placeholder={placeholder}
-					autoComplete={autocomplete}
-					className={clsx(styles.input, classNamesTextarea, {
-						[styles.hasError]: errors?.[itemName],
-						[styles.disabled]: disabled
-					})}
+					rules={rules}
+					render={({ field }) => (
+						<textarea
+							ref={el => void (inputRefs.current[itemName] = el)}
+							key={itemName}
+							onChange={e => field.onChange(e.target.value)}
+							value={field.value ?? ''}
+							name={itemName}
+							id={itemName}
+							placeholder={placeholder}
+							autoComplete={autocomplete}
+							className={clsx(styles.input, classNamesTextarea, {
+								[styles.hasError]: errors?.[itemName],
+								[styles.disabled]: disabled
+							})}
+						/>
+					)}
 				/>
 			);
 			break;
@@ -73,6 +168,7 @@ export default function FormItem<TFormValues extends FieldValues>({
 					render={({ field }) => (
 						<input
 							{...field}
+							ref={el => void (inputRefs.current[itemName] = el)}
 							type='tel'
 							id={itemName}
 							placeholder={placeholder}
@@ -120,40 +216,48 @@ export default function FormItem<TFormValues extends FieldValues>({
 
 		default:
 			inputElement = (
-				<input
-					key={itemName}
-					type={type}
-					{...register(itemName, rules)}
-					id={itemName}
-					placeholder={placeholder}
-					autoComplete={autocomplete}
-					className={clsx(styles.input, classNamesInput, {
-						[styles.hasError]: errors?.[itemName],
-						[styles.disabled]: disabled
-					})}
+				<Controller
+					name={itemName}
+					rules={rules}
+					render={({ field }) => (
+						<input
+							key={itemName}
+							type={type}
+							ref={el => void (inputRefs.current[itemName] = el)}
+							// {...register(itemName, rules)}
+							onChange={e => field.onChange(e.target.value)}
+							value={field.value ?? ''}
+							name={itemName}
+							id={itemName}
+							placeholder={placeholder}
+							autoComplete={autocomplete}
+							className={clsx(styles.input, classNamesInput, {
+								[styles.hasError]: errors?.[itemName],
+								[styles.disabled]: disabled
+							})}
+						/>
+					)}
 				/>
 			);
 	}
 
 	return (
 		<div className={clsx(styles.inputWrapper, classNamesWrapper)}>
-			{label && (
-				<label
-					className={clsx(styles.label, classNamesLabel, {
-						[styles.hasError]: errors?.[itemName]
-					})}
-					htmlFor={itemName}
-				>
-					{errorMessage ? (
-						<span className={styles.labelSpan}>{errorMessage}</span>
-					) : label ? (
-						label
-					) : (
-						''
-					)}
-					{isRequired && <span className={styles.required}>*</span>}
-				</label>
-			)}
+			<label
+				className={clsx(styles.label, classNamesLabel, {
+					[styles.hasError]: errors?.[itemName]
+				})}
+				htmlFor={itemName}
+			>
+				{errorMessage ? (
+					<span className={styles.labelSpan}>{errorMessage}</span>
+				) : label ? (
+					label
+				) : (
+					''
+				)}
+				{isRequired && <span className={styles.required}>*</span>}
+			</label>
 			{inputElement}
 		</div>
 	);

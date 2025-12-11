@@ -1,7 +1,6 @@
 import { Logo } from '@/shared/assets/icons';
 import Link from 'next/link';
 import styles from './Login.module.scss';
-const logo = '@/shared/assets/images/logo.svg';
 
 export const Login = () => {
 	return (

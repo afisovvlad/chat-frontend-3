@@ -12,7 +12,7 @@ import FormItem from '@/shared/ui/FormItem/FormItem';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import styles from './LoginPhone.module.scss';
 
 interface LoginPhoneForm {
@@ -21,18 +21,21 @@ interface LoginPhoneForm {
 
 export const LoginPhone = () => {
 	const [disabled, setDisabled] = useState(true);
-	// const [phone, setPhone] = useState('');
 	const router = useRouter();
-	const methods = useForm<LoginPhoneForm>();
+	const methods = useForm<LoginPhoneForm>({
+		defaultValues: {
+			phone: '' // обязательно пустая строка
+		}
+	});
 
-	const phone = methods.watch('phone', '');
+	const phone = useWatch({
+		control: methods.control,
+		name: 'phone',
+		defaultValue: ''
+	});
 
 	useEffect(() => {
-		if (phone.length === 16) {
-			setDisabled(false);
-		} else {
-			setDisabled(true);
-		}
+		setDisabled(phone.length !== 16);
 	}, [phone]);
 
 	const formItem = [
@@ -116,12 +119,10 @@ export const LoginPhone = () => {
 
 	const onSubmit: SubmitHandler<LoginPhoneForm> = data => {
 		console.log(data);
-		console.log(data.phone);
-
-		if (data.phone) {
-			setDisabled(false);
-			router.push('/login/code');
-		}
+		// console.log(data.phone);
+		// сохраняем phone в store
+		//отправляем телефон на сервер
+		router.push('/login/code');
 	};
 
 	return (
@@ -145,7 +146,6 @@ export const LoginPhone = () => {
 						placeholder={item.placeholder}
 						autocomplete={item.autocomplete}
 						disabled={item.disabled}
-						// error={item.error}
 						isRequired={item.isRequired}
 						rules={item.rules}
 						classNamesInput={styles.formItem}
@@ -159,7 +159,6 @@ export const LoginPhone = () => {
 				>
 					Далее
 				</Button>
-				{/* <button type='submit'>Далее</button> */}
 			</Form>
 		</div>
 	);
