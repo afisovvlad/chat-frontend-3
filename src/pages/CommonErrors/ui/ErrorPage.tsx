@@ -1,9 +1,9 @@
 'use client';
 
-import { Error } from '@/shared/assets/icons';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Button } from '@/shared/ui/Button';
 import { Container } from '@/shared/ui/Container';
+import { Error } from '@icons/index';
 import cls from './CommonErrors.module.scss';
 
 export const ErrorPage = () => {

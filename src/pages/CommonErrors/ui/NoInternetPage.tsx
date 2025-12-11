@@ -4,7 +4,7 @@ import { classNames } from '@/shared/lib/classNames/classNames';
 import { Container } from '@/shared/ui/Container';
 import cls from './CommonErrors.module.scss';
 
-import { NoInternet } from '@/shared/assets/icons';
+import { NoInternet } from '@icons/index';
 import { Button } from '@/shared/ui/Button';
 
 export const NoInternetPage = () => {

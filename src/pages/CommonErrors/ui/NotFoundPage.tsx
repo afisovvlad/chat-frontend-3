@@ -1,6 +1,6 @@
-import { NotFound } from '@/shared/assets/icons';
 import { Button } from '@/shared/ui/Button';
 import { Container } from '@/shared/ui/Container';
+import { NotFound } from '@icons/index';
 import Link from 'next/link';
 import cls from './CommonErrors.module.scss';
 
