@@ -1,7 +1,7 @@
 import { OnlineChecker } from '@/app/providers/OnlineChecker';
 import { StoreProvider } from '@/app/providers/StoreProvider';
 import '@/app/styles/index.scss';
-import { roboto, sfPro } from '@/shared/assets/fonts/index';
+import { roboto, sfPro } from '../public/assets/fonts/index';
 
 interface IChildren {
 	children: React.ReactNode;

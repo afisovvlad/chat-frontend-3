@@ -6,15 +6,21 @@ import cls from './CommonErrors.module.scss';
 
 import { NoInternet } from '@icons/index';
 import { Button } from '@/shared/ui/Button';
+import { Text, TextColor, TextSize } from '@/shared/ui/Text';
 
 export const NoInternetPage = () => {
 	return (
 		<Container className={classNames(cls.container)}>
 			<NoInternet className={cls.iconPage}></NoInternet>
 
-			<div className={cls.text}>
+			<Text
+				className={cls.text}
+				fontSize={TextSize.M}
+				color={TextColor.GRAY}
+				lineHeight={1.3}
+			>
 				Нет доступа к интернету. Проверьте подключение сети и повторите запрос
-			</div>
+			</Text>
 
 			<Button className={cls.button} onClick={() => window.location.reload()}>
 				Перезагрузить страницу

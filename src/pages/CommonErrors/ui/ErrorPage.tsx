@@ -3,6 +3,7 @@
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Button } from '@/shared/ui/Button';
 import { Container } from '@/shared/ui/Container';
+import { Text, TextColor, TextSize } from '@/shared/ui/Text';
 import { Error } from '@icons/index';
 import cls from './CommonErrors.module.scss';
 
@@ -11,9 +12,14 @@ export const ErrorPage = () => {
 		<Container className={classNames(cls.container)}>
 			<Error className={cls.iconPage}></Error>
 
-			<div className={cls.text}>
+			<Text
+				className={cls.text}
+				fontSize={TextSize.M}
+				color={TextColor.GRAY}
+				lineHeight={1.3}
+			>
 				Похоже, возникла техническая проблема. Попробуйте обновить страницу
-			</div>
+			</Text>
 
 			<Button className={cls.button} onClick={() => window.location.reload()}>
 				Перезагрузить страницу
