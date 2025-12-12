@@ -1,0 +1,79 @@
+.overlay {
+	position: fixed;
+	inset: 0;
+	box-sizing: border-box;
+	background: rgba(149, 135, 245, 40%);
+	z-index: 100;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1rem;
+	animation: fade-in 0.2s ease;
+	backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+	animation: fade-in 0.2s ease;
+
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
+}
+
+.modal {
+	position: relative;
+	background: var(--color-white);
+	box-sizing: border-box;
+	border-radius: 8px;
+	max-width: 445px;
+	max-height: min(520px, 90vh);
+	width: 100%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.content {
+	overflow-x: auto;
+	flex: 1 1 auto;
+}
+
+.closeButton {
+	position: absolute;
+	color: var(--color-gray-500);
+	top: 8px;
+	right: 8px;
+	right: 12px;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10;
+	user-select: none;
+	transition: all 0.2s ease;
+	transition: all 0.2s ease;
+	transition: all 0.2s ease;
+	transition: all 0.2s ease;
+	transition: all 0.2s ease;
+
+	&:hover {
+		color: var(--color-black);
+	}
+}
+
+.actions {
+	display: flex;
+	gap: 8px;
+	justify-content: flex-end;
+}
+
+.closeIcon {
+	font-size: 14px;
+}

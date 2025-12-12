@@ -1,3 +1,56 @@
 .homePage {
 	border: none;
 }
+
+.btn {
+	color: rgb(213, 230, 167);
+	width: 150px;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	transition: all 0.2s ease;
+	transition: all 0.2s ease;
+	transition: all 0.2s ease;
+	transition: all 0.2s ease;
+	transition: all 0.2s ease;
+
+	&:hover {
+		color: antiquewhite;
+		background-color: #11096b;
+		transform: scale(1.01);
+		transform: scale(1.01);
+		transform: scale(1.01);
+		transform: scale(1.01);
+		transform: scale(1.01);
+	}
+}
+
+.modal {
+	padding: 24px;
+}
+
+.btnCancel {
+	color: var(--color-violet-500);
+	padding: 4px 16px;
+	width: 90px;
+	height: 32px;
+	font-size: 16px;
+}
+
+.btnDelete {
+	color: var(--color-white);
+	padding: 4px 16px;
+	width: 90px;
+	height: 32px;
+	font-size: 16px;
+}
+
+.modalTitle {
+	margin-bottom: 8px;
+}
+
+.modalText {
+	margin-bottom: 24px;
+}
