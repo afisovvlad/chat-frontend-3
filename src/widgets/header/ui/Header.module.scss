@@ -6,8 +6,55 @@
 	height: 60px;
 	margin-bottom: 24px;
 	padding: 8px 16px;
-	background-color: var(--header-background);
+
+	// background-color: var(--header-background);
 	border: 1px solid var(--color-gray-50);
 	border-bottom-left-radius: 8px;
 	border-bottom-right-radius: 8px;
+
+	@media screen and (max-width: 768px) {
+		padding: 18px 16px 14px 36px;
+		background-color: var(--header-mobile-background);
+		border: 1px solid transparent;
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+		backdrop-filter: blur(50px);
+	}
+}
+
+.desktop {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+
+	@media screen and (max-width: 768px) {
+		display: none;
+	}
+}
+
+.mobile {
+	display: none;
+
+	@media screen and (max-width: 768px) {
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+	}
+}
+
+.time {
+	font-family: var(--primary-text-font);
+	font-weight: 600;
+	font-size: 17px;
+	line-height: 22px;
+	letter-spacing: 0;
+	text-align: center;
+}
+
+.riteBlock .desktop {
+	gap: 8px;
+}
+
+.riteBlock .mobile {
+	gap: 7.5px;
 }
