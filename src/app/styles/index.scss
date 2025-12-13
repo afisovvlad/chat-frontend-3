@@ -1,0 +1,11 @@
+@use './reset';
+@use './variables/variables';
+
+body {
+	font-family:
+		var(--primary-text-font),
+		-apple-system,
+		Arial,
+		sans-serif;
+	font-weight: var(--font-weight-regular);
+}
