@@ -1,5 +1,4 @@
-import { Apple, Connection, Google, Logo, Wifi } from '@/shared/assets/icons';
-import { StatusBar } from '@/widgets/StatusBar';
+import { Apple, Google, Logo } from '@/shared/assets/icons';
 import styles from './Header.module.scss';
 
 export const Header = () => {
@@ -9,25 +8,25 @@ export const Header = () => {
 
 	return (
 		<header className={styles.header}>
-			<div className={styles.leftBlock}>
-				<div className={styles.desktop}>
-					<Logo height={44} width={44} />
-				</div>
-				<div className={styles.mobile}>
+			{/* <div className={styles.leftBlock}> */}
+			{/* <div className={styles.desktop}> */}
+			<Logo height={44} width={44} fontSize={44} />
+			{/* </div> */}
+			{/* <div className={styles.mobile}>
 					<span className={styles.time}>{time}</span>
-				</div>
-			</div>
+				</div> */}
+			{/* </div> */}
 
 			<div className={styles.riteBlock}>
-				<div className={styles.desktop}>
-					<Apple height={44} width={150} className={styles.desktop} />
-					<Google height={44} width={150} className={styles.desktop} />
-				</div>
+				{/* <div className={styles.desktop}> */}
+				<Apple height={44} width={150} />
+				<Google height={44} width={150} />
+				{/* </div>
 				<div className={styles.mobile}>
 					<Connection fontSize={12.23} />
 					<Wifi width={17.14} height={12.23} />
 					<StatusBar />
-				</div>
+				</div> */}
 			</div>
 		</header>
 	);
