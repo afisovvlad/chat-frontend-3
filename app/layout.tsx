@@ -1,3 +1,4 @@
+import { StoreProvider } from '@/app/providers/StoreProvider';
 import '@/app/styles/index.scss';
 import { roboto, sfPro } from '@/shared/assets/fonts/index';
 
@@ -10,7 +11,9 @@ export default function RootLayout({ children }: IChildren) {
 		<html lang='ru' className={`${roboto.variable} ${sfPro.variable} `}>
 			<head></head>
 			<body>
-				<main>{children}</main>
+				<StoreProvider>
+					<main>{children}</main>
+				</StoreProvider>
 			</body>
 		</html>
 	);

@@ -1,5 +1,7 @@
-import { Apple, Google, Logo } from '@/shared/assets/icons';
 import styles from './Header.module.scss';
+import Apple from '@icons/Apple.svg';
+import Logo from '@icons/Logo.svg';
+import Google from '@icons/Google.svg';
 
 export const Header = () => {
 	return (
