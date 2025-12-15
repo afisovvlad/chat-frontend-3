@@ -1,0 +1,14 @@
+# #!/usr/bin/env sh
+# . "$(dirname -- "$0")/_/husky.sh"
+
+# # Проверка staged файлов
+# npx lint-staged
+
+# # Сборка проекта
+# npm run build
+
+# Этот вариант будет запускаться перед пушем
+
+echo "Running lint-staged and building project..."
+npx lint-staged
+npm run build
