@@ -1,15 +1,12 @@
-'use client';
-
 import { classNames, Mods } from '@/shared/lib/classNames/classNames';
 import { ReactNode } from 'react';
-import styled from 'styled-components';
 import {
 	ButtonColor,
 	ButtonFontSize,
 	ButtonSize,
 	ButtonTheme,
 	ButtonType
-} from '../model/type';
+} from '../model/types/type';
 import cls from './Button.module.scss';
 
 interface ButtonProps {
@@ -21,11 +18,8 @@ interface ButtonProps {
 	disabled?: boolean;
 	callBtn?: boolean;
 	btnType?: ButtonType;
-	widthDesktop?: string;
-	heightDesktop?: string;
-	widthMobile?: string;
-	heightMobile?: string;
 	children?: ReactNode;
+	onClick?: () => void;
 }
 
 export const Button = (props: ButtonProps) => {
@@ -38,11 +32,8 @@ export const Button = (props: ButtonProps) => {
 		disabled = false,
 		callBtn = false,
 		btnType = ButtonType.BUTTON,
-		widthDesktop,
-		heightDesktop,
-		widthMobile,
-		heightMobile,
-		children
+		children,
+		onClick
 	} = props;
 
 	const mods: Mods = {
@@ -54,22 +45,14 @@ export const Button = (props: ButtonProps) => {
 		[cls.disabled]: disabled
 	};
 
-	const StyledButton = styled.button<ButtonProps>`
-		width: ${widthDesktop || undefined};
-		height: ${heightDesktop || undefined};
-
-		@media(max-width: 768px) {
-			width: ${widthMobile || undefined};
-			height: ${heightMobile || undefined};
-		`;
-
 	return (
-		<StyledButton
+		<button
 			className={classNames(cls.Button, mods, [className])}
 			disabled={disabled}
 			type={btnType}
+			onClick={onClick}
 		>
 			{children}
-		</StyledButton>
+		</button>
 	);
 };
