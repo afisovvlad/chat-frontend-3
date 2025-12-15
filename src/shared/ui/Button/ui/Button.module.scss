@@ -1,7 +1,10 @@
 .Button {
 	cursor: pointer;
 	text-align: center;
-	transition: 0.15s ease all;
+	transition:
+		0.15s ease background-color,
+		0.15s ease background,
+		0.15s ease color;
 	padding: 16px 8px;
 
 	&.fs_16 {
@@ -70,7 +73,7 @@
 
 .background {
 	border-radius: 8px;
-	color: var(--white-color);
+	color: var(--color-white);
 
 	&.primary {
 		background-color: var(--color-violet-500);

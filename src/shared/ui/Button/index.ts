@@ -4,5 +4,5 @@ export {
 	ButtonSize,
 	ButtonTheme,
 	ButtonType
-} from './model/type';
+} from './model/types/type';
 export { Button } from './ui/Button';
