@@ -1,6 +1,5 @@
 import { Container } from '@/shared/ui/Container/ui/Container';
 import { Header } from '@/widgets/header';
-import { Sidebar } from '@/widgets/Sidebar';
 import styles from './layout.module.scss';
 
 interface IChildren {
@@ -11,7 +10,6 @@ export default function MainLayout({ children }: IChildren) {
 	return (
 		<Container>
 			<Header />
-			<Sidebar />
 			<div className={styles.mainLayout}>{children}</div>
 		</Container>
 	);

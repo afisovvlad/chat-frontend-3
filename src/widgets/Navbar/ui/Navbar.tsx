@@ -1,4 +1,5 @@
 import { classNames } from '@/shared/lib/classNames/classNames';
+
 import cls from './Navbar.module.scss';
 
 interface NavbarProps {

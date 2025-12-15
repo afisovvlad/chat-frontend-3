@@ -1,28 +1,67 @@
-export type MenuItem = {
-	id: number;
-	title: string;
-	src: string;
+import type { ComponentType, SVGProps } from 'react';
+
+import {
+	Chat,
+	Service,
+	MobileService,
+	SearchContacts,
+	Settings,
+	MobileContacts
+} from '@icons/index';
+
+export type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
+
+export type TabId = 'chat' | 'service' | 'contacts' | 'settings';
+
+export type MenuItemBase = {
+	id: TabId;
+	title: string; // для десктопа (aria-label, tooltip)
+	label: string;
+	Icon: IconComponent;
+	IconMobile?: IconComponent;
 };
 
-export const menuItems: MenuItem[] = [
-	{
-		id: 1,
-		title: 'Message',
-		src: '/'
+const menuItemConfig: Record<TabId, MenuItemBase> = {
+	chat: {
+		id: 'chat',
+		title: 'Chat',
+		label: 'Чаты',
+		Icon: Chat,
+		IconMobile: Chat
 	},
-	{
-		id: 2,
+	service: {
+		id: 'service',
 		title: 'Service',
-		src: '/'
+		label: 'Сервисы',
+		Icon: Service,
+		IconMobile: MobileService
 	},
-	{
-		id: 3,
-		title: 'Search-person',
-		src: '/'
+	contacts: {
+		id: 'contacts',
+		title: 'Search-contacts',
+		label: 'Контакты',
+		Icon: SearchContacts,
+		IconMobile: MobileContacts
 	},
-	{
-		id: 4,
+	settings: {
+		id: 'settings',
 		title: 'Settings',
-		src: '/'
+		label: 'Настройки',
+		Icon: Settings,
+		IconMobile: Settings
 	}
+};
+
+export const menuItems: MenuItemBase[] = [
+	menuItemConfig.chat,
+	menuItemConfig.service,
+	menuItemConfig.contacts,
+	menuItemConfig.settings
+];
+
+export const menuItemsMobile: MenuItemBase[] = [
+	menuItemConfig.chat,
+	menuItemConfig.contacts,
+	menuItemConfig.service,
+	menuItemConfig.settings
 ];

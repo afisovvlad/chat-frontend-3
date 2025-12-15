@@ -1,0 +1,42 @@
+/* Тестовое наполнение — удалить в проде */
+.placeholder {
+	background-color: var(--color-gray-100);
+	width: 360px;
+	padding: 16px;
+}
+
+.title {
+	margin-bottom: 20px;
+}
+
+.servicesGrid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px;
+
+	@media (max-width: 575px) {
+		grid-template-columns: repeat(1, 1fr);
+	}
+}
+
+.serviceCard {
+	background: white;
+	padding: 16px;
+	border-radius: 8px;
+	text-align: center;
+	cursor: pointer;
+
+	&:hover {
+		background: var(--color-violet-50);
+	}
+
+	h3 {
+		font-weight: 600;
+		color: var(--color-black);
+	}
+
+	p {
+		color: var(--color-gray-500);
+		font-size: 14px;
+	}
+}

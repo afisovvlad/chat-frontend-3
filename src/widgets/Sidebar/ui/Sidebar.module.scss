@@ -1,5 +1,35 @@
-// это тестовый стиль чтобы stylelint не ругался
-// когда другой стиль добавиться - УДАЛИТЬ
+@use '@/app/styles/mixins/mixin.scss' as *;
+
 .Sidebar {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.SidebarIcon {
+	width: 44px;
+	height: 44px;
+	padding: 8px;
+	border-radius: 8px;
+	color: var(--color-gray-500);
+	transition: all 0.2s ease;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.SidebarBtn {
 	display: block;
+	text-decoration: none;
+	color: inherit;
+	user-select: none;
+	user-select: none;
+
+	&.active .SidebarIcon {
+		@include interactive-state-with-bg;
+	}
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.SidebarBtn:hover:not(.active) .SidebarIcon {
+		@include interactive-state-with-bg;
+	}
 }
