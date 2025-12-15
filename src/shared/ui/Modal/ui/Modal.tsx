@@ -1,17 +1,19 @@
 'use client';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Close } from '@icons/index';
-
+import { MODAL_SIZES_PX, ModalSize } from '../model/type';
 import cls from './Modal.module.scss';
 
 export interface ModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	children: ReactNode;
-	closeButton?: ReactNode;
+	closeButton?: ReactNode | boolean;
 	className?: string;
+	size?: ModalSize;
+	unmountOnClose?: boolean;
 }
 
 interface ModalActionsProps {
@@ -24,13 +26,25 @@ export const Modal = ({
 	onClose,
 	children,
 	closeButton,
-	className
+	className,
+	size,
+	unmountOnClose = true
 }: ModalProps) => {
+	const modalRef = useRef<HTMLDivElement>(null);
+
+	const originalOverflow = useRef<string>(document.body.style.overflow);
+
 	useEffect(() => {
 		if (!isOpen) {
+			if (unmountOnClose) {
+				return;
+			}
+			document.body.style.overflow = originalOverflow.current;
 			return;
 		}
+		originalOverflow.current = document.body.style.overflow;
 		document.body.style.overflow = 'hidden';
+		modalRef.current?.focus();
 
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === 'Escape') {
@@ -41,10 +55,10 @@ export const Modal = ({
 		window.addEventListener('keydown', handleKeyDown);
 
 		return () => {
-			document.body.style.overflow = '';
+			document.body.style.overflow = originalOverflow.current;
 			window.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [isOpen, onClose]);
+	}, [isOpen, onClose, unmountOnClose]);
 
 	const handleOverlayClick = (e: React.MouseEvent) => {
 		if (e.target === e.currentTarget) {
@@ -52,19 +66,37 @@ export const Modal = ({
 		}
 	};
 
-	if (!isOpen) {
+	if (!isOpen && unmountOnClose) {
 		return null;
 	}
 
-	return createPortal(
-		<div className={cls.overlay} onClick={handleOverlayClick}>
-			<div className={classNames(cls.modal, {}, [className])}>
-				{closeButton && (
-					<button className={cls.closeButton} onClick={onClose}>
-						<Close className={cls.closeIcon} />
-					</button>
-				)}
+	const renderCloseButton = () => {
+		if (closeButton === true) {
+			return (
+				<button className={cls.closeButton} onClick={onClose}>
+					<Close className={cls.closeIcon} />
+				</button>
+			);
+		}
+		return closeButton && typeof closeButton === 'object' ? closeButton : null;
+	};
 
+	const sizeClass = cls[`size_${size}`];
+
+	return createPortal(
+		<div
+			className={cls.overlay}
+			onClick={handleOverlayClick}
+			role='dialog'
+			aria-modal='true'
+		>
+			<div
+				ref={modalRef}
+				tabIndex={-1}
+				className={classNames(cls.modal, {}, [className, sizeClass])}
+				style={{ maxWidth: size ? MODAL_SIZES_PX[size] : undefined }}
+			>
+				{renderCloseButton()}
 				<div className={cls.content}>{children}</div>
 			</div>
 		</div>,

@@ -8,8 +8,6 @@
 	align-items: center;
 	justify-content: center;
 	padding: 1rem;
-	animation: fade-in 0.2s ease;
-	backdrop-filter: blur(4px);
 	backdrop-filter: blur(4px);
 	animation: fade-in 0.2s ease;
 
@@ -28,7 +26,7 @@
 	position: relative;
 	background: var(--color-white);
 	box-sizing: border-box;
-	border-radius: 8px;
+	border-radius: 12px;
 	max-width: 445px;
 	max-height: min(520px, 90vh);
 	width: 100%;
@@ -57,10 +55,6 @@
 	justify-content: center;
 	z-index: 10;
 	user-select: none;
-	transition: all 0.2s ease;
-	transition: all 0.2s ease;
-	transition: all 0.2s ease;
-	transition: all 0.2s ease;
 	transition: all 0.2s ease;
 
 	&:hover {

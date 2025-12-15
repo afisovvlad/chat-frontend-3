@@ -7,13 +7,19 @@ import styles from './page.module.scss';
 
 export default function HomePage() {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [isNewModalOpen, setNewIsModalOpen] = useState<boolean>(false);
 	const onClose = () => {
 		setIsModalOpen(false);
+	};
+
+	const NewModalClose = () => {
+		setNewIsModalOpen(false);
 	};
 
 	const onConfirm = () => {
 		//  логика удаления
 		setIsModalOpen(false);
+		setNewIsModalOpen(false);
 	};
 	return (
 		<section className={styles.homePage}>
@@ -21,7 +27,12 @@ export default function HomePage() {
 				Удалить элемент
 			</Button>
 
+			<Button onClick={() => setNewIsModalOpen(true)} className={styles.btn}>
+				Новая Модалка
+			</Button>
+
 			<Modal
+				size='extraWide'
 				isOpen={isModalOpen}
 				onClose={onClose}
 				closeButton
@@ -58,6 +69,22 @@ export default function HomePage() {
 						Удалить
 					</Button>
 				</Modal.Actions>
+			</Modal>
+
+			<Modal
+				size='wide'
+				isOpen={isNewModalOpen}
+				onClose={NewModalClose}
+				className={styles.newModal}
+			>
+				<Text type={TextType.TITLE}>some text</Text>
+				<Text>
+					В процессе разработки проекта мы столкнулись с рядом интересных задач.
+					Команда профессионалов тщательно анализирует каждый аспект, чтобы
+					обеспечить высокое качество результата. Используем современные
+					технологии и проверенные методики. Особое внимание уделяем
+					пользовательскому опыту и удобству интерфейса.{' '}
+				</Text>
 			</Modal>
 		</section>
 	);
