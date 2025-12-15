@@ -19,9 +19,9 @@ export const NotFoundPage = () => {
 				Проверьте правильность адреса или вернитесь на главную страницу
 			</Text>
 
-			<Link href='/'>
-				<Button className={cls.button}>Вернуться на главную</Button>
-			</Link>
+			<Button className={cls.button}>
+				<Link href='/'>Вернуться на главную</Link>
+			</Button>
 		</Container>
 	);
 };
