@@ -1,9 +1,10 @@
 'use client';
 
-import { useGetCitiesQuery } from '../api/citiesApi';
+import { useGetCitiesQuery, useGetCodeMutation } from '../api/citiesApi';
 
 export const Cities = () => {
 	const { isLoading, data: cities, error } = useGetCitiesQuery('');
+	// const { isLoading, data: cities, error } = useGetCodeMutation();
 
 	console.log(cities);
 
