@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Text, TextSize, TextType } from '@/shared/ui/Text';
-import { Modal } from '@/shared/ui/Modal/ui/Modal.client';
+
 import styles from './page.module.scss';
+import { Modal } from '@/shared/ui/Modal';
 
 export default function HomePage() {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);

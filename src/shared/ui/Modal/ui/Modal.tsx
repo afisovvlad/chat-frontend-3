@@ -32,18 +32,19 @@ export const Modal = ({
 }: ModalProps) => {
 	const modalRef = useRef<HTMLDivElement>(null);
 
-	const originalOverflow = useRef<string>(document.body.style.overflow);
-
+	const originalOverflow = useRef<string>('');
 	useEffect(() => {
 		if (!isOpen) {
-			if (unmountOnClose) {
-				return;
+			if (originalOverflow.current !== '') {
+				document.body.style.overflow = originalOverflow.current;
+				originalOverflow.current = '';
 			}
-			document.body.style.overflow = originalOverflow.current;
 			return;
 		}
-		originalOverflow.current = document.body.style.overflow;
+
+		originalOverflow.current = document.body.style.overflow || '';
 		document.body.style.overflow = 'hidden';
+
 		modalRef.current?.focus();
 
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -55,10 +56,13 @@ export const Modal = ({
 		window.addEventListener('keydown', handleKeyDown);
 
 		return () => {
-			document.body.style.overflow = originalOverflow.current;
+			if (originalOverflow.current !== '') {
+				document.body.style.overflow = originalOverflow.current;
+				originalOverflow.current = '';
+			}
 			window.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [isOpen, onClose, unmountOnClose]);
+	}, [isOpen, onClose]);
 
 	const handleOverlayClick = (e: React.MouseEvent) => {
 		if (e.target === e.currentTarget) {
