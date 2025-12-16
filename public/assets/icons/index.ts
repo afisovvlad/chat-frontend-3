@@ -1,4 +1,5 @@
 export { default as AddContact } from './AddContact.svg';
+export { default as Apple } from './Apple.svg';
 export { default as Aservice } from './AService.svg';
 export { default as Back } from './Back.svg';
 export { default as BlackList } from './BlackList.svg';
@@ -15,9 +16,10 @@ export { default as CreateNew } from './CreateNew.svg';
 export { default as Down } from './Down.svg';
 export { default as Download } from './Download.svg';
 export { default as Edit } from './Edit.svg';
-export { default as Error } from './Error.svg';
 export { default as Forward } from './Forward.svg';
 export { default as FullScreen } from './FullScreen.svg';
+export { default as Google } from './Google.svg';
+export { default as Error } from './Error.svg';
 export { default as InfoCircle } from './InfoCircle.svg';
 export { default as Left } from './Left.svg';
 export { default as Logo } from './Logo.svg';
