@@ -6,19 +6,11 @@ import {
 	fetchBaseQuery,
 	FetchBaseQueryError
 } from '@reduxjs/toolkit/query/react';
-import { getAccessToken } from './services/getAccessToken/getAccessToken';
-import { getRefreshToken } from './services/getRefreshToken/getRefreshToken';
+import { logoutFromInterceptor } from './services/logoutForInterceptor/logoutForInterceptor';
 
 // Интерсептор 1: добавление accessToken в заголовок
 const baseQuery = fetchBaseQuery({
-	baseUrl: process.env.NEXT_PUBLIC_BASE_API as string,
-	prepareHeaders: async headers => {
-		const accessToken = await getAccessToken();
-		if (accessToken) {
-			headers.set('Authorization', `Bearer ${accessToken}`);
-		}
-		return headers;
-	}
+	baseUrl: process.env.NEXT_PUBLIC_BASE_API as string
 });
 
 // Интерсептор 2: refresh при 401
@@ -50,31 +42,26 @@ const baseQueryWithReauth: BaseQueryFn<
 		api.dispatch(authActions.setRefreshing(true));
 
 		try {
-			const refreshToken = await getRefreshToken();
-
 			const refreshResult = await baseQuery(
 				{
-					url: '/auth/refresh/',
-					method: 'POST',
-					body: { refresh: refreshToken }
+					url: '/api/auth/refresh',
+					method: 'POST'
 				},
 				api,
 				extraOptions
 			);
 
 			if (refreshResult.error) {
-				throw refreshResult.error;
+				api.dispatch(authActions.logout());
+				await logoutFromInterceptor();
+				return result;
 			}
 
 			// Повторяем с новым токеном (prepareHeaders подхватит автоматически)
 			return baseQuery(args, api, extraOptions);
-		} catch (error) {
-			// TODO: добавить логику logout после создания логина
-
-			// api.dispatch({ type: 'auth/logout' });
-			// if (typeof window !== 'undefined') {
-			// 	window.location.href = '/login';
-			// }
+		} catch (_) {
+			api.dispatch(authActions.logout());
+			await logoutFromInterceptor();
 			return result;
 		} finally {
 			api.dispatch(authActions.setRefreshing(false));

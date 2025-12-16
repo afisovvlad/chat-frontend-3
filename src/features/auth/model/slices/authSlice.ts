@@ -12,6 +12,10 @@ const authSlice = createSlice({
 		// Флаг для предотвращения race condition при refresh
 		setRefreshing: (state, action: PayloadAction<boolean>) => {
 			state.isRefreshing = action.payload;
+			state.isRefreshing = action.payload;
+		},
+		logout: state => {
+			state.isRefreshing = false;
 		}
 	}
 });
