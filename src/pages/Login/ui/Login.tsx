@@ -11,8 +11,6 @@ export const Login = () => {
 			<p>Привет!</p>
 			<p className={styles.text}>Давай знакомиться</p>
 
-			<Button className={styles.btn}></Button>
-
 			<Link href={`/login/phone`} className={styles.link}>
 				Начать
 			</Link>
