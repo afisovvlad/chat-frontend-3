@@ -1,13 +1,29 @@
-.title {
-	margin-bottom: 24px;
-}
-
-.loginSlug {
+.loginPhone {
+	position: relative;
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
+	justify-content: flex-start;
 	align-items: center;
 	width: 100%;
 	height: 100%;
 	padding: 72px 64px 80px;
+}
+
+.title {
+	margin-bottom: 24px;
+}
+
+.linkBack {
+	position: absolute;
+	top: 72px;
+	left: 64px;
+	color: var(--color-black);
+}
+
+.logo {
+	margin-bottom: 32px;
+}
+
+.formItem {
+	margin-bottom: 317px;
 }
