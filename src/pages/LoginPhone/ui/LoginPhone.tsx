@@ -11,20 +11,22 @@ import FormItem from '@/shared/ui/FormItem/FormItem';
 import { Back, Logo } from '@icons/index';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { FormItemType } from '@/shared/ui/FormItem/model/types';
 import styles from './LoginPhone.module.scss';
 
 interface LoginPhoneForm {
+	name: string;
 	phone: string;
 }
 
 export const LoginPhone = () => {
 	const [disabled, setDisabled] = useState(true);
 	const router = useRouter();
-	const inputRefs = useRef<(HTMLInputElement | HTMLTextAreaElement | null)[]>(
-		[]
-	);
+	// const inputRefs = useRef<(HTMLInputElement | HTMLTextAreaElement | null)[]>(
+	// 	[]
+	// );
 	const methods = useForm<LoginPhoneForm>({
 		defaultValues: {
 			phone: '' // обязательно пустая строка
@@ -38,10 +40,34 @@ export const LoginPhone = () => {
 	});
 
 	useEffect(() => {
+		methods.setFocus('name');
+	}, [methods]);
+
+	useEffect(() => {
 		setDisabled(phone.length !== 16);
 	}, [phone]);
 
 	const formItem = [
+		{
+			type: 'text',
+			name: 'name',
+			label: 'Имя',
+			placeholder: 'Иван',
+			autocomplete: 'given-name', // необходимое свойство для автозаполнения, чему равно - посмотреть в интернете
+			disabled: false,
+			isRequired: false,
+			rules: {
+				required: 'Заполните это поле',
+				minLength: {
+					value: 3,
+					message: 'Минимум 3 буквы'
+				},
+				pattern: {
+					value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
+					message: 'Допускаются только буквы'
+				}
+			}
+		},
 		{
 			type: 'tel',
 			name: 'phone',
@@ -64,18 +90,18 @@ export const LoginPhone = () => {
 		}
 	];
 
-	const setRef = (
-		index: number,
-		el: HTMLInputElement | HTMLTextAreaElement | null
-	) => {
-		inputRefs.current[index] = el;
-	};
+	// const setRef = (
+	// 	index: number,
+	// 	el: HTMLInputElement | HTMLTextAreaElement | null
+	// ) => {
+	// 	inputRefs.current[index] = el;
+	// };
 
-	// ⬅️ Фокус в РОДИТЕЛЕ, а не внутри FormItem
-	useEffect(() => {
-		const firstEmpty = inputRefs.current.find(el => el && el.value === '');
-		firstEmpty?.focus();
-	}, []);
+	// // ⬅️ Фокус в РОДИТЕЛЕ, а не внутри FormItem
+	// useEffect(() => {
+	// 	const firstEmpty = inputRefs.current.find(el => el && el.value === '');
+	// 	firstEmpty?.focus();
+	// }, []);
 
 	const onSubmit: SubmitHandler<LoginPhoneForm> = data => {
 		console.log(data);
@@ -102,7 +128,7 @@ export const LoginPhone = () => {
 						index={index}
 						key={item.name}
 						type={item.type}
-						itemName={item.name}
+						name={item.name}
 						label={item.label}
 						placeholder={item.placeholder}
 						autocomplete={item.autocomplete}
@@ -110,7 +136,7 @@ export const LoginPhone = () => {
 						isRequired={item.isRequired}
 						rules={item.rules}
 						classNamesInput={styles.formItem}
-						setRef={setRef}
+						// setRef={setRef}
 					/>
 				))}
 				<Button

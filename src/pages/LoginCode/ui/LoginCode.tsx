@@ -87,7 +87,7 @@ export const LoginCode = () => {
 						index={index}
 						key={item.name}
 						type={item.type}
-						itemName={item.name}
+						name={item.name}
 						label={item.label}
 						placeholder={item.placeholder}
 						autocomplete={item.autocomplete}

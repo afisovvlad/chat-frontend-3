@@ -5,7 +5,7 @@ import {
 	FieldValues,
 	FormProvider,
 	SubmitHandler,
-	UseFormProps,
+	// UseFormProps,
 	UseFormReturn
 } from 'react-hook-form';
 import styles from './Form.module.scss';
@@ -13,7 +13,7 @@ import styles from './Form.module.scss';
 interface FormProps<T extends FieldValues> {
 	children: ReactNode;
 	onSubmit: SubmitHandler<T>;
-	options?: UseFormProps<T>;
+	// options?: UseFormProps<T>;
 	className?: string;
 	methods: UseFormReturn<T>;
 }
