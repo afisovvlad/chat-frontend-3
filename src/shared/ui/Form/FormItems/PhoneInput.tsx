@@ -5,19 +5,19 @@ import {
 	Path,
 	RegisterOptions
 } from 'react-hook-form';
-import styles from './InputInternal.module.scss';
+import styles from './styles.module.scss';
 
 interface PhoneInputInternalProps<TFormValues extends FieldValues> {
 	name: string;
-	rules: RegisterOptions<TFormValues, Path<TFormValues>>;
+	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
 	placeholder?: string;
 	autoComplete?: string;
-	errorMessage?: string;
-	classNamesInput?: string;
+	isError?: boolean;
+	classNamesPhone?: string;
 	disabled?: boolean;
 }
 
-export default function PhoneInputInternal(
+export default function PhoneInput(
 	props: PhoneInputInternalProps<FieldValues>
 ) {
 	const formatPhone = (value: string | undefined | null): string => {
@@ -78,10 +78,14 @@ export default function PhoneInputInternal(
 		onChange(formatted);
 	};
 
+	const rules = {
+		required: 'Заполните это поле'
+	};
+
 	return (
 		<Controller
 			name={props.name}
-			rules={props.rules || {}} // защита от undefined
+			rules={rules}
 			render={({ field }) => {
 				// Безопасное значение
 				const inputValue = field.value || '';
@@ -93,9 +97,9 @@ export default function PhoneInputInternal(
 						id={props.name}
 						value={inputValue}
 						placeholder={props.placeholder}
-						autoComplete={props.autoComplete}
-						className={clsx(styles.input, props.classNamesInput, {
-							[styles.hasError]: props.errorMessage,
+						autoComplete=''
+						className={clsx(styles.input, props.classNamesPhone, {
+							[styles.hasError]: props.isError,
 							[styles.disabled]: props.disabled
 						})}
 						disabled={props.disabled}

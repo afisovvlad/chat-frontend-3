@@ -1,0 +1,186 @@
+.input {
+	flex: 1;
+
+	// padding: 16.5px 20px;
+	font-family: inherit;
+	font-weight: inherit;
+	outline: none;
+
+	// font-size: 16px;
+	// color: var(--foreground-primary);
+	// background-color: var(--color-white);
+	// border: 1px solid var(--foreground-secondary);
+	// border-radius: 8px;
+
+	// &::placeholder {
+	// 	color: var(--foreground-secondary);
+	// }
+
+	&:disabled {
+		cursor: not-allowed;
+		color: var(--color-gray-200);
+	}
+
+	&.hasError {
+		outline: 2px solid var(--color-red);
+		outline-offset: 0;
+	}
+
+	// &:focus {
+	// 	outline: 2px solid var(--color-primary);
+	// 	outline-offset: 0;
+	// }
+}
+
+.hiddenInput {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.cells {
+	display: flex;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.cell {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 60;
+	height: 60;
+	padding: 10px;
+	font-family: inherit;
+	font-weight: inherit;
+	font-size: 18px;
+	line-height: 130%;
+	border: 1px solid var(--color-primary);
+	border-radius: 8px;
+
+	&.active {
+		outline: 2px solid var(--color-primary);
+		outline-offset: 0;
+	}
+
+	// курсор
+	&.active::after {
+		content: '|';
+		position: absolute;
+		color: var(--color-black);
+		font-size: 18px;
+		text-align: center;
+		vertical-align: middle;
+		animation: blink 2s step-start infinite;
+	}
+}
+
+@keyframes blink {
+	0%,
+	50%,
+	100% {
+		opacity: 1;
+	}
+
+	25%,
+	75% {
+		opacity: 0;
+	}
+}
+
+.container {
+	position: relative;
+	width: 100%;
+	cursor: text;
+
+	&.disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+}
+
+.container.error .cell {
+	outline: 2px solid var(--color-red);
+	outline-offset: 0;
+}
+
+// ***************
+
+// .codeContainer {
+// 	position: relative;
+// 	cursor: text;
+
+// 	&.disabled {
+// 		cursor: not-allowed;
+// 		opacity: 0.6;
+// 	}
+// }
+
+// .cells {
+// 	display: flex;
+// 	gap: 8px;
+// 	justify-content: center;
+// }
+
+// .cell {
+// 	width: 48px;
+// 	height: 56px;
+// 	display: flex;
+// 	align-items: center;
+// 	justify-content: center;
+// 	border: 1px solid #ccc;
+// 	border-radius: 8px;
+// 	font-size: 24px;
+// 	font-weight: 600;
+// 	background: white;
+// 	transition: all 0.2s ease;
+
+// 	&.filled {
+// 		border-color: #0070f3;
+// 	}
+
+// 	&.focused {
+// 		border-color: #0070f3;
+// 		box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+// 		outline: none;
+// 	}
+
+// 	&.active {
+// 		border-color: #0070f3;
+// 	}
+
+// 	&:focus {
+// 		outline: none;
+// 		border-color: #0070f3;
+// 		box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+// 	}
+// }
+
+// .hasError {
+// 	.cell {
+// 		border-color: #ff4444;
+
+// 		&:focus {
+// 			border-color: #ff4444;
+// 			box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.1);
+// 		}
+// 	}
+// }
+
+// .hiddenInput {
+// 	position: absolute;
+// 	opacity: 0;
+// 	pointer-events: none;
+// 	width: 0;
+// 	height: 0;
+// }
+
+// .cursor {
+// 	animation: blink 1s infinite;
+// 	color: #ccc;
+// }
+
+// @keyframes blink {
+// 	0%, 100% { opacity: 1; }
+// 	50% { opacity: 0; }
+// }

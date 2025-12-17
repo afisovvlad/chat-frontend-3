@@ -1,5 +1,4 @@
 'use client';
-import { FormItemType } from './model/types';
 import clsx from 'clsx';
 import { useEffect } from 'react';
 import {
@@ -8,14 +7,15 @@ import {
 	RegisterOptions,
 	useFormContext
 } from 'react-hook-form';
-import { CodeInputInternal } from '../FormInputs/CodeInputInternal';
-import PhoneInputInternal from '../FormInputs/PhoneInputInternal';
-import { TextareaInternal } from '../FormInputs/TextareaInternal';
-import styles from './FormItem.module.scss';
+import CodeInput from '../Form/FormItems/CodeInput';
+import PhoneInput from '../Form/FormItems/PhoneInput';
+import Textarea from '../Form/FormItems/Textarea';
+import styles from './FormAuthItem.module.scss';
+import { FormAuthItemType } from './model/types';
 
 interface FormItemProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
-	type: FormItemType;
+	type: FormAuthItemType;
 	label?: string;
 	placeholder?: string;
 	autoComplete?: string;
@@ -29,19 +29,19 @@ interface FormItemProps<TFormValues extends FieldValues> {
 	onValueChange?: (value: string) => void; // для реакции на ввод сразу
 }
 
-export default function FormItem<TFormValues extends FieldValues>({
+export default function FormAuthItem<TFormValues extends FieldValues>({
 	name,
 	type,
 	label,
 	placeholder,
-	autoComplete,
+	autoComplete = 'off',
 	disabled,
 	isRequired,
-	rules,
+	// rules,
 	length = 5,
-	classNamesLabel,
-	classNamesInput,
-	classNamesWrapper,
+	// classNamesLabel,
+	// classNamesInput,
+	// classNamesWrapper,
 	onValueChange
 }: FormItemProps<TFormValues>) {
 	const {
@@ -51,8 +51,10 @@ export default function FormItem<TFormValues extends FieldValues>({
 		formState: { errors }
 	} = useFormContext<TFormValues>();
 	const errorMessage = errors?.[name]?.message as string | undefined;
+	const classNamesInput = styles.input;
 
 	const value = watch(name);
+
 	useEffect(() => {
 		if (onValueChange) {
 			onValueChange(value ?? '');
@@ -65,43 +67,42 @@ export default function FormItem<TFormValues extends FieldValues>({
 	switch (type) {
 		case 'textarea':
 			inputElement = (
-				<TextareaInternal
+				<Textarea
 					name={name}
 					placeholder={placeholder}
 					autoComplete={autoComplete}
 					disabled={disabled}
-					rules={rules}
+					// rules={rules}
 					errorMessage={errorMessage}
 					onValueChange={onValueChange}
+					classNamesTextarea={classNamesInput}
 				/>
 			);
 
 			break;
 		case 'code':
 			inputElement = (
-				<CodeInputInternal
+				<CodeInput
 					name={name}
 					placeholder={placeholder}
-					autoComplete={autoComplete}
+					// autoComplete={autoComplete}
 					disabled={disabled}
-					rules={rules}
+					// rules={rules}
 					length={length}
-					errorMessage={errorMessage}
+					isError={Boolean(errorMessage)}
 					control={control}
+					classNamesCode={classNamesInput}
 				/>
 			);
 			break;
 		case 'tel':
 			inputElement = (
-				<PhoneInputInternal
+				<PhoneInput
 					name={name}
 					placeholder={placeholder}
-					autoComplete={autoComplete}
 					disabled={disabled}
-					rules={rules}
-					classNamesInput={classNamesInput}
-					errorMessage={errorMessage}
-					control={control}
+					classNamesPhone={classNamesInput}
+					isError={Boolean(errorMessage)}
 				/>
 			);
 			break;
@@ -302,11 +303,20 @@ export default function FormItem<TFormValues extends FieldValues>({
 	// }
 
 	return (
-		<div className={clsx(styles.inputWrapper, classNamesWrapper)}>
+		<div
+			className={clsx(
+				styles.inputWrapper
+				// classNamesWrapper
+			)}
+		>
 			<label
-				className={clsx(styles.label, classNamesLabel, {
-					[styles.hasError]: !!errorMessage
-				})}
+				className={clsx(
+					styles.label,
+					// classNamesLabel,
+					{
+						[styles.hasError]: !!errorMessage
+					}
+				)}
 				htmlFor={name}
 			>
 				{errorMessage ?? label}

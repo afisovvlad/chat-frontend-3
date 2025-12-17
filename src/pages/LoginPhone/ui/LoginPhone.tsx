@@ -6,19 +6,22 @@ import {
 	ButtonTheme,
 	ButtonType
 } from '@/shared/ui/Button';
-import { Form } from '@/shared/ui/Form/Form';
-import FormItem from '@/shared/ui/FormItem/FormItem';
+import { Form } from '@/shared/ui/Form/FormProvider/Form';
+import FormAuthItem from '@/shared/ui/FormAuthItem/FormAuthItem';
+import {
+	FormAuthItemNames,
+	FormAuthItemType
+} from '@/shared/ui/FormAuthItem/model/types';
 import { Back, Logo } from '@icons/index';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { FormItemType } from '@/shared/ui/FormItem/model/types';
 import styles from './LoginPhone.module.scss';
 
 interface LoginPhoneForm {
 	name: string;
-	phone: string;
+	phone_number: string;
 }
 
 export const LoginPhone = () => {
@@ -29,15 +32,17 @@ export const LoginPhone = () => {
 	// );
 	const methods = useForm<LoginPhoneForm>({
 		defaultValues: {
-			phone: '' // обязательно пустая строка
+			phone_number: '' // обязательно пустая строка
 		}
 	});
 
 	const phone = useWatch({
 		control: methods.control,
-		name: 'phone',
+		name: 'phone_number',
 		defaultValue: ''
 	});
+
+	// console.log(phone);
 
 	useEffect(() => {
 		methods.setFocus('name');
@@ -48,45 +53,33 @@ export const LoginPhone = () => {
 	}, [phone]);
 
 	const formItem = [
+		// {
+		// 	type: FormAuthItemType.TEXT,
+		// 	name: FormAuthItemNames.NAME,
+		// 	label: 'Имя',
+		// 	placeholder: 'Иван',
+		// 	autocomplete: FormAuthItemAutocomplete.NAME, // необходимое свойство для автозаполнения, чему равно - посмотреть в интернете
+		// 	disabled: false,
+		// 	isRequired: false
+		// 	// rules: {
+		// 	// 	required: 'Заполните это поле',
+		// 	// 	minLength: {
+		// 	// 		value: 3,
+		// 	// 		message: 'Минимум 3 буквы'
+		// 	// 	},
+		// 	// 	pattern: {
+		// 	// 		value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
+		// 	// 		message: 'Допускаются только буквы'
+		// 	// 	}
+		// 	// }
+		// },
 		{
-			type: 'text',
-			name: 'name',
-			label: 'Имя',
-			placeholder: 'Иван',
-			autocomplete: 'given-name', // необходимое свойство для автозаполнения, чему равно - посмотреть в интернете
-			disabled: false,
-			isRequired: false,
-			rules: {
-				required: 'Заполните это поле',
-				minLength: {
-					value: 3,
-					message: 'Минимум 3 буквы'
-				},
-				pattern: {
-					value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-					message: 'Допускаются только буквы'
-				}
-			}
-		},
-		{
-			type: 'tel',
-			name: 'phone',
+			type: FormAuthItemType.TEL,
+			name: FormAuthItemNames.PHONE_NUMBER,
 			label: 'Введите номер телефона',
 			placeholder: '+ 7 900 000 00 00',
-			autocomplete: 'tel',
 			disabled: false,
-			isRequired: false,
-			rules: {
-				required: 'Заполните это поле',
-				minLength: {
-					value: 12,
-					message: 'Минимум 12 знаков'
-				},
-				pattern: {
-					value: /^\+7 \d{3} \d{3} \d{2} \d{2}$/,
-					message: 'Допускаются только цифры'
-				}
-			}
+			isRequired: false
 		}
 	];
 
@@ -124,19 +117,17 @@ export const LoginPhone = () => {
 				className={styles.form}
 			>
 				{formItem.map((item, index) => (
-					<FormItem
-						index={index}
+					<FormAuthItem
 						key={item.name}
 						type={item.type}
 						name={item.name}
 						label={item.label}
 						placeholder={item.placeholder}
-						autocomplete={item.autocomplete}
+						autoComplete={item.autocomplete || 'off'}
 						disabled={item.disabled}
 						isRequired={item.isRequired}
-						rules={item.rules}
+						// rules={item.rules}
 						classNamesInput={styles.formItem}
-						// setRef={setRef}
 					/>
 				))}
 				<Button

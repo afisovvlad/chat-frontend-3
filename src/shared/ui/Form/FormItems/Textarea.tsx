@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import styles from './InputInternal.module.scss';
+import styles from './styles.module.scss';
 import { FieldValues, Path, RegisterOptions } from 'react-hook-form';
 
 interface TextareaInternalProps<TFormValues extends FieldValues> {
@@ -11,7 +11,7 @@ interface TextareaInternalProps<TFormValues extends FieldValues> {
 	disabled?: boolean;
 }
 
-export function TextareaInternal({
+export default function Textarea({
 	name,
 	rules,
 	placeholder,
