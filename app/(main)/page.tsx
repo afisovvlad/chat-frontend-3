@@ -33,7 +33,7 @@ export default function HomePage() {
 			</Button>
 
 			<Modal
-				size='extraWide'
+				size='wide'
 				isOpen={isModalOpen}
 				onClose={onClose}
 				closeButton
@@ -73,7 +73,7 @@ export default function HomePage() {
 			</Modal>
 
 			<Modal
-				size='wide'
+				size='extraWide'
 				isOpen={isNewModalOpen}
 				onClose={NewModalClose}
 				className={cls.newModal}

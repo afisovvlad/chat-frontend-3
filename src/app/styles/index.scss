@@ -9,3 +9,7 @@ body {
 		sans-serif;
 	font-weight: var(--font-weight-regular);
 }
+
+body.modal-open {
+	overflow: hidden;
+}

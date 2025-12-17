@@ -1,9 +1,10 @@
 'use client';
+
 import { ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Close } from '@icons/index';
-import { MODAL_SIZES_PX, ModalSize } from '../model/type';
+import { MODAL_SIZES, ModalSize } from '../model/type';
 import { FocusTrap } from 'focus-trap-react';
 import cls from './Modal.module.scss';
 
@@ -11,10 +12,9 @@ export interface ModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	children: ReactNode;
-	closeButton?: ReactNode | boolean;
+	closeButton?: boolean;
 	className?: string;
 	size?: ModalSize;
-	unmountOnClose?: boolean;
 }
 
 interface ModalActionsProps {
@@ -28,40 +28,34 @@ export const Modal = ({
 	children,
 	closeButton,
 	className,
-	size,
-	unmountOnClose = true
+	size
 }: ModalProps) => {
 	const modalRef = useRef<HTMLDivElement>(null);
 
-	const originalOverflow = useRef<string>('');
-
+	// Управление body.overflow через класс
 	useEffect(() => {
-		if (!isOpen) {
-			if (originalOverflow.current !== '') {
-				document.body.style.overflow = originalOverflow.current;
-				originalOverflow.current = '';
-			}
-			return;
+		if (isOpen) {
+			document.body.classList.add('modal-open');
+		} else {
+			document.body.classList.remove('modal-open');
 		}
 
-		originalOverflow.current = document.body.style.overflow || '';
-		document.body.style.overflow = 'hidden';
+		// Cleanup при размонтировании компонента
+		return () => {
+			document.body.classList.remove('modal-open');
+		};
+	}, [isOpen]);
 
+	// Escape-закрытие
+	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') {
+			if (e.key === 'Escape' && isOpen) {
 				onClose();
 			}
 		};
 
 		window.addEventListener('keydown', handleKeyDown);
-
-		return () => {
-			if (originalOverflow.current !== '') {
-				document.body.style.overflow = originalOverflow.current;
-				originalOverflow.current = '';
-			}
-			window.removeEventListener('keydown', handleKeyDown);
-		};
+		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, [isOpen, onClose]);
 
 	const handleOverlayClick = (e: React.MouseEvent) => {
@@ -70,12 +64,12 @@ export const Modal = ({
 		}
 	};
 
-	if (!isOpen && unmountOnClose) {
+	if (!isOpen) {
 		return null;
 	}
 
 	const renderCloseButton = () => {
-		if (closeButton === true) {
+		if (closeButton) {
 			return (
 				<button
 					className={cls.closeButton}
@@ -86,10 +80,8 @@ export const Modal = ({
 				</button>
 			);
 		}
-		return closeButton && typeof closeButton === 'object' ? closeButton : null;
+		return null;
 	};
-
-	const sizeClass = cls[`size_${size}`];
 
 	return createPortal(
 		<div
@@ -108,8 +100,8 @@ export const Modal = ({
 				<div
 					ref={modalRef}
 					tabIndex={-1}
-					className={classNames(cls.modal, {}, [className, sizeClass])}
-					style={{ maxWidth: size ? MODAL_SIZES_PX[size] : undefined }}
+					className={classNames(cls.modal, {}, [className])}
+					style={{ maxWidth: size ? MODAL_SIZES[size] : undefined }}
 				>
 					{renderCloseButton()}
 					<div className={cls.content}>{children}</div>

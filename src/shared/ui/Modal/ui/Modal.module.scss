@@ -1,13 +1,13 @@
 .overlay {
 	position: fixed;
+	inset: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: 1rem;
-	inset: 0;
 	background: rgba(149, 135, 245, 40%);
 	backdrop-filter: blur(4px);
-	z-index: 100;
+	z-index: 1000;
 	animation: fade-in 0.2s ease;
 
 	@keyframes fade-in {
@@ -25,11 +25,10 @@
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	border-radius: 12px;
-	max-width: 445px;
 	width: 100%;
 	max-height: min(520px, 90vh);
 	background: var(--color-white);
+	border-radius: 8px;
 	overflow-y: auto;
 }
 
@@ -39,19 +38,17 @@
 
 .closeButton {
 	position: absolute;
-	top: 8px;
-	right: 8px;
-	width: 24px;
-	height: 24px;
+	top: 16px;
+	right: 16px;
 	padding: 0;
-	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: var(--color-gray-500);
 	user-select: none;
 	transition: color 0.2s ease;
-	z-index: 10;
+	color: var(--color-gray-500);
+	cursor: pointer;
+	z-index: 100;
 
 	&:hover {
 		color: var(--color-black);
@@ -60,16 +57,16 @@
 	&:focus-visible {
 		outline: 2px solid var(--color-gray-500);
 		outline-offset: 2px;
-		border-radius: 8px;
+		border-radius: 4px;
 	}
+}
+
+.closeIcon {
+	font-size: 14px;
 }
 
 .actions {
 	display: flex;
 	gap: 8px;
 	justify-content: flex-end;
-}
-
-.closeIcon {
-	font-size: 14px;
 }
