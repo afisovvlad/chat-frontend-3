@@ -17,6 +17,11 @@
 		color: antiquewhite;
 		background-color: #11096b;
 	}
+
+	&:focus-visible {
+		outline: 1px solid var(--color-red);
+		outline-offset: 2px;
+	}
 }
 
 .modal {
@@ -29,6 +34,12 @@
 	width: 90px;
 	height: 32px;
 	font-size: 16px;
+
+	&:focus-visible {
+		outline: 2px solid var(--color-gray-500);
+		outline-offset: 2px;
+		border-radius: 8px;
+	}
 }
 
 .btnDelete {
@@ -37,6 +48,12 @@
 	width: 90px;
 	height: 32px;
 	font-size: 16px;
+
+	&:focus-visible {
+		outline: 2px solid var(--color-gray-500);
+		outline-offset: 2px;
+		border-radius: 8px;
+	}
 }
 
 .modalTitle {
@@ -48,5 +65,15 @@
 }
 
 .newModal {
-	padding: 45px;
+	padding: 20px;
+}
+
+.checkbox {
+	border: 1px solid var(--color-black);
+
+	&:focus-visible {
+		outline: 2px solid var(--color-gray-500);
+		outline-offset: 2px;
+		border-radius: 8px;
+	}
 }

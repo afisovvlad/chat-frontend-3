@@ -1,14 +1,13 @@
 .overlay {
 	position: fixed;
-	inset: 0;
-	box-sizing: border-box;
-	background: rgba(149, 135, 245, 40%);
-	z-index: 100;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: 1rem;
+	inset: 0;
+	background: rgba(149, 135, 245, 40%);
 	backdrop-filter: blur(4px);
+	z-index: 100;
 	animation: fade-in 0.2s ease;
 
 	@keyframes fade-in {
@@ -24,28 +23,24 @@
 
 .modal {
 	position: relative;
-	background: var(--color-white);
-	box-sizing: border-box;
-	border-radius: 12px;
-	max-width: 445px;
-	max-height: min(520px, 90vh);
-	width: 100%;
-	overflow: hidden;
 	display: flex;
 	flex-direction: column;
+	border-radius: 12px;
+	max-width: 445px;
+	width: 100%;
+	max-height: min(520px, 90vh);
+	background: var(--color-white);
+	overflow-y: auto;
 }
 
 .content {
-	overflow-x: auto;
 	flex: 1 1 auto;
 }
 
 .closeButton {
 	position: absolute;
-	color: var(--color-gray-500);
 	top: 8px;
 	right: 8px;
-	right: 12px;
 	width: 24px;
 	height: 24px;
 	padding: 0;
@@ -53,12 +48,19 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	z-index: 10;
+	color: var(--color-gray-500);
 	user-select: none;
-	transition: all 0.2s ease;
+	transition: color 0.2s ease;
+	z-index: 10;
 
 	&:hover {
 		color: var(--color-black);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--color-gray-500);
+		outline-offset: 2px;
+		border-radius: 8px;
 	}
 }
 

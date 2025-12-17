@@ -2,9 +2,9 @@
 import { useState } from 'react';
 import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Text, TextSize, TextType } from '@/shared/ui/Text';
-
-import styles from './page.module.scss';
 import { Modal } from '@/shared/ui/Modal';
+
+import cls from './page.module.scss';
 
 export default function HomePage() {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -23,12 +23,12 @@ export default function HomePage() {
 		setNewIsModalOpen(false);
 	};
 	return (
-		<section className={styles.homePage}>
-			<Button onClick={() => setIsModalOpen(true)} className={styles.btn}>
+		<section className={cls.homePage}>
+			<Button onClick={() => setIsModalOpen(true)} className={cls.btn}>
 				Удалить элемент
 			</Button>
 
-			<Button onClick={() => setNewIsModalOpen(true)} className={styles.btn}>
+			<Button onClick={() => setNewIsModalOpen(true)} className={cls.btn}>
 				Новая Модалка
 			</Button>
 
@@ -37,35 +37,35 @@ export default function HomePage() {
 				isOpen={isModalOpen}
 				onClose={onClose}
 				closeButton
-				className={styles.modal}
+				className={cls.modal}
 			>
 				<Text
 					type={TextType.TITLE}
 					fontSize={TextSize.L}
-					className={styles.modalTitle}
+					className={cls.modalTitle}
 				>
 					Удалить сообщение
 				</Text>
 				<Text
 					type={TextType.TEXT}
 					fontSize={TextSize.M}
-					className={styles.modalText}
+					className={cls.modalText}
 				>
 					Вы действительно хотите удалить собщение?.
 				</Text>
 
-				<Modal.Actions className={styles.actions}>
+				<Modal.Actions className={cls.actions}>
 					<Button
 						color={ButtonColor.TRANSPARENT}
 						onClick={onClose}
-						className={styles.btnCancel}
+						className={cls.btnCancel}
 					>
 						Отмена
 					</Button>
 					<Button
 						color={ButtonColor.PRIMARY}
 						onClick={onConfirm}
-						className={styles.btnDelete}
+						className={cls.btnDelete}
 					>
 						Удалить
 					</Button>
@@ -76,7 +76,7 @@ export default function HomePage() {
 				size='wide'
 				isOpen={isNewModalOpen}
 				onClose={NewModalClose}
-				className={styles.newModal}
+				className={cls.newModal}
 			>
 				<Text type={TextType.TITLE}>some text</Text>
 				<Text>
@@ -86,6 +86,22 @@ export default function HomePage() {
 					технологии и проверенные методики. Особое внимание уделяем
 					пользовательскому опыту и удобству интерфейса.{' '}
 				</Text>
+
+				<Text>
+					В процессе разработки проекта мы столкнулись с рядом интересных задач.
+					Команда профессионалов тщательно анализирует каждый аспект, чтобы
+					обеспечить высокое качество результата. Используем современные
+					технологии и проверенные методики. Особое внимание уделяем
+					пользовательскому опыту и удобству интерфейса.{' '}
+				</Text>
+				<Text>
+					В процессе разработки проекта мы столкнулись с рядом интересных задач.
+					Команда профессионалов тщательно анализирует каждый аспект, чтобы
+					обеспечить высокое качество результата. Используем современные
+					технологии и проверенные методики. Особое внимание уделяем
+					пользовательскому опыту и удобству интерфейса.{' '}
+				</Text>
+				<input type='checkbox' className={cls.checkbox} />
 			</Modal>
 		</section>
 	);

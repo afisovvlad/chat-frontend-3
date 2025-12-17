@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Close } from '@icons/index';
 import { MODAL_SIZES_PX, ModalSize } from '../model/type';
+import { FocusTrap } from 'focus-trap-react';
 import cls from './Modal.module.scss';
 
 export interface ModalProps {
@@ -33,6 +34,7 @@ export const Modal = ({
 	const modalRef = useRef<HTMLDivElement>(null);
 
 	const originalOverflow = useRef<string>('');
+
 	useEffect(() => {
 		if (!isOpen) {
 			if (originalOverflow.current !== '') {
@@ -44,8 +46,6 @@ export const Modal = ({
 
 		originalOverflow.current = document.body.style.overflow || '';
 		document.body.style.overflow = 'hidden';
-
-		modalRef.current?.focus();
 
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === 'Escape') {
@@ -77,8 +77,12 @@ export const Modal = ({
 	const renderCloseButton = () => {
 		if (closeButton === true) {
 			return (
-				<button className={cls.closeButton} onClick={onClose}>
-					<Close className={cls.closeIcon} />
+				<button
+					className={cls.closeButton}
+					onClick={onClose}
+					aria-label='Закрыть'
+				>
+					<Close className={cls.closeIcon} aria-hidden='true' />
 				</button>
 			);
 		}
@@ -94,15 +98,23 @@ export const Modal = ({
 			role='dialog'
 			aria-modal='true'
 		>
-			<div
-				ref={modalRef}
-				tabIndex={-1}
-				className={classNames(cls.modal, {}, [className, sizeClass])}
-				style={{ maxWidth: size ? MODAL_SIZES_PX[size] : undefined }}
+			<FocusTrap
+				active={isOpen}
+				focusTrapOptions={{
+					allowOutsideClick: true,
+					fallbackFocus: () => modalRef.current!
+				}}
 			>
-				{renderCloseButton()}
-				<div className={cls.content}>{children}</div>
-			</div>
+				<div
+					ref={modalRef}
+					tabIndex={-1}
+					className={classNames(cls.modal, {}, [className, sizeClass])}
+					style={{ maxWidth: size ? MODAL_SIZES_PX[size] : undefined }}
+				>
+					{renderCloseButton()}
+					<div className={cls.content}>{children}</div>
+				</div>
+			</FocusTrap>
 		</div>,
 		document.body
 	);
