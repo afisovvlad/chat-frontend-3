@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import styles from './TextareaInternal.module.scss';
+import styles from './InputInternal.module.scss';
 import { FieldValues, Path, RegisterOptions } from 'react-hook-form';
 
 interface TextareaInternalProps<TFormValues extends FieldValues> {
