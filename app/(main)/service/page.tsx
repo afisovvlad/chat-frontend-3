@@ -1,5 +1,3 @@
-// src/features/Service/Service.tsx
-
 'use client';
 
 import { Text, TextType } from '@/shared/ui/Text';

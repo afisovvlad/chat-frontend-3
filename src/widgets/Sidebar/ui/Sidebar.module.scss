@@ -2,34 +2,131 @@
 
 .Sidebar {
 	display: flex;
-	flex-direction: column;
 	gap: 12px;
+
+	// Десктоп: вертикальная боковая панель
+	flex-direction: column;
+
+	// Мобильная версия: фиксированная нижняя панель
+	@media (max-width: 576px) {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 1000;
+		background-color: var(--color-white);
+		border-top: 0.33px solid rgba(0, 0, 0, 70%);
+		padding: 8px 16px 13px 8px;
+		flex-direction: row;
+		gap: 8px;
+		justify-content: space-around;
+
+		// Изменяем порядок элементов на мобильном
+		& > a:nth-child(1) {
+			order: 1;
+		} // chat
+		& > a:nth-child(2) {
+			order: 3;
+		} // service → 3-й
+		& > a:nth-child(3) {
+			order: 2;
+		} // contacts → 2-й
+		& > a:nth-child(4) {
+			order: 4;
+		} // settings → 4-й
+	}
 }
 
-.SidebarIcon {
-	width: 44px;
-	height: 44px;
+.SidebarIconDesktop {
+	width: 48px;
+	height: 48px;
 	padding: 8px;
 	border-radius: 8px;
 	color: var(--color-gray-500);
 	transition: all 0.2s ease;
 	-webkit-tap-highlight-color: transparent;
+
+	// На десктопе — только эта иконка видна
+	@media (min-width: 577px) {
+		display: block;
+	}
+
+	// На мобильном — скрыта
+	@media (max-width: 576px) {
+		display: none;
+	}
+}
+
+.SidebarIconMobile {
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	border-radius: 2px;
+	color: var(--color-gray-500);
+	transition: all 0.2s ease;
+	-webkit-tap-highlight-color: transparent;
+
+	// На десктопе — скрыта
+	@media (min-width: 577px) {
+		display: none;
+	}
+
+	// На мобильном — видна
+	@media (max-width: 576px) {
+		display: block;
+	}
 }
 
 .SidebarBtn {
-	display: block;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 	text-decoration: none;
 	color: inherit;
+	background: none;
+	border: none;
+	cursor: pointer;
 	user-select: none;
-	user-select: none;
+	font-size: 14px;
+	padding: 0 6px;
+	text-align: center;
 
-	&.active .SidebarIcon {
+	// Десктоп: скрываем текст под иконкой
+	@media (min-width: 577px) {
+		.label {
+			display: none;
+		}
+	}
+
+	// Мобильный: показываем текст
+	@media (max-width: 576px) {
+		.label {
+			margin-top: 4px;
+		}
+
+		&.active .label,
+		&:active s.label {
+			@include interactive-state-color-only;
+		}
+	}
+
+	// Активный стиль
+	&.active .SidebarIconDesktop,
+	&.active .SidebarIconMobile {
 		@include interactive-state-with-bg;
 	}
 }
 
+// Hover-эффекты (только для десктопа с мышью)
 @media (hover: hover) and (pointer: fine) {
-	.SidebarBtn:hover:not(.active) .SidebarIcon {
+	.SidebarBtn:hover:not(.active) .SidebarIconDesktop {
 		@include interactive-state-with-bg;
+	}
+
+	@media (max-width: 576px) {
+		.SidebarBtn:hover .label {
+			@include interactive-state-color-only;
+		}
 	}
 }
