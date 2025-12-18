@@ -1,11 +1,16 @@
 'use client';
-
 import { ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Close } from '@icons/index';
 import { MODAL_SIZES, ModalSize } from '../model/type';
 import { FocusTrap } from 'focus-trap-react';
+import {
+	Button,
+	ButtonColor,
+	ButtonSize,
+	ButtonTheme
+} from '@/shared/ui/Button';
 import cls from './Modal.module.scss';
 
 export interface ModalProps {
@@ -71,13 +76,16 @@ export const Modal = ({
 	const renderCloseButton = () => {
 		if (closeButton) {
 			return (
-				<button
+				<Button
+					theme={ButtonTheme.CLEAR}
+					color={ButtonColor.TRANSPARENT}
+					size={ButtonSize.S}
 					className={cls.closeButton}
 					onClick={onClose}
 					aria-label='Закрыть'
 				>
 					<Close className={cls.closeIcon} aria-hidden='true' />
-				</button>
+				</Button>
 			);
 		}
 		return null;

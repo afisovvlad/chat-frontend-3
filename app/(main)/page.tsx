@@ -73,7 +73,7 @@ export default function HomePage() {
 			</Modal>
 
 			<Modal
-				size='extraWide'
+				size='wide'
 				isOpen={isNewModalOpen}
 				onClose={NewModalClose}
 				className={cls.newModal}
