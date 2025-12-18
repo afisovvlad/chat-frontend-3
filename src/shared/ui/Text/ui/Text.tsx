@@ -13,7 +13,6 @@ export const Text = (props: TextProps) => {
 		fontWeight,
 		lineHeight,
 		textAlign,
-		margin,
 		truncate = false,
 		uppercase = false,
 		maxLines,
@@ -32,7 +31,6 @@ export const Text = (props: TextProps) => {
 		...(fontWeight !== undefined ? { fontWeight } : {}),
 		...(lineHeight !== undefined ? { lineHeight } : {}),
 		...(textAlign !== undefined ? { textAlign } : {}),
-		...(margin !== undefined ? { margin } : {}),
 		...(uppercase ? { textTransform: 'uppercase' } : {})
 	};
 
