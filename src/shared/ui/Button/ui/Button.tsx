@@ -7,7 +7,7 @@ import {
 	ButtonSize,
 	ButtonTheme,
 	ButtonType
-} from '../model/type';
+} from '../model/types/type';
 import cls from './Button.module.scss';
 
 interface ButtonProps {
@@ -19,10 +19,6 @@ interface ButtonProps {
 	disabled?: boolean;
 	callBtn?: boolean;
 	btnType?: ButtonType;
-	widthDesktop?: string;
-	heightDesktop?: string;
-	widthMobile?: string;
-	heightMobile?: string;
 	children?: ReactNode;
 	onClick?: () => void;
 }
