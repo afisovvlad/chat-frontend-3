@@ -1,9 +1,9 @@
 'use client';
 
 import { Text, TextType } from '@/shared/ui/Text';
-import cls from './Chat.module.scss';
+import cls from './chats.module.scss';
 
-const Chat = () => {
+const Chats = () => {
 	return (
 		<div className={cls.placeholder}>
 			{/* Тестовое наполнение — удалить в проде */}
@@ -27,4 +27,4 @@ const Chat = () => {
 	);
 };
 
-export default Chat;
+export default Chats;

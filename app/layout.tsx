@@ -7,7 +7,6 @@ interface IChildren {
 }
 
 export default function RootLayout({ children }: IChildren) {
-	console.log(children, 'children');
 	return (
 		<html lang='ru' className={`${roboto.variable} ${sfPro.variable} `}>
 			<head></head>

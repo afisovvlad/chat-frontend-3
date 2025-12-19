@@ -1,8 +1,8 @@
 'use client';
 
 import { Text, TextType } from '@/shared/ui/Text';
-import cls from './Settings.module.scss';
 import { BlackList, Edit, Forward, Logout, Support, Trash } from '@icons/index';
+import cls from './settings.module.scss';
 
 const Settings = () => {
 	return (

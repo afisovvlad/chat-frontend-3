@@ -3,7 +3,7 @@
 'use client';
 
 import { Text, TextType } from '@/shared/ui/Text';
-import cls from './Contacts.module.scss';
+import cls from './contacts.module.scss';
 
 const Contacts = () => {
 	return (

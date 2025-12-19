@@ -1,44 +1,22 @@
-import { menuItems } from '../model/const/menuItems';
 import { classNames } from '@/shared/lib/classNames/classNames';
-
+import Image from 'next/image';
+import { menuItems } from '../model/const/menuItems';
 import cls from './Sidebar.module.scss';
-import Link from 'next/link';
-import { Text, TextSize, TextType } from '@/shared/ui/Text';
-
-export type PageId = 'chat' | 'service' | 'contacts' | 'settings';
 
 interface SidebarProps {
-	activePage: PageId;
+	className?: string;
 }
 
-export const Sidebar = ({ activePage }: SidebarProps) => {
+export const Sidebar = ({ className }: SidebarProps) => {
 	return (
-		<div className={classNames(cls.Sidebar)}>
-			{menuItems.map(item => {
-				const Icon = item.Icon;
-				const IconMobile = item.IconMobile || item.Icon;
-
-				return (
-					<Link
-						key={item.id}
-						href={`/${item.id}`}
-						className={classNames(cls.SidebarBtn, {
-							[cls.active]: activePage === item.id
-						})}
-						aria-label={item.title}
-					>
-						<Icon className={cls.SidebarIconDesktop} />
-						<IconMobile className={cls.SidebarIconMobile} />
-						<Text
-							type={TextType.TEXT}
-							fontSize={TextSize.S}
-							className={cls.label}
-						>
-							{item.label}
-						</Text>
-					</Link>
-				);
-			})}
-		</div>
+		<ul className={classNames(cls.Sidebar, {}, [className])}>
+			{menuItems.map(item => (
+				<li key={item.id}>
+					<a href={item.src}>
+						<Image src={item.src} width={48} height={48} alt={item.title} />
+					</a>
+				</li>
+			))}
+		</ul>
 	);
 };
