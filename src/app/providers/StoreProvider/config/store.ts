@@ -1,3 +1,4 @@
+import { authReducer } from '@/features/auth';
 import { citiesReducer } from '@/pages/Cities';
 import { rtkApi } from '@/shared/api/rtkApi';
 import {
@@ -9,7 +10,8 @@ import { StateSchema } from './StateSchema';
 
 const rootReducer = combineReducers<ReducersMapObject<StateSchema>>({
 	[rtkApi.reducerPath]: rtkApi.reducer,
-	cities: citiesReducer
+	cities: citiesReducer,
+	auth: authReducer
 });
 
 export const makeStore = (initialState?: StateSchema) => {
