@@ -1,25 +1,17 @@
 import clsx from 'clsx';
-import {
-	Controller,
-	FieldValues,
-	Path,
-	RegisterOptions
-} from 'react-hook-form';
+import { Controller, FieldValues } from 'react-hook-form';
+import { FormAuthItemAutocomplete } from '../model/types';
 import styles from './styles.module.scss';
 
-interface PhoneInputInternalProps<TFormValues extends FieldValues> {
+interface PhoneInputProps<TFormValues extends FieldValues> {
 	name: string;
-	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
 	placeholder?: string;
-	autoComplete?: string;
 	isError?: boolean;
-	classNamesPhone?: string;
+	classNameInput?: string;
 	disabled?: boolean;
 }
 
-export default function PhoneInput(
-	props: PhoneInputInternalProps<FieldValues>
-) {
+export function PhoneInput(props: PhoneInputProps<FieldValues>) {
 	const formatPhone = (value: string | undefined | null): string => {
 		// Безопасная проверка
 		if (!value && value !== '') {
@@ -97,8 +89,8 @@ export default function PhoneInput(
 						id={props.name}
 						value={inputValue}
 						placeholder={props.placeholder}
-						autoComplete=''
-						className={clsx(styles.input, props.classNamesPhone, {
+						autoComplete={FormAuthItemAutocomplete.PHONE}
+						className={clsx(styles.input, props.classNameInput, {
 							[styles.hasError]: props.isError,
 							[styles.disabled]: props.disabled
 						})}
@@ -116,46 +108,3 @@ export default function PhoneInput(
 		/>
 	);
 }
-
-// <input
-// 	{...field}
-// 	type='tel'
-// 	id={props.name}
-// 	placeholder={props.placeholder}
-// 	autoComplete={props.autoComplete}
-// 	className={clsx(styles.input, props.classNamesInput, {
-// 		[styles.hasError]: props.errorMessage,
-// 		[styles.disabled]: props.disabled
-// 	})}
-// 	onFocus={() => {
-// 		if (!field.value) {
-// 			field.onChange('+7 ');
-// 		}
-// 	}}
-// 	onChange={e => {
-// 		const raw = e.target.value?.replace(/\D/g, '') || ''; // только цифры
-// 		let formatted = '+7 ';
-
-// 		// удаляем код страны (+7) из raw
-// 		const digits = raw.startsWith('7') ? raw.slice(1) : raw;
-
-// 		if (digits?.length > 10) {
-// 			return;
-// 		} // ограничение на 10 цифр
-
-// 		if (digits?.length > 0) {
-// 			formatted += digits.substring(0, 3);
-// 		}
-// 		if (digits?.length > 3) {
-// 			formatted += ' ' + digits.substring(3, 6);
-// 		}
-// 		if (digits?.length > 6) {
-// 			formatted += ' ' + digits.substring(6, 8);
-// 		}
-// 		if (digits?.length > 8) {
-// 			formatted += ' ' + digits.substring(8, 10);
-// 		}
-
-// 		field.onChange(formatted);
-// 	}}
-// />

@@ -1,17 +1,18 @@
 'use client';
 
+import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
 import {
 	Button,
 	ButtonColor,
 	ButtonTheme,
 	ButtonType
 } from '@/shared/ui/Button';
-import { Form } from '@/shared/ui/Form/FormProvider/Form';
-import FormAuthItem from '@/shared/ui/FormAuthItem/FormAuthItem';
 import {
+	FormAuthItemAutocomplete,
 	FormAuthItemNames,
 	FormAuthItemType
-} from '@/shared/ui/FormAuthItem/model/types';
+} from '@/shared/ui/Form/FormItems/model/types';
+import { Form } from '@/shared/ui/Form/FormProvider/ui/Form';
 import { Back, Logo } from '@icons/index';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -27,22 +28,17 @@ interface LoginPhoneForm {
 export const LoginPhone = () => {
 	const [disabled, setDisabled] = useState(true);
 	const router = useRouter();
-	// const inputRefs = useRef<(HTMLInputElement | HTMLTextAreaElement | null)[]>(
-	// 	[]
-	// );
 	const methods = useForm<LoginPhoneForm>({
 		defaultValues: {
-			phone_number: '' // обязательно пустая строка
+			phone_number: '' // пишем здесь сохраненный телефон из state
+			// phone_number: '+7 929 011 45 87' // пишем здесь сохраненный телефон из state
 		}
 	});
 
 	const phone = useWatch({
 		control: methods.control,
-		name: 'phone_number',
-		defaultValue: ''
+		name: 'phone_number'
 	});
-
-	// console.log(phone);
 
 	useEffect(() => {
 		methods.setFocus('name');
@@ -53,26 +49,47 @@ export const LoginPhone = () => {
 	}, [phone]);
 
 	const formItem = [
-		// {
-		// 	type: FormAuthItemType.TEXT,
-		// 	name: FormAuthItemNames.NAME,
-		// 	label: 'Имя',
-		// 	placeholder: 'Иван',
-		// 	autocomplete: FormAuthItemAutocomplete.NAME, // необходимое свойство для автозаполнения, чему равно - посмотреть в интернете
-		// 	disabled: false,
-		// 	isRequired: false
-		// 	// rules: {
-		// 	// 	required: 'Заполните это поле',
-		// 	// 	minLength: {
-		// 	// 		value: 3,
-		// 	// 		message: 'Минимум 3 буквы'
-		// 	// 	},
-		// 	// 	pattern: {
-		// 	// 		value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-		// 	// 		message: 'Допускаются только буквы'
-		// 	// 	}
-		// 	// }
-		// },
+		{
+			type: FormAuthItemType.TEXT,
+			name: FormAuthItemNames.NAME,
+			label: 'Имя',
+			placeholder: 'Иван',
+			autocomplete: FormAuthItemAutocomplete.NAME, // необходимое свойство для автозаполнения, чему равно - посмотреть в интернете
+			disabled: false,
+			isRequired: false,
+			rules: {
+				required: 'Заполните это поле',
+				minLength: {
+					value: 3,
+					message: 'Минимум 3 буквы'
+				},
+				pattern: {
+					value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
+					message: 'Допускаются только буквы'
+				}
+			}
+		},
+		{
+			type: FormAuthItemType.TEXTAREA,
+			name: FormAuthItemNames.NICKNAME,
+			label: 'Введите никнейм',
+			placeholder: 'alex',
+			autocomplete: FormAuthItemAutocomplete.NICKNAME,
+			disabled: false,
+			isRequired: false,
+			rules: {
+				required: 'Заполните это поле',
+				minLength: {
+					value: 3,
+					message: 'Минимум 3 буквы'
+				}
+				// pattern: {
+				// 	value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
+				// 	message: 'Допускаются только буквы'
+				// }
+			}
+		},
+
 		{
 			type: FormAuthItemType.TEL,
 			name: FormAuthItemNames.PHONE_NUMBER,
@@ -82,19 +99,6 @@ export const LoginPhone = () => {
 			isRequired: false
 		}
 	];
-
-	// const setRef = (
-	// 	index: number,
-	// 	el: HTMLInputElement | HTMLTextAreaElement | null
-	// ) => {
-	// 	inputRefs.current[index] = el;
-	// };
-
-	// // ⬅️ Фокус в РОДИТЕЛЕ, а не внутри FormItem
-	// useEffect(() => {
-	// 	const firstEmpty = inputRefs.current.find(el => el && el.value === '');
-	// 	firstEmpty?.focus();
-	// }, []);
 
 	const onSubmit: SubmitHandler<LoginPhoneForm> = data => {
 		console.log(data);
@@ -123,10 +127,10 @@ export const LoginPhone = () => {
 						name={item.name}
 						label={item.label}
 						placeholder={item.placeholder}
-						autoComplete={item.autocomplete || 'off'}
+						autoComplete={item.autocomplete}
 						disabled={item.disabled}
 						isRequired={item.isRequired}
-						// rules={item.rules}
+						rules={item.rules}
 						classNamesInput={styles.formItem}
 					/>
 				))}
@@ -204,26 +208,26 @@ export const LoginPhone = () => {
 // 		// 		}
 // 		// 	}
 // 		// },
-// 		// {
-// 		// 	type: 'text',
-// 		// 	name: 'nickName',
-// 		// 	label: 'Введите никнейм',
-// 		// 	placeholder: 'alex',
-// 		// 	autocomplete: 'family-name',
-// 		// 	disabled: false,
-// 		// 	isRequired: false,
-// 		// 	rules: {
-// 		// 		required: 'Заполните это поле',
-// 		// 		minLength: {
-// 		// 			value: 3,
-// 		// 			message: 'Минимум 3 буквы'
-// 		// 		},
-// 		// 		pattern: {
-// 		// 			value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-// 		// 			message: 'Допускаются только буквы'
-// 		// 		}
-// 		// 	}
-// 		// },
+//  {
+//  	type: 'text',
+//  	name: 'nickName',
+//  	label: 'Введите никнейм',
+//  	placeholder: 'alex',
+//  	autocomplete: 'family-name',
+//  	disabled: false,
+//  	isRequired: false,
+//  	rules: {
+//  		required: 'Заполните это поле',
+//  		minLength: {
+//  			value: 3,
+//  			message: 'Минимум 3 буквы'
+//  		},
+//  		pattern: {
+//  			value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
+//  			message: 'Допускаются только буквы'
+//  		}
+//  	}
+//  },
 // 		{
 // 			type: 'tel',
 // 			name: 'phone',

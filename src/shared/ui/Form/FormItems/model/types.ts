@@ -1,5 +1,3 @@
-// export type FormItemNames = 'phone_number' | 'code' | 'username' | 'nickname';
-
 export enum FormAuthItemNames {
 	PHONE_NUMBER = 'phone_number',
 	CODE = 'code',
@@ -37,5 +35,8 @@ export enum FormAuthItemAutocomplete {
 	LAST_NAME = 'family-name',
 	CODE = 'one-time-code',
 	PHONE = 'tel',
-	EMAIL = 'email'
+	EMAIL = 'email',
+	SEARCH = 'search',
+	OFF = 'off',
+	ON = 'on'
 }

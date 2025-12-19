@@ -24,7 +24,7 @@ export const Form = <T extends FieldValues>({
 	onSubmit,
 	// options,
 	className,
-	shouldSubmit,
+	// shouldSubmit,
 	methods
 }: FormProps<T>) => {
 	return (

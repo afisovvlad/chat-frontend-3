@@ -1,20 +1,8 @@
-.input {
+.input,
+.textarea {
 	flex: 1;
-
-	// padding: 16.5px 20px;
 	font-family: inherit;
 	font-weight: inherit;
-	outline: none;
-
-	// font-size: 16px;
-	// color: var(--foreground-primary);
-	// background-color: var(--color-white);
-	// border: 1px solid var(--foreground-secondary);
-	// border-radius: 8px;
-
-	// &::placeholder {
-	// 	color: var(--foreground-secondary);
-	// }
 
 	&:disabled {
 		cursor: not-allowed;
@@ -22,14 +10,10 @@
 	}
 
 	&.hasError {
+		border-color: transparent;
 		outline: 2px solid var(--color-red);
 		outline-offset: 0;
 	}
-
-	// &:focus {
-	// 	outline: 2px solid var(--color-primary);
-	// 	outline-offset: 0;
-	// }
 }
 
 .hiddenInput {
@@ -45,47 +29,18 @@
 }
 
 .cell {
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	width: 60;
 	height: 60;
 	padding: 10px;
 	font-family: inherit;
 	font-weight: inherit;
+	color: inherit;
 	font-size: 18px;
 	line-height: 130%;
+	text-align: center;
+	vertical-align: middle;
 	border: 1px solid var(--color-primary);
 	border-radius: 8px;
-
-	&.active {
-		outline: 2px solid var(--color-primary);
-		outline-offset: 0;
-	}
-
-	// курсор
-	&.active::after {
-		content: '|';
-		position: absolute;
-		color: var(--color-black);
-		font-size: 18px;
-		text-align: center;
-		vertical-align: middle;
-		animation: blink 2s step-start infinite;
-	}
-}
-
-@keyframes blink {
-	0%,
-	50%,
-	100% {
-		opacity: 1;
-	}
-
-	25%,
-	75% {
-		opacity: 0;
-	}
 }
 
 .container {
@@ -99,10 +54,10 @@
 	}
 }
 
-.container.error .cell {
-	outline: 2px solid var(--color-red);
-	outline-offset: 0;
-}
+// .container.error .cell {
+// 	outline: 2px solid var(--color-red);
+// 	outline-offset: 0;
+// }
 
 // ***************
 
