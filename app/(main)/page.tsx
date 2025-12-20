@@ -1,10 +1,16 @@
 'use client';
+
 import { useState } from 'react';
 import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Text, TextSize, TextType } from '@/shared/ui/Text';
 import { Modal } from '@/shared/ui/Modal';
 
 import cls from './page.module.scss';
+
+import { redirect } from 'next/navigation';
+
+export default function HomePage() {
+	redirect('/chats');
 
 export default function HomePage() {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);

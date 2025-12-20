@@ -1,0 +1,46 @@
+/* Тестовое наполнение — удалить в проде */
+.placeholder {
+	background-color: var(--color-gray-100);
+	width: 360px;
+	padding: 16px;
+}
+
+.chatItem {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px;
+	border-bottom: 1px solid var(--color-gray-50);
+
+	&:last-child {
+		border-bottom: none;
+	}
+}
+
+.avatar {
+	width: 48px;
+	height: 48px;
+	background: var(--color-gray-200);
+	border-radius: 50%;
+}
+
+.info {
+	flex: 1;
+}
+
+.name {
+	font-weight: 600;
+	color: var(--color-black);
+}
+
+.message {
+	color: var(--color-gray-500);
+	font-size: 14px;
+}
+
+.input {
+	height: 30px;
+	border: 1px solid var(--color-black);
+	background-color: #fff;
+	border-radius: 8px;
+}
