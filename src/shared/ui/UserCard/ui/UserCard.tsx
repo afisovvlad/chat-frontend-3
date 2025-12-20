@@ -25,14 +25,14 @@ export const UserCard = ({ className, UserData, type }: ChatListItemProps) => {
 		<div className={classNames(cls.ChatListItem, {}, [className])}>
 			<Image
 				className={classNames(cls.avatar, {}, [cls[type]])}
-				alt={UserData.chat?.username || ''}
-				src={UserData.chat?.avatar_url || ''}
+				alt={UserData.user?.username || ''}
+				src={UserData.user?.avatar_url || ''}
 			></Image>
 
 			<div className={cls.info}>
 				<div className={cls.header}>
 					<Text color={TextColor.BLACK} className={cls.name}>
-						{UserData.chat?.first_name} {UserData.chat?.last_name}
+						{UserData.user?.first_name} {UserData.user?.last_name}
 					</Text>
 
 					<div className={cls.notification}></div>
