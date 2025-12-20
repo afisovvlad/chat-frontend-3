@@ -1,8 +1,4 @@
-import {
-	ChatListItem,
-	ChatListItemSchema,
-	ChatType
-} from '@/shared/ui/UserCard';
+import { ChatItemSchema, ChatType } from '@/entities/Chat';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import cls from './Chats.module.scss';
 
@@ -10,7 +6,7 @@ interface ChatsProps {
 	className?: string;
 }
 
-const chats: ChatListItemSchema[] = [
+const chats: ChatItemSchema[] = [
 	{
 		id: 1,
 		chat: {
@@ -116,9 +112,9 @@ const chats: ChatListItemSchema[] = [
 export const Chats = ({ className }: ChatsProps) => {
 	return (
 		<div className={classNames(cls.Chats, {}, [className])}>
-			{chats.map(chat => (
+			{/* {chats.map(chat => (
 				<ChatListItem chat={chat} key={chat.id}></ChatListItem>
-			))}
+			))} */}
 		</div>
 	);
 };
