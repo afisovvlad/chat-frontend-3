@@ -1,9 +1,10 @@
 'use client';
-import { useState } from 'react';
 import { Button, ButtonColor } from '@/shared/ui/Button';
-import { Text, TextSize, TextType } from '@/shared/ui/Text';
 import { Modal } from '@/shared/ui/Modal';
+import { Text, TextSize, TextType } from '@/shared/ui/Text';
+import { useState } from 'react';
 
+import { Chats } from '@/pages/Chats';
 import cls from './page.module.scss';
 
 export default function HomePage() {
@@ -103,6 +104,8 @@ export default function HomePage() {
 				</Text>
 				<input type='checkbox' className={cls.checkbox} />
 			</Modal>
+
+			<Chats></Chats>
 		</section>
 	);
 }
