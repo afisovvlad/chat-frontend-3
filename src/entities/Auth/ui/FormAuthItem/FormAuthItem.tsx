@@ -25,9 +25,9 @@ interface FormItemProps<TFormValues extends FieldValues> {
 	isRequired?: boolean;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
 	length?: number; // для code
-	classNamesLabel?: string;
-	classNamesInput?: string;
-	classNamesWrapper?: string;
+	classNameParentLabel?: string;
+	classNameParentInput?: string;
+	classNameParentWrapper?: string;
 	onValueChange?: (value: string) => void; // для реакции на ввод сразу
 }
 
@@ -40,7 +40,10 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 	isRequired,
 	length = 5,
 	onValueChange,
-	rules
+	rules,
+	classNameParentInput,
+	classNameParentWrapper,
+	classNameParentLabel
 }: FormItemProps<TFormValues>) {
 	const {
 		register,
@@ -72,7 +75,11 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 					disabled={disabled}
 					isError={isError}
 					// onValueChange={onValueChange}
-					classNameTextarea={clsx(styles.textarea, isError && styles.error)}
+					classNameTextarea={clsx(
+						styles.textarea,
+						classNameParentInput,
+						isError && styles.error
+					)}
 					rules={rules}
 					register={register}
 				/>
@@ -88,7 +95,11 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 					length={length}
 					isError={isError}
 					control={control}
-					classNameInput={clsx(styles.input, isError && styles.error)}
+					classNameInput={clsx(
+						styles.input,
+						classNameParentInput,
+						isError && styles.error
+					)}
 				/>
 			);
 			break;
@@ -100,7 +111,11 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 					placeholder={placeholder}
 					disabled={disabled}
 					isError={isError}
-					classNameInput={clsx(styles.input, isError && styles.error)}
+					classNameInput={clsx(
+						styles.input,
+						classNameParentInput,
+						isError && styles.error
+					)}
 				/>
 			);
 			break;
@@ -115,15 +130,19 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 					type={FormAuthItemType.TEXT}
 					register={register}
 					isError={isError}
-					classNameInput={clsx(styles.input, isError && styles.error)}
+					classNameInput={clsx(
+						styles.input,
+						classNameParentInput,
+						isError && styles.error
+					)}
 				/>
 			);
 	}
 
 	return (
-		<div className={clsx(styles.inputWrapper)}>
+		<div className={clsx(styles.inputWrapper, classNameParentWrapper)}>
 			<label
-				className={clsx(styles.label, {
+				className={clsx(styles.label, classNameParentLabel, {
 					[styles.hasError]: !!errorMessage
 				})}
 				htmlFor={name}

@@ -8,11 +8,20 @@ import {
 	ButtonType
 } from '@/shared/ui/Button';
 import {
-	FormAuthItemAutocomplete,
 	FormAuthItemNames,
 	FormAuthItemType
 } from '@/shared/ui/Form/FormItems/model/types';
 import { Form } from '@/shared/ui/Form/FormProvider/ui/Form';
+import { Modal } from '@/shared/ui/Modal';
+import {
+	FontWeight,
+	Text,
+	TextAlign,
+	TextColor,
+	TextSize,
+	TextType,
+	TitleTag
+} from '@/shared/ui/Text';
 import { Back, Logo } from '@icons/index';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -21,17 +30,16 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import styles from './LoginPhone.module.scss';
 
 interface LoginPhoneForm {
-	name: string;
 	phone_number: string;
 }
 
 export const LoginPhone = () => {
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [disabled, setDisabled] = useState(true);
 	const router = useRouter();
 	const methods = useForm<LoginPhoneForm>({
 		defaultValues: {
-			phone_number: '' // пишем здесь сохраненный телефон из state
-			// phone_number: '+7 929 011 45 87' // пишем здесь сохраненный телефон из state
+			phone_number: '' // пишем здесь сохраненный телефон из state, например +7 929 011 45 87
 		}
 	});
 
@@ -41,7 +49,7 @@ export const LoginPhone = () => {
 	});
 
 	useEffect(() => {
-		methods.setFocus('name');
+		methods.setFocus('phone_number');
 	}, [methods]);
 
 	useEffect(() => {
@@ -50,47 +58,6 @@ export const LoginPhone = () => {
 
 	const formItem = [
 		{
-			type: FormAuthItemType.TEXT,
-			name: FormAuthItemNames.NAME,
-			label: 'Имя',
-			placeholder: 'Иван',
-			autocomplete: FormAuthItemAutocomplete.NAME, // необходимое свойство для автозаполнения, чему равно - посмотреть в интернете
-			disabled: false,
-			isRequired: false,
-			rules: {
-				required: 'Заполните это поле',
-				minLength: {
-					value: 3,
-					message: 'Минимум 3 буквы'
-				},
-				pattern: {
-					value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-					message: 'Допускаются только буквы'
-				}
-			}
-		},
-		{
-			type: FormAuthItemType.TEXTAREA,
-			name: FormAuthItemNames.NICKNAME,
-			label: 'Введите никнейм',
-			placeholder: 'alex',
-			autocomplete: FormAuthItemAutocomplete.NICKNAME,
-			disabled: false,
-			isRequired: false,
-			rules: {
-				required: 'Заполните это поле',
-				minLength: {
-					value: 3,
-					message: 'Минимум 3 буквы'
-				}
-				// pattern: {
-				// 	value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-				// 	message: 'Допускаются только буквы'
-				// }
-			}
-		},
-
-		{
 			type: FormAuthItemType.TEL,
 			name: FormAuthItemNames.PHONE_NUMBER,
 			label: 'Введите номер телефона',
@@ -98,14 +65,61 @@ export const LoginPhone = () => {
 			disabled: false,
 			isRequired: false
 		}
+		// {
+		// 	type: FormAuthItemType.TEXT,
+		// 	name: FormAuthItemNames.NAME,
+		// 	label: 'Имя',
+		// 	placeholder: 'Иван',
+		// 	autocomplete: FormAuthItemAutocomplete.NAME, // необходимое свойство для автозаполнения, чему равно - посмотреть в интернете
+		// 	disabled: false,
+		// 	isRequired: false,
+		// 	rules: {
+		// 		required: 'Заполните это поле',
+		// 		minLength: {
+		// 			value: 3,
+		// 			message: 'Минимум 3 буквы'
+		// 		},
+		// 		pattern: {
+		// 			value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
+		// 			message: 'Допускаются только буквы'
+		// 		}
+		// 	}
+		// },
+		// {
+		// 	type: FormAuthItemType.TEXTAREA,
+		// 	name: FormAuthItemNames.NICKNAME,
+		// 	label: 'Введите никнейм',
+		// 	placeholder: 'alex',
+		// 	autocomplete: FormAuthItemAutocomplete.NICKNAME,
+		// 	disabled: false,
+		// 	isRequired: false,
+		// 	rules: {
+		// 		required: 'Заполните это поле',
+		// 		minLength: {
+		// 			value: 3,
+		// 			message: 'Минимум 3 буквы'
+		// 		}
+		// 		// pattern: {
+		// 		// 	value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
+		// 		// 	message: 'Допускаются только буквы'
+		// 		// }
+		// 	}
+		// },
 	];
 
-	const onSubmit: SubmitHandler<LoginPhoneForm> = data => {
-		console.log(data);
-		// console.log(data.phone);
+	const onModalClose = () => {
+		setIsModalOpen(false);
+	};
+	const onConfirm = () => {
 		// сохраняем phone в store
 		//отправляем телефон на сервер
 		router.push('/login/code');
+		setIsModalOpen(false);
+	};
+
+	const onSubmit: SubmitHandler<LoginPhoneForm> = data => {
+		console.log(data);
+		setIsModalOpen(true);
 	};
 
 	return (
@@ -114,24 +128,34 @@ export const LoginPhone = () => {
 			<Link href='/login' title='Назад' className={styles.linkBack}>
 				<Back style={{ fontSize: '20px' }} className={styles.back} />
 			</Link>
-			<h1 className={styles.title}>Вход/регистрация</h1>
+			<Text
+				type={TextType.TITLE}
+				tag={TitleTag.H1}
+				fontSize={TextSize.XXL}
+				fontWeight={FontWeight.SEMI_BOLD}
+				textAlign={TextAlign.CENTER}
+				className={styles.title}
+			>
+				Вход/регистрация
+			</Text>
+
 			<Form<LoginPhoneForm>
 				methods={methods}
 				onSubmit={onSubmit}
 				className={styles.form}
 			>
-				{formItem.map((item, index) => (
+				{formItem.map(item => (
 					<FormAuthItem
 						key={item.name}
 						type={item.type}
 						name={item.name}
 						label={item.label}
 						placeholder={item.placeholder}
-						autoComplete={item.autocomplete}
+						autoComplete={undefined}
 						disabled={item.disabled}
 						isRequired={item.isRequired}
-						rules={item.rules}
-						classNamesInput={styles.formItem}
+						rules={undefined}
+						classNameParentInput={styles.formItem}
 					/>
 				))}
 				<Button
@@ -143,172 +167,50 @@ export const LoginPhone = () => {
 					Далее
 				</Button>
 			</Form>
+
+			<Modal
+				size='wide'
+				isOpen={isModalOpen}
+				onClose={onModalClose}
+				className={styles.modal}
+			>
+				<Text
+					type={TextType.TEXT}
+					fontSize={TextSize.L}
+					fontWeight={FontWeight.MEDIUM}
+					color={TextColor.BLACK}
+					className={styles.modalPhone}
+				>
+					+7 962 888 54 36
+				</Text>
+				<Text
+					type={TextType.TEXT}
+					fontSize={TextSize.M}
+					fontWeight={FontWeight.REGULAR}
+					color={TextColor.GRAY}
+					className={styles.modalText}
+				>
+					Номер телефона указан верно?
+				</Text>
+
+				<Modal.Actions className={styles.actions}>
+					<Button
+						color={ButtonColor.PRIMARY}
+						onClick={onModalClose}
+						className={styles.btnCancel}
+						theme={ButtonTheme.CLEAR}
+					>
+						Изменить
+					</Button>
+					<Button
+						color={ButtonColor.PRIMARY}
+						onClick={onConfirm}
+						className={styles.btnConfirm}
+					>
+						Верно
+					</Button>
+				</Modal.Actions>
+			</Modal>
 		</div>
 	);
 };
-
-// 'use client';
-
-// import { Back, Logo } from '@icons/index';
-// import {
-// 	Button,
-// 	ButtonColor,
-// 	ButtonTheme,
-// 	ButtonType
-// } from '@/shared/ui/Button';
-// import { Form } from '@/shared/ui/Form/Form';
-// import FormItem from '@/shared/ui/FormItem/FormItem';
-// import Link from 'next/link';
-// import { useRouter } from 'next/navigation';
-// import { useEffect, useState } from 'react';
-// import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-// import styles from './LoginPhone.module.scss';
-
-// interface LoginPhoneForm {
-// 	phone: string;
-// }
-
-// export const LoginPhone = () => {
-// 	const [disabled, setDisabled] = useState(true);
-// 	const router = useRouter();
-// 	const methods = useForm<LoginPhoneForm>({
-// 		defaultValues: {
-// 			phone: '' // обязательно пустая строка
-// 		}
-// 	});
-
-// 	const phone = useWatch({
-// 		control: methods.control,
-// 		name: 'phone',
-// 		defaultValue: ''
-// 	});
-
-// 	useEffect(() => {
-// 		setDisabled(phone.length !== 16);
-// 	}, [phone]);
-
-// 	const formItem = [
-// 		// {
-// 		// 	type: 'text',
-// 		// 	name: 'name',
-// 		// 	label: 'Имя',
-// 		// 	placeholder: 'Иван',
-// 		// 	autocomplete: 'given-name', // необходимое свойство для автозаполнения, чему равно - посмотреть в интернете
-// 		// 	disabled: false,
-// 		// 	isRequired: false,
-// 		// 	rules: {
-// 		// 		required: 'Заполните это поле',
-// 		// 		minLength: {
-// 		// 			value: 3,
-// 		// 			message: 'Минимум 3 буквы'
-// 		// 		},
-// 		// 		pattern: {
-// 		// 			value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-// 		// 			message: 'Допускаются только буквы'
-// 		// 		}
-// 		// 	}
-// 		// },
-//  {
-//  	type: 'text',
-//  	name: 'nickName',
-//  	label: 'Введите никнейм',
-//  	placeholder: 'alex',
-//  	autocomplete: 'family-name',
-//  	disabled: false,
-//  	isRequired: false,
-//  	rules: {
-//  		required: 'Заполните это поле',
-//  		minLength: {
-//  			value: 3,
-//  			message: 'Минимум 3 буквы'
-//  		},
-//  		pattern: {
-//  			value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-//  			message: 'Допускаются только буквы'
-//  		}
-//  	}
-//  },
-// 		{
-// 			type: 'tel',
-// 			name: 'phone',
-// 			label: 'Введите номер телефона',
-// 			placeholder: '+ 7 900 000 00 00',
-// 			autocomplete: 'tel',
-// 			disabled: false,
-// 			isRequired: false,
-// 			rules: {
-// 				required: 'Заполните это поле',
-// 				minLength: {
-// 					value: 12,
-// 					message: 'Минимум 12 знаков'
-// 				},
-// 				pattern: {
-// 					value: /^\+7 \d{3} \d{3} \d{2} \d{2}$/,
-// 					message: 'Допускаются только цифры'
-// 				}
-// 			}
-// 		}
-// 		// {
-// 		// 	type: 'code',
-// 		// 	name: 'code',
-// 		// 	label: null,
-// 		// 	placeholder: '11111',
-// 		// 	autocomplete: 'one-time-code',
-// 		// 	disabled: false,
-// 		// 	isRequired: false,
-// 		// 	rules: {
-// 		// 		required: 'Заполните это поле',
-// 		// 		minLength: {
-// 		// 			value: 5,
-// 		// 			message: 'Минимум 5 знаков'
-// 		// 		}
-// 		// 	}
-// 		// }
-// 	];
-
-// 	const onSubmit: SubmitHandler<LoginPhoneForm> = data => {
-// 		console.log(data);
-// 		// console.log(data.phone);
-// 		// сохраняем phone в store
-// 		//отправляем телефон на сервер
-// 		router.push('/login/code');
-// 	};
-
-// 	return (
-// 		<div className={styles.loginPhone}>
-// 			<Logo style={{ fontSize: '70px' }} className={styles.logo} />
-// 			<Link href='/login' title='Назад' className={styles.linkBack}>
-// 				<Back style={{ fontSize: '20px' }} className={styles.back} />
-// 			</Link>
-// 			<h1 className={styles.title}>Вход/регистрация</h1>
-// 			<Form<LoginPhoneForm>
-// 				methods={methods}
-// 				onSubmit={onSubmit}
-// 				className={styles.form}
-// 			>
-// 				{formItem.map(item => (
-// 					<FormItem
-// 						key={item.name}
-// 						type={item.type}
-// 						itemName={item.name}
-// 						label={item.label}
-// 						placeholder={item.placeholder}
-// 						autocomplete={item.autocomplete}
-// 						disabled={item.disabled}
-// 						isRequired={item.isRequired}
-// 						rules={item.rules}
-// 						classNamesInput={styles.formItem}
-// 					/>
-// 				))}
-// 				<Button
-// 					btnType={ButtonType.SUBMIT}
-// 					disabled={disabled}
-// 					theme={ButtonTheme.BACKGROUND}
-// 					color={ButtonColor.PRIMARY}
-// 				>
-// 					Далее
-// 				</Button>
-// 			</Form>
-// 		</div>
-// 	);
-// };

@@ -50,5 +50,6 @@ export enum TextColor {
 	GRAY = 'var(--color-gray-500)',
 	ERROR = 'var(--color-red)',
 	ACCENT = 'var(--color-violet-500)',
+	VIOLET = 'var(--color-violet-700)',
 	WHITE = 'var(--white-color)'
 }

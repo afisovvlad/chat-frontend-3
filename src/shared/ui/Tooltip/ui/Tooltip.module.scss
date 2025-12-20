@@ -1,0 +1,19 @@
+.tooltip {
+	min-width: 290px;
+	max-width: 329px;
+	height: auto;
+	padding: 20px;
+	color: var(--color-white);
+	border-radius: 16px;
+	background-color: var(--color-violet-700);
+	margin-bottom: 24px;
+}
+
+.text {
+	line-height: 120%;
+	letter-spacing: 0.4px;
+}
+
+.text:not(:last-child) {
+	margin-bottom: 12px;
+}
