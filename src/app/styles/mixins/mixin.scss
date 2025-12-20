@@ -1,0 +1,8 @@
+@mixin interactive-state-with-bg {
+	color: var(--color-violet-500);
+	background: var(--color-violet-50);
+}
+
+@mixin interactive-state-color-only {
+	color: var(--color-violet-500);
+}
