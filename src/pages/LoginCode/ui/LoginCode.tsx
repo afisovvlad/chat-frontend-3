@@ -137,10 +137,10 @@ export const LoginCode = () => {
 				>
 					Введите код
 				</Text>
-				<div className={styles.info}>
-					<InfoCircle width={24} height={24} className={styles.infoIcon} />
-					<Tooltip classNameParent={styles.tooltip} />
-				</div>
+				{/* <div className={styles.info}> */}
+				<InfoCircle width={24} height={24} className={styles.infoIcon} />
+				<Tooltip classNameParent={styles.tooltip} />
+				{/* </div> */}
 				{/* {isTooltipVisible && <Tooltip classNameParent={styles.tooltip} />} */}
 			</div>
 

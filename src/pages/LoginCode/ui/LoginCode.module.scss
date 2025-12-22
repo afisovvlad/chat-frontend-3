@@ -64,9 +64,10 @@
 
 .tooltip {
 	position: absolute;
-	top: -140px;
+	top: -132px;
 	right: 15.5px;
-	display: none;
+
+	// display: none;
 }
 
 .info:hover .tooltip {

@@ -1,5 +1,6 @@
 .tooltip {
-	min-width: 290px;
+	width: 100%;
+	min-width: 300px;
 	max-width: 329px;
 	height: auto;
 	padding: 20px;
@@ -7,6 +8,18 @@
 	border-radius: 16px;
 	background-color: var(--color-violet-700);
 	margin-bottom: 24px;
+
+	&::after {
+		content: '';
+		position: absolute;
+		top: 100%;
+		right: 55px;
+		background-image: url('/images/tooltip-arrow.svg');
+		background-size: contain;
+		background-repeat: no-repeat;
+		width: 24px;
+		height: 18px;
+	}
 }
 
 .text {

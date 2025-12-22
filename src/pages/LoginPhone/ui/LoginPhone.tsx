@@ -1,6 +1,8 @@
 'use client';
 
 import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
+import { authActions } from '@/features/auth/model/slices/authSlice';
+import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import {
 	Button,
 	ButtonColor,
@@ -42,6 +44,7 @@ export const LoginPhone = () => {
 			phone_number: '' // пишем здесь сохраненный телефон из state, например +7 929 011 45 87
 		}
 	});
+	const dispatch = useAppDispatch();
 
 	const phone = useWatch({
 		control: methods.control,
@@ -112,7 +115,10 @@ export const LoginPhone = () => {
 	};
 	const onConfirm = () => {
 		// сохраняем phone в store
+		dispatch(authActions.setPhone(phone));
+
 		//отправляем телефон на сервер
+
 		router.push('/login/code');
 		setIsModalOpen(false);
 	};
@@ -181,7 +187,7 @@ export const LoginPhone = () => {
 					color={TextColor.BLACK}
 					className={styles.modalPhone}
 				>
-					+7 962 888 54 36
+					{phone}
 				</Text>
 				<Text
 					type={TextType.TEXT}
