@@ -92,6 +92,8 @@
 	padding: 0 6px;
 	text-align: center;
 
+	@include focus-visible;
+
 	// Десктоп: скрываем текст под иконкой переделать на 768
 	@media (min-width: 768px) {
 		.label {

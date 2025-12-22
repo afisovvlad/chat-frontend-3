@@ -6,3 +6,11 @@
 @mixin interactive-state-color-only {
 	color: var(--color-violet-500);
 }
+
+@mixin focus-visible() {
+	&:focus-visible {
+		outline: 2px solid var(--color-gray-500);
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+}
