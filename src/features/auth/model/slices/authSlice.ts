@@ -12,7 +12,7 @@ const initialState: AuthSchema = {
 
 export const fetchPhone = createAsyncThunk(
 	'auth/fetchPhone',
-	async (phone_number: AuthSchema, { rejectWithValue }) => {
+	async (phone_number: string, { rejectWithValue }) => {
 		try {
 			const response = await fetch(
 				`${process.env.NEXT_PUBLIC_BASE_API}/${process.env.NEXT_PUBLIC_CODE}`,
@@ -42,40 +42,40 @@ export const fetchPhone = createAsyncThunk(
 	}
 );
 
-export const fetchCode = createAsyncThunk(
-	'auth/fetchCode',
-	async (
-		{ phone_number, code }: { phone_number: string; code: string },
-		{ rejectWithValue }
-	) => {
-		try {
-			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_BASE_API}/${process.env.NEXT_PUBLIC_TOKEN}`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({ phone_number: phone_number, code: code })
-				}
-			);
+// export const fetchCode = createAsyncThunk(
+// 	'auth/fetchCode',
+// 	async (
+// 		{ phone_number, code }: { phone_number: string; code: string },
+// 		{ rejectWithValue }
+// 	) => {
+// 		try {
+// 			const response = await fetch(
+// 				`${process.env.NEXT_PUBLIC_BASE_API}/${process.env.NEXT_PUBLIC_TOKEN}`,
+// 				{
+// 					method: 'POST',
+// 					headers: {
+// 						'Content-Type': 'application/json'
+// 					},
+// 					body: JSON.stringify({ phone_number: phone_number, code: code })
+// 				}
+// 			);
 
-			if (!response.ok) {
-				throw new Error('Ошибка отправки кода');
-			}
-			const result = await response.json();
-			console.log("result in 'fetchPhone'", result);
-			return result;
-			// return await response.json();
-		} catch (err: unknown) {
-			if (err instanceof Error) {
-				return rejectWithValue(err.message);
-			} else {
-				return rejectWithValue('Что-то пошло не так');
-			}
-		}
-	}
-);
+// 			if (!response.ok) {
+// 				throw new Error('Ошибка отправки кода');
+// 			}
+// 			const result = await response.json();
+// 			console.log("result in 'fetchPhone'", result);
+// 			return result;
+// 			// return await response.json();
+// 		} catch (err: unknown) {
+// 			if (err instanceof Error) {
+// 				return rejectWithValue(err.message);
+// 			} else {
+// 				return rejectWithValue('Что-то пошло не так');
+// 			}
+// 		}
+// 	}
+// );
 
 const authSlice = createSlice({
 	name: 'auth',
