@@ -1,11 +1,9 @@
 'use client';
 
 import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
-import {
-	authActions,
-	fetchPhone
-} from '@/features/auth/model/slices/authSlice';
+import { fetchPhone } from '@/features/auth/model/slices/authSlice';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import {
 	Button,
 	ButtonColor,
@@ -39,8 +37,11 @@ interface LoginPhoneForm {
 }
 
 export const LoginPhone = () => {
+	const { isDisabledCodeAttempts } = useAppSelector(state => state.auth);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const [disabled, setDisabled] = useState(true);
+	// const [disabled, setDisabled] = useState<boolean>(
+	// 	isDisabledCodeAttempts || true
+	// );
 	const router = useRouter();
 	const methods = useForm<LoginPhoneForm>({
 		defaultValues: {
@@ -53,14 +54,17 @@ export const LoginPhone = () => {
 		control: methods.control,
 		name: 'phone_number'
 	});
+	const disabled = isDisabledCodeAttempts || phone_number.length !== 16;
+
+	console.log(isDisabledCodeAttempts);
 
 	useEffect(() => {
 		methods.setFocus('phone_number');
 	}, [methods]);
 
-	useEffect(() => {
-		setDisabled(phone_number.length !== 16);
-	}, [phone_number]);
+	// useEffect(() => {
+	// 	setDisabled(isDisabledCodeAttempts && phone_number.length !== 16);
+	// }, [phone_number, isDisabledCodeAttempts]);
 
 	const formItem = [
 		{

@@ -1,6 +1,7 @@
 'use client';
 
 import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
+import { authActions } from '@/features/auth/model/slices/authSlice';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { Button } from '@/shared/ui/Button';
@@ -36,13 +37,18 @@ import { LoginCodeForm } from '../types';
 import styles from './LoginCode.module.scss';
 
 export const LoginCode = () => {
+	const [attemptsNumber, setAttemptsNumber] = useState(5);
 	const [timeLeft, setTimeLeft] = useState(60);
 	const [submitted, setSubmitted] = useState(false);
-	const { phone_number, code_len } = useAppSelector(state => state.auth);
+	const {
+		phone_number,
+		code_len,
+		isDisabledCodeAttempts: disabled
+	} = useAppSelector(state => state.auth);
 	const dispatch = useAppDispatch();
 	const router = useRouter();
 	const methods = useForm<LoginCodeForm>();
-	const { handleSubmit } = methods;
+	const { handleSubmit, setError } = methods;
 	const code = useWatch({
 		control: methods.control,
 		name: 'code'
@@ -54,35 +60,55 @@ export const LoginCode = () => {
 			name: FormAuthItemNames.CODE,
 			label: '',
 			placeholder: '11111',
-			disabled: false,
 			isRequired: false
 		}
 	];
 
-	const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(
-		async data => {
-			console.log(data);
+	console.log('attemptsNumber', attemptsNumber);
+	console.log('disabled', disabled);
 
-			// отправляем код и телефон  на сервер
-			const response = await fetch('/api/auth/setTokens', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ phone_number, code })
-			});
+	const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(async () => {
+		// отправляем код и телефон  на сервер
+		const response = await fetch('/api/auth/setTokens', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ phone_number, code })
+		});
 
-			console.log('response in LoginCode', response);
-
+		console.log('response in LoginCode', response);
+		const res = await response.json();
+		console.log('res in LoginCode', res);
+		if (res.success) {
 			router.push('/');
-		},
-		[router, dispatch, phone_number, code]
-	);
+		} else if (res.errors) {
+			if (attemptsNumber === 1) {
+				// setDisabled(true);
+				dispatch(authActions.disabledCodeAttempts(true));
+				setTimeLeft(600);
+				setError('code', {
+					message: 'Слишком много неверных попыток.'
+				});
+			} else {
+				setError('code', {
+					message: `Код введен неверно. Осталось ${attemptsNumber - 1} попытки`
+				});
+			}
+			setAttemptsNumber(prev => prev - 1);
+		} else {
+			setError('code', {
+				message: `Неизвестная ошибка`
+			});
+		}
+	}, [router, phone_number, code, setError, attemptsNumber, dispatch]);
 
 	useEffect(() => {
 		if (code?.length === code_len && !submitted) {
 			handleSubmit(onSubmit)();
 			setTimeout(() => setSubmitted(true), 0); // отложенный setState
+		} else if (code?.length !== code_len && submitted) {
+			setTimeout(() => setSubmitted(false), 0); // отложенный setState
 		}
 	}, [code, submitted, handleSubmit, onSubmit, code_len]);
 
@@ -97,6 +123,19 @@ export const LoginCode = () => {
 
 		return () => clearInterval(timer);
 	}, [timeLeft]);
+
+	useEffect(() => {
+		if (attemptsNumber === 0 && disabled === true) {
+			const timer = setTimeout(() => {
+				dispatch(authActions.disabledCodeAttempts(false));
+				setAttemptsNumber(5);
+				setError('code', {
+					message: ``
+				});
+			}, 25000); // 600000 - 10 минут
+			return () => clearTimeout(timer);
+		}
+	}, [attemptsNumber, disabled, setError]);
 
 	return (
 		<div className={styles.loginCode}>
@@ -168,7 +207,7 @@ export const LoginCode = () => {
 						label={item.label}
 						placeholder={item.placeholder}
 						length={code_len}
-						disabled={item.disabled}
+						disabled={disabled}
 						isRequired={item.isRequired}
 					/>
 				))}
@@ -209,6 +248,3 @@ export const LoginCode = () => {
 		</div>
 	);
 };
-// function dispatch(arg0: any) {
-// 	throw new Error('Function not implemented.');
-// }

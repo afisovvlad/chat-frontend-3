@@ -7,7 +7,8 @@ const initialState: AuthSchema = {
 	code_len: 0,
 	code: '',
 	status: 'idle',
-	error: null
+	error: null,
+	isDisabledCodeAttempts: false
 };
 
 export const fetchPhone = createAsyncThunk(
@@ -28,10 +29,10 @@ export const fetchPhone = createAsyncThunk(
 			if (!response.ok) {
 				throw new Error('Ошибка отправки телефона');
 			}
-			const result = await response.json();
-			console.log("result in 'fetchPhone'", result);
-			return result;
-			// return await response.json();
+			// const result = await response.json();
+			// console.log("result in 'fetchPhone'", result);
+			// return result;
+			return await response.json();
 		} catch (err: unknown) {
 			if (err instanceof Error) {
 				return rejectWithValue(err.message);
@@ -88,10 +89,10 @@ const authSlice = createSlice({
 		},
 		logout: state => {
 			state.isRefreshing = false;
+		},
+		disabledCodeAttempts: (state, action: PayloadAction<boolean>) => {
+			state.isDisabledCodeAttempts = action.payload;
 		}
-		// setPhone: (state, action: PayloadAction<string>) => {
-		// 	state.phone_number = action.payload;
-		// }
 	},
 
 	extraReducers: builder => {
