@@ -111,24 +111,7 @@ const authSlice = createSlice({
 				state.status = 'failed';
 				state.error = action.error.message || 'Что-то пошло не так';
 			});
-		// .addCase(fetchCode.pending, state => {
-		// 	state.status = 'loading';
-		// 	state.error = null;
-		// })
-		// .addCase(fetchCode.fulfilled, (state, action) => {
-		// 	state.status = 'succeeded';
-		// 	state.error = null;
-		// 	state.access = action.payload.access;
-		// 	state.refresh = action.payload.refresh;
-		// 	state.is_filled = action.payload.is_filled;
-		// })
-		// .addCase(fetchCode.rejected, (state, action) => {
-		// 	state.status = 'failed';
-		// 	state.error = action.error.message || 'Что-то пошло не так';
-		// });
 	}
 });
 
 export const { reducer: authReducer, actions: authActions } = authSlice;
-// export const { setRefreshing, logout, setPhone } = authSlice.actions;
-// export const authReducer = authSlice.reducer;

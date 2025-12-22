@@ -1,7 +1,6 @@
 'use client';
 
 import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
-import { authActions } from '@/features/auth/model/slices/authSlice';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { Button } from '@/shared/ui/Button';
@@ -35,6 +34,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { LoginCodeForm } from '../types';
 import styles from './LoginCode.module.scss';
+import { authActions } from '@/features/auth';
 
 export const LoginCode = () => {
 	const [attemptsNumber, setAttemptsNumber] = useState(5);

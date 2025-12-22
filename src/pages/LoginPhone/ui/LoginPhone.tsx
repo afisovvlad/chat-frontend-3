@@ -37,19 +37,17 @@ interface LoginPhoneForm {
 }
 
 export const LoginPhone = () => {
-	const { isDisabledCodeAttempts } = useAppSelector(state => state.auth);
+	const { isDisabledCodeAttempts, phone_number: phone } = useAppSelector(
+		state => state.auth
+	);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	// const [disabled, setDisabled] = useState<boolean>(
-	// 	isDisabledCodeAttempts || true
-	// );
 	const router = useRouter();
 	const methods = useForm<LoginPhoneForm>({
 		defaultValues: {
-			phone_number: '' // пишем здесь сохраненный телефон из state, например +7 929 011 45 87
+			phone_number: phone // пишем здесь сохраненный телефон из state, например +7 929 011 45 87
 		}
 	});
 	const dispatch = useAppDispatch();
-
 	const phone_number = useWatch({
 		control: methods.control,
 		name: 'phone_number'
@@ -61,10 +59,6 @@ export const LoginPhone = () => {
 	useEffect(() => {
 		methods.setFocus('phone_number');
 	}, [methods]);
-
-	// useEffect(() => {
-	// 	setDisabled(isDisabledCodeAttempts && phone_number.length !== 16);
-	// }, [phone_number, isDisabledCodeAttempts]);
 
 	const formItem = [
 		{
