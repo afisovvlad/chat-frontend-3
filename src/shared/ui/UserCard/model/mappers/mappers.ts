@@ -1,6 +1,7 @@
 import { BlackListSchema } from '@/entities/BlackList';
 import { ChatItemSchema } from '@/entities/Chat';
 import { ContactsSchema } from '@/entities/Contacts/model';
+import { ProfileSchema } from '@/entities/Profile';
 import { IUserCard } from '../types/IUserCard';
 
 export const mapChatToUserCard = (user: ChatItemSchema): IUserCard => ({
@@ -34,7 +35,8 @@ export const mapContactToUserCard = (user: ContactsSchema): IUserCard => ({
 		avatar_webp: user.system_contact.avatar_webp,
 		avatar_webp_url: user.system_contact.avatar_webp_url,
 		is_online: user.system_contact.is_online,
-		was_online_at: user.system_contact.was_online_at
+		was_online_at: user.system_contact.was_online_at,
+		phone: user.phone
 	}
 });
 
@@ -50,6 +52,23 @@ export const mapBlackListToUserCard = (user: BlackListSchema): IUserCard => ({
 		avatar_webp: user.avatar_webp,
 		avatar_webp_url: user.avatar_webp_url,
 		is_online: user.is_online,
-		was_online_at: user.was_online_at
+		was_online_at: user.was_online_at,
+		phone: user.phone
+	}
+});
+
+export const mapProfileToUserCard = (user: ProfileSchema): IUserCard => ({
+	user: {
+		nickname: user.nickname,
+		first_name: user.first_name,
+		last_name: user.last_name,
+		patronymic: user.patronymic,
+		additional_information: user.additional_information,
+		birthday: user.birthday,
+		email: user.email,
+		gender: user.gender,
+		country: user.country,
+		city_id: user.city_id,
+		phone: user.phone
 	}
 });

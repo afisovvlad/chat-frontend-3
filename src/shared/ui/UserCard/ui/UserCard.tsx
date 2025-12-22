@@ -1,13 +1,14 @@
 import { classNames } from '@/shared/lib/classNames/classNames';
+import { Avatar } from '@/shared/ui/Avatar/';
 import { Text, TextColor } from '@/shared/ui/Text';
-import Image from 'next/image';
 import { IUserCard } from '../model/types/IUserCard';
 import cls from './UserCard.module.scss';
 
 export enum UserCardType {
 	CHAT = 'chat',
 	CONTACT = 'contact',
-	BLACK_LIST = 'blackList'
+	BLACK_LIST = 'blackList',
+	PROFILE = 'profile'
 }
 
 interface ChatListItemProps {
@@ -21,13 +22,23 @@ export const UserCard = ({ className, UserData, type }: ChatListItemProps) => {
 		return null;
 	}
 
+	const AVATAR_SIZE: Record<UserCardType, number> = {
+		[UserCardType.CHAT]: 60,
+		[UserCardType.CONTACT]: 40,
+		[UserCardType.BLACK_LIST]: 40,
+		[UserCardType.PROFILE]: 82
+	};
+
+	const size = AVATAR_SIZE[type];
+
 	return (
 		<div className={classNames(cls.ChatListItem, {}, [className])}>
-			<Image
-				className={classNames(cls.avatar, {}, [cls[type]])}
-				alt={UserData.user?.username || ''}
+			<Avatar
+				className={classNames(cls.avatar, {}, [])}
+				alt={UserData.user?.username}
 				src={UserData.user?.avatar_url || ''}
-			></Image>
+				size={size}
+			></Avatar>
 
 			<div className={cls.info}>
 				<div className={cls.header}>

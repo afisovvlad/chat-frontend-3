@@ -8,18 +8,19 @@ export interface IUserCard {
 	phone?: string;
 }
 
-interface UserCardInfo {
-	uid: string;
+interface UserCardInfo extends UserCardForProfile {
+	uid?: string;
 	username?: string;
-	nickname?: string;
+	nickname?: string; // @bda777
 	first_name: string;
 	last_name: string;
-	avatar: string;
-	avatar_url: string;
-	avatar_webp: string;
-	avatar_webp_url: string;
-	is_online: boolean;
-	was_online_at: number;
+	avatar?: string;
+	avatar_url?: string;
+	avatar_webp?: string;
+	avatar_webp_url?: string;
+	is_online?: boolean;
+	was_online_at?: number;
+	phone?: string;
 }
 
 interface LastMessage {
@@ -44,4 +45,17 @@ enum ChatType {
 	PRIVATE_GROUP = 'private-group',
 	PUBLIC_CHANNEL = 'public-channel',
 	PRIVATE_CHANNEL = 'private-channel'
+}
+
+interface UserCardForProfile {
+	nickname?: string;
+	first_name?: string;
+	last_name?: string;
+	patronymic?: string;
+	additional_information?: string;
+	birthday?: number;
+	email?: string;
+	gender?: 'male' | 'female';
+	country?: string;
+	city_id?: number;
 }
