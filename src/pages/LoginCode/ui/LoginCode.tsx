@@ -1,6 +1,8 @@
 'use client';
 
 import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
+import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { Button } from '@/shared/ui/Button';
 import {
 	ButtonColor,
@@ -24,7 +26,6 @@ import {
 	TextType,
 	TitleTag
 } from '@/shared/ui/Text';
-import Tooltip from '@/shared/ui/Tooltip/ui/Tooltip';
 import { Back, InfoCircle, Logo } from '@icons/index';
 import clsx from 'clsx';
 import Link from 'next/link';
@@ -35,11 +36,11 @@ import { LoginCodeForm } from '../types';
 import styles from './LoginCode.module.scss';
 
 export const LoginCode = () => {
-	const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 	const [timeLeft, setTimeLeft] = useState(60);
 	const [submitted, setSubmitted] = useState(false);
+	const { phone_number, code_len } = useAppSelector(state => state.auth);
+	const dispatch = useAppDispatch();
 	const router = useRouter();
-	const length = 5; // получаем из state
 	const methods = useForm<LoginCodeForm>();
 	const { handleSubmit } = methods;
 	const code = useWatch({
@@ -59,21 +60,31 @@ export const LoginCode = () => {
 	];
 
 	const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(
-		data => {
+		async data => {
 			console.log(data);
-			router.push('/');
-			// получаем телефон из store
+
 			// отправляем код и телефон  на сервер
+			const response = await fetch('/api/auth/setTokens', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ phone_number, code })
+			});
+
+			console.log('response in LoginCode', response);
+
+			router.push('/');
 		},
-		[router]
+		[router, dispatch, phone_number, code]
 	);
 
 	useEffect(() => {
-		if (code?.length === length && !submitted) {
+		if (code?.length === code_len && !submitted) {
 			handleSubmit(onSubmit)();
 			setTimeout(() => setSubmitted(true), 0); // отложенный setState
 		}
-	}, [code, submitted, handleSubmit, onSubmit, length]);
+	}, [code, submitted, handleSubmit, onSubmit, code_len]);
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -123,7 +134,7 @@ export const LoginCode = () => {
 				color={TextColor.BLACK}
 				className={styles.boldText}
 			>
-				+7 962 888 54 36
+				{phone_number}
 			</Text>
 			<div className={styles.infoWrapper}>
 				<Text
@@ -139,16 +150,15 @@ export const LoginCode = () => {
 				</Text>
 				{/* <div className={styles.info}> */}
 				<InfoCircle width={24} height={24} className={styles.infoIcon} />
-				<Tooltip classNameParent={styles.tooltip} />
+				{/* <Tooltip classNameParent={styles.tooltip} /> */}
 				{/* </div> */}
-				{/* {isTooltipVisible && <Tooltip classNameParent={styles.tooltip} />} */}
 			</div>
 
 			<Form<LoginCodeForm>
 				methods={methods}
 				onSubmit={onSubmit}
 				className={styles.form}
-				shouldSubmit={code?.length === length}
+				shouldSubmit={code?.length === code_len}
 			>
 				{formItem.map(item => (
 					<FormAuthItem
@@ -157,7 +167,7 @@ export const LoginCode = () => {
 						name={item.name}
 						label={item.label}
 						placeholder={item.placeholder}
-						length={length}
+						length={code_len}
 						disabled={item.disabled}
 						isRequired={item.isRequired}
 					/>
@@ -199,3 +209,6 @@ export const LoginCode = () => {
 		</div>
 	);
 };
+// function dispatch(arg0: any) {
+// 	throw new Error('Function not implemented.');
+// }

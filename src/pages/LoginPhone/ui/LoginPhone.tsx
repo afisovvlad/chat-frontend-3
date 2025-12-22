@@ -1,7 +1,10 @@
 'use client';
 
 import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
-import { authActions } from '@/features/auth/model/slices/authSlice';
+import {
+	authActions,
+	fetchPhone
+} from '@/features/auth/model/slices/authSlice';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import {
 	Button,
@@ -46,7 +49,7 @@ export const LoginPhone = () => {
 	});
 	const dispatch = useAppDispatch();
 
-	const phone = useWatch({
+	const phone_number = useWatch({
 		control: methods.control,
 		name: 'phone_number'
 	});
@@ -56,8 +59,8 @@ export const LoginPhone = () => {
 	}, [methods]);
 
 	useEffect(() => {
-		setDisabled(phone.length !== 16);
-	}, [phone]);
+		setDisabled(phone_number.length !== 16);
+	}, [phone_number]);
 
 	const formItem = [
 		{
@@ -114,10 +117,10 @@ export const LoginPhone = () => {
 		setIsModalOpen(false);
 	};
 	const onConfirm = () => {
-		// сохраняем phone в store
-		dispatch(authActions.setPhone(phone));
+		// сохраняем phone в store и отправляем телефон на сервер
 
-		//отправляем телефон на сервер
+		const formattedPhone = phone_number.replace(/[^\d+]/g, '');
+		dispatch(fetchPhone(formattedPhone));
 
 		router.push('/login/code');
 		setIsModalOpen(false);
@@ -187,7 +190,7 @@ export const LoginPhone = () => {
 					color={TextColor.BLACK}
 					className={styles.modalPhone}
 				>
-					{phone}
+					{phone_number}
 				</Text>
 				<Text
 					type={TextType.TEXT}

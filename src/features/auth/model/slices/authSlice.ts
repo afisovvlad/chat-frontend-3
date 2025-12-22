@@ -3,33 +3,70 @@ import { AuthSchema } from '../types/AuthSchema';
 
 const initialState: AuthSchema = {
 	isRefreshing: false,
-	phone: '',
+	phone_number: '',
+	code_len: 0,
+	code: '',
 	status: 'idle',
 	error: null
 };
 
 export const fetchPhone = createAsyncThunk(
 	'auth/fetchPhone',
-	async (phone: string, { rejectWithValue }) => {
+	async (phone_number: AuthSchema, { rejectWithValue }) => {
 		try {
-			// const token = localStorage.getItem("token");
-
 			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_BASE_API}/${process.env.NEXT_PUBLIC_PHONE}/${phone}`,
+				`${process.env.NEXT_PUBLIC_BASE_API}/${process.env.NEXT_PUBLIC_CODE}`,
 				{
 					method: 'POST',
 					headers: {
-						// Authorization: `Bearer ${token}`,
 						'Content-Type': 'application/json'
-					}
+					},
+					body: JSON.stringify({ phone_number: phone_number })
 				}
 			);
 
 			if (!response.ok) {
 				throw new Error('Ошибка отправки телефона');
 			}
+			const result = await response.json();
+			console.log("result in 'fetchPhone'", result);
+			return result;
+			// return await response.json();
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				return rejectWithValue(err.message);
+			} else {
+				return rejectWithValue('Что-то пошло не так');
+			}
+		}
+	}
+);
 
-			return await response.json();
+export const fetchCode = createAsyncThunk(
+	'auth/fetchCode',
+	async (
+		{ phone_number, code }: { phone_number: string; code: string },
+		{ rejectWithValue }
+	) => {
+		try {
+			const response = await fetch(
+				`${process.env.NEXT_PUBLIC_BASE_API}/${process.env.NEXT_PUBLIC_TOKEN}`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({ phone_number: phone_number, code: code })
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error('Ошибка отправки кода');
+			}
+			const result = await response.json();
+			console.log("result in 'fetchPhone'", result);
+			return result;
+			// return await response.json();
 		} catch (err: unknown) {
 			if (err instanceof Error) {
 				return rejectWithValue(err.message);
@@ -51,10 +88,10 @@ const authSlice = createSlice({
 		},
 		logout: state => {
 			state.isRefreshing = false;
-		},
-		setPhone: (state, action: PayloadAction<string>) => {
-			state.phone = action.payload;
 		}
+		// setPhone: (state, action: PayloadAction<string>) => {
+		// 	state.phone_number = action.payload;
+		// }
 	},
 
 	extraReducers: builder => {
@@ -66,25 +103,28 @@ const authSlice = createSlice({
 			.addCase(fetchPhone.fulfilled, (state, action) => {
 				state.status = 'succeeded';
 				state.error = null;
-				state.phone = action.payload;
+				state.phone_number = action.payload.phone_number;
+				state.code_len = action.payload.code_len;
 			})
 			.addCase(fetchPhone.rejected, (state, action) => {
 				state.status = 'failed';
 				state.error = action.error.message || 'Что-то пошло не так';
+			})
+			.addCase(fetchCode.pending, state => {
+				state.status = 'loading';
+				state.error = null;
+			})
+			.addCase(fetchCode.fulfilled, (state, action) => {
+				state.status = 'succeeded';
+				state.error = null;
+				state.access = action.payload.access;
+				state.refresh = action.payload.refresh;
+				state.is_filled = action.payload.is_filled;
+			})
+			.addCase(fetchCode.rejected, (state, action) => {
+				state.status = 'failed';
+				state.error = action.error.message || 'Что-то пошло не так';
 			});
-		// .addCase(updateProductsInCart.pending, state => {
-		// 	state.status = 'loading';
-		// 	state.error = null;
-		// })
-		// .addCase(updateProductsInCart.fulfilled, (state, action) => {
-		// 	state.status = 'succeeded';
-		// 	state.error = null;
-		// 	state.cart = action.payload;
-		// })
-		// .addCase(updateProductsInCart.rejected, (state, action) => {
-		// 	state.status = 'failed';
-		// 	state.error = action.error.message || 'Something went wrong';
-		// });
 	}
 });
 
