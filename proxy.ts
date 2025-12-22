@@ -16,8 +16,14 @@ export function proxy(request: NextRequest) {
 	console.log('🔥 proxy WORKS', request.nextUrl.pathname);
 	const accessToken = request.cookies.get('accessToken')?.value;
 	const { pathname } = request.nextUrl;
+
+	if (pathname === '/api/auth/setTokens') {
+		return NextResponse.next();
+	}
+
 	// const isLoginPage = pathname === '/login';
-	const isLoginPage = pathname.endsWith('/login');
+	// const isLoginPage = pathname.endsWith('/login');
+	const isLoginPage = pathname.includes('/login');
 	console.log('isLoginPage proxy', isLoginPage);
 	console.log('accessToken proxy', accessToken);
 	// Авторизованный не пускаем на /login
@@ -40,7 +46,16 @@ export function proxy(request: NextRequest) {
 	return NextResponse.next();
 }
 
+// export const config = {
+// 	matcher: ['/login', '/(.*)/login', '/api/:path*']
+// 	// matcher: ['/login', '/api/:path*']
+// };
+
 export const config = {
-	matcher: ['/login', '/(.*)/login', '/api/:path*']
-	// matcher: ['/login', '/api/:path*']
+	matcher: [
+		'/login',
+		// все остальные пути, кроме статики
+		'/((?!_next/static|_next/image|favicon.ico).*)',
+		'/api/:path*' // если нужен проксинг токена на API
+	]
 };
