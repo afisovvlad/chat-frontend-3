@@ -1,25 +1,33 @@
 import { classNames } from '@/shared/lib/classNames/classNames';
-import styles from './Container.module.scss';
-import { ContainerTypeEnum } from '../model/enum';
+import { ContainerType } from '../model/enum';
+import cls from './Container.module.scss';
 
 interface ContainerProps {
 	className?: string;
 	children: React.ReactNode;
-	type?: ContainerTypeEnum;
+	type?: ContainerType;
 }
 
 export function Container({
 	children,
 	className,
-	type = ContainerTypeEnum.MAIN
+	type = ContainerType.MAIN
 }: ContainerProps) {
+	// Для WRAPPER — отдельный класс
+	if (type === ContainerType.WRAPPER) {
+		return (
+			<div className={classNames(cls.wrapper, {}, [className])}>{children}</div>
+		);
+	}
+
+	// Для остальных — классический container с модификаторами
 	const mods = {
-		[styles.left]: type === ContainerTypeEnum.LEFT,
-		[styles.right]: type === ContainerTypeEnum.RIGHT
+		[cls.sidebar]: type === ContainerType.SIDEBAR,
+		[cls.content]: type === ContainerType.CONTENT
 	};
 
 	return (
-		<div className={classNames(styles.container, mods, [className])}>
+		<div className={classNames(cls.container, mods, [className])}>
 			{children}
 		</div>
 	);

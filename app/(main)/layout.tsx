@@ -1,7 +1,7 @@
 import { Container } from '@/shared/ui/Container/ui/Container';
 import { Header } from '@/widgets/Header';
 import { Navbar } from '@/widgets/Navbar';
-import styles from './layout.module.scss';
+import cls from './layout.module.scss';
 
 export default function MainLayout({
 	children
@@ -11,9 +11,9 @@ export default function MainLayout({
 	return (
 		<Container>
 			<Header />
-			<div className={styles.mainLayout}>
+			<div className={cls.mainLayout}>
 				<Navbar />
-				<main className={styles.content}>{children}</main>
+				<main className={cls.content}>{children}</main>
 			</div>
 		</Container>
 	);

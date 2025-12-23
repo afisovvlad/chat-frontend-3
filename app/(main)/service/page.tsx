@@ -1,5 +1,4 @@
 'use client';
-
 import { Text, TextType } from '@/shared/ui/Text';
 import cls from './service.module.scss';
 

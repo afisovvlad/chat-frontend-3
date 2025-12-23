@@ -1,19 +1,14 @@
 'use client';
-
 import { Text, TextType } from '@/shared/ui/Text';
-import cls from './contacts.module.scss';
-import {
-	Container,
-	ContainerTypeEnum,
-	FlexContainer
-} from '@/shared/ui/Container';
+import { Container, ContainerType } from '@/shared/ui/Container';
 import Image from 'next/image';
+import cls from './contacts.module.scss';
 
 const Contacts = () => {
 	return (
-		<FlexContainer>
-			{/* Тестовое наполнение — удалить в проде */}
-			<Container type={ContainerTypeEnum.LEFT}>
+		<Container type={ContainerType.WRAPPER}>
+			<Container type={ContainerType.SIDEBAR}>
+				{/* Тестовое наполнение — удалить в проде */}
 				<div className={cls.placeholder}>
 					<div className={cls.header}>
 						<Text type={TextType.TITLE} className={cls.title}>
@@ -41,7 +36,7 @@ const Contacts = () => {
 					</div>
 				</div>
 			</Container>
-			<Container type={ContainerTypeEnum.RIGHT}>
+			<Container type={ContainerType.CONTENT}>
 				<div className={cls.rightCont}>
 					<Image
 						src='/images/png/img_frog Web.png'
@@ -51,7 +46,7 @@ const Contacts = () => {
 					/>
 				</div>
 			</Container>
-		</FlexContainer>
+		</Container>
 	);
 };
 

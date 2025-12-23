@@ -1,12 +1,6 @@
 'use client';
-
 import { Text, TextType } from '@/shared/ui/Text';
-import {
-	Container,
-	ContainerTypeEnum,
-	FlexContainer
-} from '@/shared/ui/Container';
-
+import { Container, ContainerType } from '@/shared/ui/Container';
 import cls from './chats.module.scss';
 
 import Image from 'next/image';
@@ -18,8 +12,8 @@ import {
 
 const Chats = () => {
 	return (
-		<FlexContainer>
-			<Container type={ContainerTypeEnum.LEFT}>
+		<Container type={ContainerType.WRAPPER}>
+			<Container type={ContainerType.SIDEBAR}>
 				<div className={cls.placeholder}>
 					{/* Тестовое наполнение — удалить в проде */}
 					<input className={cls.input} />
@@ -40,7 +34,7 @@ const Chats = () => {
 					</div>
 				</div>
 			</Container>
-			<Container type={ContainerTypeEnum.RIGHT}>
+			<Container type={ContainerType.CONTENT}>
 				<div className={cls.rightCont}>
 					<Image
 						src='/images/png/img_frog Web.png'
@@ -64,7 +58,7 @@ const Chats = () => {
 					</Text>
 				</div>
 			</Container>
-		</FlexContainer>
+		</Container>
 	);
 };
 

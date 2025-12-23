@@ -3,16 +3,12 @@
 import { Text, TextType } from '@/shared/ui/Text';
 import { BlackList, Edit, Forward, Logout, Support, Trash } from '@icons/index';
 import cls from './settings.module.scss';
-import {
-	Container,
-	ContainerTypeEnum,
-	FlexContainer
-} from '@/shared/ui/Container';
+import { Container, ContainerType } from '@/shared/ui/Container';
 
 const Settings = () => {
 	return (
-		<FlexContainer>
-			<Container type={ContainerTypeEnum.LEFT}>
+		<Container type={ContainerType.WRAPPER}>
+			<Container type={ContainerType.SIDEBAR}>
 				<div className={cls.placeholder}>
 					{/* Тестовое наполнение — удалить в проде */}
 					<div className={cls.profileSection}>
@@ -65,10 +61,10 @@ const Settings = () => {
 					</div>
 				</div>
 			</Container>
-			<Container type={ContainerTypeEnum.RIGHT}>
+			<Container type={ContainerType.MAIN}>
 				<div className={cls.rightCont}></div>
 			</Container>
-		</FlexContainer>
+		</Container>
 	);
 };
 

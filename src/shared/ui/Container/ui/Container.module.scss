@@ -1,11 +1,9 @@
 .container {
 	width: 100%;
 	margin: 0 auto;
-	padding-inline: 10px;
 	height: 100dvh;
-	max-width: 1210px;
+	max-width: 1200px;
 	display: flex;
-	overflow: hidden;
 	flex-direction: column;
 
 	@media (max-width: 1200px) {
@@ -17,11 +15,12 @@
 	}
 }
 
-.left {
+.sidebar {
 	max-width: none;
 	width: 360px;
 	margin: 0;
-	background-color: var(--cont-bg-left);
+	padding: 0;
+	background-color: var(--color-gray-50);
 	overflow-y: auto;
 	height: 100dvh;
 
@@ -30,17 +29,31 @@
 	}
 }
 
-.right {
+.content {
 	max-width: none;
 	width: 744px;
-	flex: 1;
 	min-width: 0;
 	margin: 0;
-	background-color: var(--cont-bg-right);
+	padding: 0;
+	background-color: var(--color-violet-50);
 	height: 100dvh;
 	overflow-y: auto;
 
 	@media (max-width: 768px) {
 		width: 100%;
+		display: none; // при разработке логики это свойство убрать,, или изменить согласно логике показа сообщений!!!
+	}
+}
+
+.wrapper {
+	display: flex;
+	gap: 24px;
+	height: 100%;
+	overflow: hidden;
+	width: 100%;
+
+	@media (max-width: 768px) {
+		flex-direction: column;
+		gap: 0;
 	}
 }

@@ -1,5 +1,6 @@
-export enum ContainerTypeEnum {
+export enum ContainerType {
 	MAIN = 'main',
-	LEFT = 'left',
-	RIGHT = 'right'
+	SIDEBAR = 'sidebar',
+	CONTENT = 'content',
+	WRAPPER = 'wrapper'
 }
