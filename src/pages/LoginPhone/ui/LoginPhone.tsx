@@ -42,9 +42,21 @@ export const LoginPhone = () => {
 	);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const router = useRouter();
+	const formattedPhone = phone
+		? phone.slice(0, 2) +
+			' ' +
+			phone.slice(2, 5) +
+			' ' +
+			phone.slice(5, 8) +
+			' ' +
+			phone.slice(8, 10) +
+			' ' +
+			phone.slice(10, 12)
+		: '';
+
 	const methods = useForm<LoginPhoneForm>({
 		defaultValues: {
-			phone_number: phone // пишем здесь сохраненный телефон из state, например +7 929 011 45 87
+			phone_number: formattedPhone || ''
 		}
 	});
 	const dispatch = useAppDispatch();
@@ -54,7 +66,7 @@ export const LoginPhone = () => {
 	});
 	const disabled = isDisabledCodeAttempts || phone_number.length !== 16;
 
-	console.log(isDisabledCodeAttempts);
+	// console.log(isDisabledCodeAttempts);
 
 	useEffect(() => {
 		methods.setFocus('phone_number');

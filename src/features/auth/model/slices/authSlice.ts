@@ -4,7 +4,7 @@ import { AuthSchema } from '../types/AuthSchema';
 const initialState: AuthSchema = {
 	isRefreshing: false,
 	phone_number: '',
-	code_len: 0,
+	code_len: 5,
 	code: '',
 	status: 'idle',
 	error: null,

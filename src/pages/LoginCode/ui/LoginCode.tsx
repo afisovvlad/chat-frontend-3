@@ -1,6 +1,7 @@
 'use client';
 
 import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
+import { authActions } from '@/features/auth';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { Button } from '@/shared/ui/Button';
@@ -26,6 +27,7 @@ import {
 	TextType,
 	TitleTag
 } from '@/shared/ui/Text';
+import Tooltip from '@/shared/ui/Tooltip/ui/Tooltip';
 import { Back, InfoCircle, Logo } from '@icons/index';
 import clsx from 'clsx';
 import Link from 'next/link';
@@ -34,7 +36,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { LoginCodeForm } from '../types';
 import styles from './LoginCode.module.scss';
-import { authActions } from '@/features/auth';
 
 export const LoginCode = () => {
 	const [attemptsNumber, setAttemptsNumber] = useState(5);
@@ -189,7 +190,7 @@ export const LoginCode = () => {
 				</Text>
 				{/* <div className={styles.info}> */}
 				<InfoCircle width={24} height={24} className={styles.infoIcon} />
-				{/* <Tooltip classNameParent={styles.tooltip} /> */}
+				<Tooltip classNameParent={styles.tooltip} />
 				{/* </div> */}
 			</div>
 
@@ -209,6 +210,7 @@ export const LoginCode = () => {
 						length={code_len}
 						disabled={disabled}
 						isRequired={item.isRequired}
+						classNameParentInput={styles.codeInput}
 					/>
 				))}
 			</Form>
