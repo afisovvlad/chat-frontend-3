@@ -25,7 +25,7 @@ const Service = () => {
 			</Container>
 
 			<Container type={ContainerType.CONTENT}>
-				<div className={cls.content}></div>
+				<div className={cls.rightCont}></div>
 			</Container>
 		</Container>
 	);

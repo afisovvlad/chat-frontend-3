@@ -61,7 +61,8 @@ const Settings = () => {
 					</div>
 				</div>
 			</Container>
-			<Container type={ContainerType.MAIN}>
+
+			<Container type={ContainerType.CONTENT}>
 				<div className={cls.rightCont}></div>
 			</Container>
 		</Container>

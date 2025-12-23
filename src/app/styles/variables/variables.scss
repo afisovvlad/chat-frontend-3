@@ -59,8 +59,11 @@
 	--font-size-24: 24px;
 	--font-size-32: 32px;
 	--font-size-34: 34px;
+
 	--sidebar-width: 48px;
 	--header-height: 60px;
+	--header-margin: 24px;
+	--app-header-offset: calc(var(--header-height) + var(--header-margin) + 4px);
 
 	// font-weight
 	--font-weight-regular: 400;

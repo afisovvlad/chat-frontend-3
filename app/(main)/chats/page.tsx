@@ -18,7 +18,7 @@ const Chats = () => {
 					{/* Тестовое наполнение — удалить в проде */}
 					<input className={cls.input} />
 					<div className={cls.mockChats}>
-						{Array.from({ length: 12 }).map((_, i) => (
+						{Array.from({ length: 72 }).map((_, i) => (
 							<div key={i} className={cls.chatItem}>
 								<div className={cls.avatar}></div>
 								<div className={cls.info}>

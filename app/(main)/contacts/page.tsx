@@ -1,5 +1,11 @@
 'use client';
-import { Text, TextType } from '@/shared/ui/Text';
+import {
+	Text,
+	TextAlign,
+	TextColor,
+	TextSize,
+	TextType
+} from '@/shared/ui/Text';
 import { Container, ContainerType } from '@/shared/ui/Container';
 import Image from 'next/image';
 import cls from './contacts.module.scss';
@@ -44,6 +50,20 @@ const Contacts = () => {
 						width={200}
 						height={200}
 					/>
+					<Text
+						color={TextColor.GRAY}
+						fontSize={TextSize.L}
+						textAlign={TextAlign.CENTER}
+					>
+						Сообщений пока нет
+					</Text>
+					<Text
+						color={TextColor.GRAY}
+						fontSize={TextSize.S}
+						textAlign={TextAlign.CENTER}
+					>
+						Напишите первым :)
+					</Text>
 				</div>
 			</Container>
 		</Container>
