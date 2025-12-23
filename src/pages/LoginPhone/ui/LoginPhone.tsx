@@ -136,8 +136,7 @@ export const LoginPhone = () => {
 		setIsModalOpen(false);
 	};
 
-	const onSubmit: SubmitHandler<LoginPhoneForm> = data => {
-		console.log(data);
+	const onSubmit: SubmitHandler<LoginPhoneForm> = () => {
 		setIsModalOpen(true);
 	};
 

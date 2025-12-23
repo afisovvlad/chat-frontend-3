@@ -19,9 +19,13 @@ export async function POST(request: NextRequest) {
 		);
 	}
 	const data = await res.json();
+	console.log('data in setTokens', data);
 
 	// Создаём ответ
-	const response = NextResponse.json({ success: true });
+	const response = NextResponse.json(
+		{ success: true, is_filled: data.is_filled },
+		{ status: 200 }
+	);
 	// Устанавливаем Access Token
 	response.cookies.set('accessToken', data.access, {
 		path: '/',

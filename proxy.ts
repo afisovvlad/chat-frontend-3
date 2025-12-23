@@ -8,7 +8,10 @@ export function proxy(request: NextRequest) {
 		return NextResponse.next();
 	}
 
-	const isLoginPage = pathname.includes('/login');
+	const isLoginPage =
+		pathname.includes('/login') ||
+		pathname.includes('/registration') ||
+		pathname.includes('/user-agreement');
 
 	// Авторизованный не пускаем на /login
 	if (accessToken && isLoginPage) {

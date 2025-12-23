@@ -44,6 +44,7 @@ export const LoginCode = () => {
 	const {
 		phone_number,
 		code_len,
+		is_filled,
 		isDisabledCodeAttempts: disabled
 	} = useAppSelector(state => state.auth);
 	const dispatch = useAppDispatch();
@@ -65,8 +66,8 @@ export const LoginCode = () => {
 		}
 	];
 
-	console.log('attemptsNumber', attemptsNumber);
-	console.log('disabled', disabled);
+	console.log('is_filled', is_filled);
+	// console.log('disabled', disabled);
 
 	const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(async () => {
 		// отправляем код и телефон  на сервер
@@ -77,15 +78,16 @@ export const LoginCode = () => {
 			},
 			body: JSON.stringify({ phone_number, code })
 		});
-
-		console.log('response in LoginCode', response);
 		const res = await response.json();
 		console.log('res in LoginCode', res);
 		if (res.success) {
-			router.push('/');
+			if (res.is_filled) {
+				router.push('/');
+			} else {
+				router.push('/registration');
+			}
 		} else if (res.errors) {
 			if (attemptsNumber === 1) {
-				// setDisabled(true);
 				dispatch(authActions.disabledCodeAttempts(true));
 				setTimeLeft(600);
 				setError('code', {
@@ -163,7 +165,7 @@ export const LoginCode = () => {
 				color={TextColor.BLACK}
 				className={styles.text}
 			>
-				Код подтверждения отправлен на следующий номер:
+				Код подтверждения отправлен на следующий номер:
 			</Text>
 			<Text
 				type={TextType.TEXT}
