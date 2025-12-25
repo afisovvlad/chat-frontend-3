@@ -3,7 +3,7 @@ import {
 	FieldValues,
 	Path,
 	RegisterOptions,
-	UseFormRegister
+	useFormContext
 } from 'react-hook-form';
 import { FormAuthItemAutocomplete, FormAuthItemType } from '../model/types';
 import styles from './styles.module.scss';
@@ -11,28 +11,30 @@ import styles from './styles.module.scss';
 interface InputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>> | undefined;
-	type: FormAuthItemType;
+	type: FormAuthItemType | string;
 	placeholder?: string;
 	disabled?: boolean;
-	isError?: boolean;
 	autoComplete?: FormAuthItemAutocomplete;
-	register: UseFormRegister<TFormValues>;
 	classNameInput?: string;
 }
 
 export function Input<TFormValues extends FieldValues>({
 	name,
-	register,
 	rules = {
 		required: 'Заполните это поле'
 	},
-	type,
+	type = 'text',
 	placeholder,
 	disabled,
-	isError,
 	autoComplete,
 	classNameInput
 }: InputProps<TFormValues>) {
+	const {
+		register,
+		formState: { errors }
+	} = useFormContext<TFormValues>();
+	const isError = Boolean(errors?.[name]?.message as string | undefined);
+
 	return (
 		<input
 			{...register(name, rules)}

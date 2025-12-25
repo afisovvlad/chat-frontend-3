@@ -9,6 +9,7 @@
 		"Reducers",
 		"slices",
 		"staged",
+		"Theme",
 		"Wrapper"
 	]
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, Label, OTPInput, PhoneInput, Textarea } from '@/shared/ui/Form';
+import { Input, Label, SelectItem, Textarea } from '@/shared/ui/Form';
 import {
 	FormAuthItemAutocomplete,
 	FormAuthItemType
@@ -13,7 +13,7 @@ import {
 	RegisterOptions,
 	useFormContext
 } from 'react-hook-form';
-import styles from './FormAuthItem.module.scss';
+import styles from './FormSettingsItem.module.scss';
 
 interface FormItemProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
@@ -28,7 +28,9 @@ interface FormItemProps<TFormValues extends FieldValues> {
 	classNameParentLabel?: string;
 	classNameParentInput?: string;
 	classNameParentWrapper?: string;
+	classNameParentSelect?: string;
 	onValueChange?: (value: string) => void; // для реакции на ввод сразу
+	options?: { value: string; label: string }[] | [];
 }
 
 export default function FormAuthItem<TFormValues extends FieldValues>({
@@ -38,16 +40,15 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 	placeholder,
 	disabled,
 	isRequired,
-	length = 5,
 	onValueChange,
 	rules,
 	classNameParentInput,
 	classNameParentWrapper,
-	classNameParentLabel
+	classNameParentLabel,
+	classNameParentSelect,
+	options = []
 }: FormItemProps<TFormValues>) {
 	const {
-		// register,
-		control,
 		watch,
 		formState: { errors }
 	} = useFormContext<TFormValues>();
@@ -83,36 +84,34 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 			);
 			break;
 
-		case FormAuthItemType.CODE:
+		case FormAuthItemType.SELECT:
 			inputElement = (
-				<OTPInput
+				<SelectItem
+					options={options}
 					name={name}
-					placeholder={placeholder}
+					// placeholder={placeholder}
 					disabled={disabled}
-					length={length}
-					control={control}
-					classNameInput={clsx(
-						styles.input,
-						classNameParentInput,
+					classNameSelect={clsx(
+						styles.select,
+						classNameParentSelect,
 						isError && styles.error
 					)}
 				/>
 			);
 			break;
-
-		case FormAuthItemType.TEL:
-			inputElement = (
-				<PhoneInput
-					name={name}
-					placeholder={placeholder}
-					disabled={disabled}
-					classNameInput={clsx(
-						styles.input,
-						classNameParentInput,
-						isError && styles.error
-					)}
-				/>
-			);
+		case FormAuthItemType.EMAIL:
+			<Input
+				name={name}
+				placeholder={placeholder}
+				disabled={disabled}
+				rules={rules}
+				type={FormAuthItemType.EMAIL}
+				classNameInput={clsx(
+					styles.input,
+					classNameParentInput,
+					isError && styles.error
+				)}
+			/>;
 			break;
 
 		default:
@@ -140,8 +139,6 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 				isRequired={isRequired}
 			>
 				{label}
-				{/* {errorMessage ?? label}
-				{isRequired && <span className={styles.required}>*</span>} */}
 			</Label>
 			{inputElement}
 		</div>

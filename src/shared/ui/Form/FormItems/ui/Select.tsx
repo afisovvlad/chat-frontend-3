@@ -14,7 +14,7 @@ interface SelectProps<TFormValues extends FieldValues> {
 	options: { value: string; label: string }[];
 	name: Path<TFormValues>;
 	classNameParentSelectWrapper?: string;
-	classNameParentSelect?: string;
+	classNameSelect?: string;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>> | undefined;
 	disabled?: boolean;
 	icon?: JSX.Element;
@@ -24,7 +24,7 @@ export function SelectItem<TFormValues extends FieldValues>({
 	options,
 	name,
 	classNameParentSelectWrapper,
-	classNameParentSelect,
+	classNameSelect,
 	icon,
 	disabled = false,
 	rules = {
@@ -61,7 +61,7 @@ export function SelectItem<TFormValues extends FieldValues>({
 							field.onChange(selectedOption?.value || '')
 						}
 						onBlur={field.onBlur}
-						className={clsx(styles.select, classNameParentSelect, {
+						className={clsx(styles.select, classNameSelect, {
 							[styles.hasError]: isError,
 							[styles.disabled]: disabled
 						})}

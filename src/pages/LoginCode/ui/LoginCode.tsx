@@ -44,7 +44,7 @@ export const LoginCode = () => {
 	const {
 		phone_number,
 		code_len,
-		is_filled,
+		// is_filled,
 		isDisabledCodeAttempts: disabled
 	} = useAppSelector(state => state.auth);
 	const dispatch = useAppDispatch();
@@ -66,7 +66,7 @@ export const LoginCode = () => {
 		}
 	];
 
-	console.log('is_filled', is_filled);
+	// console.log('is_filled', is_filled);
 	// console.log('disabled', disabled);
 
 	const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(async () => {

@@ -2,14 +2,19 @@
 
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
-import { Control, Controller, FieldValues, Path } from 'react-hook-form';
+import {
+	Control,
+	Controller,
+	FieldValues,
+	Path,
+	useFormContext
+} from 'react-hook-form';
 import { FormAuthItemAutocomplete, FormAuthItemType } from '../model/types';
 import styles from './styles.module.scss';
 
 interface OTPInputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
 	length: number;
-	isError?: boolean;
 	disabled?: boolean;
 	placeholder?: string;
 	classNameInput?: string;
@@ -20,12 +25,15 @@ export function OTPInput<TFormValues extends FieldValues>({
 	name,
 	length = 5,
 	classNameInput,
-	isError,
 	disabled,
 	control
 }: OTPInputProps<TFormValues>) {
 	const inputRef = useRef<(HTMLInputElement | null)[]>([]);
 	const [OTP, setOTP] = useState<string[]>(Array(length).fill(''));
+	const {
+		formState: { errors }
+	} = useFormContext<TFormValues>();
+	const isError = Boolean(errors?.[name]?.message as string | undefined);
 
 	// автофокус на первом input
 	useEffect(() => {
@@ -141,7 +149,6 @@ export function OTPInput<TFormValues extends FieldValues>({
 									[styles.hasError]: isError || fieldState?.error,
 									[styles.disabled]: disabled
 								})}
-								// onFocus={e => e.target.select()}
 							/>
 						))}
 					</div>

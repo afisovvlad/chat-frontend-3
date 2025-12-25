@@ -3,7 +3,8 @@ import {
 	FieldValues,
 	Path,
 	RegisterOptions,
-	UseFormRegister
+	useFormContext
+	// UseFormRegister
 } from 'react-hook-form';
 import { FormAuthItemAutocomplete } from '../model/types';
 import styles from './styles.module.scss';
@@ -13,9 +14,9 @@ interface TextareaProps<TFormValues extends FieldValues> {
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
 	placeholder?: string;
 	autoComplete?: FormAuthItemAutocomplete;
-	isError?: boolean;
+	// isError?: boolean;
 	disabled?: boolean;
-	register: UseFormRegister<TFormValues>;
+	// register: UseFormRegister<TFormValues>;
 	classNameTextarea?: string;
 }
 
@@ -26,10 +27,16 @@ export function Textarea<TFormValues extends FieldValues>({
 	},
 	placeholder,
 	disabled,
-	isError,
-	register,
+	// isError,
+	// register,
 	classNameTextarea
 }: TextareaProps<TFormValues>) {
+	const {
+		register,
+		formState: { errors }
+	} = useFormContext<TFormValues>();
+	const isError = Boolean(errors?.[name]?.message as string | undefined);
+
 	return (
 		<textarea
 			{...register(name, rules)}

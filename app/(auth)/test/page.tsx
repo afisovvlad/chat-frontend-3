@@ -1,6 +1,7 @@
 'use client';
 
-import { Form, Label, SelectItem } from '@/shared/ui/Form';
+import { Form, Input, Label, SelectItem, Textarea } from '@/shared/ui/Form';
+import { FormAuthItemType } from '@/shared/ui/Form/FormItems/model/types';
 import { Down } from '@icons/index';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import styles from './page.module.scss';
@@ -23,6 +24,7 @@ export default function TestPage() {
 			year: '2018'
 		}
 	});
+	// const { setError } = methods;
 	const days = [
 		{ value: '1', label: '1' },
 		{ value: '2', label: '2' },
@@ -73,22 +75,41 @@ export default function TestPage() {
 						options={days}
 						name={day}
 						classNameParentSelectWrapper={styles.selectWrapper}
-						classNameParentSelect={styles.selectDay}
+						classNameSelect={styles.selectDay}
 						icon={<Down className={styles.iconDown} />}
 					/>
 					<SelectItem
 						options={months}
 						name={month}
-						classNameParentSelect={styles.selectMonth}
+						classNameSelect={styles.selectMonth}
 						icon={<Down className={styles.iconDown} />}
 					/>
 					<SelectItem
 						options={years}
 						name={year}
-						classNameParentSelect={styles.selectYear}
+						classNameSelect={styles.selectYear}
 						icon={<Down className={styles.iconDown} />}
 					/>
 				</div>
+				<Label name={'name'} classNameParentLabel={styles.label}>
+					Введите дату своего рождения
+				</Label>
+				<Input name={'name'} type={FormAuthItemType.TEXT} />
+
+				<Label name={'email'} classNameParentLabel={styles.label}>
+					Введите email
+				</Label>
+				<Input name={'email'} type={FormAuthItemType.EMAIL} />
+
+				<Label
+					name={'message'}
+					classNameParentLabel={styles.label}
+					isRequired={true}
+				>
+					Введите сообщение
+				</Label>
+				<Textarea name={'message'} />
+
 				<button type='submit'>Сохранить</button>
 			</Form>
 		</>

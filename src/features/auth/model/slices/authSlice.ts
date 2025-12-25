@@ -9,6 +9,7 @@ const initialState: AuthSchema = {
 	status: 'idle',
 	error: null,
 	isDisabledCodeAttempts: false
+	// is_filled: false
 };
 
 export const fetchPhone = createAsyncThunk(

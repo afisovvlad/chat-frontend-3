@@ -6,4 +6,5 @@ export interface AuthSchema {
 	status: 'idle' | 'loading' | 'succeeded' | 'failed';
 	error: string | null;
 	isDisabledCodeAttempts: boolean;
+	// is_filled: boolean;
 }

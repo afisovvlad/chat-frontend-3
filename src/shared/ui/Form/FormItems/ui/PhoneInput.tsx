@@ -1,20 +1,25 @@
-import clsx from 'clsx';
-// import { Controller, FieldValues } from 'react-hook-form';
-import { FormAuthItemAutocomplete } from '../model/types';
 import styles from './styles.module.scss';
-import { Controller, FieldValues } from 'react-hook-form';
+import clsx from 'clsx';
+import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form';
+import { FormAuthItemAutocomplete } from '../model/types';
 
 interface PhoneInputProps<TFormValues extends FieldValues> {
-	name: string;
+	name: Path<TFormValues>;
 	placeholder?: string;
-	isError?: boolean;
 	classNameInput?: string;
 	disabled?: boolean;
 }
 
-export function PhoneInput<TFormValues extends FieldValues>(
-	props: PhoneInputProps<TFormValues>
-) {
+export function PhoneInput<TFormValues extends FieldValues>({
+	name,
+	placeholder,
+	classNameInput,
+	disabled
+}: PhoneInputProps<TFormValues>) {
+	const {
+		formState: { errors }
+	} = useFormContext<TFormValues>();
+	const isError = Boolean(errors?.[name]?.message as string | undefined);
 	const formatPhone = (value: string | undefined | null): string => {
 		// Безопасная проверка
 		if (!value && value !== '') {
@@ -79,7 +84,7 @@ export function PhoneInput<TFormValues extends FieldValues>(
 
 	return (
 		<Controller
-			name={props.name}
+			name={name}
 			rules={rules}
 			render={({ field }) => {
 				// Безопасное значение
@@ -89,15 +94,15 @@ export function PhoneInput<TFormValues extends FieldValues>(
 					<input
 						{...field}
 						type='tel'
-						id={props.name}
+						id={name}
 						value={inputValue}
-						placeholder={props.placeholder}
+						placeholder={placeholder}
 						autoComplete={FormAuthItemAutocomplete.PHONE}
-						className={clsx(styles.input, props.classNameInput, {
-							[styles.hasError]: props.isError,
-							[styles.disabled]: props.disabled
+						className={clsx(styles.input, classNameInput, {
+							[styles.hasError]: isError,
+							[styles.disabled]: disabled
 						})}
-						disabled={props.disabled}
+						disabled={disabled}
 						onFocus={() => {
 							if (!field.value || field.value === '') {
 								field.onChange('+7 ');
