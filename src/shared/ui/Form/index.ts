@@ -4,5 +4,6 @@ export { OTPInput } from './FormItems/ui/OTPInput';
 export { PhoneInput } from './FormItems/ui/PhoneInput';
 export { Input } from './FormItems/ui/Input';
 // export { Radio } from './ui/Radio';
-// export { Select } from './ui/Select';
+export { SelectItem } from './FormItems/ui/Select';
 export { Textarea } from './FormItems/ui/Textarea';
+export { Label } from './FormItems/ui/Label';

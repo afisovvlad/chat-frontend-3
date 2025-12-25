@@ -1,7 +1,8 @@
 import clsx from 'clsx';
-import { Controller, FieldValues } from 'react-hook-form';
+// import { Controller, FieldValues } from 'react-hook-form';
 import { FormAuthItemAutocomplete } from '../model/types';
 import styles from './styles.module.scss';
+import { Controller, FieldValues } from 'react-hook-form';
 
 interface PhoneInputProps<TFormValues extends FieldValues> {
 	name: string;
@@ -11,7 +12,9 @@ interface PhoneInputProps<TFormValues extends FieldValues> {
 	disabled?: boolean;
 }
 
-export function PhoneInput(props: PhoneInputProps<FieldValues>) {
+export function PhoneInput<TFormValues extends FieldValues>(
+	props: PhoneInputProps<TFormValues>
+) {
 	const formatPhone = (value: string | undefined | null): string => {
 		// Безопасная проверка
 		if (!value && value !== '') {

@@ -1,4 +1,4 @@
-export type LoginProfileForm = {
+export interface LoginProfileForm {
 	name: string;
 	nicname: string;
-};
+}

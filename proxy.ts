@@ -11,7 +11,8 @@ export function proxy(request: NextRequest) {
 	const isLoginPage =
 		pathname.includes('/login') ||
 		pathname.includes('/registration') ||
-		pathname.includes('/user-agreement');
+		pathname.includes('/user-agreement') ||
+		pathname.includes('/test');
 
 	// Авторизованный не пускаем на /login
 	if (accessToken && isLoginPage) {

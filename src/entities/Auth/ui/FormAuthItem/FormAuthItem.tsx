@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, OTPInput, PhoneInput, Textarea } from '@/shared/ui/Form';
+import { Input, Label, OTPInput, PhoneInput, Textarea } from '@/shared/ui/Form';
 import {
 	FormAuthItemAutocomplete,
 	FormAuthItemType
@@ -141,7 +141,15 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 
 	return (
 		<div className={clsx(styles.inputWrapper, classNameParentWrapper)}>
-			<label
+			<Label
+				classNameParentLabel={classNameParentLabel}
+				isError={isError}
+				name={name}
+			>
+				{errorMessage ?? label}
+				{isRequired && <span className={styles.required}>*</span>}
+			</Label>
+			{/* <label
 				className={clsx(styles.label, classNameParentLabel, {
 					[styles.hasError]: !!errorMessage
 				})}
@@ -149,7 +157,7 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 			>
 				{errorMessage ?? label}
 				{isRequired && <span className={styles.required}>*</span>}
-			</label>
+			</label> */}
 			{inputElement}
 		</div>
 	);

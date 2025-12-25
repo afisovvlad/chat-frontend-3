@@ -6,28 +6,28 @@
 	background-color: transparent;
 }
 
-.label {
-	color: var(--foreground-secondary);
-	font-family: inherit;
-	font-weight: inherit;
-	font-size: var(--font-size-14);
-	line-height: 120%;
-	letter-spacing: 1%;
-	vertical-align: middle;
-	background-color: transparent;
+// .label {
+// 	color: var(--foreground-secondary);
+// 	font-family: inherit;
+// 	font-weight: inherit;
+// 	font-size: var(--font-size-14);
+// 	line-height: 120%;
+// 	letter-spacing: 1%;
+// 	vertical-align: middle;
+// 	background-color: transparent;
 
-	&.hasError {
-		color: var(--color-red);
-		margin-left: 2px;
-	}
-}
+// 	&.hasError {
+// 		color: var(--color-red);
+// 		margin-left: 2px;
+// 	}
+// }
 
-.labelSpan {
-	color: inherit;
-	font-family: inherit;
-	font-weight: inherit;
-	font-size: inherit;
-}
+// .labelSpan {
+// 	color: inherit;
+// 	font-family: inherit;
+// 	font-weight: inherit;
+// 	font-size: inherit;
+// }
 
 .textarea {
 	min-height: 219px;
