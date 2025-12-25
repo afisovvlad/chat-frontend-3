@@ -89,10 +89,11 @@
 	cursor: pointer;
 	user-select: none;
 	font-size: 14px;
-	padding: 0 6px;
 	text-align: center;
 
-	// Десктоп: скрываем текст под иконкой переделать на 768
+	@include focus-visible;
+
+	// Десктоп: скрываем текст под иконкой
 	@media (min-width: 768px) {
 		.label {
 			display: none;
