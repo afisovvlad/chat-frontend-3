@@ -11,6 +11,17 @@ import {
 } from '../../../src/shared/ui/Text/model/types/enums';
 
 const Chats = () => {
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [isNewModalOpen, setNewIsModalOpen] = useState<boolean>(false);
+
+	const onClose = () => setIsModalOpen(false);
+	const NewModalClose = () => setNewIsModalOpen(false);
+
+	const onConfirm = () => {
+		setIsModalOpen(false);
+		setNewIsModalOpen(false);
+	};
+
 	return (
 		<Container type={ContainerType.WRAPPER}>
 			<Container type={ContainerType.SIDEBAR}>

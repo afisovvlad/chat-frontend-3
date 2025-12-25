@@ -53,9 +53,86 @@
 	font-size: 14px;
 }
 
-.input {
-	height: 30px;
-	border: 1px solid var(--color-black);
-	background-color: #fff;
+/* === Панель управления — справа, вне чата === */
+.controlsPanel {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+
+	/* Не влияет на ширину чата — полностью отдельно */
+}
+
+.btn {
+	color: rgb(213, 230, 167);
+	width: 160px;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	border: 1px solid #555;
 	border-radius: 8px;
+	background-color: transparent;
+	transition: all 0.2s ease;
+
+	&:hover {
+		color: antiquewhite;
+		background-color: #11096b;
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--color-red);
+		outline-offset: 2px;
+	}
+}
+
+/* === Модалки — без изменений (остаются как есть) === */
+.modal {
+	padding: 24px;
+}
+
+.newModal {
+	padding: 20px;
+}
+
+.modalTitle {
+	margin-bottom: 8px;
+}
+
+.modalText {
+	margin-bottom: 24px;
+}
+
+.actions {
+	display: flex;
+	gap: 12px;
+	justify-content: flex-end;
+}
+
+.btnCancel {
+	color: var(--color-violet-700);
+}
+
+.btnCancel,
+.btnDelete {
+	padding: 4px 16px;
+	width: 90px;
+	height: 32px;
+	font-size: 16px;
+
+	&:focus-visible {
+		outline: 2px solid var(--color-gray-500);
+		outline-offset: 2px;
+		border-radius: 8px;
+	}
+}
+
+.checkbox {
+	border: 1px solid var(--color-black);
+
+	&:focus-visible {
+		outline: 2px solid var(--color-gray-500);
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
 }
