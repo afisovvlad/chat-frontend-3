@@ -1,12 +1,12 @@
 .mainLayout {
 	display: flex;
 	gap: 20px;
+	flex: 1;
+	min-height: 0;
 }
 
 .content {
 	flex: 1;
 	overflow-y: auto;
-	background-color: var(--color-white);
 	border-radius: 8px;
-	padding: 20px;
 }
