@@ -2,8 +2,8 @@
 
 import { Input, Label, SelectItem, Textarea } from '@/shared/ui/Form';
 import {
-	FormAuthItemAutocomplete,
-	FormAuthItemType
+	FormItemAutocomplete,
+	FormItemType
 } from '@/shared/ui/Form/FormItems/model/types';
 import clsx from 'clsx';
 import { useEffect } from 'react';
@@ -17,10 +17,10 @@ import styles from './FormSettingsItem.module.scss';
 
 interface FormItemProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
-	type: FormAuthItemType;
+	type: FormItemType;
 	label?: string;
 	placeholder?: string;
-	autoComplete?: FormAuthItemAutocomplete;
+	autoComplete?: FormItemAutocomplete;
 	disabled?: boolean;
 	isRequired?: boolean;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
@@ -33,7 +33,7 @@ interface FormItemProps<TFormValues extends FieldValues> {
 	options?: { value: string; label: string }[] | [];
 }
 
-export default function FormAuthItem<TFormValues extends FieldValues>({
+export default function FormSettingsItem<TFormValues extends FieldValues>({
 	name,
 	type,
 	label,
@@ -55,6 +55,8 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 	const errorMessage = errors?.[name]?.message as string | undefined;
 	const isError = Boolean(errorMessage);
 	const value = watch(name);
+	console.log(errorMessage);
+	console.log(isError);
 
 	// console.log(value);
 
@@ -68,7 +70,7 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 
 	let inputElement;
 	switch (type) {
-		case FormAuthItemType.TEXTAREA:
+		case FormItemType.TEXTAREA:
 			inputElement = (
 				<Textarea
 					name={name}
@@ -84,7 +86,7 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 			);
 			break;
 
-		case FormAuthItemType.SELECT:
+		case FormItemType.SELECT:
 			inputElement = (
 				<SelectItem
 					options={options}
@@ -99,19 +101,21 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 				/>
 			);
 			break;
-		case FormAuthItemType.EMAIL:
-			<Input
-				name={name}
-				placeholder={placeholder}
-				disabled={disabled}
-				rules={rules}
-				type={FormAuthItemType.EMAIL}
-				classNameInput={clsx(
-					styles.input,
-					classNameParentInput,
-					isError && styles.error
-				)}
-			/>;
+		case FormItemType.EMAIL:
+			inputElement = (
+				<Input
+					name={name}
+					placeholder={placeholder}
+					disabled={disabled}
+					rules={rules}
+					type={FormItemType.EMAIL}
+					classNameInput={clsx(
+						styles.input,
+						classNameParentInput,
+						isError && styles.error
+					)}
+				/>
+			);
 			break;
 
 		default:
@@ -121,7 +125,7 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 					placeholder={placeholder}
 					disabled={disabled}
 					rules={rules}
-					type={FormAuthItemType.TEXT}
+					type={FormItemType.TEXT}
 					classNameInput={clsx(
 						styles.input,
 						classNameParentInput,
@@ -134,7 +138,7 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 	return (
 		<div className={clsx(styles.inputWrapper, classNameParentWrapper)}>
 			<Label
-				classNameParentLabel={classNameParentLabel}
+				classNameParentLabel={clsx(styles.label, classNameParentLabel)}
 				name={name}
 				isRequired={isRequired}
 			>

@@ -1,4 +1,4 @@
-export enum FormAuthItemNames {
+export enum FormItemNames {
 	PHONE_NUMBER = 'phone_number',
 	CODE = 'code',
 	NAME = 'name',
@@ -13,7 +13,7 @@ export enum FormAuthItemNames {
 	// PHONE = 'phone'
 }
 
-export enum FormAuthItemType {
+export enum FormItemType {
 	TEXT = 'text',
 	NUMBER = 'number',
 	TEXTAREA = 'textarea',
@@ -28,7 +28,7 @@ export enum FormAuthItemType {
 
 	// PASSWORD = 'password'
 }
-export enum FormAuthItemAutocomplete {
+export enum FormItemAutocomplete {
 	USERNAME = 'username',
 	NICKNAME = 'nickname',
 	NAME = 'given-name',

@@ -11,8 +11,8 @@ import {
 	ButtonType
 } from '@/shared/ui/Button';
 import {
-	FormAuthItemNames,
-	FormAuthItemType
+	FormItemNames,
+	FormItemType
 } from '@/shared/ui/Form/FormItems/model/types';
 import { Form } from '@/shared/ui/Form/FormProvider/ui/Form';
 import { Modal } from '@/shared/ui/Modal';
@@ -74,8 +74,8 @@ export const LoginPhone = () => {
 
 	const formItem = [
 		{
-			type: FormAuthItemType.TEL,
-			name: FormAuthItemNames.PHONE_NUMBER,
+			type: FormItemType.TEL,
+			name: FormItemNames.PHONE_NUMBER,
 			label: 'Введите номер телефона',
 			placeholder: '+ 7 900 000 00 00',
 			disabled: false,

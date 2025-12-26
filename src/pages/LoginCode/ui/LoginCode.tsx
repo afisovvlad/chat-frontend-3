@@ -13,8 +13,8 @@ import {
 	ButtonType
 } from '@/shared/ui/Button/model/type';
 import {
-	FormAuthItemNames,
-	FormAuthItemType
+	FormItemNames,
+	FormItemType
 } from '@/shared/ui/Form/FormItems/model/types';
 import { Form } from '@/shared/ui/Form/FormProvider/ui/Form';
 import {
@@ -58,10 +58,10 @@ export const LoginCode = () => {
 
 	const formItem = [
 		{
-			type: FormAuthItemType.CODE,
-			name: FormAuthItemNames.CODE,
+			type: FormItemType.CODE,
+			name: FormItemNames.CODE,
 			label: '',
-			placeholder: '11111',
+			placeholder: '1',
 			isRequired: false
 		}
 	];

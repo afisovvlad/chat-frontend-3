@@ -1,7 +1,7 @@
 import styles from './styles.module.scss';
 import clsx from 'clsx';
 import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form';
-import { FormAuthItemAutocomplete } from '../model/types';
+import { FormItemAutocomplete } from '../model/types';
 
 interface PhoneInputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
@@ -12,7 +12,7 @@ interface PhoneInputProps<TFormValues extends FieldValues> {
 
 export function PhoneInput<TFormValues extends FieldValues>({
 	name,
-	placeholder,
+	placeholder = '',
 	classNameInput,
 	disabled
 }: PhoneInputProps<TFormValues>) {
@@ -97,7 +97,7 @@ export function PhoneInput<TFormValues extends FieldValues>({
 						id={name}
 						value={inputValue}
 						placeholder={placeholder}
-						autoComplete={FormAuthItemAutocomplete.PHONE}
+						autoComplete={FormItemAutocomplete.PHONE}
 						className={clsx(styles.input, classNameInput, {
 							[styles.hasError]: isError,
 							[styles.disabled]: disabled

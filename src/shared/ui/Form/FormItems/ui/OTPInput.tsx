@@ -9,7 +9,7 @@ import {
 	Path,
 	useFormContext
 } from 'react-hook-form';
-import { FormAuthItemAutocomplete, FormAuthItemType } from '../model/types';
+import { FormItemAutocomplete, FormItemType } from '../model/types';
 import styles from './styles.module.scss';
 
 interface OTPInputProps<TFormValues extends FieldValues> {
@@ -24,6 +24,7 @@ interface OTPInputProps<TFormValues extends FieldValues> {
 export function OTPInput<TFormValues extends FieldValues>({
 	name,
 	length = 5,
+	placeholder = '',
 	classNameInput,
 	disabled,
 	control
@@ -130,12 +131,13 @@ export function OTPInput<TFormValues extends FieldValues>({
 						{Array.from({ length }).map((_, index) => (
 							<input
 								key={index}
-								type={FormAuthItemType.TEXT}
+								type={FormItemType.TEXT}
 								inputMode='numeric'
 								id={index === 0 ? name : ''}
 								name={name}
 								maxLength={1}
-								autoComplete={FormAuthItemAutocomplete.CODE}
+								placeholder={placeholder}
+								autoComplete={FormItemAutocomplete.CODE}
 								value={OTP[index] || ''}
 								onChange={e =>
 									handleTextChange(e.target.value, index, field.onChange)

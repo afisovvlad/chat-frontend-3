@@ -32,6 +32,7 @@ export const Form = <T extends FieldValues>({
 			<form
 				onSubmit={methods.handleSubmit(onSubmit)}
 				className={clsx(styles.form, className)}
+				noValidate
 			>
 				{children}
 			</form>

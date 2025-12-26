@@ -5,16 +5,16 @@ import {
 	RegisterOptions,
 	useFormContext
 } from 'react-hook-form';
-import { FormAuthItemAutocomplete, FormAuthItemType } from '../model/types';
+import { FormItemAutocomplete, FormItemType } from '../model/types';
 import styles from './styles.module.scss';
 
 interface InputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>> | undefined;
-	type: FormAuthItemType | string;
+	type: FormItemType | string;
 	placeholder?: string;
 	disabled?: boolean;
-	autoComplete?: FormAuthItemAutocomplete;
+	autoComplete?: FormItemAutocomplete;
 	classNameInput?: string;
 }
 
@@ -24,7 +24,7 @@ export function Input<TFormValues extends FieldValues>({
 		required: 'Заполните это поле'
 	},
 	type = 'text',
-	placeholder,
+	placeholder = '',
 	disabled,
 	autoComplete,
 	classNameInput
@@ -41,7 +41,7 @@ export function Input<TFormValues extends FieldValues>({
 			type={type}
 			placeholder={placeholder}
 			disabled={disabled}
-			autoComplete={autoComplete || FormAuthItemAutocomplete.ON}
+			autoComplete={autoComplete || FormItemAutocomplete.ON}
 			className={clsx(classNameInput, styles.input, {
 				[styles.hasError]: isError,
 				[styles.disabled]: disabled

@@ -2,6 +2,7 @@
 
 import { Text, TextType } from '@/shared/ui/Text';
 import { BlackList, Edit, Forward, Logout, Support, Trash } from '@icons/index';
+import Link from 'next/link';
 import cls from './settings.module.scss';
 
 const Settings = () => {
@@ -37,9 +38,9 @@ const Settings = () => {
 					</span>
 				</div>
 				<div className={cls.option}>
-					<span>
+					<Link href='/settings/support'>
 						<Support /> Поддержка
-					</span>
+					</Link>
 					<span>
 						<Forward />
 					</span>

@@ -6,14 +6,14 @@ import {
 	useFormContext
 	// UseFormRegister
 } from 'react-hook-form';
-import { FormAuthItemAutocomplete } from '../model/types';
+import { FormItemAutocomplete } from '../model/types';
 import styles from './styles.module.scss';
 
 interface TextareaProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
 	placeholder?: string;
-	autoComplete?: FormAuthItemAutocomplete;
+	autoComplete?: FormItemAutocomplete;
 	// isError?: boolean;
 	disabled?: boolean;
 	// register: UseFormRegister<TFormValues>;
@@ -25,7 +25,7 @@ export function Textarea<TFormValues extends FieldValues>({
 	rules = {
 		required: 'Заполните это поле'
 	},
-	placeholder,
+	placeholder = '',
 	disabled,
 	// isError,
 	// register,
@@ -42,7 +42,7 @@ export function Textarea<TFormValues extends FieldValues>({
 			{...register(name, rules)}
 			id={name}
 			placeholder={placeholder}
-			autoComplete={FormAuthItemAutocomplete.OFF}
+			autoComplete={FormItemAutocomplete.OFF}
 			disabled={disabled}
 			className={clsx(styles.textarea, classNameTextarea, {
 				[styles.hasError]: isError,

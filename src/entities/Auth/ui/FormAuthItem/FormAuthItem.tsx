@@ -2,8 +2,8 @@
 
 import { Input, Label, OTPInput, PhoneInput, Textarea } from '@/shared/ui/Form';
 import {
-	FormAuthItemAutocomplete,
-	FormAuthItemType
+	FormItemAutocomplete,
+	FormItemType
 } from '@/shared/ui/Form/FormItems/model/types';
 import clsx from 'clsx';
 import { useEffect } from 'react';
@@ -17,10 +17,10 @@ import styles from './FormAuthItem.module.scss';
 
 interface FormItemProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
-	type: FormAuthItemType;
+	type: FormItemType;
 	label?: string;
 	placeholder?: string;
-	autoComplete?: FormAuthItemAutocomplete;
+	autoComplete?: FormItemAutocomplete;
 	disabled?: boolean;
 	isRequired?: boolean;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
@@ -67,7 +67,7 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 
 	let inputElement;
 	switch (type) {
-		case FormAuthItemType.TEXTAREA:
+		case FormItemType.TEXTAREA:
 			inputElement = (
 				<Textarea
 					name={name}
@@ -83,7 +83,7 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 			);
 			break;
 
-		case FormAuthItemType.CODE:
+		case FormItemType.CODE:
 			inputElement = (
 				<OTPInput
 					name={name}
@@ -100,7 +100,7 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 			);
 			break;
 
-		case FormAuthItemType.TEL:
+		case FormItemType.TEL:
 			inputElement = (
 				<PhoneInput
 					name={name}
@@ -122,7 +122,7 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 					placeholder={placeholder}
 					disabled={disabled}
 					rules={rules}
-					type={FormAuthItemType.TEXT}
+					type={FormItemType.TEXT}
 					classNameInput={clsx(
 						styles.input,
 						classNameParentInput,
