@@ -24,7 +24,7 @@ export const Navbar = () => {
 					<Link
 						key={item.id}
 						href={href}
-						className={classNames(cls.NavbarBtn, {
+						className={classNames(cls.NavbarLink, {
 							[cls.active]: isActive
 						})}
 						aria-label={item.title}

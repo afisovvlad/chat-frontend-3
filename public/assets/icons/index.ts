@@ -26,7 +26,7 @@ export { default as Logo } from './Logo.svg';
 export { default as LogoAds } from './LogoAds.svg';
 export { default as LogoRealty } from './LogoRealty.svg';
 export { default as LogoRestaurant } from './LogoRestaurant.svg';
-export { default as Logout } from './Logout.svg';
+export { default as LogoutIcon } from './Logout.svg';
 export { default as LogoVideo } from './LogoVideo.svg';
 export { default as MessageRead } from './MessageRead.svg';
 export { default as Microphone } from './Microphone.svg';

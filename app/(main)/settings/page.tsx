@@ -1,15 +1,34 @@
 'use client';
 
-import { Text, TextType } from '@/shared/ui/Text';
-import { BlackList, Edit, Forward, Logout, Support, Trash } from '@icons/index';
-import cls from './settings.module.scss';
+import {
+	Text,
+	TextType,
+	TitleTag,
+	TextAlign,
+	TextSize,
+	FontWeight
+} from '@/shared/ui/Text';
+import { Trash } from '@icons/index';
 import { Container, ContainerType } from '@/shared/ui/Container';
+import { SettingsMenu } from './shared/ui/SettingsMenu/SettingsMenu';
+import cls from './settings.module.scss';
+import { Button, ButtonColor, ButtonTheme } from '@/shared/ui/Button';
 
 const Settings = () => {
 	return (
 		<Container type={ContainerType.WRAPPER}>
-			<Container type={ContainerType.SIDEBAR}>
-				<div className={cls.placeholder}>
+			<Container type={ContainerType.SIDEBAR} className={cls.sidebar}>
+				<div className={cls.settings}>
+					<Text
+						type={TextType.TITLE}
+						tag={TitleTag.H3}
+						fontSize={TextSize.L}
+						textAlign={TextAlign.CENTER}
+						fontWeight={FontWeight.MEDIUM}
+						className={cls.settingsTitle}
+					>
+						Настройки
+					</Text>
 					{/* Тестовое наполнение — удалить в проде */}
 					<div className={cls.profileSection}>
 						<div className={cls.avatarWrapper}>
@@ -22,43 +41,15 @@ const Settings = () => {
 						</div>
 					</div>
 
-					<div className={cls.options}>
-						<div className={cls.option}>
-							<span>
-								<Edit /> Редактирование профиля
-							</span>
-							<span>
-								<Forward />
-							</span>
-						</div>
-						<div className={cls.option}>
-							<span>
-								<BlackList /> Чёрный список
-							</span>
-							<span>
-								<Forward />
-							</span>
-						</div>
-						<div className={cls.option}>
-							<span>
-								<Support /> Поддержка
-							</span>
-							<span>
-								<Forward />
-							</span>
-						</div>
-						<div className={cls.option}>
-							<span>
-								<Logout /> Выйти из аккаунта
-							</span>
-						</div>
-					</div>
+					<SettingsMenu />
 
-					<div className={cls.deleteProfile}>
-						<span>
-							<Trash /> Удалить профиль
-						</span>
-					</div>
+					<Button
+						theme={ButtonTheme.CLEAR}
+						color={ButtonColor.DANGER}
+						className={cls.deleteProfile}
+					>
+						<Trash /> Удалить профиль
+					</Button>
 				</div>
 			</Container>
 
