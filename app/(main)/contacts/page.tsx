@@ -1,44 +1,40 @@
 'use client';
-import { Container, ContainerType } from '@/shared/ui/Container';
-import { Text, TextType } from '@/shared/ui/Text';
-import cls from './chats.module.scss';
-
-import Image from 'next/image';
-import { useState } from 'react';
 import {
+	Text,
 	TextAlign,
 	TextColor,
-	TextSize
-} from '../../../src/shared/ui/Text/model/types/enums';
+	TextSize,
+	TextType
+} from '@/shared/ui/Text';
+import { Container, ContainerType } from '@/shared/ui/Container';
+import Image from 'next/image';
+import cls from './contacts.module.scss';
 
-const Chats = () => {
-	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const [isNewModalOpen, setNewIsModalOpen] = useState<boolean>(false);
-
-	const onClose = () => setIsModalOpen(false);
-	const NewModalClose = () => setNewIsModalOpen(false);
-
-	const onConfirm = () => {
-		setIsModalOpen(false);
-		setNewIsModalOpen(false);
-	};
-
+const Contacts = () => {
 	return (
 		<Container type={ContainerType.WRAPPER}>
 			<Container type={ContainerType.SIDEBAR}>
+				{/* Тестовое наполнение — удалить в проде */}
 				<div className={cls.placeholder}>
-					{/* Тестовое наполнение — удалить в проде */}
-					<input className={cls.input} />
-					<div className={cls.mockChats}>
-						{Array.from({ length: 72 }).map((_, i) => (
-							<div key={i} className={cls.chatItem}>
+					<div className={cls.header}>
+						<Text type={TextType.TITLE} className={cls.title}>
+							Контакты пользователей А-чата
+						</Text>
+						<div className={cls.searchBar}>
+							<input placeholder='Поиск' className={cls.searchInput} />
+						</div>
+					</div>
+
+					<div className={cls.contactList}>
+						{Array.from({ length: 18 }).map((_, i) => (
+							<div key={i} className={cls.contactItem}>
 								<div className={cls.avatar}></div>
 								<div className={cls.info}>
 									<Text type={TextType.TITLE} className={cls.name}>
 										Пользователь {i + 1}
 									</Text>
-									<Text type={TextType.TEXT} className={cls.message}>
-										Привет! Это заглушка сообщения.
+									<Text type={TextType.TEXT} className={cls.status}>
+										в сети
 									</Text>
 								</div>
 							</div>
@@ -74,4 +70,4 @@ const Chats = () => {
 	);
 };
 
-export default Chats;
+export default Contacts;

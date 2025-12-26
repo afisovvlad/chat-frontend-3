@@ -1,4 +1,5 @@
 'use client';
+import { redirect } from 'next/navigation';
 import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Modal } from '@/shared/ui/Modal';
 import { Text, TextSize, TextType } from '@/shared/ui/Text';
@@ -104,8 +105,6 @@ export default function HomePage() {
 				</Text>
 				<input type='checkbox' className={cls.checkbox} />
 			</Modal>
-
-			<Chats></Chats>
 		</section>
 	);
 }

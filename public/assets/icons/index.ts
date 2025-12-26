@@ -1,6 +1,6 @@
 export { default as AddContact } from './AddContact.svg';
 export { default as Apple } from './Apple.svg';
-export { default as Aservice } from './AService.svg';
+export { default as Service } from './Service.svg';
 export { default as Back } from './Back.svg';
 export { default as BlackList } from './BlackList.svg';
 export { default as Block } from './Block.svg';
@@ -30,6 +30,7 @@ export { default as Logout } from './Logout.svg';
 export { default as LogoVideo } from './LogoVideo.svg';
 export { default as MessageRead } from './MessageRead.svg';
 export { default as Microphone } from './Microphone.svg';
+export { default as MobileService } from './MobileServise.svg';
 export { default as MobileContacts } from './MobileContacts.svg';
 export { default as MobileCopy } from './MobileCopy.svg';
 export { default as NoInternet } from './NoInternet.svg';
