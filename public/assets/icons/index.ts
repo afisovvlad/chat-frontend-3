@@ -51,6 +51,7 @@ export { default as SentTime } from './SentTime.svg';
 export { default as SentUnread } from './SentUnread.svg';
 export { default as Settings } from './Settings.svg';
 export { default as SiteSettings } from './SiteSettings.svg';
+export { default as Success } from './Success.svg';
 export { default as Support } from './Support.svg';
 export { default as Trash } from './Trash.svg';
 export { default as UnPin } from './UnPin.svg';

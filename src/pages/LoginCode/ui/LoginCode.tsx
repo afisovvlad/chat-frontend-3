@@ -61,7 +61,6 @@ export const LoginCode = () => {
 			type: FormItemType.CODE,
 			name: FormItemNames.CODE,
 			label: '',
-			placeholder: '1',
 			isRequired: false
 		}
 	];
@@ -208,7 +207,6 @@ export const LoginCode = () => {
 						type={item.type}
 						name={item.name}
 						label={item.label}
-						placeholder={item.placeholder}
 						length={code_len}
 						disabled={disabled}
 						isRequired={item.isRequired}

@@ -1,0 +1,46 @@
+.support {
+	background-color: var(--color-violet-40);
+}
+
+.form {
+	margin: 0 auto;
+}
+
+.formItem {
+	margin-bottom: 16px;
+}
+
+.faqText {
+	margin-bottom: 28px;
+	color: var(--color-gray-500);
+	font-family: inherit;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 120%;
+	letter-spacing: 0.4px;
+	vertical-align: middle;
+}
+
+.faqLink {
+	color: var(--color-primary);
+	font-family: inherit;
+	font-weight: 400;
+	font-size: inherit;
+	line-height: 120%;
+	letter-spacing: 0.4px;
+}
+
+.errorBlock {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	max-width: 328px;
+	margin: 200px auto 0;
+}
+
+.errorText {
+	line-height: 130%;
+	vertical-align: middle;
+	letter-spacing: 0.4px;
+}
