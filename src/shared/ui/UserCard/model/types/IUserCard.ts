@@ -5,7 +5,7 @@ export interface IUserCard {
 	chat_type?: ChatType;
 	chat_key?: string;
 	last_message?: LastMessage;
-	phone?: string;
+	// phone?: string;
 }
 
 interface UserCardInfo extends UserCardForProfile {
