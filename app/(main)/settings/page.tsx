@@ -2,7 +2,6 @@
 
 import { Text, TextType } from '@/shared/ui/Text';
 import { BlackList, Edit, Forward, Logout, Support, Trash } from '@icons/index';
-import Link from 'next/link';
 import cls from './settings.module.scss';
 import { Container, ContainerType } from '@/shared/ui/Container';
 

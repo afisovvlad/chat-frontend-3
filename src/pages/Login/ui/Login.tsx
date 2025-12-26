@@ -8,14 +8,14 @@ import {
 	TextType,
 	TitleTag
 } from '@/shared/ui/Text';
-import { Logo } from '@icons/index';
 import Link from 'next/link';
 import styles from './Login.module.scss';
+import { Logo } from '@icons/index';
 
 export const Login = () => {
 	return (
 		<section className={styles.login}>
-			<Logo style={{ fontSize: '161px' }} className={styles.logo} />
+			<Logo className={styles.logo} />
 			<Text
 				type={TextType.TITLE}
 				tag={TitleTag.H1}

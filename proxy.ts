@@ -38,7 +38,7 @@ export const config = {
 	matcher: [
 		'/login',
 		// все остальные пути, кроме статики
-		'/((?!_next/static|_next/image|favicon.ico).*)',
+		'/((?!_next|images|favicon.ico).*)',
 		'/api/:path*' // если нужен проксинг токена на API
 	]
 };

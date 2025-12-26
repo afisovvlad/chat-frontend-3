@@ -9,6 +9,7 @@ import {
 	TextColor,
 	TextSize
 } from '../../../src/shared/ui/Text/model/types/enums';
+import { useState } from 'react';
 
 const Chats = () => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
