@@ -4,9 +4,9 @@ import { Button, ButtonType } from '@/shared/ui/Button';
 import { ButtonColor, ButtonTheme } from '@/shared/ui/Button/model/type';
 import { Form } from '@/shared/ui/Form';
 import {
-	FormAuthItemAutocomplete,
-	FormAuthItemNames,
-	FormAuthItemType
+	FormItemAutocomplete,
+	FormItemNames,
+	FormItemType
 } from '@/shared/ui/Form/FormItems/model/types';
 import {
 	FontWeight,
@@ -36,11 +36,11 @@ export function LoginProfile() {
 
 	const formItem = [
 		{
-			type: FormAuthItemType.TEXT,
-			name: FormAuthItemNames.NAME,
+			type: FormItemType.TEXT,
+			name: FormItemNames.NAME,
 			label: 'Введите имя',
 			placeholder: '',
-			autocomplete: FormAuthItemAutocomplete.NAME,
+			autocomplete: FormItemAutocomplete.NAME,
 			disabled: false,
 			isRequired: false,
 			rules: {
@@ -56,11 +56,11 @@ export function LoginProfile() {
 			}
 		},
 		{
-			type: FormAuthItemType.TEXT,
-			name: FormAuthItemNames.NICKNAME,
+			type: FormItemType.TEXT,
+			name: FormItemNames.NICKNAME,
 			label: 'Введите никнейм',
 			placeholder: '',
-			autocomplete: FormAuthItemAutocomplete.NICKNAME,
+			autocomplete: FormItemAutocomplete.NICKNAME,
 			disabled: false,
 			isRequired: false,
 			rules: {
