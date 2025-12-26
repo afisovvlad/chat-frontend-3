@@ -1,7 +1,7 @@
 'use client';
 
 import { Form, Input, Label, SelectItem, Textarea } from '@/shared/ui/Form';
-import { FormAuthItemType } from '@/shared/ui/Form/FormItems/model/types';
+import { FormItemType } from '@/shared/ui/Form/FormItems/model/types';
 import { Down } from '@icons/index';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import styles from './page.module.scss';
@@ -94,12 +94,12 @@ export default function TestPage() {
 				<Label name={'name'} classNameParentLabel={styles.label}>
 					Введите дату своего рождения
 				</Label>
-				<Input name={'name'} type={FormAuthItemType.TEXT} />
+				<Input name={'name'} type={FormItemType.TEXT} />
 
 				<Label name={'email'} classNameParentLabel={styles.label}>
 					Введите email
 				</Label>
-				<Input name={'email'} type={FormAuthItemType.EMAIL} />
+				<Input name={'email'} type={FormItemType.EMAIL} />
 
 				<Label
 					name={'message'}
