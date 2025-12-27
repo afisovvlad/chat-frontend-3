@@ -13,9 +13,7 @@ export default function RootLayout({ children }: IChildren) {
 			<head></head>
 			<body>
 				<StoreProvider>
-					<OnlineChecker>
-						<main>{children}</main>
-					</OnlineChecker>
+					<OnlineChecker>{children}</OnlineChecker>
 				</StoreProvider>
 			</body>
 		</html>
