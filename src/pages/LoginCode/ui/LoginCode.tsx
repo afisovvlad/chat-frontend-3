@@ -27,7 +27,6 @@ import {
 	TextType,
 	TitleTag
 } from '@/shared/ui/Text';
-import Tooltip from '@/shared/ui/Tooltip/ui/Tooltip';
 import { Back, InfoCircle, Logo } from '@icons/index';
 import clsx from 'clsx';
 import Link from 'next/link';
@@ -191,7 +190,7 @@ export const LoginCode = () => {
 				</Text>
 				{/* <div className={styles.info}> */}
 				<InfoCircle width={24} height={24} className={styles.infoIcon} />
-				<Tooltip classNameParent={styles.tooltip} />
+				{/* <Tooltip classNameParent={styles.tooltip} /> */}
 				{/* </div> */}
 			</div>
 

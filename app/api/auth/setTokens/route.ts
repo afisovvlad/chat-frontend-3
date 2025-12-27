@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 		);
 	}
 	const data = await res.json();
-	console.log('data in setTokens', data);
+	// console.log('data in setTokens', data);
 
 	// Создаём ответ
 	const response = NextResponse.json(
