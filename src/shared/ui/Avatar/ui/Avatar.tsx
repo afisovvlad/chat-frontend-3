@@ -18,7 +18,7 @@ export const Avatar = ({ className, src, size, alt }: AvatarProps) => {
 	};
 
 	return (
-		<div className={classNames(cls.Avatar, {}, [className])} style={styles}>
+		<div className={classNames(cls.avatar, {}, [className])} style={styles}>
 			{src ? (
 				<Image fill={true} alt={alt || 'Аватар'} src={src} />
 			) : (

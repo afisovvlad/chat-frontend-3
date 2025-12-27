@@ -1,3 +1,4 @@
+import { ChatType } from '@/entities/Chat';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Avatar } from '@/shared/ui/Avatar/';
 import {
@@ -6,85 +7,80 @@ import {
 	TextClamp,
 	TextColor,
 	TextSize,
-	TextTag
+	TextTag,
+	TextType,
+	TitleTag
 } from '@/shared/ui/Text';
 import { SentRead, SentTime, Trash, VolumeOff, VolumeOn } from '@icons/index';
+import { ReactNode } from 'react';
 import { Button, ButtonColor, ButtonSize, ButtonTheme } from '../../Button';
-import { IUserCard } from '../model/types/IUserCard';
+import { AVATAR_SIZE, IUserCard, UserCardType } from '../model/types/IUserCard';
 import cls from './UserCard.module.scss';
 
-export enum UserCardType {
-	CHAT = 'chat',
-	CONTACT = 'contact',
-	BLACK_LIST = 'blackList',
-	PROFILE = 'profile'
-}
-
-interface ChatListItemProps {
+interface UserCardProps {
 	className?: string;
-	UserData?: IUserCard;
+	userData?: IUserCard;
 	type: UserCardType;
 	sendingMessage?: boolean;
 }
 
+const formatUnreadCount = (count: number | undefined): string => {
+	if (count) {
+		if (count < 1000) {
+			return count.toString();
+		}
+
+		const thousands = count / 1000;
+		return thousands % 1 === 0
+			? `${Math.floor(thousands)}К`
+			: `${thousands.toFixed(1).replace('.', ',')}К`;
+	}
+	return '';
+};
+
+const NOTIFICATION_OFF = (
+	<div className={cls.notification}>
+		<VolumeOff className={cls.volumeIcon} />
+	</div>
+);
+
+const NOTIFICATION_ON = (
+	<div className={cls.notification}>
+		<VolumeOn className={cls.volumeIcon} />
+	</div>
+);
+
+const renderNotifications = (
+	type: UserCardType,
+	notification: IUserCard['notifications'],
+	chatType: IUserCard['chat_type']
+): ReactNode | null => {
+	if (type === UserCardType.CHAT) {
+		if (!notification) {
+			return NOTIFICATION_OFF;
+		} else if (chatType !== ChatType.CHAT) {
+			return NOTIFICATION_ON;
+		}
+	}
+};
+
 export const UserCard = ({
 	className,
-	UserData,
+	userData,
 	type,
 	sendingMessage
-}: ChatListItemProps) => {
-	if (!UserData) {
+}: UserCardProps) => {
+	if (!userData) {
 		return null;
 	}
 
-	const AVATAR_SIZE: Record<UserCardType, number> = {
-		[UserCardType.CHAT]: 60,
-		[UserCardType.CONTACT]: 40,
-		[UserCardType.BLACK_LIST]: 40,
-		[UserCardType.PROFILE]: 82
-	};
-
-	const size = AVATAR_SIZE[type];
-
-	const formatUnreadCount = (count: number | undefined): string => {
-		if (count) {
-			if (count < 1000) {
-				return count.toString();
-			}
-
-			const thousands = count / 1000;
-			return thousands % 1 === 0
-				? `${Math.floor(thousands)}К`
-				: `${thousands.toFixed(1).replace('.', ',')}К`;
-		}
-		return '';
-	};
-
-	const renderNotifications = () => {
-		if (type === UserCardType.CHAT) {
-			if (!UserData.notifications) {
-				return (
-					<div className={cls.notification}>
-						<VolumeOff className={cls.volumeIcon} />
-					</div>
-				);
-			} else if (UserData.chat_type !== 'chat') {
-				return (
-					<div className={cls.notification}>
-						<VolumeOn className={cls.volumeIcon} />
-					</div>
-				);
-			}
-		}
-	};
-
 	return (
-		<div className={classNames(cls.UserCard, {}, [className, cls[type]])}>
+		<div className={classNames(cls.userCard, {}, [className, cls[type]])}>
 			<Avatar
 				className={cls.avatar}
-				alt={UserData.user?.username}
-				src={UserData.user?.avatar_url}
-				size={size}
+				alt={userData.user?.username}
+				src={userData.user?.avatar_url}
+				size={AVATAR_SIZE[type]}
 			/>
 
 			<div className={cls.info}>
@@ -94,12 +90,17 @@ export const UserCard = ({
 							color={TextColor.BLACK}
 							fontSize={TextSize.L}
 							fontWeight={FontWeight.MEDIUM}
-							tag={TextTag.DIV}
+							tag={TitleTag.H3}
+							type={TextType.TITLE}
 							className={cls.name}
 						>
-							{UserData.user?.first_name} {UserData.user?.last_name}
+							{userData.user?.first_name} {userData.user?.last_name}
 						</Text>
-						{renderNotifications()}
+						{renderNotifications(
+							type,
+							userData.notifications,
+							userData.chat_type
+						)}
 					</div>
 
 					{/* rightHeader только для чатов */}
@@ -113,6 +114,7 @@ export const UserCard = ({
 								color={TextColor.GRAY}
 								fontSize={TextSize.S}
 								fontWeight={FontWeight.REGULAR}
+								tag={TextTag.SPAN}
 								className={cls.time}
 							>
 								21:49
@@ -129,7 +131,7 @@ export const UserCard = ({
 						fontWeight={FontWeight.REGULAR}
 						color={TextColor.BLACK}
 					>
-						{UserData.user?.phone}
+						{userData.user?.phone}
 					</Text>
 				)}
 
@@ -144,17 +146,18 @@ export const UserCard = ({
 								fontWeight={FontWeight.REGULAR}
 								maxLines={TextClamp.LINES_2}
 							>
-								{UserData.last_message?.content}
+								{userData.last_message?.content}
 							</Text>
 
-							{UserData.last_message?.new && (
+							{userData.last_message?.new && (
 								<Text
 									className={cls.newMesCount}
 									fontSize={TextSize.M}
 									color={TextColor.WHITE}
 									fontWeight={FontWeight.REGULAR}
+									tag={TextTag.SPAN}
 								>
-									{formatUnreadCount(UserData.new_message_count)}
+									{formatUnreadCount(userData.new_message_count)}
 								</Text>
 							)}
 						</>
@@ -167,7 +170,7 @@ export const UserCard = ({
 							fontSize={TextSize.S}
 							fontWeight={FontWeight.REGULAR}
 						>
-							{UserData.user?.is_online ? 'в сети' : 'не в сети'}
+							{userData.user?.is_online ? 'в сети' : 'не в сети'}
 						</Text>
 					)}
 
@@ -179,7 +182,7 @@ export const UserCard = ({
 							fontWeight={FontWeight.REGULAR}
 							color={TextColor.BLACK}
 						>
-							{UserData.user?.nickname}
+							{userData.user?.nickname}
 						</Text>
 					)}
 				</div>

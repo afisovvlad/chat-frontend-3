@@ -1,15 +1,18 @@
 'use client';
 import { Container, ContainerType } from '@/shared/ui/Container';
-import { Text, TextType } from '@/shared/ui/Text';
+import {
+	Text,
+	TextAlign,
+	TextColor,
+	TextSize,
+	TextType
+} from '@/shared/ui/Text';
 import cls from './chats.module.scss';
+
+import { ChatsPage } from '@/pages/Chats';
 
 import Image from 'next/image';
 import { useState } from 'react';
-import {
-	TextAlign,
-	TextColor,
-	TextSize
-} from '../../../src/shared/ui/Text/model/types/enums';
 
 const Chats = () => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -69,6 +72,8 @@ const Chats = () => {
 						Напишите первым :)
 					</Text>
 				</div>
+
+				<ChatsPage />
 			</Container>
 		</Container>
 	);

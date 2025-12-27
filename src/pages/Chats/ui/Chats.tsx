@@ -262,14 +262,14 @@ const profile: ProfileSchema = {
 	phone: '+7 921 7797979'
 };
 
-export const Chats = ({ className }: ChatsProps) => {
+export const ChatsPage = ({ className }: ChatsProps) => {
 	return (
 		<div className={classNames(cls.Chats, {}, [className])}>
 			Это карточки чатов
 			{chats.map(chat => (
 				<UserCard
 					type={UserCardType.CHAT}
-					UserData={mapChatToUserCard(chat)}
+					userData={mapChatToUserCard(chat)}
 					key={chat.id}
 				/>
 			))}
@@ -277,7 +277,7 @@ export const Chats = ({ className }: ChatsProps) => {
 			{contacts.map(contact => (
 				<UserCard
 					type={UserCardType.CONTACT}
-					UserData={mapContactToUserCard(contact)}
+					userData={mapContactToUserCard(contact)}
 					key={contact.uid}
 				/>
 			))}
@@ -285,13 +285,13 @@ export const Chats = ({ className }: ChatsProps) => {
 			{blackList.map(item => (
 				<UserCard
 					type={UserCardType.BLACK_LIST}
-					UserData={mapBlackListToUserCard(item)}
+					userData={mapBlackListToUserCard(item)}
 					key={item.uid}
 				/>
 			))}
 			Это карточка профиля
 			<UserCard
-				UserData={mapProfileToUserCard(profile)}
+				userData={mapProfileToUserCard(profile)}
 				type={UserCardType.PROFILE}
 			/>
 		</div>

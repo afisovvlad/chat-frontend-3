@@ -59,3 +59,17 @@ interface UserCardForProfile {
 	country?: string;
 	city_id?: number;
 }
+
+export enum UserCardType {
+	CHAT = 'chat',
+	CONTACT = 'contact',
+	BLACK_LIST = 'blackList',
+	PROFILE = 'profile'
+}
+
+export const AVATAR_SIZE: Record<UserCardType, number> = {
+	[UserCardType.CHAT]: 60,
+	[UserCardType.CONTACT]: 40,
+	[UserCardType.BLACK_LIST]: 40,
+	[UserCardType.PROFILE]: 82
+};
