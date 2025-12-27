@@ -1,0 +1,95 @@
+.userCard {
+	display: flex;
+	align-items: start;
+	cursor: pointer;
+	width: 100%;
+	gap: 8px;
+
+	// удалить потом
+	max-width: 360px;
+
+	&.chat {
+		align-items: start;
+	}
+
+	&.profile,
+	&.blackList,
+	&.contact {
+		align-items: center;
+	}
+
+	&.profile {
+		border-radius: 8px;
+		padding: 12px;
+		background-color: var(--color-white);
+		gap: 12px;
+	}
+}
+
+.avatar {
+	flex-shrink: 0;
+}
+
+.info {
+	width: 100%;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 4px;
+}
+
+.leftHeader {
+	display: flex;
+	align-items: center;
+
+	.notification {
+		width: 15px;
+		height: 15px;
+		margin-left: 6px;
+		margin-top: 3px;
+
+		& > svg {
+			color: var(--color-gray-500);
+		}
+	}
+}
+
+.rightHeader {
+	display: flex;
+	gap: 5px;
+
+	.status {
+		width: 18px;
+
+		& > svg {
+			color: var(--color-violet-500);
+		}
+	}
+}
+
+.newMesCount {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 21px;
+	padding: 6px;
+	border-radius: 100px;
+	background-color: var(--color-violet-500);
+}
+
+.trashBtn {
+	margin-left: auto;
+
+	.trashIcon {
+		color: var(--color-violet-500);
+	}
+}
+
+.footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}

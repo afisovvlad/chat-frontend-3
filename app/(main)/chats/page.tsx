@@ -1,14 +1,17 @@
 'use client';
-import { Text, TextType } from '@/shared/ui/Text';
 import { Container, ContainerType } from '@/shared/ui/Container';
-import cls from './chats.module.scss';
-
-import Image from 'next/image';
 import {
+	Text,
 	TextAlign,
 	TextColor,
-	TextSize
-} from '../../../src/shared/ui/Text/model/types/enums';
+	TextSize,
+	TextType
+} from '@/shared/ui/Text';
+import cls from './chats.module.scss';
+
+import { ChatsPage } from '@/pages/Chats';
+
+import Image from 'next/image';
 import { useState } from 'react';
 
 const Chats = () => {
@@ -69,6 +72,8 @@ const Chats = () => {
 						Напишите первым :)
 					</Text>
 				</div>
+
+				<ChatsPage />
 			</Container>
 		</Container>
 	);
