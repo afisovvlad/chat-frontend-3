@@ -1,11 +1,9 @@
 'use client';
-import { redirect } from 'next/navigation';
 import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Modal } from '@/shared/ui/Modal';
 import { Text, TextSize, TextType } from '@/shared/ui/Text';
 import { useState } from 'react';
 
-import { Chats } from '@/pages/Chats';
 import cls from './page.module.scss';
 
 export default function HomePage() {
