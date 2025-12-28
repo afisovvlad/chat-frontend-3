@@ -13,8 +13,8 @@ export type PageId = 'chats' | 'service' | 'contacts' | 'settings';
 
 export interface MenuItem {
 	id: PageId;
+	slug: string;
 	title: string;
-	label: string;
 	Icon: IconComponent;
 	IconMobile?: IconComponent;
 }
@@ -23,26 +23,26 @@ const ORDER: PageId[] = ['chats', 'service', 'contacts', 'settings'];
 
 const config: Record<PageId, Omit<MenuItem, 'id'>> = {
 	chats: {
-		title: 'Chat',
-		label: 'Чаты',
+		slug: 'Chat',
+		title: 'Чаты',
 		Icon: Chat,
 		IconMobile: Chat
 	},
 	service: {
-		title: 'Service',
-		label: 'Сервисы',
+		slug: 'Service',
+		title: 'Сервисы',
 		Icon: Service,
 		IconMobile: MobileService
 	},
 	contacts: {
-		title: 'Search contacts',
-		label: 'Контакты',
+		slug: 'Search contacts',
+		title: 'Контакты',
 		Icon: SearchContacts,
 		IconMobile: MobileContacts
 	},
 	settings: {
-		title: 'Settings',
-		label: 'Настройки',
+		slug: 'Settings',
+		title: 'Настройки',
 		Icon: Settings,
 		IconMobile: Settings
 	}

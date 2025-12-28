@@ -12,17 +12,17 @@ import {
 import { Button, ButtonColor, ButtonTheme } from '@/shared/ui/Button';
 import { Modal } from '@/shared/ui/Modal';
 import { useLogout } from '@/shared/lib/hooks/useLogout/useLogout';
-import { settingsMenuItems } from '../../model/SettingsMenuConfig';
+import { settingsListItems } from '../model/SettingsListConfig';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { usePathname } from 'next/navigation';
 import { Forward } from '@icons/index';
-import cls from './SettingsMenu.module.scss';
+import cls from './SettingsList.module.scss';
 
-interface SettingsMenuProps {
+interface SettingsListProps {
 	className?: string;
 }
 
-export const SettingsMenu = ({ className }: SettingsMenuProps) => {
+export const SettingsList = ({ className }: SettingsListProps) => {
 	const pathname = usePathname();
 	const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 	const performLogout = useLogout();
@@ -34,8 +34,8 @@ export const SettingsMenu = ({ className }: SettingsMenuProps) => {
 
 	return (
 		<>
-			<div className={classNames(cls.SettingsMenu, {}, [className])}>
-				{settingsMenuItems.map(item => {
+			<div className={classNames(cls.settingsList, {}, [className])}>
+				{settingsListItems.map(item => {
 					const Icon = item.Icon;
 
 					// Пункт "Выйти из аккаунта"
@@ -44,11 +44,11 @@ export const SettingsMenu = ({ className }: SettingsMenuProps) => {
 							<Button
 								key={item.id}
 								theme={ButtonTheme.CLEAR}
-								className={cls.SettingsMenuItem}
+								className={cls.settingsListItem}
 								onClick={() => setIsLogoutModalOpen(true)}
-								aria-label={item.title}
+								aria-label={item.slug}
 							>
-								<Icon className={cls.SettingsMenuIcon} />
+								<Icon className={cls.settingsListIcon} />
 								<Text
 									type={TextType.TEXT}
 									fontSize={TextSize.M}
@@ -56,26 +56,26 @@ export const SettingsMenu = ({ className }: SettingsMenuProps) => {
 									fontWeight={FontWeight.REGULAR}
 									className={cls.label}
 								>
-									{item.label}
+									{item.title}
 								</Text>
 							</Button>
 						);
 					}
 
 					// Обычные ссылки
-					const href = item.href || '#';
+					const href = item.href;
 					const isActive = pathname?.startsWith(href) || false;
 
 					return (
 						<Link
 							key={item.id}
 							href={href}
-							className={classNames(cls.SettingsMenuItem, {
+							className={classNames(cls.settingsListItem, {
 								[cls.active]: isActive
 							})}
-							aria-label={item.title}
+							aria-label={item.slug}
 						>
-							<Icon className={cls.SettingsMenuIcon} />
+							<Icon className={cls.settingsListIcon} />
 							<Text
 								type={TextType.TEXT}
 								fontSize={TextSize.M}
@@ -83,7 +83,7 @@ export const SettingsMenu = ({ className }: SettingsMenuProps) => {
 								fontWeight={FontWeight.REGULAR}
 								className={cls.label}
 							>
-								{item.label}
+								{item.title}
 							</Text>
 
 							<Forward className={cls.arrow} />

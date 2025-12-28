@@ -3,54 +3,54 @@ import { Edit, BlackList, Support, LogoutIcon } from '@icons/index';
 
 export type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
-export type SettingsMenuItemId =
+export type SettingsListItemId =
 	| 'edit-profile'
 	| 'blacklist'
 	| 'support'
 	| 'logout';
 
-export interface SettingsMenuItem {
-	id: SettingsMenuItemId;
+export interface SettingsListItem {
+	id: SettingsListItemId;
+	slug: string;
 	title: string;
-	label: string;
 	Icon: IconComponent;
 	href?: string; // отсутствует у logout
 }
 
-const ORDER: SettingsMenuItemId[] = [
+const ORDER: SettingsListItemId[] = [
 	'edit-profile',
 	'blacklist',
 	'support',
 	'logout'
 ];
 
-const config: Record<SettingsMenuItemId, Omit<SettingsMenuItem, 'id'>> = {
+const config: Record<SettingsListItemId, Omit<SettingsListItem, 'id'>> = {
 	'edit-profile': {
-		title: 'Edit Profile',
-		label: 'Редактирование профиля',
+		slug: 'Edit Profile',
+		title: 'Редактирование профиля',
 		Icon: Edit,
 		href: '/settings/profile'
 	},
 	blacklist: {
-		title: 'Black List',
-		label: 'Чёрный список',
+		slug: 'Black List',
+		title: 'Чёрный список',
 		Icon: BlackList,
 		href: '/settings/blacklist'
 	},
 	support: {
-		title: 'Support',
-		label: 'Поддержка',
+		slug: 'Support',
+		title: 'Поддержка',
 		Icon: Support,
 		href: '/settings/support'
 	},
 	logout: {
-		title: 'Logout',
-		label: 'Выйти из аккаунта',
+		slug: 'Logout',
+		title: 'Выйти из аккаунта',
 		Icon: LogoutIcon
 	}
 };
 
-export const settingsMenuItems: SettingsMenuItem[] = ORDER.map(id => ({
+export const settingsListItems: SettingsListItem[] = ORDER.map(id => ({
 	id,
 	...config[id]
 }));

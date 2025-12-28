@@ -1,6 +1,6 @@
 @use '@/app/styles/mixins/mixin.scss' as *;
 
-.SettingsMenu {
+.settingsList {
 	display: flex;
 	flex-direction: column;
 	background: var(--color-white);
@@ -11,11 +11,11 @@
 	}
 }
 
-.SettingsMenuItem {
+.settingsListItem {
 	display: flex;
 	align-items: center;
-	padding: 14px 10px;
-	gap: 16px;
+	padding: 14px 10px 14px 16px;
+	gap: 12px;
 	text-decoration: none;
 	color: inherit;
 	background: transparent;
@@ -43,7 +43,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.SettingsMenuItem {
+	.settingsListItem {
 		&:hover {
 			background-color: var(--hover-settings-links);
 			opacity: 1;
@@ -51,7 +51,7 @@
 	}
 }
 
-.SettingsMenuIcon {
+.settingsListIcon {
 	font-size: 24px;
 	fill: currentcolor;
 	color: var(--color-violet-500);
