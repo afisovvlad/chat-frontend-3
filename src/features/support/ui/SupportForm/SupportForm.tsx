@@ -1,6 +1,6 @@
 'use client';
 
-import FormSettingsItem from '@/entities/Settings/ui/FormSettingsItem/FormSettingsItem';
+import { FormSettingsItem } from '@/entities/FormSettingsItem';
 import { useSendSupportMessageMutation } from '@/shared/api/support/api';
 import { Button } from '@/shared/ui/Button';
 import {

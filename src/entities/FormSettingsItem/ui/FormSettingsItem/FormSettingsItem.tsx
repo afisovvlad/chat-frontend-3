@@ -29,11 +29,13 @@ interface FormItemProps<TFormValues extends FieldValues> {
 	classNameParentInput?: string;
 	classNameParentWrapper?: string;
 	classNameParentSelect?: string;
+	isMessageShort?: boolean;
+	textareaHeight?: string | undefined;
 	onValueChange?: (value: string) => void; // для реакции на ввод сразу
 	options?: { value: string; label: string }[] | [];
 }
 
-export default function FormSettingsItem<TFormValues extends FieldValues>({
+export function FormSettingsItem<TFormValues extends FieldValues>({
 	name,
 	type,
 	label,
@@ -46,6 +48,8 @@ export default function FormSettingsItem<TFormValues extends FieldValues>({
 	classNameParentWrapper,
 	classNameParentLabel,
 	classNameParentSelect,
+	isMessageShort,
+	textareaHeight,
 	options = []
 }: FormItemProps<TFormValues>) {
 	const {
@@ -79,9 +83,11 @@ export default function FormSettingsItem<TFormValues extends FieldValues>({
 					classNameTextarea={clsx(
 						styles.textarea,
 						classNameParentInput,
-						isError && styles.error
+						isError && styles.error,
+						isMessageShort && styles.messageShort
 					)}
 					rules={rules}
+					height={textareaHeight}
 				/>
 			);
 			break;

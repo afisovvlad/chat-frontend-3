@@ -1,7 +1,9 @@
-import styles from './styles.module.scss';
+'use client';
+
 import clsx from 'clsx';
 import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form';
 import { FormItemAutocomplete } from '../model/types';
+import styles from './styles.module.scss';
 
 interface PhoneInputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;

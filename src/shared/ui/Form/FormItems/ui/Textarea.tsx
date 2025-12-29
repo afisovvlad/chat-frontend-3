@@ -14,10 +14,9 @@ interface TextareaProps<TFormValues extends FieldValues> {
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
 	placeholder?: string;
 	autoComplete?: FormItemAutocomplete;
-	// isError?: boolean;
 	disabled?: boolean;
-	// register: UseFormRegister<TFormValues>;
 	classNameTextarea?: string;
+	height?: string | undefined;
 }
 
 export function Textarea<TFormValues extends FieldValues>({
@@ -27,9 +26,8 @@ export function Textarea<TFormValues extends FieldValues>({
 	},
 	placeholder = '',
 	disabled,
-	// isError,
-	// register,
-	classNameTextarea
+	classNameTextarea,
+	height
 }: TextareaProps<TFormValues>) {
 	const {
 		register,
@@ -48,6 +46,7 @@ export function Textarea<TFormValues extends FieldValues>({
 				[styles.hasError]: isError,
 				[styles.disabled]: disabled
 			})}
+			style={height ? { minHeight: height, maxHeight: height } : {}}
 		/>
 	);
 }
