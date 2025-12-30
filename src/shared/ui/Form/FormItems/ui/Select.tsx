@@ -1,5 +1,6 @@
 'use client';
 
+import { SelectOption } from '@/shared/ui/Form/FormItems/model/types';
 import clsx from 'clsx';
 import { JSX } from 'react';
 import {
@@ -9,10 +10,15 @@ import {
 	RegisterOptions,
 	useFormContext
 } from 'react-hook-form';
-import Select from 'react-select';
+import Select, { StylesConfig } from 'react-select';
+import { CustomDropdownIndicator } from '../..';
+import { CustomSelectOption } from './CustomSelectOption';
 import styles from './styles.module.scss';
 
-interface SelectProps<TFormValues extends FieldValues> {
+interface SelectProps<
+	TFormValues extends FieldValues,
+	Option extends SelectOption = SelectOption
+> {
 	options: { value: string; label: string }[];
 	name: Path<TFormValues>;
 	classNameParentSelectWrapper?: string;
@@ -20,22 +26,28 @@ interface SelectProps<TFormValues extends FieldValues> {
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>> | undefined;
 	disabled?: boolean;
 	icon?: JSX.Element;
+	customStyles:
+		| StylesConfig<Option>
+		| ((width?: number | string) => StylesConfig<Option>);
+	menu?: string;
+	width?: number | string;
 }
 
 export function SelectItem<TFormValues extends FieldValues>({
 	options,
 	name,
 	classNameParentSelectWrapper,
-	classNameSelect,
+	customStyles,
 	icon,
 	disabled = false,
+	width,
 	rules = {
 		required: 'Заполните это поле'
 	}
 }: SelectProps<TFormValues>) {
 	const {
 		// register,
-		control,
+		// control,
 		// watch,
 		formState: { errors }
 	} = useFormContext<TFormValues>();
@@ -49,12 +61,16 @@ export function SelectItem<TFormValues extends FieldValues>({
 		<div className={clsx(classNameParentSelectWrapper, {})}>
 			<Controller
 				name={name} // Ключ в данных формы
-				control={control} // Объект управления формой
+				// control={control} // Объект управления формой
 				rules={rules}
 				render={(
 					{ field } // field содержит onChange, onBlur, value, name, ref
 				) => (
-					<Select
+					<Select<SelectOption>
+						components={{
+							Option: CustomSelectOption,
+							DropdownIndicator: CustomDropdownIndicator
+						}}
 						options={options}
 						name={field.name} // Передаем имя из field
 						// Значение и обработчик изменения связываются с react-hook-form
@@ -63,10 +79,15 @@ export function SelectItem<TFormValues extends FieldValues>({
 							field.onChange(selectedOption?.value || '')
 						}
 						onBlur={field.onBlur}
-						className={clsx(styles.select, classNameSelect, {
-							[styles.hasError]: isError,
-							[styles.disabled]: disabled
-						})}
+						styles={customStyles<SelectOption>(width)}
+						classNames={{
+							menuList: () => styles.menuList
+						}}
+						// styles={customStyles}
+						// className={clsx(styles.select, classNameSelect, {
+						// 	[styles.hasError]: isError,
+						// 	[styles.disabled]: disabled
+						// })}
 						isDisabled={disabled}
 						instanceId={name}
 						// ref={field.ref}
@@ -74,7 +95,6 @@ export function SelectItem<TFormValues extends FieldValues>({
 					/>
 				)}
 			/>
-			{icon && icon}
 		</div>
 	);
 }

@@ -87,6 +87,38 @@
 	height: 100px;
 }
 
+.control {
+	min-height: 56px;
+	border-radius: 8px;
+}
+
+.menuList::-webkit-scrollbar {
+	width: 6px;
+}
+
+.menuList::-webkit-scrollbar-track {
+	margin: 4px 0;
+}
+
+.menuList::-webkit-scrollbar-thumb {
+	background: var(--color-gray-200);
+	border-radius: 8px;
+}
+
+.menuList::-webkit-scrollbar-button {
+	display: none;
+}
+
+.iconDown {
+	// position: absolute;
+	// top: 24px;
+	// right: 12px;
+	width: 12px;
+	height: 7.4px;
+	color: var(--color-gray-500);
+	z-index: 0;
+}
+
 // .container.error .cell {
 // 	outline: 2px solid var(--color-red);
 // 	outline-offset: 0;

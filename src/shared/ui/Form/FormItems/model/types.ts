@@ -40,3 +40,8 @@ export enum FormItemAutocomplete {
 	OFF = 'off',
 	ON = 'on'
 }
+
+export type SelectOption = {
+	value: string;
+	label: string;
+};

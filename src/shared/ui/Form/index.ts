@@ -7,3 +7,4 @@ export { Input } from './FormItems/ui/Input';
 export { SelectItem } from './FormItems/ui/Select';
 export { Textarea } from './FormItems/ui/Textarea';
 export { Label } from './FormItems/ui/Label';
+export { CustomDropdownIndicator } from './FormItems/ui/CustomDropdownIndicator ';

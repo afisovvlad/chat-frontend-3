@@ -1,9 +1,12 @@
 'use client';
 
 import { Form, Input, Label, SelectItem, Textarea } from '@/shared/ui/Form';
-import { FormItemType } from '@/shared/ui/Form/FormItems/model/types';
-import { Down } from '@icons/index';
+import {
+	FormItemType,
+	SelectOption
+} from '@/shared/ui/Form/FormItems/model/types';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { StylesConfig } from 'react-select';
 import styles from './page.module.scss';
 
 interface LoginProfileForm {
@@ -33,6 +36,15 @@ export default function TestPage() {
 		{ value: '5', label: '5' },
 		{ value: '6', label: '6' },
 		{ value: '7', label: '7' },
+		{ value: '8', label: '8' },
+		{ value: '8', label: '8' },
+		{ value: '8', label: '8' },
+		{ value: '8', label: '8' },
+		{ value: '8', label: '8' },
+		{ value: '8', label: '8' },
+		{ value: '8', label: '8' },
+		{ value: '8', label: '8' },
+		{ value: '8', label: '8' },
 		{ value: '8', label: '8' }
 	];
 	const months = [
@@ -60,6 +72,127 @@ export default function TestPage() {
 		{ value: '2016', label: '2016' }
 	];
 
+	// type Option = {
+	// 	value: string;
+	// 	label: string;
+	// };
+
+	// export const customStyles = <Option>( width?: number | string) : StylesConfig<Option> => ({
+	// 	control: (base, state) => ({
+	// 		...base,
+	// 		width: '80px',
+	// 		minHeight: '56px',
+	// 		borderRadius: state.menuIsOpen ? '8px 8px 0 0 ' : '8px',
+	// 		borderWidth: '1px',
+	// 		borderColor: 'transparent',
+	// 		outline: 'none',
+	// 		boxShadow: '0',
+	// 		'&:hover': {
+	// 			borderColor: 'var(--color-primary)'
+	// 		}
+	// 	}),
+
+	// 	menu: base => ({
+	// 		...base,
+	// 		marginTop: 0,
+	// 		border: '1px solid var(--color-primary)',
+	// 		borderRadius: '0 0 8px 8px',
+	// 		boxShadow: '0',
+	// 		overflow: 'hidden'
+	// 	}),
+
+	// 	option: (base, state) => ({
+	// 		...base,
+	// 		padding: '12px 16px',
+	// 		backgroundColor: 'transparent',
+	// 		// backgroundColor: state.isSelected
+	// 		// 	? '#048e22'
+	// 		// 	: state.isFocused
+	// 		// 		? '#e6f4ea'
+	// 		// 		: 'transparent',
+	// 		color: state.isSelected ? '#fff' : '#000',
+	// 		cursor: 'pointer'
+	// 	}),
+
+	// 	singleValue: base => ({
+	// 		...base,
+	// 		color: '#000'
+	// 	})
+	// });
+
+	const customStyles = <
+		Option extends SelectOption,
+		IsMulti extends boolean = false
+	>(
+		width?: number | string
+	): StylesConfig<Option, IsMulti> => ({
+		control: (base, state) => ({
+			...base,
+			position: 'relative',
+			width,
+			minHeight: 56,
+			fontFamily: 'inherit',
+			fontSize: '18px',
+			lineHeight: '130%',
+			letterSpacing: '0.4px',
+			borderRadius: state.menuIsOpen ? '8px 8px 0 0' : '8px',
+			border: state.menuIsOpen
+				? '1px solid var(--color-primary)'
+				: '1px solid transparent',
+			outline: 'none',
+			boxShadow: 'none',
+
+			'&:hover': {
+				borderColor: 'var(--color-primary)'
+			}
+		}),
+
+		menu: base => ({
+			...base,
+			minHeight: 140,
+			maxHeight: 140,
+			marginTop: 0,
+			marginBottom: '4px',
+			padding: '4px 6px 4px 10px',
+			border: '1px solid var(--color-primary)',
+			borderTop: 'none ',
+			borderRadius: '0 0 8px 8px',
+			boxShadow: 'none',
+			overflow: 'hidden'
+		}),
+
+		menuList: base => ({
+			...base,
+			maxHeight: 140,
+			overflowY: 'auto'
+		}),
+
+		option: (base, state) => ({
+			...base,
+			padding: '0 0 4px 0',
+			fontFamily: 'inherit',
+			fontSize: '18px',
+			lineHeight: '130%',
+			letterSpacing: '0.4px',
+			backgroundColor: state.isSelected
+				? 'transparent'
+				: state.isFocused
+					? 'transparent'
+					: 'transparent',
+			color: 'var(--color-black)',
+			cursor: 'pointer'
+		}),
+
+		singleValue: base => ({
+			...base,
+			color: '#000'
+		}),
+
+		indicatorSeparator: () => ({
+			display: 'none'
+		})
+	});
+
 	const onSubmit: SubmitHandler<LoginProfileForm> = data => {
 		console.log(data);
 	};
@@ -76,19 +209,25 @@ export default function TestPage() {
 						name={day}
 						classNameParentSelectWrapper={styles.selectWrapper}
 						classNameSelect={styles.selectDay}
-						icon={<Down className={styles.iconDown} />}
+						// icon={<Down className={styles.iconDown} />}
+						customStyles={customStyles}
+						width={80}
 					/>
 					<SelectItem
 						options={months}
 						name={month}
 						classNameSelect={styles.selectMonth}
-						icon={<Down className={styles.iconDown} />}
+						// icon={<Down className={styles.iconDown} />}
+						customStyles={customStyles}
+						width={133}
 					/>
 					<SelectItem
 						options={years}
 						name={year}
 						classNameSelect={styles.selectYear}
-						icon={<Down className={styles.iconDown} />}
+						// icon={<Down className={styles.iconDown} />}
+						customStyles={customStyles}
+						width={107}
 					/>
 				</div>
 				<Label name={'name'} classNameParentLabel={styles.label}>
