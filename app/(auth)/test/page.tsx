@@ -1,10 +1,7 @@
 'use client';
 
 import { Form, Input, Label, SelectItem, Textarea } from '@/shared/ui/Form';
-import {
-	FormItemType,
-	SelectOption
-} from '@/shared/ui/Form/FormItems/model/types';
+import { FormItemType } from '@/shared/ui/Form/FormItems/model/types';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StylesConfig } from 'react-select';
 import styles from './page.module.scss';
@@ -72,60 +69,9 @@ export default function TestPage() {
 		{ value: '2016', label: '2016' }
 	];
 
-	// type Option = {
-	// 	value: string;
-	// 	label: string;
-	// };
-
-	// export const customStyles = <Option>( width?: number | string) : StylesConfig<Option> => ({
-	// 	control: (base, state) => ({
-	// 		...base,
-	// 		width: '80px',
-	// 		minHeight: '56px',
-	// 		borderRadius: state.menuIsOpen ? '8px 8px 0 0 ' : '8px',
-	// 		borderWidth: '1px',
-	// 		borderColor: 'transparent',
-	// 		outline: 'none',
-	// 		boxShadow: '0',
-	// 		'&:hover': {
-	// 			borderColor: 'var(--color-primary)'
-	// 		}
-	// 	}),
-
-	// 	menu: base => ({
-	// 		...base,
-	// 		marginTop: 0,
-	// 		border: '1px solid var(--color-primary)',
-	// 		borderRadius: '0 0 8px 8px',
-	// 		boxShadow: '0',
-	// 		overflow: 'hidden'
-	// 	}),
-
-	// 	option: (base, state) => ({
-	// 		...base,
-	// 		padding: '12px 16px',
-	// 		backgroundColor: 'transparent',
-	// 		// backgroundColor: state.isSelected
-	// 		// 	? '#048e22'
-	// 		// 	: state.isFocused
-	// 		// 		? '#e6f4ea'
-	// 		// 		: 'transparent',
-	// 		color: state.isSelected ? '#fff' : '#000',
-	// 		cursor: 'pointer'
-	// 	}),
-
-	// 	singleValue: base => ({
-	// 		...base,
-	// 		color: '#000'
-	// 	})
-	// });
-
-	const customStyles = <
-		Option extends SelectOption,
-		IsMulti extends boolean = false
-	>(
+	const customStyles = <SelectOption, IsMulti extends boolean = false>(
 		width?: number | string
-	): StylesConfig<Option, IsMulti> => ({
+	): StylesConfig<SelectOption, IsMulti> => ({
 		control: (base, state) => ({
 			...base,
 			position: 'relative',
@@ -254,31 +200,3 @@ export default function TestPage() {
 		</>
 	);
 }
-
-/* <Form<LoginProfileForm> onSubmit={onSubmit} methods={methods}>
-<Label name={'day'} classNameParentLabel={styles.label}>
-  Введите дату своего рождения
-</Label>
-<div className={styles.selectContainer}>
-  <Select
-    options={days}
-    name={day}
-    classNameParentSelectWrapper={styles.selectWrapper}
-    classNameParentSelect={styles.selectDay}
-    icon={<Down className={styles.iconDown} />}
-  />
-  <Select
-    options={months}
-    name={month}
-    classNameParentSelect={styles.selectMonth}
-    icon={<Down className={styles.iconDown} />}
-  />
-  <Select
-    options={years}
-    name={year}
-    classNameParentSelect={styles.selectYear}
-    icon={<Down className={styles.iconDown} />}
-  />
-</div>
-<button type='submit'>Сохранить</button>
-</Form> */

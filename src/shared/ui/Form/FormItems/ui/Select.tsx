@@ -1,6 +1,5 @@
 'use client';
 
-import { SelectOption } from '@/shared/ui/Form/FormItems/model/types';
 import clsx from 'clsx';
 import { JSX } from 'react';
 import {
@@ -17,9 +16,9 @@ import styles from './styles.module.scss';
 
 interface SelectProps<
 	TFormValues extends FieldValues,
-	Option extends SelectOption = SelectOption
+	TOption extends { value: string; label: string }
 > {
-	options: { value: string; label: string }[];
+	options: TOption[];
 	name: Path<TFormValues>;
 	classNameParentSelectWrapper?: string;
 	classNameSelect?: string;
@@ -27,28 +26,27 @@ interface SelectProps<
 	disabled?: boolean;
 	icon?: JSX.Element;
 	customStyles:
-		| StylesConfig<Option>
-		| ((width?: number | string) => StylesConfig<Option>);
+		| StylesConfig<TOption>
+		| ((width?: number | string) => StylesConfig<TOption>);
 	menu?: string;
 	width?: number | string;
 }
 
-export function SelectItem<TFormValues extends FieldValues>({
+export function SelectItem<
+	TFormValues extends FieldValues,
+	TOption extends { value: string; label: string }
+>({
 	options,
 	name,
 	classNameParentSelectWrapper,
 	customStyles,
-	icon,
 	disabled = false,
 	width,
 	rules = {
 		required: 'Заполните это поле'
 	}
-}: SelectProps<TFormValues>) {
+}: SelectProps<TFormValues, TOption>) {
 	const {
-		// register,
-		// control,
-		// watch,
 		formState: { errors }
 	} = useFormContext<TFormValues>();
 
@@ -66,7 +64,7 @@ export function SelectItem<TFormValues extends FieldValues>({
 				render={(
 					{ field } // field содержит onChange, onBlur, value, name, ref
 				) => (
-					<Select<SelectOption>
+					<Select<TOption>
 						components={{
 							Option: CustomSelectOption,
 							DropdownIndicator: CustomDropdownIndicator
@@ -79,19 +77,16 @@ export function SelectItem<TFormValues extends FieldValues>({
 							field.onChange(selectedOption?.value || '')
 						}
 						onBlur={field.onBlur}
-						styles={customStyles<SelectOption>(width)}
+						styles={
+							typeof customStyles === 'function'
+								? customStyles(width)
+								: customStyles
+						}
 						classNames={{
 							menuList: () => styles.menuList
 						}}
-						// styles={customStyles}
-						// className={clsx(styles.select, classNameSelect, {
-						// 	[styles.hasError]: isError,
-						// 	[styles.disabled]: disabled
-						// })}
 						isDisabled={disabled}
 						instanceId={name}
-						// ref={field.ref}
-						// isError={isError}
 					/>
 				)}
 			/>
