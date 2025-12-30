@@ -10,8 +10,7 @@ import {
 	useFormContext
 } from 'react-hook-form';
 import Select, { StylesConfig } from 'react-select';
-import { CustomDropdownIndicator } from '../..';
-import { CustomSelectOption } from './CustomSelectOption';
+import { CustomDropdownIndicator, CustomSelectOption } from '../..';
 import styles from './styles.module.scss';
 
 interface SelectProps<
@@ -25,7 +24,7 @@ interface SelectProps<
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>> | undefined;
 	disabled?: boolean;
 	icon?: JSX.Element;
-	customStyles:
+	customStyles?:
 		| StylesConfig<TOption>
 		| ((width?: number | string) => StylesConfig<TOption>);
 	menu?: string;
@@ -78,10 +77,17 @@ export function SelectItem<
 						}
 						onBlur={field.onBlur}
 						styles={
-							typeof customStyles === 'function'
-								? customStyles(width)
-								: customStyles
+							customStyles
+								? typeof customStyles === 'function'
+									? customStyles(width)
+									: customStyles
+								: {}
 						}
+						// styles={
+						// 	typeof customStyles === 'function'
+						// 		? customStyles(width)
+						// 		: customStyles
+						// }
 						classNames={{
 							menuList: () => styles.menuList
 						}}
