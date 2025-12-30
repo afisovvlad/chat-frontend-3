@@ -29,7 +29,7 @@ const config: Record<SettingsListItemId, Omit<SettingsListItem, 'id'>> = {
 		slug: 'Edit Profile',
 		title: 'Редактирование профиля',
 		Icon: Edit,
-		href: '/settings/profile'
+		href: '/settings/edit-profile'
 	},
 	blacklist: {
 		slug: 'Black List',

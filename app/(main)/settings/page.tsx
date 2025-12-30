@@ -1,7 +1,7 @@
-import { SettingsMenu } from './ui/SettingsMenu';
+import { SettingsPage } from '@/pages/SettingsPage/SettingsPage';
 
 const Settings = () => {
-	return <SettingsMenu />;
+	return <SettingsPage />;
 };
 
 export default Settings;

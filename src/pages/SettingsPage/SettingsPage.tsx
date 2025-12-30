@@ -10,9 +10,9 @@ import {
 	Text
 } from '@/shared/ui/Text';
 import { Trash } from '@icons/index';
-import cls from './SettingsMenu.module.scss';
+import cls from './SettingsPage.module.scss';
 
-export const SettingsMenu = () => {
+export const SettingsPage = () => {
 	return (
 		<Container type={ContainerType.WRAPPER}>
 			<Container type={ContainerType.SIDEBAR} className={cls.sidebar}>
