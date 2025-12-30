@@ -9,6 +9,8 @@ import {
 import { Container, ContainerType } from '@/shared/ui/Container';
 import Image from 'next/image';
 import cls from './chats.module.scss';
+import { ChatsPage } from '@/pages/Chats';
+import { useState } from 'react';
 
 const Chats = () => {
 	return (
@@ -57,6 +59,8 @@ const Chats = () => {
 						Напишите первым :)
 					</Text>
 				</div>
+
+				<ChatsPage />
 			</Container>
 		</Container>
 	);
