@@ -59,8 +59,8 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 	const errorMessage = errors?.[name]?.message as string | undefined;
 	const isError = Boolean(errorMessage);
 	const value = watch(name);
-	console.log(errorMessage);
-	console.log(isError);
+	// console.log(errorMessage);
+	// console.log(isError);
 
 	// console.log(value);
 
@@ -97,7 +97,6 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 				<SelectItem
 					options={options}
 					name={name}
-					// placeholder={placeholder}
 					disabled={disabled}
 					classNameSelect={clsx(
 						styles.select,

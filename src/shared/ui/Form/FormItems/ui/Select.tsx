@@ -12,10 +12,11 @@ import {
 import Select, { StylesConfig } from 'react-select';
 import { CustomDropdownIndicator, CustomSelectOption } from '../..';
 import styles from './styles.module.scss';
+import { SelectOption } from '../model/selectTypes';
 
 interface SelectProps<
 	TFormValues extends FieldValues,
-	TOption extends { value: string; label: string }
+	TOption extends SelectOption<unknown>
 > {
 	options: TOption[];
 	name: Path<TFormValues>;
@@ -33,7 +34,7 @@ interface SelectProps<
 
 export function SelectItem<
 	TFormValues extends FieldValues,
-	TOption extends { value: string; label: string }
+	TOption extends SelectOption<unknown>
 >({
 	options,
 	name,
@@ -83,11 +84,6 @@ export function SelectItem<
 									: customStyles
 								: {}
 						}
-						// styles={
-						// 	typeof customStyles === 'function'
-						// 		? customStyles(width)
-						// 		: customStyles
-						// }
 						classNames={{
 							menuList: () => styles.menuList
 						}}
@@ -99,26 +95,3 @@ export function SelectItem<
 		</div>
 	);
 }
-
-// return (
-//   <div className={clsx(classNameParentSelectWrapper, {})}>
-//     <select
-//       id={name}
-//       {...register(name, rules)}
-//       // placeholder={placeholder}
-//       disabled={disabled}
-//       autoComplete={FormAuthItemAutocomplete.OFF}
-//       className={clsx(styles.select, classNameParentSelect, {
-//         [styles.hasError]: isError,
-//         [styles.disabled]: disabled
-//       })}
-//     >
-//       {options.map(option => (
-//         <option key={option.value} value={option.value}>
-//           {option.label}
-//         </option>
-//       ))}
-//     </select>
-//     {icon && icon}
-//   </div>
-// );
