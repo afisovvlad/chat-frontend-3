@@ -11,8 +11,8 @@ import {
 } from 'react-hook-form';
 import Select, { StylesConfig } from 'react-select';
 import { CustomDropdownIndicator, CustomSelectOption } from '../..';
-import styles from './styles.module.scss';
 import { SelectOption } from '../model/selectTypes';
+import styles from './styles.module.scss';
 
 interface SelectProps<
 	TFormValues extends FieldValues,
@@ -72,10 +72,8 @@ export function SelectItem<
 						options={options}
 						name={field.name} // Передаем имя из field
 						// Значение и обработчик изменения связываются с react-hook-form
-						value={options.find(option => option.value === field.value) || null}
-						onChange={selectedOption =>
-							field.onChange(selectedOption?.value || '')
-						}
+						value={field.value}
+						onChange={selectedOption => field.onChange(selectedOption)}
 						onBlur={field.onBlur}
 						styles={
 							customStyles

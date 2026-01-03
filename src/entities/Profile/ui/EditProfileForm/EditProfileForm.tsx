@@ -32,7 +32,7 @@ interface EditBirthdayForm {
 
 interface EditProfileForm extends EditBirthdayForm {
 	nickname: string;
-	name: string;
+	first_name: string;
 	last_name: string;
 	// patronymic: string;
 	message: string;
@@ -101,7 +101,7 @@ export function EditProfileForm() {
 	const formItem = [
 		{
 			type: FormItemType.TEXT,
-			name: FormItemNames.NAME,
+			name: FormItemNames.FIRST_NAME,
 			label: 'Изменить имя',
 			placeholder: 'Иван',
 			autocomplete: FormItemAutocomplete.NAME,
@@ -233,12 +233,11 @@ export function EditProfileForm() {
 
 	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
 		setServerErrorMessage('');
-		console.log(data);
 
 		const newData = {
 			nickname: data.nickname,
-			first_name: 'Иван',
-			last_name: ' Иванов',
+			first_name: data.first_name,
+			last_name: data.last_name,
 			birthday: 0,
 			// birthday: newBirthday,
 			additional_information: data.message,
@@ -247,23 +246,28 @@ export function EditProfileForm() {
 			gender: 'male',
 			country: 'RU',
 			city_id: 2,
-			phone: '+79870118430'
+			phone: '+79870118530'
 		};
 
 		console.log(newData);
 
 		try {
-			const { data, error } = await editProfile(newData);
-			console.log(data, error);
+			const result = await editProfile(newData);
+			console.log(result);
 
-			if (data) {
+			if ('data' in result) {
 				console.log('success', data);
 			} else {
+				const error = result.error;
 				console.log('error', error);
-				if (error?.data) {
+				if (
+					error &&
+					typeof error === 'object' &&
+					'status' in error &&
+					'data' in error
+				) {
 					console.log(error.data);
 					const serverErrors = error.data as Record<string, string[]>;
-					// ожидаем, что сервер вернёт объект вида { fieldName: [message1, message2] }
 
 					Object.entries(serverErrors).forEach(([field, messages]) => {
 						setError(field as keyof EditProfileForm, {
@@ -275,24 +279,6 @@ export function EditProfileForm() {
 					setServerErrorMessage('Произошла непредвиденная ошибка');
 				}
 			}
-			// else if (error && error.status === 400) {
-			// 	console.log('error', error.data);
-			// } else if (error && error.status === 500) {
-			// 	console.log('error', response.error);
-			// 	setServerErrorMessage('Произошла непредвиденная ошибка');
-			// }
-
-			// const response = await editProfile(newData);
-			// console.log(response);
-
-			// if (response.data) {
-			// 	console.log('success', response.data);
-			// } else if (response.error && response.error.status === 400) {
-			// 	console.log('error', response.error.data);
-			// } else if (response.error && response.error.status === 500) {
-			// 	console.log('error', response.error);
-			// 	setServerErrorMessage('Произошла непредвиденная ошибка');
-			// }
 		} catch (e) {
 			console.log(e);
 		}

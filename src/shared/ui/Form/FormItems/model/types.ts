@@ -4,6 +4,7 @@ export enum FormItemNames {
 	NAME = 'name',
 	USERNAME = 'username',
 	NICKNAME = 'nickname',
+	FIRST_NAME = 'first_name',
 	LAST_NAME = 'last_name',
 	EMAIL = 'email',
 	SEARCH = 'search',
