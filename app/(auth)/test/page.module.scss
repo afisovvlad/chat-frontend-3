@@ -1,9 +1,9 @@
-.selectContainer {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: 4px;
-}
+// .selectContainer {
+// 	display: flex;
+// 	justify-content: space-between;
+// 	align-items: center;
+// 	gap: 4px;
+// }
 
 // .selectDay,
 // .selectMonth,
@@ -55,16 +55,16 @@
 // 	color: var(--color-gray-500);
 // 	z-index: 0;
 // }
+// *********************
+// .selectWrapper {
+// 	position: relative;
+// 	background-color: var(--color-white);
+// 	border-radius: 8px;
+// }
 
-.selectWrapper {
-	position: relative;
-	background-color: var(--color-white);
-	border-radius: 8px;
-}
-
-.selectMenu {
-	padding: 10px 58px 10px 4px;
-	border: 1px solid var(--color-primary);
-	background-color: var(--color-white);
-	border-radius: 0 0 8px 8px;
-}
+// .selectMenu {
+// 	padding: 10px 58px 10px 4px;
+// 	border: 1px solid var(--color-primary);
+// 	background-color: var(--color-white);
+// 	border-radius: 0 0 8px 8px;
+// }

@@ -24,7 +24,7 @@ export function proxy(request: NextRequest) {
 		return NextResponse.redirect(new URL('/login', request.url), 307);
 	}
 
-	// добавляем accessToken в заголовок
+	// // добавляем accessToken в заголовок
 	if (accessToken && pathname.startsWith('/api/')) {
 		const requestHeaders = new Headers(request.headers);
 		requestHeaders.set('Authorization', `Bearer ${accessToken}`);

@@ -1,8 +1,10 @@
 'use client';
 
 import { FormSettingsItem } from '@/entities/FormSettingsItem';
+import { useEditProfileMutation } from '@/features/profile/edit/api/editProfile.api';
 import { Button, ButtonType } from '@/shared/ui/Button';
 import { Form, Label, SelectItem } from '@/shared/ui/Form';
+import { DateOption } from '@/shared/ui/Form/FormItems/model/selectTypes';
 import {
 	FormItemAutocomplete,
 	FormItemNames,
@@ -14,48 +16,87 @@ import {
 	getMonthsOptions,
 	getYearsOptions
 } from '@/shared/utils/dateOptions';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StylesConfig } from 'react-select';
-
-import { DateOption } from '@/shared/ui/Form/FormItems/model/selectTypes';
 import styles from './EditProfileForm.module.scss';
 
-interface SupportForm {
-	name: string;
-	lastName: string;
+interface EditBirthdayForm {
+	// day: number;
+	// month: number;
+	// year: number;
+	day: DateOption | null;
+	month: DateOption | null;
+	year: DateOption | null;
+}
+
+interface EditProfileForm extends EditBirthdayForm {
 	nickname: string;
+	name: string;
+	last_name: string;
+	// patronymic: string;
 	message: string;
-	day: number | undefined;
-	month: number | undefined;
-	year: number | undefined;
+	// birthday: number;
+	// email: string;
+	// gender: string;
+	// country: string;
+	// city_id: number;
+	// phone: string;
 }
 
 export function EditProfileForm() {
-	const methods = useForm<SupportForm>({
+	const [serverErrorMessage, setServerErrorMessage] = useState('');
+	const [editProfile] = useEditProfileMutation();
+	const methods = useForm<EditProfileForm>({
 		defaultValues: {
-			day: 1,
-			month: 1,
-			year: 2026
+			// day: 1',
+			// month: 1,
+			// year: 2026
+			day: { value: 1, label: '1' },
+			month: { value: 1, label: 'Январь' },
+			year: { value: 2026, label: '2026' }
 		}
 	});
-	const { watch, setValue } = methods;
-	const month = watch('month');
-	const year = watch('year');
-	const day = watch('day');
+	const { watch, setValue, setError } = methods;
+	const day = watch('day')?.value;
+	const month = watch('month')?.value;
+	const year = watch('year')?.value;
 
-	const dayOptions = getDaysOptions(month, year);
+	// const month = watch('month');
+	// const year = watch('year');
+	// const day = watch('day');
+
+	console.log(day, month, year);
+
+	const newBirthday = `${day}-${month}-${year}`;
+	// const dayOptions = useMemo(() => {
+	// 	if (!month || !year) return [];
+	// 	return getDaysOptions(month, year);
+	// }, [month, year]);
+
+	const dayOptions = month && year ? getDaysOptions(month, year) : [];
 
 	// 🔄 Синхронизация дня при смене месяца / года
 	useEffect(() => {
-		if (day && month && year) {
-			const maxDay = getDaysInMonth(month as number, year as number);
+		if (!day || !month || !year) {
+			return;
+		}
 
-			if (day > maxDay) {
-				setValue('day', maxDay);
-			}
+		const maxDay = getDaysInMonth(month, year);
+
+		if (day > maxDay) {
+			setValue('day', { label: String(maxDay), value: maxDay });
 		}
 	}, [month, year]);
+	// useEffect(() => {
+	// 	if (day && month && year) {
+	// 		const maxDay = getDaysInMonth(month as number, year as number);
+
+	// 		if (day > maxDay) {
+	// 			setValue('day', maxDay);
+	// 		}
+	// 	}
+	// }, [month, year]);
 
 	const formItem = [
 		{
@@ -118,14 +159,6 @@ export function EditProfileForm() {
 				}
 			}
 		}
-		// {
-		// 	type: FormItemType.TEXTAREA,
-		// 	name: FormItemNames.MESSAGE,
-		// 	label: 'Напишите пару слов о себе',
-		// 	rules: {
-		// 		required: 'Заполните это поле'
-		// 	}
-		// }
 	];
 
 	const customStyles = (
@@ -198,12 +231,75 @@ export function EditProfileForm() {
 		})
 	});
 
-	const onSubmit: SubmitHandler<SupportForm> = data => {
+	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
+		setServerErrorMessage('');
 		console.log(data);
+
+		const newData = {
+			nickname: data.nickname,
+			first_name: 'Иван',
+			last_name: ' Иванов',
+			birthday: 0,
+			// birthday: newBirthday,
+			additional_information: data.message,
+			patronymic: 'Иванович',
+			email: 'user@example.com',
+			gender: 'male',
+			country: 'RU',
+			city_id: 2,
+			phone: '+79870118430'
+		};
+
+		console.log(newData);
+
+		try {
+			const { data, error } = await editProfile(newData);
+			console.log(data, error);
+
+			if (data) {
+				console.log('success', data);
+			} else {
+				console.log('error', error);
+				if (error?.data) {
+					console.log(error.data);
+					const serverErrors = error.data as Record<string, string[]>;
+					// ожидаем, что сервер вернёт объект вида { fieldName: [message1, message2] }
+
+					Object.entries(serverErrors).forEach(([field, messages]) => {
+						setError(field as keyof EditProfileForm, {
+							type: 'server',
+							message: messages.join(' ') // объединяем все ошибки для одного поля
+						});
+					});
+				} else {
+					setServerErrorMessage('Произошла непредвиденная ошибка');
+				}
+			}
+			// else if (error && error.status === 400) {
+			// 	console.log('error', error.data);
+			// } else if (error && error.status === 500) {
+			// 	console.log('error', response.error);
+			// 	setServerErrorMessage('Произошла непредвиденная ошибка');
+			// }
+
+			// const response = await editProfile(newData);
+			// console.log(response);
+
+			// if (response.data) {
+			// 	console.log('success', response.data);
+			// } else if (response.error && response.error.status === 400) {
+			// 	console.log('error', response.error.data);
+			// } else if (response.error && response.error.status === 500) {
+			// 	console.log('error', response.error);
+			// 	setServerErrorMessage('Произошла непредвиденная ошибка');
+			// }
+		} catch (e) {
+			console.log(e);
+		}
 	};
 
 	return (
-		<Form<SupportForm>
+		<Form<EditProfileForm>
 			methods={methods}
 			onSubmit={onSubmit}
 			className={styles.form}
@@ -222,7 +318,7 @@ export function EditProfileForm() {
 			))}
 			<Label name={'day'}>Введите дату своего рождения</Label>
 			<div className={styles.selectContainer}>
-				<SelectItem<SupportForm, DateOption>
+				<SelectItem<EditProfileForm, DateOption>
 					options={dayOptions}
 					name={'day'}
 					classNameParentSelectWrapper={styles.selectWrapper}
@@ -230,7 +326,7 @@ export function EditProfileForm() {
 					customStyles={customStyles}
 					width={80}
 				/>
-				<SelectItem<SupportForm, DateOption>
+				<SelectItem<EditProfileForm, DateOption>
 					options={getMonthsOptions()}
 					name={'month'}
 					classNameSelect={styles.selectMonth}
@@ -254,6 +350,7 @@ export function EditProfileForm() {
 				classNameParentInput={styles.formItem}
 				textareaHeight={'56px'}
 			/>
+			{serverErrorMessage && <p>{serverErrorMessage}</p>}
 			<Button btnType={ButtonType.SUBMIT}>Сохранить</Button>
 		</Form>
 	);

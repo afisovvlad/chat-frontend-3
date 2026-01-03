@@ -10,7 +10,8 @@ import { logoutFromInterceptor } from './services/logoutForInterceptor/logoutFor
 
 // Интерсептор 1: добавление accessToken в заголовок
 const baseQuery = fetchBaseQuery({
-	baseUrl: process.env.NEXT_PUBLIC_BASE_API as string
+	baseUrl: process.env.NEXT_PUBLIC_BASE_API as string,
+	credentials: 'include'
 });
 
 // Интерсептор 2: refresh при 401
