@@ -22,9 +22,6 @@ import { StylesConfig } from 'react-select';
 import styles from './EditProfileForm.module.scss';
 
 interface EditBirthdayForm {
-	// day: number;
-	// month: number;
-	// year: number;
 	day: DateOption | null;
 	month: DateOption | null;
 	year: DateOption | null;
@@ -49,9 +46,6 @@ export function EditProfileForm() {
 	const [editProfile] = useEditProfileMutation();
 	const methods = useForm<EditProfileForm>({
 		defaultValues: {
-			// day: 1',
-			// month: 1,
-			// year: 2026
 			day: { value: 1, label: '1' },
 			month: { value: 1, label: 'Январь' },
 			year: { value: 2026, label: '2026' }
@@ -62,41 +56,11 @@ export function EditProfileForm() {
 	const month = watch('month')?.value;
 	const year = watch('year')?.value;
 
-	// const month = watch('month');
-	// const year = watch('year');
-	// const day = watch('day');
-
-	console.log(day, month, year);
+	// console.log(day, month, year);
 
 	const newBirthday = `${day}-${month}-${year}`;
-	// const dayOptions = useMemo(() => {
-	// 	if (!month || !year) return [];
-	// 	return getDaysOptions(month, year);
-	// }, [month, year]);
 
 	const dayOptions = month && year ? getDaysOptions(month, year) : [];
-
-	// 🔄 Синхронизация дня при смене месяца / года
-	useEffect(() => {
-		if (!day || !month || !year) {
-			return;
-		}
-
-		const maxDay = getDaysInMonth(month, year);
-
-		if (day > maxDay) {
-			setValue('day', { label: String(maxDay), value: maxDay });
-		}
-	}, [month, year]);
-	// useEffect(() => {
-	// 	if (day && month && year) {
-	// 		const maxDay = getDaysInMonth(month as number, year as number);
-
-	// 		if (day > maxDay) {
-	// 			setValue('day', maxDay);
-	// 		}
-	// 	}
-	// }, [month, year]);
 
 	const formItem = [
 		{
@@ -231,6 +195,19 @@ export function EditProfileForm() {
 		})
 	});
 
+	// 🔄 Синхронизация дня при смене месяца / года
+	useEffect(() => {
+		if (!day || !month || !year) {
+			return;
+		}
+
+		const maxDay = getDaysInMonth(month, year);
+
+		if (day > maxDay) {
+			setValue('day', { label: String(maxDay), value: maxDay });
+		}
+	}, [month, year]);
+
 	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
 		setServerErrorMessage('');
 
@@ -248,8 +225,6 @@ export function EditProfileForm() {
 			city_id: 2,
 			phone: '+79870118530'
 		};
-
-		console.log(newData);
 
 		try {
 			const result = await editProfile(newData);
@@ -281,6 +256,7 @@ export function EditProfileForm() {
 			}
 		} catch (e) {
 			console.log(e);
+			setServerErrorMessage('Произошла непредвиденная ошибка');
 		}
 	};
 

@@ -36,8 +36,8 @@ export async function POST(request: Request) {
 
 	const result = await res.json();
 
-	console.log('res status', res.status);
-	console.log('result in edit profile', result);
+	// console.log('res status', res.status);
+	// console.log('result in edit profile', result);
 
 	return NextResponse.json(result, { status: res.status });
 }

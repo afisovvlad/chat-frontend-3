@@ -8,6 +8,7 @@ import {
 	ButtonTheme,
 	ButtonType
 } from '@/shared/ui/Button/model/type';
+import { Container, ContainerType } from '@/shared/ui/Container';
 import { Form } from '@/shared/ui/Form';
 import {
 	FormItemNames,
@@ -86,57 +87,61 @@ export function SupportForm() {
 	};
 
 	return (
-		<div className={styles.support}>
-			{isError ? (
-				<div className={styles.errorBlock}>
-					<Text
-						type={TextType.TEXT}
-						tag={TextTag.P}
-						fontSize={TextSize.L}
-						fontWeight={FontWeight.REGULAR}
-						textAlign={TextAlign.CENTER}
-						color={TextColor.ERROR}
-						className={styles.errorText}
-					>
-						При отправке произошла ошибка. Попробуйте позже
-					</Text>
+		<Container type={ContainerType.WRAPPER}>
+			<Container type={ContainerType.SIDEBAR}>
+				<div className={styles.support}>
+					{isError ? (
+						<div className={styles.errorBlock}>
+							<Text
+								type={TextType.TEXT}
+								tag={TextTag.P}
+								fontSize={TextSize.L}
+								fontWeight={FontWeight.REGULAR}
+								textAlign={TextAlign.CENTER}
+								color={TextColor.ERROR}
+								className={styles.errorText}
+							>
+								При отправке произошла ошибка. Попробуйте позже
+							</Text>
+						</div>
+					) : isSuccess ? (
+						<SuccessBlock marginTop='341px' />
+					) : (
+						<Form<SupportForm>
+							methods={methods}
+							onSubmit={onSubmit}
+							className={styles.form}
+						>
+							{formItem.map(item => (
+								<FormSettingsItem
+									key={item.name}
+									type={item.type}
+									name={item.name}
+									label={item.label}
+									placeholder={item.placeholder}
+									autoComplete={undefined}
+									rules={item.rules || undefined}
+									classNameParentInput={styles.formItem}
+								/>
+							))}
+							<Text className={styles.faqText}>
+								Ознакомьтесь со 
+								<Link href='/support/faq' className={styles.faqLink}>
+									списком известных проблем и их решениями.
+								</Link>
+							</Text>
+							<Button
+								btnType={ButtonType.SUBMIT}
+								disabled={disabled}
+								theme={ButtonTheme.BACKGROUND}
+								color={ButtonColor.PRIMARY}
+							>
+								{isLoading ? 'Отправка...' : 'Отправить'}
+							</Button>
+						</Form>
+					)}
 				</div>
-			) : isSuccess ? (
-				<SuccessBlock marginTop='341px' />
-			) : (
-				<Form<SupportForm>
-					methods={methods}
-					onSubmit={onSubmit}
-					className={styles.form}
-				>
-					{formItem.map(item => (
-						<FormSettingsItem
-							key={item.name}
-							type={item.type}
-							name={item.name}
-							label={item.label}
-							placeholder={item.placeholder}
-							autoComplete={undefined}
-							rules={item.rules || undefined}
-							classNameParentInput={styles.formItem}
-						/>
-					))}
-					<Text className={styles.faqText}>
-						Ознакомьтесь со 
-						<Link href='/support/faq' className={styles.faqLink}>
-							списком известных проблем и их решениями.
-						</Link>
-					</Text>
-					<Button
-						btnType={ButtonType.SUBMIT}
-						disabled={disabled}
-						theme={ButtonTheme.BACKGROUND}
-						color={ButtonColor.PRIMARY}
-					>
-						{isLoading ? 'Отправка...' : 'Отправить'}
-					</Button>
-				</Form>
-			)}
-		</div>
+			</Container>
+		</Container>
 	);
 }
