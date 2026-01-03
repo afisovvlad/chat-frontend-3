@@ -24,19 +24,19 @@ export const Navbar = () => {
 					<Link
 						key={item.id}
 						href={href}
-						className={classNames(cls.NavbarBtn, {
+						className={classNames(cls.navbarLink, {
 							[cls.active]: isActive
 						})}
-						aria-label={item.title}
+						aria-label={item.slug}
 					>
-						<Icon className={cls.NavbarIconDesktop} />
-						<IconMobile className={cls.NavbarIconMobile} />
+						<Icon className={cls.navbarIconDesktop} />
+						<IconMobile className={cls.navbarIconMobile} />
 						<Text
 							type={TextType.TEXT}
 							fontSize={TextSize.S}
 							className={cls.label}
 						>
-							{item.label}
+							{item.title}
 						</Text>
 					</Link>
 				);

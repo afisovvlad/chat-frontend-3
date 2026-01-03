@@ -1,31 +1,18 @@
 'use client';
-import { Container, ContainerType } from '@/shared/ui/Container';
 import {
 	Text,
+	TextType,
 	TextAlign,
 	TextColor,
-	TextSize,
-	TextType
+	TextSize
 } from '@/shared/ui/Text';
-import cls from './chats.module.scss';
-
-import { ChatsPage } from '@/pages/Chats';
-
+import { Container, ContainerType } from '@/shared/ui/Container';
 import Image from 'next/image';
+import cls from './chats.module.scss';
+import { ChatsPage } from '@/pages/Chats';
 import { useState } from 'react';
 
 const Chats = () => {
-	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const [isNewModalOpen, setNewIsModalOpen] = useState<boolean>(false);
-
-	const onClose = () => setIsModalOpen(false);
-	const NewModalClose = () => setNewIsModalOpen(false);
-
-	const onConfirm = () => {
-		setIsModalOpen(false);
-		setNewIsModalOpen(false);
-	};
-
 	return (
 		<Container type={ContainerType.WRAPPER}>
 			<Container type={ContainerType.SIDEBAR}>
