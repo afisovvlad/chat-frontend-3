@@ -9,6 +9,81 @@
 	gap: 4px;
 }
 
-.formItem {
-	border: 1px solid transparent;
+.selectDay,
+.selectMonth,
+.selectYear {
+	position: relative;
+	height: 56px;
+	justify-content: space-between;
+	padding: 12px 4px 12px 2px;
+	color: var(--color-black);
+	font-family: inherit;
+	font-weight: 400;
+	font-size: 18px;
+	line-height: 130%;
+	letter-spacing: 0.4px;
+	border-radius: 8px;
+	border: solid 1px var(--settings-border-color);
+	border-width: 1px;
+	z-index: 1;
+	outline: none;
+	box-shadow: none;
+
+	@media screen and (max-width: 768px) {
+		font-size: 15px;
+		padding: 6px 0;
+	}
+}
+
+.selectDay {
+	width: 80px;
+
+	@media screen and (max-width: 768px) {
+		width: 67px;
+	}
+}
+
+.selectMonth {
+	width: 133px;
+
+	@media screen and (max-width: 768px) {
+		min-width: 120px;
+		max-width: 137px;
+	}
+}
+
+.selectYear {
+	width: 107px;
+
+	@media screen and (max-width: 768px) {
+		width: fit-content;
+	}
+}
+
+.selectDay:hover,
+.selectMonth:hover,
+.selectYear:hover {
+	border-color: var(--color-primary);
+}
+
+.selectDay:focus,
+.selectMonth:focus,
+.selectYear:focus {
+	border-color: transparent;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+	outline: 2px solid var(--color-primary);
+}
+
+.selectMenu {
+	min-height: 140;
+	max-height: 140;
+	margin-top: 0;
+	margin-bottom: 4px;
+	padding: 4px 6px 4px 10px;
+	border: 1px solid var(--color-primary);
+	border-top: none;
+	border-radius: 0 0 8px 8px;
+	box-shadow: none;
+	overflow: hidden;
 }

@@ -1,4 +1,36 @@
 .editProfile {
 	display: block; // удалит потом
 	background-color: var(--color-violet-40);
+
+	@media screen and (max-width: 768px) {
+		background-color: var(--color-white);
+	}
+}
+
+.title {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	margin-top: 11px;
+	margin-bottom: 23px;
+	line-height: 120%;
+	letter-spacing: 0.4px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.link {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 44px;
+	height: 44px;
+	margin-right: 24px;
+}
+
+.back {
+	width: 7.5px;
+	height: 12px;
+	color: var(--color-gray-500);
+	cursor: pointer;
 }

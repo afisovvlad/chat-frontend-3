@@ -9,43 +9,89 @@ import {
 	RegisterOptions,
 	useFormContext
 } from 'react-hook-form';
-import Select, { StylesConfig } from 'react-select';
+import Select, { GroupBase, StylesConfig } from 'react-select';
 import { CustomDropdownIndicator, CustomSelectOption } from '../..';
 import { SelectOption } from '../model/selectTypes';
 import styles from './styles.module.scss';
 
+// declare module 'react-select' {
+// 	interface Props<
+// 		Option,
+// 		IsMulti extends boolean = false,
+// 		Group extends GroupBase<Option> = GroupBase<Option>
+// 	> {
+// 		hasError?: boolean;
+// 	}
+// }
+
 interface SelectProps<
 	TFormValues extends FieldValues,
-	TOption extends SelectOption<unknown>
+	TOption extends SelectOption<unknown>,
+	IsMulti extends boolean = false,
+	Group extends GroupBase<TOption> = GroupBase<TOption>
 > {
 	options: TOption[];
 	name: Path<TFormValues>;
 	classNameParentSelectWrapper?: string;
-	classNameSelect?: string;
+	classNameParentSelectControl?: string;
+	classNameParentSelectMenu?: string;
+	classNameParentSelectMenuList?: string;
+	classNameParentSelectOption?: string;
+	classNameParentSelectSingleValue?: string;
+	classNameParentSelectIndicatorSeparator?: string;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>> | undefined;
 	disabled?: boolean;
 	icon?: JSX.Element;
-	customStyles?:
-		| StylesConfig<TOption>
-		| ((width?: number | string) => StylesConfig<TOption>);
+	customStyles?: StylesConfig<TOption>;
 	menu?: string;
-	width?: number | string;
 }
+
+const emptyStyles = <TOption extends SelectOption<unknown>>(): StylesConfig<
+	TOption,
+	false
+> => {
+	return {
+		control: base => ({
+			...base,
+			all: 'unset'
+		}),
+		menu: base => ({
+			...base,
+			all: 'unset'
+		}),
+		menuList: base => ({
+			...base,
+			all: 'unset'
+		}),
+		option: base => ({
+			...base,
+			all: 'unset'
+		})
+	};
+};
 
 export function SelectItem<
 	TFormValues extends FieldValues,
-	TOption extends SelectOption<unknown>
+	TOption extends SelectOption<unknown>,
+	IsMulti extends boolean = false,
+	Group extends GroupBase<TOption> = GroupBase<TOption>
 >({
 	options,
 	name,
 	classNameParentSelectWrapper,
+	classNameParentSelectControl,
+	classNameParentSelectMenu,
+	classNameParentSelectMenuList,
+	classNameParentSelectOption,
+	classNameParentSelectSingleValue,
+	classNameParentSelectIndicatorSeparator,
 	customStyles,
 	disabled = false,
-	width,
+	// width,
 	rules = {
-		required: 'Заполните это поле'
+		required: 'Заполните поля'
 	}
-}: SelectProps<TFormValues, TOption>) {
+}: SelectProps<TFormValues, TOption, IsMulti, Group>) {
 	const {
 		formState: { errors }
 	} = useFormContext<TFormValues>();
@@ -64,26 +110,44 @@ export function SelectItem<
 				render={(
 					{ field } // field содержит onChange, onBlur, value, name, ref
 				) => (
-					<Select<TOption>
+					<Select<TOption, IsMulti, Group>
 						components={{
 							Option: CustomSelectOption,
 							DropdownIndicator: CustomDropdownIndicator
 						}}
 						options={options}
 						name={field.name} // Передаем имя из field
+						placeholder={options[0].label}
 						// Значение и обработчик изменения связываются с react-hook-form
 						value={field.value}
+						defaultValue={options[0]}
 						onChange={selectedOption => field.onChange(selectedOption)}
 						onBlur={field.onBlur}
-						styles={
-							customStyles
-								? typeof customStyles === 'function'
-									? customStyles(width)
-									: customStyles
-								: {}
-						}
+						// hasError={!!isError}
+						styles={customStyles ?? emptyStyles<TOption>()}
 						classNames={{
-							menuList: () => styles.menuList
+							control: state =>
+								clsx(
+									styles.control,
+									`${styles.control} ${classNameParentSelectControl || ''}`,
+									{
+										[styles.hasError]: (
+											state.selectProps as typeof state.selectProps & {
+												hasError?: boolean;
+											}
+										).hasError
+									}
+								),
+
+							menu: () => `${styles.menu} ${classNameParentSelectMenu || ''}`,
+							menuList: () =>
+								`${styles.menuList} ${classNameParentSelectMenuList || ''}`,
+							option: () =>
+								`${styles.option} ${classNameParentSelectOption || ''}`,
+							singleValue: () =>
+								`${styles.singleValue} ${classNameParentSelectSingleValue || ''}`,
+							indicatorSeparator: () =>
+								`${styles.indicatorSeparator} ${classNameParentSelectIndicatorSeparator || ''}`
 						}}
 						isDisabled={disabled}
 						instanceId={name}

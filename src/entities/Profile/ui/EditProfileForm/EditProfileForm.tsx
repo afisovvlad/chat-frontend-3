@@ -56,8 +56,6 @@ export function EditProfileForm() {
 	const month = watch('month')?.value;
 	const year = watch('year')?.value;
 
-	// console.log(day, month, year);
-
 	const newBirthday = `${day}-${month}-${year}`;
 
 	const dayOptions = month && year ? getDaysOptions(month, year) : [];
@@ -125,22 +123,19 @@ export function EditProfileForm() {
 		}
 	];
 
-	const customStyles = (
-		width?: number | string
-	): StylesConfig<DateOption, boolean> => ({
+	const customStyles: StylesConfig<DateOption, boolean> = {
 		control: (base, state) => ({
 			...base,
-			position: 'relative',
-			width,
-			minHeight: 56,
-			fontFamily: 'inherit',
-			fontSize: '18px',
-			lineHeight: '130%',
-			letterSpacing: '0.4px',
+			// position: 'relative',
+			// minHeight: 56,
+			// fontFamily: 'inherit',
+			// fontSize: '18px',
+			// lineHeight: '130%',
+			// letterSpacing: '0.4px',
 			borderRadius: state.menuIsOpen ? '8px 8px 0 0' : '8px',
 			border: state.menuIsOpen
 				? '1px solid var(--color-primary)'
-				: '1px solid transparent',
+				: '1px solid var(--settings-border-color)',
 			outline: 'none',
 			boxShadow: 'none',
 
@@ -151,14 +146,14 @@ export function EditProfileForm() {
 
 		menu: base => ({
 			...base,
-			minHeight: 140,
-			maxHeight: 140,
-			marginTop: 0,
-			marginBottom: '4px',
-			padding: '4px 6px 4px 10px',
-			border: '1px solid var(--color-primary)',
-			borderTop: 'none ',
-			borderRadius: '0 0 8px 8px',
+			// minHeight: 140,
+			// maxHeight: 140,
+			// marginTop: 0,
+			// marginBottom: '4px',
+			// padding: '4px 6px 4px 10px',
+			// border: '1px solid var(--color-primary)',
+			// borderTop: 'none ',
+			// borderRadius: '0 0 8px 8px',
 			boxShadow: 'none',
 			overflow: 'hidden'
 		}),
@@ -172,10 +167,6 @@ export function EditProfileForm() {
 		option: (base, state) => ({
 			...base,
 			padding: '0 0 4px 0',
-			fontFamily: 'inherit',
-			fontSize: '18px',
-			lineHeight: '130%',
-			letterSpacing: '0.4px',
 			backgroundColor: state.isSelected
 				? 'transparent'
 				: state.isFocused
@@ -183,17 +174,17 @@ export function EditProfileForm() {
 					: 'transparent',
 			color: 'var(--color-black)',
 			cursor: 'pointer'
-		}),
-
-		singleValue: base => ({
-			...base,
-			color: '#000'
-		}),
-
-		indicatorSeparator: () => ({
-			display: 'none'
 		})
-	});
+
+		// singleValue: base => ({
+		// 	...base,
+		// 	color: '#000'
+		// }),
+
+		// indicatorSeparator: () => ({
+		// 	display: 'none'
+		// })
+	};
 
 	// 🔄 Синхронизация дня при смене месяца / года
 	useEffect(() => {
@@ -284,23 +275,44 @@ export function EditProfileForm() {
 					options={dayOptions}
 					name={'day'}
 					classNameParentSelectWrapper={styles.selectWrapper}
-					classNameSelect={styles.selectDay}
+					classNameParentSelectControl={styles.selectDay}
+					classNameParentSelectMenu={styles.selectMenu}
+					classNameParentSelectMenuList={styles.selectMenuList}
+					classNameParentSelectOption={styles.selectOption}
+					classNameParentSelectSingleValue={styles.selectSingleValue}
+					classNameParentSelectIndicatorSeparator={
+						styles.selectIndicatorSeparator
+					}
 					customStyles={customStyles}
-					width={80}
+					// width={80}
 				/>
 				<SelectItem<EditProfileForm, DateOption>
 					options={getMonthsOptions()}
 					name={'month'}
-					classNameSelect={styles.selectMonth}
+					classNameParentSelectControl={styles.selectMonth}
+					classNameParentSelectMenu={styles.selectMenu}
+					classNameParentSelectMenuList={styles.selectMenuList}
+					classNameParentSelectOption={styles.selectOption}
+					classNameParentSelectSingleValue={styles.selectSingleValue}
+					classNameParentSelectIndicatorSeparator={
+						styles.selectIndicatorSeparator
+					}
 					customStyles={customStyles}
-					width={133}
+					// width={133}
 				/>
 				<SelectItem
 					options={getYearsOptions()}
 					name={'year'}
-					classNameSelect={styles.selectYear}
+					classNameParentSelectControl={styles.selectYear}
+					classNameParentSelectMenu={styles.selectMenu}
+					classNameParentSelectMenuList={styles.selectMenuList}
+					classNameParentSelectOption={styles.selectOption}
+					classNameParentSelectSingleValue={styles.selectSingleValue}
+					classNameParentSelectIndicatorSeparator={
+						styles.selectIndicatorSeparator
+					}
 					customStyles={customStyles}
-					width={107}
+					// width={107}
 				/>
 			</div>
 			<FormSettingsItem

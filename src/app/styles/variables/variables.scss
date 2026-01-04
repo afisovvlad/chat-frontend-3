@@ -54,6 +54,7 @@
 	--background-primary: var(--color-violet-50);
 	--foreground-primary: var(--color-black); // цвет заголовков
 	--foreground-secondary: var(--color-gray-500); // цвет текста
+	--settings-border-color: transparent; // цвет border в формах settings
 
 	// fonts-family
 	--primary-text-font: roboto;
@@ -79,4 +80,8 @@
 	--font-weight-semi-bold: 600;
 	--font-weight-bold: 700;
 	--font-weight-extra-bold: 800;
+
+	@media screen and (max-width: 768px) {
+		--settings-border-color: var(--color-gray-500);
+	}
 }

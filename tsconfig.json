@@ -31,10 +31,11 @@
 			],
 			"@store": [
 				"./src/app/providers/StoreProvider/config/store"
-			],		
+			],
 		}
 	},
 	"include": [
+		"src",
 		"next-env.d.ts",
 		"**/*.ts",
 		"**/*.tsx",

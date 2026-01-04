@@ -23,7 +23,8 @@
 .input,
 .textarea {
 	width: 100%;
-	max-width: 328px;
+
+	// max-width: 328px;
 	padding: 16px 12px;
 	font-size: 16px;
 	color: var(--foreground-primary);
@@ -38,6 +39,10 @@
 	&:focus {
 		border-color: transparent;
 		outline: 1px solid var(--color-primary);
+	}
+
+	@media screen and (max-width: 768px) {
+		border-color: var(--color-gray-500);
 	}
 }
 

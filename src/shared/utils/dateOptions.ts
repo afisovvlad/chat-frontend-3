@@ -36,6 +36,7 @@ export const days = [
 
 export const getMonthsOptions = (): SelectOption<number>[] => [
 	{ value: 1, label: 'Январь' },
+	{ value: 1, label: 'Январь' },
 	{ value: 2, label: 'Февраль' },
 	{ value: 3, label: 'Март' },
 	{ value: 4, label: 'Апрель' },

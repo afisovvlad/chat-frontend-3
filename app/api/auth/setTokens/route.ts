@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
 		path: '/',
 		httpOnly: true,
 		secure: true,
-		maxAge: 10 * 60 // 10 минут
+		maxAge: 120 * 60 // 120 минут
+		// maxAge: 10 * 60 // 10 минут
 	});
 
 	// Устанавливаем Refresh Token
