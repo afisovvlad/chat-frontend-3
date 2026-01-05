@@ -1,4 +1,3 @@
-import styles from './SuccessBlock.module.scss';
 import {
 	FontWeight,
 	Text,
@@ -10,11 +9,14 @@ import {
 	TitleTag
 } from '@/shared/ui/Text';
 import { Success } from '@icons/index';
+import { SuccessBlockProps } from '..';
+import styles from './SuccessBlock.module.scss';
 
-export function SuccessBlock({ marginTop }: { marginTop?: string }) {
+export function SuccessBlock({ marginTop, title, text }: SuccessBlockProps) {
 	return (
 		<div className={styles.successBlock} style={{ marginTop: marginTop }}>
 			<Success width={66.7} height={66.7} className={styles.successIcon} />
+
 			<Text
 				type={TextType.TITLE}
 				tag={TitleTag.H2}
@@ -23,20 +25,22 @@ export function SuccessBlock({ marginTop }: { marginTop?: string }) {
 				textAlign={TextAlign.CENTER}
 				className={styles.successTitle}
 			>
-				Обращение отправлено!
+				{title}
 			</Text>
-			<Text
-				type={TextType.TEXT}
-				tag={TextTag.P}
-				fontSize={TextSize.L}
-				fontWeight={FontWeight.REGULAR}
-				textAlign={TextAlign.CENTER}
-				color={TextColor.BLACK}
-				className={styles.successText}
-			>
-				В ближайшее время вы получите ответ на электронную почту, указанную
-				в обращении
-			</Text>
+
+			{text && (
+				<Text
+					type={TextType.TEXT}
+					tag={TextTag.P}
+					fontSize={TextSize.L}
+					fontWeight={FontWeight.REGULAR}
+					textAlign={TextAlign.CENTER}
+					color={TextColor.BLACK}
+					className={styles.successText}
+				>
+					{text}
+				</Text>
+			)}
 		</div>
 	);
 }

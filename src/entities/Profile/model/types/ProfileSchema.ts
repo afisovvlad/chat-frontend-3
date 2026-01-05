@@ -11,3 +11,7 @@ export interface ProfileSchema {
 	city_id?: number;
 	phone?: string;
 }
+
+export interface CreateCustomStylesOptions {
+	hasError?: boolean;
+}

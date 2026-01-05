@@ -30,7 +30,7 @@ export function EditProfile() {
 						</Link>
 						Редактирование профиля
 					</Text>
-					<p style={{ marginBottom: '20px' }}>Выбрать фотографию</p>
+
 					<EditProfileForm />
 				</section>
 			</Container>

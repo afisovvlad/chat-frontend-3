@@ -105,7 +105,13 @@ export function SupportForm() {
 							</Text>
 						</div>
 					) : isSuccess ? (
-						<SuccessBlock marginTop='341px' />
+						<SuccessBlock
+							marginTop='341px'
+							title={' Обращение отправлено!'}
+							text={
+								'В ближайшее время Вы получите ответ на электронную почту, указанную в обращении'
+							}
+						/>
 					) : (
 						<Form<SupportForm>
 							methods={methods}

@@ -11,6 +11,8 @@ import {
 	FormItemNames,
 	FormItemType
 } from '@/shared/ui/Form/FormItems/model/types';
+import { Loader } from '@/shared/ui/Loader';
+import { SuccessBlock } from '@/shared/ui/SuccessBlock';
 import {
 	getDaysInMonth,
 	getDaysOptions,
@@ -20,8 +22,8 @@ import {
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StylesConfig } from 'react-select';
+import { CreateCustomStylesOptions } from '../..';
 import styles from './EditProfileForm.module.scss';
-import { Loader } from '@/shared/ui/Loader';
 
 interface EditBirthdayForm {
 	day: DateOption | undefined;
@@ -43,10 +45,14 @@ interface EditProfileForm extends EditBirthdayForm {
 	// phone: string;
 }
 
+// interface CreateCustomStylesOptions {
+// 	hasError?: boolean;
+// }
+
 export function EditProfileForm() {
+	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverErrorMessage, setServerErrorMessage] = useState('');
-	const [editProfile, { isLoading, isError, isSuccess, error }] =
-		useEditProfileMutation();
+	const [editProfile, { isLoading }] = useEditProfileMutation();
 	const methods = useForm<EditProfileForm>({
 		defaultValues: {
 			// day: { value: '1', label: '1' },
@@ -126,72 +132,76 @@ export function EditProfileForm() {
 	];
 
 	const createCustomStyles = (
-		hasError?: boolean
-	): StylesConfig<DateOption, boolean> => ({
-		control: (base, state) => ({
-			...base,
-			position: 'relative',
-			minHeight: 56,
-			fontFamily: 'inherit',
-			lineHeight: '130%',
-			letterSpacing: '0.4px',
-			borderRadius: state.menuIsOpen ? '8px 8px 0 0' : '8px',
-			border: state.menuIsOpen
-				? '1px solid var(--color-primary)'
-				: `1px solid ${hasError ? 'transparent' : 'var(--settings-border-color)'}`,
-			outline: hasError ? '2px solid var(--color-red)' : 'none',
-			boxShadow: 'none',
+		options: CreateCustomStylesOptions = {}
+	): StylesConfig<DateOption, boolean> => {
+		const { hasError } = options;
 
-			'&:hover': {
-				borderColor: hasError ? 'var(--color-red)' : 'var(--color-primary)'
-			},
+		return {
+			control: (base, state) => ({
+				...base,
+				position: 'relative',
+				minHeight: 56,
+				fontFamily: 'inherit',
+				lineHeight: '130%',
+				letterSpacing: '0.4px',
+				borderRadius: state.menuIsOpen ? '8px 8px 0 0' : '8px',
+				border: state.menuIsOpen
+					? '1px solid var(--color-primary)'
+					: `1px solid ${hasError ? 'transparent' : 'var(--settings-border-color)'}`,
+				outline: hasError ? '2px solid var(--color-red)' : 'none',
+				boxShadow: 'none',
 
-			'&:focus': {
-				borderColor: 'var(--color-primary)'
-			}
-		}),
+				'&:hover': {
+					borderColor: hasError ? 'var(--color-red)' : 'var(--color-primary)'
+				},
 
-		menu: base => ({
-			...base,
-			minHeight: 140,
-			maxHeight: 140,
-			marginTop: 0,
-			marginBottom: '4px',
-			padding: '4px 6px 4px 10px',
-			border: '1px solid var(--color-primary)',
-			borderTop: 'none ',
-			borderRadius: '0 0 8px 8px',
-			boxShadow: 'none',
-			overflow: 'hidden'
-		}),
+				'&:focus': {
+					borderColor: 'var(--color-primary)'
+				}
+			}),
 
-		menuList: base => ({
-			...base,
-			maxHeight: 140,
-			overflowY: 'auto'
-		}),
+			menu: base => ({
+				...base,
+				minHeight: 140,
+				maxHeight: 140,
+				marginTop: 0,
+				marginBottom: '4px',
+				padding: '4px 6px 4px 10px',
+				border: '1px solid var(--color-primary)',
+				borderTop: 'none ',
+				borderRadius: '0 0 8px 8px',
+				boxShadow: 'none',
+				overflow: 'hidden'
+			}),
 
-		option: (base, state) => ({
-			...base,
-			padding: '0 0 4px 0',
-			backgroundColor: state.isSelected
-				? 'transparent'
-				: state.isFocused
+			menuList: base => ({
+				...base,
+				maxHeight: 140,
+				overflowY: 'auto'
+			}),
+
+			option: (base, state) => ({
+				...base,
+				padding: '0 0 4px 0',
+				backgroundColor: state.isSelected
 					? 'transparent'
-					: 'transparent',
-			color: 'var(--color-black)',
-			cursor: 'pointer'
-		}),
+					: state.isFocused
+						? 'transparent'
+						: 'transparent',
+				color: 'var(--color-black)',
+				cursor: 'pointer'
+			}),
 
-		// singleValue: base => ({
-		// 	...base,
-		// 	color: '#000'
-		// }),
+			// singleValue: base => ({
+			// 	...base,
+			// 	color: '#000'
+			// }),
 
-		indicatorSeparator: () => ({
-			display: 'none'
-		})
-	});
+			indicatorSeparator: () => ({
+				display: 'none'
+			})
+		};
+	};
 
 	// 🔄 Синхронизация дня при смене месяца / года
 	useEffect(() => {
@@ -221,7 +231,7 @@ export function EditProfileForm() {
 			gender: 'male',
 			country: 'RU',
 			city_id: 2,
-			phone: '+79870118530'
+			phone: '+79870228530'
 		};
 
 		try {
@@ -230,6 +240,7 @@ export function EditProfileForm() {
 
 			if ('data' in result) {
 				console.log('success', data);
+				setIsSuccess(true);
 			} else {
 				const error = result.error;
 				console.log('error', error);
@@ -258,12 +269,19 @@ export function EditProfileForm() {
 		}
 	};
 
+	if (isSuccess) {
+		return (
+			<SuccessBlock marginTop='100px' title={' Ваш профиль успешно изменен'} />
+		);
+	}
+
 	return (
 		<Form<EditProfileForm>
 			methods={methods}
 			onSubmit={onSubmit}
 			className={styles.form}
 		>
+			<p style={{ marginBottom: '30px' }}>Выбрать фотографию</p>
 			{formItem.map(item => (
 				<FormSettingsItem
 					key={item.name}
@@ -292,7 +310,7 @@ export function EditProfileForm() {
 					classNameParentSelectIndicatorSeparator={
 						styles.selectIndicatorSeparator
 					}
-					customStyles={createCustomStyles}
+					createCustomStyles={createCustomStyles}
 					ariaLabel='Выбор дня месяца'
 				/>
 				<SelectItem<EditProfileForm, DateOption>
@@ -306,7 +324,7 @@ export function EditProfileForm() {
 					classNameParentSelectIndicatorSeparator={
 						styles.selectIndicatorSeparator
 					}
-					customStyles={createCustomStyles}
+					createCustomStyles={createCustomStyles}
 					ariaLabel='Выбор месяца'
 				/>
 				<SelectItem
@@ -320,7 +338,7 @@ export function EditProfileForm() {
 					classNameParentSelectIndicatorSeparator={
 						styles.selectIndicatorSeparator
 					}
-					customStyles={createCustomStyles}
+					createCustomStyles={createCustomStyles}
 					ariaLabel='Выбор года'
 				/>
 			</div>

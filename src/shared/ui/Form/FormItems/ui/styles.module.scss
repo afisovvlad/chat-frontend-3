@@ -89,15 +89,6 @@
 	height: 100px;
 }
 
-.control,
-.menu {
-	font-size: 18px;
-
-	@media screen and (max-width: 768px) {
-		font-size: 15px;
-	}
-}
-
 .menuList::-webkit-scrollbar {
 	width: 6px;
 }
