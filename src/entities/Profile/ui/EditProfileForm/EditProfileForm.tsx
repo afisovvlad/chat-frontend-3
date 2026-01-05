@@ -4,7 +4,7 @@ import { FormSettingsItem } from '@/entities/FormSettingsItem';
 import { useEditProfileMutation } from '@/features/profile/edit/api/editProfile.api';
 import { Button, ButtonType } from '@/shared/ui/Button';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
-import { Form, Label, SelectItem } from '@/shared/ui/Form';
+import { Form, SelectItem } from '@/shared/ui/Form';
 import { DateOption } from '@/shared/ui/Form/FormItems/model/selectTypes';
 import {
 	FormItemAutocomplete,
@@ -19,6 +19,7 @@ import {
 	getMonthsOptions,
 	getYearsOptions
 } from '@/shared/utils/dateOptions';
+import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StylesConfig } from 'react-select';
@@ -60,10 +61,18 @@ export function EditProfileForm() {
 			// year: { value: '2026', label: '2026' }
 		}
 	});
-	const { watch, setValue, setError } = methods;
+	const { watch, setValue, setError, formState } = methods;
+	// const [day, month, year] = useWatch({
+	// 	control,
+	// 	name: ['day', 'month', 'year']
+	// });
+
+	// const hasError = !day || !month || !year;
+
 	const day = watch('day')?.value;
 	const month = watch('month')?.value;
 	const year = watch('year')?.value;
+	// console.log(day, month, year);
 
 	const newBirthday = `${day}-${month}-${year}`;
 	const dayOptions = getDaysOptions(month, year);
@@ -216,6 +225,8 @@ export function EditProfileForm() {
 		}
 	}, [month, year, setValue]);
 
+	const hasError = formState.isSubmitted && (!day || !month || !year);
+
 	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
 		setServerErrorMessage('');
 
@@ -231,7 +242,7 @@ export function EditProfileForm() {
 			gender: 'male',
 			country: 'RU',
 			city_id: 2,
-			phone: '+79870228530'
+			phone: '+79870328530'
 		};
 
 		try {
@@ -294,54 +305,63 @@ export function EditProfileForm() {
 					classNameParentInput={styles.formItem}
 				/>
 			))}
-			<Label name={'day' && 'month' && 'year'}>
-				Введите дату своего рождения
-			</Label>
-			<div className={styles.selectContainer}>
-				<SelectItem<EditProfileForm, DateOption>
-					options={dayOptions}
-					name={'day'}
-					classNameParentSelectWrapper={styles.selectWrapper}
-					classNameParentSelectControl={styles.selectDay}
-					classNameParentSelectMenu={styles.selectMenu}
-					classNameParentSelectMenuList={styles.selectMenuList}
-					classNameParentSelectOption={styles.selectOption}
-					classNameParentSelectSingleValue={styles.selectSingleValue}
-					classNameParentSelectIndicatorSeparator={
-						styles.selectIndicatorSeparator
-					}
-					createCustomStyles={createCustomStyles}
-					ariaLabel='Выбор дня месяца'
-				/>
-				<SelectItem<EditProfileForm, DateOption>
-					options={getMonthsOptions()}
-					name={'month'}
-					classNameParentSelectControl={styles.selectMonth}
-					classNameParentSelectMenu={styles.selectMenu}
-					classNameParentSelectMenuList={styles.selectMenuList}
-					classNameParentSelectOption={styles.selectOption}
-					classNameParentSelectSingleValue={styles.selectSingleValue}
-					classNameParentSelectIndicatorSeparator={
-						styles.selectIndicatorSeparator
-					}
-					createCustomStyles={createCustomStyles}
-					ariaLabel='Выбор месяца'
-				/>
-				<SelectItem
-					options={getYearsOptions()}
-					name={'year'}
-					classNameParentSelectControl={styles.selectYear}
-					classNameParentSelectMenu={styles.selectMenu}
-					classNameParentSelectMenuList={styles.selectMenuList}
-					classNameParentSelectOption={styles.selectOption}
-					classNameParentSelectSingleValue={styles.selectSingleValue}
-					classNameParentSelectIndicatorSeparator={
-						styles.selectIndicatorSeparator
-					}
-					createCustomStyles={createCustomStyles}
-					ariaLabel='Выбор года'
-				/>
-			</div>
+
+			<fieldset>
+				{hasError ? (
+					<legend className={clsx(styles.birthday, styles.birthdayError)}>
+						Пожалуйста, заполните дату рождения
+					</legend>
+				) : (
+					<legend className={styles.birthday}>
+						Введите дату своего рождения
+					</legend>
+				)}
+				<div className={styles.selectContainer}>
+					<SelectItem<EditProfileForm, DateOption>
+						options={dayOptions}
+						name={'day'}
+						classNameParentSelectWrapper={styles.selectWrapper}
+						classNameParentSelectControl={styles.selectDay}
+						classNameParentSelectMenu={styles.selectMenu}
+						classNameParentSelectMenuList={styles.selectMenuList}
+						classNameParentSelectOption={styles.selectOption}
+						classNameParentSelectSingleValue={styles.selectSingleValue}
+						classNameParentSelectIndicatorSeparator={
+							styles.selectIndicatorSeparator
+						}
+						createCustomStyles={createCustomStyles}
+						ariaLabel='Выбор дня месяца'
+					/>
+					<SelectItem<EditProfileForm, DateOption>
+						options={getMonthsOptions()}
+						name={'month'}
+						classNameParentSelectControl={styles.selectMonth}
+						classNameParentSelectMenu={styles.selectMenu}
+						classNameParentSelectMenuList={styles.selectMenuList}
+						classNameParentSelectOption={styles.selectOption}
+						classNameParentSelectSingleValue={styles.selectSingleValue}
+						classNameParentSelectIndicatorSeparator={
+							styles.selectIndicatorSeparator
+						}
+						createCustomStyles={createCustomStyles}
+						ariaLabel='Выбор месяца'
+					/>
+					<SelectItem
+						options={getYearsOptions()}
+						name={'year'}
+						classNameParentSelectControl={styles.selectYear}
+						classNameParentSelectMenu={styles.selectMenu}
+						classNameParentSelectMenuList={styles.selectMenuList}
+						classNameParentSelectOption={styles.selectOption}
+						classNameParentSelectSingleValue={styles.selectSingleValue}
+						classNameParentSelectIndicatorSeparator={
+							styles.selectIndicatorSeparator
+						}
+						createCustomStyles={createCustomStyles}
+						ariaLabel='Выбор года'
+					/>
+				</div>
+			</fieldset>
 			<FormSettingsItem
 				key={FormItemNames.MESSAGE}
 				type={FormItemType.TEXTAREA}

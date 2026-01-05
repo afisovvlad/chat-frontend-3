@@ -23,6 +23,7 @@ interface SelectProps<
 > {
 	options: TOption[];
 	name: Path<TFormValues>;
+	classNameSelect?: string;
 	classNameParentSelectWrapper?: string;
 	classNameParentSelectControl?: string;
 	classNameParentSelectMenu?: string;
@@ -48,6 +49,7 @@ export function SelectItem<
 >({
 	options,
 	name,
+	classNameSelect,
 	classNameParentSelectWrapper,
 	classNameParentSelectControl,
 	classNameParentSelectMenu,
@@ -90,11 +92,16 @@ export function SelectItem<
 						}}
 						classNames={{
 							control: state =>
-								clsx(styles.control, classNameParentSelectControl, {
-									[styles.hasError]: (
-										state.selectProps as { hasError?: boolean }
-									).hasError
-								}),
+								clsx(
+									styles.control,
+									classNameSelect,
+									classNameParentSelectControl,
+									{
+										[styles.hasError]: (
+											state.selectProps as { hasError?: boolean }
+										).hasError
+									}
+								),
 							menu: () => clsx(styles.menu, classNameParentSelectMenu),
 							menuList: () =>
 								clsx(styles.menuList, classNameParentSelectMenuList),

@@ -9,6 +9,22 @@
 	gap: 4px;
 }
 
+.birthday {
+	margin-bottom: 4px;
+	color: var(--foreground-secondary);
+	font-family: inherit;
+	font-weight: inherit;
+	font-size: var(--font-size-14);
+	line-height: 120%;
+	letter-spacing: 1%;
+	vertical-align: middle;
+	background-color: transparent;
+}
+
+.birthdayError {
+	color: var(--color-red);
+}
+
 .selectDay,
 .selectMonth,
 .selectYear {

@@ -67,7 +67,6 @@ export const getDaysOptions = (
 	year?: string
 ): SelectOption<string>[] => {
 	if (!month || !year) {
-		console.log('!month || !year', !month || !year);
 		return days;
 	}
 

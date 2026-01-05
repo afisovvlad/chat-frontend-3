@@ -59,10 +59,6 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 	const errorMessage = errors?.[name]?.message as string | undefined;
 	const isError = Boolean(errorMessage);
 	const value = watch(name);
-	// console.log(errorMessage);
-	// console.log(isError);
-
-	// console.log(value);
 
 	useEffect(() => {
 		if (onValueChange) {
