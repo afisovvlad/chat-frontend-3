@@ -3,6 +3,7 @@
 import { FormSettingsItem } from '@/entities/FormSettingsItem';
 import { useEditProfileMutation } from '@/features/profile/edit/api/editProfile.api';
 import { Button, ButtonType } from '@/shared/ui/Button';
+import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form, Label, SelectItem } from '@/shared/ui/Form';
 import { DateOption } from '@/shared/ui/Form/FormItems/model/selectTypes';
 import {
@@ -20,11 +21,12 @@ import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StylesConfig } from 'react-select';
 import styles from './EditProfileForm.module.scss';
+import { Loader } from '@/shared/ui/Loader';
 
 interface EditBirthdayForm {
-	day: DateOption | null;
-	month: DateOption | null;
-	year: DateOption | null;
+	day: DateOption | undefined;
+	month: DateOption | undefined;
+	year: DateOption | undefined;
 }
 
 interface EditProfileForm extends EditBirthdayForm {
@@ -43,12 +45,13 @@ interface EditProfileForm extends EditBirthdayForm {
 
 export function EditProfileForm() {
 	const [serverErrorMessage, setServerErrorMessage] = useState('');
-	const [editProfile] = useEditProfileMutation();
+	const [editProfile, { isLoading, isError, isSuccess, error }] =
+		useEditProfileMutation();
 	const methods = useForm<EditProfileForm>({
 		defaultValues: {
-			day: { value: 1, label: '1' },
-			month: { value: 1, label: 'Январь' },
-			year: { value: 2026, label: '2026' }
+			// day: { value: '1', label: '1' },
+			// month: { value: '1', label: 'Январь' },
+			// year: { value: '2026', label: '2026' }
 		}
 	});
 	const { watch, setValue, setError } = methods;
@@ -57,8 +60,7 @@ export function EditProfileForm() {
 	const year = watch('year')?.value;
 
 	const newBirthday = `${day}-${month}-${year}`;
-
-	const dayOptions = month && year ? getDaysOptions(month, year) : [];
+	const dayOptions = getDaysOptions(month, year);
 
 	const formItem = [
 		{
@@ -123,37 +125,42 @@ export function EditProfileForm() {
 		}
 	];
 
-	const customStyles: StylesConfig<DateOption, boolean> = {
+	const createCustomStyles = (
+		hasError?: boolean
+	): StylesConfig<DateOption, boolean> => ({
 		control: (base, state) => ({
 			...base,
-			// position: 'relative',
-			// minHeight: 56,
-			// fontFamily: 'inherit',
-			// fontSize: '18px',
-			// lineHeight: '130%',
-			// letterSpacing: '0.4px',
+			position: 'relative',
+			minHeight: 56,
+			fontFamily: 'inherit',
+			lineHeight: '130%',
+			letterSpacing: '0.4px',
 			borderRadius: state.menuIsOpen ? '8px 8px 0 0' : '8px',
 			border: state.menuIsOpen
 				? '1px solid var(--color-primary)'
-				: '1px solid var(--settings-border-color)',
-			outline: 'none',
+				: `1px solid ${hasError ? 'transparent' : 'var(--settings-border-color)'}`,
+			outline: hasError ? '2px solid var(--color-red)' : 'none',
 			boxShadow: 'none',
 
 			'&:hover': {
+				borderColor: hasError ? 'var(--color-red)' : 'var(--color-primary)'
+			},
+
+			'&:focus': {
 				borderColor: 'var(--color-primary)'
 			}
 		}),
 
 		menu: base => ({
 			...base,
-			// minHeight: 140,
-			// maxHeight: 140,
-			// marginTop: 0,
-			// marginBottom: '4px',
-			// padding: '4px 6px 4px 10px',
-			// border: '1px solid var(--color-primary)',
-			// borderTop: 'none ',
-			// borderRadius: '0 0 8px 8px',
+			minHeight: 140,
+			maxHeight: 140,
+			marginTop: 0,
+			marginBottom: '4px',
+			padding: '4px 6px 4px 10px',
+			border: '1px solid var(--color-primary)',
+			borderTop: 'none ',
+			borderRadius: '0 0 8px 8px',
 			boxShadow: 'none',
 			overflow: 'hidden'
 		}),
@@ -174,17 +181,17 @@ export function EditProfileForm() {
 					: 'transparent',
 			color: 'var(--color-black)',
 			cursor: 'pointer'
-		})
+		}),
 
 		// singleValue: base => ({
 		// 	...base,
 		// 	color: '#000'
 		// }),
 
-		// indicatorSeparator: () => ({
-		// 	display: 'none'
-		// })
-	};
+		indicatorSeparator: () => ({
+			display: 'none'
+		})
+	});
 
 	// 🔄 Синхронизация дня при смене месяца / года
 	useEffect(() => {
@@ -192,12 +199,12 @@ export function EditProfileForm() {
 			return;
 		}
 
-		const maxDay = getDaysInMonth(month, year);
+		const maxDay = getDaysInMonth(Number(month), Number(year));
 
-		if (day > maxDay) {
-			setValue('day', { label: String(maxDay), value: maxDay });
+		if (Number(day) > maxDay) {
+			setValue('day', { label: String(maxDay), value: String(maxDay) });
 		}
-	}, [month, year]);
+	}, [month, year, setValue]);
 
 	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
 		setServerErrorMessage('');
@@ -269,7 +276,9 @@ export function EditProfileForm() {
 					classNameParentInput={styles.formItem}
 				/>
 			))}
-			<Label name={'day'}>Введите дату своего рождения</Label>
+			<Label name={'day' && 'month' && 'year'}>
+				Введите дату своего рождения
+			</Label>
 			<div className={styles.selectContainer}>
 				<SelectItem<EditProfileForm, DateOption>
 					options={dayOptions}
@@ -283,8 +292,8 @@ export function EditProfileForm() {
 					classNameParentSelectIndicatorSeparator={
 						styles.selectIndicatorSeparator
 					}
-					customStyles={customStyles}
-					// width={80}
+					customStyles={createCustomStyles}
+					ariaLabel='Выбор дня месяца'
 				/>
 				<SelectItem<EditProfileForm, DateOption>
 					options={getMonthsOptions()}
@@ -297,8 +306,8 @@ export function EditProfileForm() {
 					classNameParentSelectIndicatorSeparator={
 						styles.selectIndicatorSeparator
 					}
-					customStyles={customStyles}
-					// width={133}
+					customStyles={createCustomStyles}
+					ariaLabel='Выбор месяца'
 				/>
 				<SelectItem
 					options={getYearsOptions()}
@@ -311,8 +320,8 @@ export function EditProfileForm() {
 					classNameParentSelectIndicatorSeparator={
 						styles.selectIndicatorSeparator
 					}
-					customStyles={customStyles}
-					// width={107}
+					customStyles={createCustomStyles}
+					ariaLabel='Выбор года'
 				/>
 			</div>
 			<FormSettingsItem
@@ -324,8 +333,12 @@ export function EditProfileForm() {
 				classNameParentInput={styles.formItem}
 				textareaHeight={'56px'}
 			/>
-			{serverErrorMessage && <p>{serverErrorMessage}</p>}
-			<Button btnType={ButtonType.SUBMIT}>Сохранить</Button>
+			{serverErrorMessage && (
+				<ErrorComponent>{serverErrorMessage}</ErrorComponent>
+			)}
+			<Button btnType={ButtonType.SUBMIT}>
+				{isLoading ? <Loader width='22px' height='22px' /> : 'Сохранить'}
+			</Button>
 		</Form>
 	);
 }

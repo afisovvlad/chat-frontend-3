@@ -22,6 +22,7 @@ export { default as Forward } from './Forward.svg';
 export { default as FullScreen } from './FullScreen.svg';
 export { default as Google } from './Google.svg';
 export { default as InfoCircle } from './InfoCircle.svg';
+export { default as LoaderIcon } from './LoaderIcon.svg';
 export { default as Left } from './Left.svg';
 export { default as Logo } from './Logo.svg';
 export { default as LogoAds } from './LogoAds.svg';

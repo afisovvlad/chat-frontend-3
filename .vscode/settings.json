@@ -5,6 +5,7 @@
 		"attempts",
 		"birthday",
 		"filled",
+		"Loader",
 		"Props",
 		"Reducers",
 		"slices",

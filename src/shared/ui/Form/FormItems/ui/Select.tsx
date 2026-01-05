@@ -14,16 +14,6 @@ import { CustomDropdownIndicator, CustomSelectOption } from '../..';
 import { SelectOption } from '../model/selectTypes';
 import styles from './styles.module.scss';
 
-// declare module 'react-select' {
-// 	interface Props<
-// 		Option,
-// 		IsMulti extends boolean = false,
-// 		Group extends GroupBase<Option> = GroupBase<Option>
-// 	> {
-// 		hasError?: boolean;
-// 	}
-// }
-
 interface SelectProps<
 	TFormValues extends FieldValues,
 	TOption extends SelectOption<unknown>,
@@ -42,8 +32,13 @@ interface SelectProps<
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>> | undefined;
 	disabled?: boolean;
 	icon?: JSX.Element;
-	customStyles?: StylesConfig<TOption>;
+	customStyles?:
+		| StylesConfig<TOption, IsMulti, Group>
+		| ((hasError?: boolean) => StylesConfig<TOption, IsMulti, Group>)
+		| undefined;
+	// customStyles?: StylesConfig<TOption, IsMulti, Group> | undefined;
 	menu?: string;
+	ariaLabel?: string;
 }
 
 const emptyStyles = <TOption extends SelectOption<unknown>>(): StylesConfig<
@@ -87,7 +82,7 @@ export function SelectItem<
 	classNameParentSelectIndicatorSeparator,
 	customStyles,
 	disabled = false,
-	// width,
+	ariaLabel = '',
 	rules = {
 		required: 'Заполните поля'
 	}
@@ -117,14 +112,28 @@ export function SelectItem<
 						}}
 						options={options}
 						name={field.name} // Передаем имя из field
-						placeholder={options[0].label}
+						placeholder={options[0]?.label}
 						// Значение и обработчик изменения связываются с react-hook-form
 						value={field.value}
-						defaultValue={options[0]}
+						aria-label={ariaLabel}
+						// defaultValue={options[4].value}
 						onChange={selectedOption => field.onChange(selectedOption)}
 						onBlur={field.onBlur}
-						// hasError={!!isError}
-						styles={customStyles ?? emptyStyles<TOption>()}
+						hasError={!!isError}
+						styles={
+							typeof customStyles === 'function'
+								? customStyles(isError)
+								: customStyles
+						}
+						// classNames={{
+						// 	control: () => clsx(`${classNameParentSelectControl || ''}`),
+						// 	menu: () => `${classNameParentSelectMenu || ''}`,
+						// 	menuList: () => `${classNameParentSelectMenuList || ''}`,
+						// 	option: () => `${classNameParentSelectOption || ''}`,
+						// 	singleValue: () => `${classNameParentSelectSingleValue || ''}`,
+						// 	indicatorSeparator: () =>
+						// 		`${classNameParentSelectIndicatorSeparator || ''}`
+						// }}
 						classNames={{
 							control: state =>
 								clsx(
