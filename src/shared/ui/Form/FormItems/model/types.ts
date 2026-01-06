@@ -8,6 +8,7 @@ export enum FormItemNames {
 	LAST_NAME = 'last_name',
 	EMAIL = 'email',
 	SEARCH = 'search',
+	ADDITIONAL_INFORMATION = 'additional_information',
 	MESSAGE = 'message',
 	MEDIA = 'media'
 

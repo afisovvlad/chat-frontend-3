@@ -20,7 +20,7 @@ import {
 	getYearsOptions
 } from '@/shared/utils/dateOptions';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StylesConfig } from 'react-select';
 import { CreateCustomStylesOptions } from '../..';
@@ -37,7 +37,7 @@ interface EditProfileForm extends EditBirthdayForm {
 	first_name: string;
 	last_name: string;
 	// patronymic: string;
-	message: string;
+	additional_information: string;
 	// birthday: number;
 	// email: string;
 	// gender: string;
@@ -56,26 +56,22 @@ export function EditProfileForm() {
 	const [editProfile, { isLoading }] = useEditProfileMutation();
 	const methods = useForm<EditProfileForm>({
 		defaultValues: {
+			nickname: '',
+			first_name: '',
+			last_name: '',
+			additional_information: ''
 			// day: { value: '1', label: '1' },
 			// month: { value: '1', label: 'Январь' },
 			// year: { value: '2026', label: '2026' }
 		}
 	});
-	const { watch, setValue, setError, formState } = methods;
-	// const [day, month, year] = useWatch({
-	// 	control,
-	// 	name: ['day', 'month', 'year']
-	// });
-
-	// const hasError = !day || !month || !year;
-
+	const { watch, setValue, setError, formState, reset } = methods;
 	const day = watch('day')?.value;
 	const month = watch('month')?.value;
 	const year = watch('year')?.value;
-	// console.log(day, month, year);
-
 	const newBirthday = `${day}-${month}-${year}`;
 	const dayOptions = getDaysOptions(month, year);
+	const hasError = formState.isSubmitted && (!day || !month || !year);
 
 	const formItem = [
 		{
@@ -212,6 +208,20 @@ export function EditProfileForm() {
 		};
 	};
 
+	const fetchProfile = useCallback(async () => {
+		const response = await editProfile({});
+		if (response.data) {
+			const data = response.data;
+			reset({
+				nickname: data.nickname || '',
+				first_name: data.first_name || '',
+				last_name: data.last_name || '',
+				additional_information: data.additional_information || ''
+			});
+		}
+		// console.log(response);
+	}, [reset]);
+
 	// 🔄 Синхронизация дня при смене месяца / года
 	useEffect(() => {
 		if (!day || !month || !year) {
@@ -225,7 +235,9 @@ export function EditProfileForm() {
 		}
 	}, [month, year, setValue]);
 
-	const hasError = formState.isSubmitted && (!day || !month || !year);
+	useEffect(() => {
+		fetchProfile();
+	}, [fetchProfile]);
 
 	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
 		setServerErrorMessage('');
@@ -236,13 +248,13 @@ export function EditProfileForm() {
 			last_name: data.last_name,
 			birthday: 0,
 			// birthday: newBirthday,
-			additional_information: data.message,
+			additional_information: data.additional_information,
 			patronymic: 'Иванович',
 			email: 'user@example.com',
 			gender: 'male',
 			country: 'RU',
 			city_id: 2,
-			phone: '+79870328530'
+			phone: '+79870328130'
 		};
 
 		try {
@@ -363,9 +375,9 @@ export function EditProfileForm() {
 				</div>
 			</fieldset>
 			<FormSettingsItem
-				key={FormItemNames.MESSAGE}
+				key={FormItemNames.ADDITIONAL_INFORMATION}
 				type={FormItemType.TEXTAREA}
-				name={FormItemNames.MESSAGE}
+				name={FormItemNames.ADDITIONAL_INFORMATION}
 				label={'Напишите пару слов о себе'}
 				rules={{ required: 'Заполните это поле' }}
 				classNameParentInput={styles.formItem}
