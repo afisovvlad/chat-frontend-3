@@ -2,6 +2,8 @@
 
 import { FormSettingsItem } from '@/entities/FormSettingsItem';
 import { useEditProfileMutation } from '@/features/profile/edit/api/editProfile.api';
+import { convertDateToNumber } from '@/shared/lib/convertDateToNumber/convertDateToNumber';
+import { convertNumberToDate } from '@/shared/lib/convertNumberToDate/convertNumberToDate';
 import { Button, ButtonType } from '@/shared/ui/Button';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form, SelectItem } from '@/shared/ui/Form';
@@ -36,19 +38,9 @@ interface EditProfileForm extends EditBirthdayForm {
 	nickname: string;
 	first_name: string;
 	last_name: string;
-	// patronymic: string;
 	additional_information: string;
-	// birthday: number;
-	// email: string;
-	// gender: string;
-	// country: string;
-	// city_id: number;
-	// phone: string;
+	birthday: number;
 }
-
-// interface CreateCustomStylesOptions {
-// 	hasError?: boolean;
-// }
 
 export function EditProfileForm() {
 	const [isSuccess, setIsSuccess] = useState(false);
@@ -59,17 +51,14 @@ export function EditProfileForm() {
 			nickname: '',
 			first_name: '',
 			last_name: '',
-			additional_information: ''
-			// day: { value: '1', label: '1' },
-			// month: { value: '1', label: 'Январь' },
-			// year: { value: '2026', label: '2026' }
+			additional_information: '',
+			birthday: 0
 		}
 	});
 	const { watch, setValue, setError, formState, reset } = methods;
 	const day = watch('day')?.value;
 	const month = watch('month')?.value;
 	const year = watch('year')?.value;
-	const newBirthday = `${day}-${month}-${year}`;
 	const dayOptions = getDaysOptions(month, year);
 	const hasError = formState.isSubmitted && (!day || !month || !year);
 
@@ -212,15 +201,19 @@ export function EditProfileForm() {
 		const response = await editProfile({});
 		if (response.data) {
 			const data = response.data;
+			const { day, month, year } = convertNumberToDate(data.birthday);
 			reset({
 				nickname: data.nickname || '',
 				first_name: data.first_name || '',
 				last_name: data.last_name || '',
-				additional_information: data.additional_information || ''
+				additional_information: data.additional_information || '',
+				day: { label: String(day), value: String(day) },
+				month: { label: String(month), value: String(month) },
+				year: { label: String(year), value: String(year) }
 			});
 		}
 		// console.log(response);
-	}, [reset]);
+	}, [reset, editProfile]);
 
 	// 🔄 Синхронизация дня при смене месяца / года
 	useEffect(() => {
@@ -233,47 +226,44 @@ export function EditProfileForm() {
 		if (Number(day) > maxDay) {
 			setValue('day', { label: String(maxDay), value: String(maxDay) });
 		}
-	}, [month, year, setValue]);
+	}, [day, month, year, setValue]);
 
 	useEffect(() => {
 		fetchProfile();
 	}, [fetchProfile]);
 
+	useEffect(() => {});
+
 	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
 		setServerErrorMessage('');
+		const newBirthday =
+			day && month && year && convertDateToNumber({ day, month, year });
 
 		const newData = {
 			nickname: data.nickname,
 			first_name: data.first_name,
 			last_name: data.last_name,
-			birthday: 0,
-			// birthday: newBirthday,
-			additional_information: data.additional_information,
-			patronymic: 'Иванович',
-			email: 'user@example.com',
-			gender: 'male',
-			country: 'RU',
-			city_id: 2,
-			phone: '+79870328130'
+			birthday: newBirthday,
+			additional_information: data.additional_information
 		};
 
 		try {
 			const result = await editProfile(newData);
-			console.log(result);
+			// console.log(result);
 
 			if ('data' in result) {
-				console.log('success', data);
+				// console.log('success', data);
 				setIsSuccess(true);
 			} else {
 				const error = result.error;
-				console.log('error', error);
+				// console.log('error', error);
 				if (
 					error &&
 					typeof error === 'object' &&
 					'status' in error &&
 					'data' in error
 				) {
-					console.log(error.data);
+					// console.log(error.data);
 					const serverErrors = error.data as Record<string, string[]>;
 
 					Object.entries(serverErrors).forEach(([field, messages]) => {
@@ -287,7 +277,7 @@ export function EditProfileForm() {
 				}
 			}
 		} catch (e) {
-			console.log(e);
+			// console.log(e);
 			setServerErrorMessage('Произошла непредвиденная ошибка');
 		}
 	};

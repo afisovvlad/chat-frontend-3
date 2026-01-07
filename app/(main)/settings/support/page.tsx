@@ -1,10 +1,5 @@
-import { SupportForm } from '@/features/support/ui';
-import { Container, ContainerType } from '@/shared/ui/Container';
+import { SupportPage } from '@/pages/SupportPage';
 
-export default function SupportPage() {
-	return (
-		<Container type={ContainerType.SIDEBAR}>
-			<SupportForm />
-		</Container>
-	);
+export default function Support() {
+	return <SupportPage />;
 }

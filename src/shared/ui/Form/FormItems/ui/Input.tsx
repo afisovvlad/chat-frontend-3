@@ -39,6 +39,8 @@ export function Input<TFormValues extends FieldValues>({
 		<input
 			{...register(name, rules)}
 			type={type}
+			id={name}
+			name={name}
 			placeholder={placeholder}
 			disabled={disabled}
 			autoComplete={autoComplete || FormItemAutocomplete.ON}
