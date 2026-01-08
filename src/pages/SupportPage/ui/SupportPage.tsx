@@ -5,7 +5,8 @@ import styles from './SupportPage.module.scss';
 
 export function SupportPage() {
 	return (
-		<Container type={ContainerType.SIDEBAR}>
+		// <Container type={ContainerType.SIDEBAR}>
+		<section className={styles.support}>
 			<HeaderBlock
 				title={'Обращение в поддержку'}
 				href={'/settings'}
@@ -14,6 +15,7 @@ export function SupportPage() {
 				iconRight
 			/>
 			<SupportForm />
-		</Container>
+		</section>
+		// </Container>
 	);
 }

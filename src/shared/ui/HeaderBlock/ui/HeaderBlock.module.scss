@@ -39,17 +39,27 @@
 }
 
 .back {
+	display: none;
 	width: 7.5px;
 	height: 12px;
 	color: var(--color-gray-500);
 	cursor: pointer;
+
+	@media screen and (max-width: 768px) {
+		display: inline-block;
+	}
 }
 
 .left {
+	display: inline-block;
 	width: 16px;
 	height: 16px;
 	color: var(--color-black);
 	cursor: pointer;
+
+	@media screen and (max-width: 768px) {
+		display: none;
+	}
 }
 
 .rightBlock {
