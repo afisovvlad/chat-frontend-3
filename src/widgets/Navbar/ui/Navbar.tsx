@@ -11,7 +11,7 @@ export const Navbar = () => {
 	const pathname = usePathname();
 
 	return (
-		<nav className={classNames(cls.Navbar)}>
+		<div className={classNames(cls.navbar)}>
 			{menuItems.map(item => {
 				const Icon = item.Icon;
 				const IconMobile = item.IconMobile || item.Icon;
@@ -41,6 +41,6 @@ export const Navbar = () => {
 					</Link>
 				);
 			})}
-		</nav>
+		</div>
 	);
 };

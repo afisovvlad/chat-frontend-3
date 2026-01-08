@@ -10,7 +10,8 @@ export enum ButtonTheme {
 	OUTLINE = 'outline',
 	BACKGROUND = 'background',
 	// преимущественно для кнопок внутри которых есть иконка
-	CIRCLE = 'circle'
+	CIRCLE = 'circle',
+	PRIMARY = "PRIMARY"
 }
 
 export enum ButtonSize {

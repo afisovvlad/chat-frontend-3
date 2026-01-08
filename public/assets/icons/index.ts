@@ -61,3 +61,5 @@ export { default as VideoCall } from './VideoCall.svg';
 export { default as VolumeOff } from './VolumeOff.svg';
 export { default as VolumeOn } from './VolumeOn.svg';
 export { default as CreateChanel } from './СreateChanel.svg';
+export { default as Checked } from './Checked.svg';
+export { default as SendIcon } from './SendIcon.svg';

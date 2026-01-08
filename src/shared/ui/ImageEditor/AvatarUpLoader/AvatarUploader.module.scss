@@ -1,0 +1,50 @@
+.previewContainer {
+	text-align: center;
+}
+
+.previewImg {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	object-fit: cover;
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+	margin: 0 auto;
+}
+
+.visuallyHidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	border: 0;
+	padding: 0;
+	white-space: nowrap;
+	clip-path: inset(100%);
+	clip: rect(0 0 0 0);
+	overflow: hidden;
+}
+
+.mobileFooter {
+	position: absolute;
+	bottom: var(--mobile-nav-height);
+	left: 0;
+	right: 0;
+	padding: 16px;
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+	z-index: 1001;
+}
+
+.cancelBtn {
+	background-color: var(--color-white);
+}
+
+.cancelBtn,
+.changeBtn {
+	width: 159px;
+	height: 44px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

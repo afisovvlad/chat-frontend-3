@@ -1,0 +1,187 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
+.overlay {
+	@include overlay-modal();
+	bottom: var(--mobile-nav-height);
+	@media (min-width: 768px) {
+		bottom: 0;
+	}
+}
+.modalContent {
+	border-radius: 12px;
+	width: 432px;
+	max-height: 90vh;
+	overflow: auto;
+	backdrop-filter: blur(10px);
+	background: var(--color-white);
+	@media (max-width: 768px) {
+		width: 329px;
+		border-radius: 8px;
+	}
+}
+
+.galleryScreen,
+.cropScreen {
+	padding: 17px 56px;
+	background: var(--color-white);
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	border-radius: 12px;
+	max-width: 600px;
+	margin: 0 auto;
+	position: relative;
+	@media (max-width: 768px) {
+		border-radius: 8px;
+		padding: 0;
+		width: 329px;
+	}
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	height: 22px;
+	.closeIcon {
+		width: 14px;
+		height: 14px;
+	}
+	@media (max-width: 768px) {
+		justify-content: space-between;
+		padding: 12px 16px 0;
+	}
+}
+.headerTitle {
+	font-size: 18px;
+	font-weight: 500;
+	@media (max-width: 768px) {
+		font-size: 16px;
+		font-weight: 400;
+	}
+}
+.closeButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 22px;
+	&:focus-visible {
+		@include focus-visible;
+	}
+}
+.editorContainer {
+	width: 100%;
+	min-height: 300px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 12px;
+	overflow: hidden;
+	position: relative;
+
+	@media (max-width: 768px) {
+		min-height: 0;
+		padding: 0 68px;
+	}
+}
+
+.editorWrapper {
+	width: 193px;
+	height: 193px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	margin: 0 auto;
+
+	@media (min-width: 768px) {
+		width: 320px;
+		height: 320px;
+	}
+}
+
+.controlRow {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	@media (max-width: 768px) {
+		padding: 0 68px 24px 68px;
+	}
+}
+
+.zoomControl {
+	flex: 1;
+	text-align: center;
+}
+
+.zoomSlider {
+	width: 100%;
+	appearance: none;
+	height: 6px;
+	background: #ddd;
+	border-radius: 3px;
+	outline: none;
+	transition: background 0.2s;
+
+	&::-webkit-slider-thumb {
+		appearance: none;
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: var(--color-primary);
+		cursor: pointer;
+		box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+	}
+
+	&::-moz-range-thumb {
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: var(--color-primary);
+		cursor: pointer;
+		box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+		border: none;
+	}
+
+	&:focus-visible {
+		@include focus-visible;
+	}
+}
+
+.checkmarkContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.checkmark {
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	transition: background 0.2s;
+
+	&:focus-visible {
+		@include focus-visible;
+	}
+}
+
+.checkIcon {
+	width: 36px;
+	height: 36px;
+}
+
+.checkboxEmpty {
+	width: 36px;
+	height: 36px;
+	border: 2px solid var(--color-primary);
+	border-radius: 50%;
+	background: transparent;
+}
+
+.checkmarkContainer {
+	flex-shrink: 0;
+}
