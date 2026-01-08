@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { EditProfile } from '@/pages/EditProfile';
+import { EditProfilePage } from '@/pages/EditProfilePage';
 
 export const metadata: Metadata = {
 	title: 'Редактирование профиля | А-Чат',
@@ -8,6 +8,6 @@ export const metadata: Metadata = {
 	description: 'Редактирование профиля пользователя| А-Чат'
 };
 
-export default function EditProfilePage() {
-	return <EditProfile />;
+export default function EditProfile() {
+	return <EditProfilePage />;
 }

@@ -8,22 +8,16 @@ import {
 	ButtonTheme,
 	ButtonType
 } from '@/shared/ui/Button/model/type';
-import { Container, ContainerType } from '@/shared/ui/Container';
+import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form } from '@/shared/ui/Form';
 import {
 	FormItemNames,
 	FormItemType
 } from '@/shared/ui/Form/FormItems/model/types';
+import { Loader } from '@/shared/ui/Loader';
 import { SuccessBlock } from '@/shared/ui/SuccessBlock';
-import {
-	FontWeight,
-	Text,
-	TextAlign,
-	TextColor,
-	TextSize,
-	TextTag,
-	TextType
-} from '@/shared/ui/Text';
+import { Text } from '@/shared/ui/Text';
+import clsx from 'clsx';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
@@ -34,8 +28,8 @@ interface SupportForm {
 	message: string;
 }
 
-export function SupportForm() {
-	const [sendSupportMessage, { isLoading, isError, error, isSuccess, reset }] =
+export function SupportForm({ parentClass }: { parentClass?: string }) {
+	const [sendSupportMessage, { isLoading, isError, isSuccess }] =
 		useSendSupportMessageMutation();
 	const methods = useForm<SupportForm>();
 
@@ -76,78 +70,63 @@ export function SupportForm() {
 
 	const onSubmit: SubmitHandler<SupportForm> = async data => {
 		try {
-			const response = await sendSupportMessage({
+			await sendSupportMessage({
 				email: data.email,
 				text: data.message
 			}).unwrap();
-			console.log(response);
 		} catch (e) {
 			console.log(e);
 		}
 	};
 
 	return (
-		<Container type={ContainerType.WRAPPER}>
-			<Container type={ContainerType.SIDEBAR}>
-				<div className={styles.support}>
-					{isError ? (
-						<div className={styles.errorBlock}>
-							<Text
-								type={TextType.TEXT}
-								tag={TextTag.P}
-								fontSize={TextSize.L}
-								fontWeight={FontWeight.REGULAR}
-								textAlign={TextAlign.CENTER}
-								color={TextColor.ERROR}
-								className={styles.errorText}
-							>
-								При отправке произошла ошибка. Попробуйте позже
-							</Text>
-						</div>
-					) : isSuccess ? (
-						<SuccessBlock
-							marginTop='341px'
-							title={' Обращение отправлено!'}
-							text={
-								'В ближайшее время Вы получите ответ на электронную почту, указанную в обращении'
-							}
+		<div className={clsx(styles.support, parentClass)}>
+			{isError ? (
+				<ErrorComponent>
+					При отправке произошла ошибка. Попробуйте позже
+				</ErrorComponent>
+			) : isSuccess ? (
+				<SuccessBlock
+					marginTop='341px'
+					title={' Обращение отправлено!'}
+					text={
+						'В ближайшее время Вы получите ответ на электронную почту, указанную в обращении'
+					}
+				/>
+			) : (
+				<Form<SupportForm>
+					methods={methods}
+					onSubmit={onSubmit}
+					className={styles.form}
+				>
+					{formItem.map(item => (
+						<FormSettingsItem
+							key={item.name}
+							type={item.type}
+							name={item.name}
+							label={item.label}
+							placeholder={item.placeholder}
+							autoComplete={undefined}
+							rules={item.rules || undefined}
+							classNameParentInput={styles.formItem}
 						/>
-					) : (
-						<Form<SupportForm>
-							methods={methods}
-							onSubmit={onSubmit}
-							className={styles.form}
-						>
-							{formItem.map(item => (
-								<FormSettingsItem
-									key={item.name}
-									type={item.type}
-									name={item.name}
-									label={item.label}
-									placeholder={item.placeholder}
-									autoComplete={undefined}
-									rules={item.rules || undefined}
-									classNameParentInput={styles.formItem}
-								/>
-							))}
-							<Text className={styles.faqText}>
-								Ознакомьтесь со 
-								<Link href='/support/faq' className={styles.faqLink}>
-									списком известных проблем и их решениями.
-								</Link>
-							</Text>
-							<Button
-								btnType={ButtonType.SUBMIT}
-								disabled={disabled}
-								theme={ButtonTheme.BACKGROUND}
-								color={ButtonColor.PRIMARY}
-							>
-								{isLoading ? 'Отправка...' : 'Отправить'}
-							</Button>
-						</Form>
-					)}
-				</div>
-			</Container>
-		</Container>
+					))}
+					<Text className={styles.faqText}>
+						Ознакомьтесь со 
+						<Link href='/support/faq' className={styles.faqLink}>
+							списком известных проблем и их решениями.
+						</Link>
+					</Text>
+					<Button
+						btnType={ButtonType.SUBMIT}
+						disabled={disabled}
+						theme={ButtonTheme.BACKGROUND}
+						color={ButtonColor.PRIMARY}
+					>
+						{isLoading ? <Loader width='22px' height='22px' /> : 'Отправить'}
+					</Button>
+				</Form>
+			)}
+		</div>
 	);
 }

@@ -1,0 +1,10 @@
+.settingsLayout {
+	height: calc(100vh - var(--app-header-offset));
+	background-color: var(--color-violet-40);
+	border: 1px solid var(--color-gray-50);
+	border-radius: 8px;
+
+	@media screen and (max-width: 768px) {
+		background-color: var(--color-white);
+	}
+}

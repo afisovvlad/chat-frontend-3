@@ -3,11 +3,8 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
 	const body = await request.json();
-	// console.log('body in edit profile', body);
 	const cookieStore = await cookies();
 	const token = cookieStore.get('accessToken')?.value;
-
-	// console.log('token in edit profile', token);
 
 	if (!token) {
 		return NextResponse.json({ detail: 'No access token' }, { status: 401 });
@@ -35,9 +32,6 @@ export async function POST(request: Request) {
 	}
 
 	const result = await res.json();
-
-	// console.log('res status', res.status);
-	// console.log('result in edit profile', result);
 
 	return NextResponse.json(result, { status: res.status });
 }

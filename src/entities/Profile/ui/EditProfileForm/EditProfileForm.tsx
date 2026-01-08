@@ -25,7 +25,7 @@ import clsx from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StylesConfig } from 'react-select';
-import { CreateCustomStylesOptions } from '../..';
+import { CreateCustomStylesOptions, ProfileSchema } from '../..';
 import styles from './EditProfileForm.module.scss';
 
 interface EditBirthdayForm {
@@ -34,15 +34,13 @@ interface EditBirthdayForm {
 	year: DateOption | undefined;
 }
 
-interface EditProfileForm extends EditBirthdayForm {
-	nickname: string;
-	first_name: string;
-	last_name: string;
-	additional_information: string;
-	birthday: number;
+interface EditProfileForm extends EditBirthdayForm, ProfileSchema {}
+
+interface EditProfileFormProps {
+	parentClass?: string;
 }
 
-export function EditProfileForm() {
+export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverErrorMessage, setServerErrorMessage] = useState('');
 	const [editProfile, { isLoading }] = useEditProfileMutation();
@@ -198,10 +196,12 @@ export function EditProfileForm() {
 	};
 
 	const fetchProfile = useCallback(async () => {
-		const response = await editProfile({});
+		const response = await editProfile({}); // Отправляем пустой {} для получения данных профиля
 		if (response.data) {
 			const data = response.data;
-			const { day, month, year } = convertNumberToDate(data.birthday);
+			const { day, month, year } = data?.birthday
+				? convertNumberToDate(data.birthday)
+				: { day: 1, month: 1, year: 2026 };
 			reset({
 				nickname: data.nickname || '',
 				first_name: data.first_name || '',
@@ -212,10 +212,9 @@ export function EditProfileForm() {
 				year: { label: String(year), value: String(year) }
 			});
 		}
-		// console.log(response);
 	}, [reset, editProfile]);
 
-	// 🔄 Синхронизация дня при смене месяца / года
+	// 🔄 Синхронизация дней при смене месяца / года, - 28, 29, 30 или 31
 	useEffect(() => {
 		if (!day || !month || !year) {
 			return;
@@ -243,13 +242,12 @@ export function EditProfileForm() {
 			nickname: data.nickname,
 			first_name: data.first_name,
 			last_name: data.last_name,
-			birthday: newBirthday,
+			birthday: newBirthday || 0,
 			additional_information: data.additional_information
 		};
 
 		try {
 			const result = await editProfile(newData);
-			// console.log(result);
 
 			if ('data' in result) {
 				// console.log('success', data);
@@ -263,7 +261,6 @@ export function EditProfileForm() {
 					'status' in error &&
 					'data' in error
 				) {
-					// console.log(error.data);
 					const serverErrors = error.data as Record<string, string[]>;
 
 					Object.entries(serverErrors).forEach(([field, messages]) => {
@@ -288,11 +285,15 @@ export function EditProfileForm() {
 		);
 	}
 
+	if (serverErrorMessage) {
+		return <ErrorComponent>{serverErrorMessage}</ErrorComponent>;
+	}
+
 	return (
 		<Form<EditProfileForm>
 			methods={methods}
 			onSubmit={onSubmit}
-			className={styles.form}
+			className={clsx(styles.form, parentClass)}
 		>
 			<p style={{ marginBottom: '30px' }}>Выбрать фотографию</p>
 			{formItem.map(item => (
@@ -373,9 +374,6 @@ export function EditProfileForm() {
 				classNameParentInput={styles.formItem}
 				textareaHeight={'56px'}
 			/>
-			{serverErrorMessage && (
-				<ErrorComponent>{serverErrorMessage}</ErrorComponent>
-			)}
 			<Button btnType={ButtonType.SUBMIT}>
 				{isLoading ? <Loader width='22px' height='22px' /> : 'Сохранить'}
 			</Button>

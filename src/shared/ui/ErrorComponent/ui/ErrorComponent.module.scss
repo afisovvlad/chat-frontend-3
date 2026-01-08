@@ -1,4 +1,17 @@
-.error {
-	color: var(--color-red);
-	font-size: var(--font-size-16);
+.errorBlock {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	max-width: 328px;
+	margin: 40px auto 0;
+}
+
+.errorText {
+	margin-top: 24px;
+	text-align: center;
+	line-height: 130%;
+	vertical-align: middle;
+	letter-spacing: 0.4px;
 }

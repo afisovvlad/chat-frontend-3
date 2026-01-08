@@ -2,6 +2,7 @@
 
 import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
 import { fetchPhone } from '@/features/auth/model/slices/authSlice';
+import { formatPhone } from '@/shared/lib/formatPhone/formatPhone';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import {
@@ -43,17 +44,7 @@ export const LoginPhone = () => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const confirmBtnRef = useRef<HTMLButtonElement>(null);
 	const router = useRouter();
-	const formattedPhone = phone
-		? phone.slice(0, 2) +
-			' ' +
-			phone.slice(2, 5) +
-			' ' +
-			phone.slice(5, 8) +
-			' ' +
-			phone.slice(8, 10) +
-			' ' +
-			phone.slice(10, 12)
-		: '';
+	const formattedPhone = formatPhone(phone);
 
 	const methods = useForm<LoginPhoneForm>({
 		defaultValues: {
@@ -86,46 +77,6 @@ export const LoginPhone = () => {
 			disabled: false,
 			isRequired: false
 		}
-		// {
-		// 	type: FormAuthItemType.TEXT,
-		// 	name: FormAuthItemNames.NAME,
-		// 	label: 'Имя',
-		// 	placeholder: 'Иван',
-		// 	autocomplete: FormAuthItemAutocomplete.NAME, // необходимое свойство для автозаполнения, чему равно - посмотреть в интернете
-		// 	disabled: false,
-		// 	isRequired: false,
-		// 	rules: {
-		// 		required: 'Заполните это поле',
-		// 		minLength: {
-		// 			value: 3,
-		// 			message: 'Минимум 3 буквы'
-		// 		},
-		// 		pattern: {
-		// 			value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-		// 			message: 'Допускаются только буквы'
-		// 		}
-		// 	}
-		// },
-		// {
-		// 	type: FormAuthItemType.TEXTAREA,
-		// 	name: FormAuthItemNames.NICKNAME,
-		// 	label: 'Введите никнейм',
-		// 	placeholder: 'alex',
-		// 	autocomplete: FormAuthItemAutocomplete.NICKNAME,
-		// 	disabled: false,
-		// 	isRequired: false,
-		// 	rules: {
-		// 		required: 'Заполните это поле',
-		// 		minLength: {
-		// 			value: 3,
-		// 			message: 'Минимум 3 буквы'
-		// 		}
-		// 		// pattern: {
-		// 		// 	value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-		// 		// 	message: 'Допускаются только буквы'
-		// 		// }
-		// 	}
-		// },
 	];
 
 	const onModalClose = () => {

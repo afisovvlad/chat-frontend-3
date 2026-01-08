@@ -1,26 +1,9 @@
-.sidebar {
-	@media (max-width: 768px) {
-		width: 100%;
-		height: 100%;
-		padding: 0;
-		border: 0;
-		background-color: var(--color-white);
-	}
-}
-
-.rightCont {
-	overflow-y: auto;
-	width: 100%;
-	height: 100%;
-}
-
 .settings {
 	width: 100%;
 	height: 100%;
-	padding: 0 16px;
 	display: flex;
 	flex-direction: column;
-	overflow: auto;
+	overflow-y: auto;
 	gap: 16px;
 
 	@media (max-width: 768px) {
@@ -31,8 +14,8 @@
 	}
 }
 
-.settingsTitle {
-	padding: 17px 16px;
+.content {
+	padding: 0 16px;
 }
 
 .profileSection {

@@ -9,21 +9,29 @@ import {
 import { Back, Left, MenuIcon } from '@icons/index';
 import clsx from 'clsx';
 import Link from 'next/link';
-import { HeaderBlockProps } from '..';
 import { Button, ButtonTheme } from '../../Button';
-import styles from './HeaderBlock.module.scss';
+import styles from './SettingsHeaderBlock.module.scss';
 
-export function HeaderBlock({
+export interface SettingsHeaderBlockProps {
+	title: string;
+	href?: string;
+	parentClass?: string;
+	iconLeft?: boolean;
+	iconRight?: boolean;
+	onClick?: () => void;
+}
+
+export function SettingsHeaderBlock({
 	title,
 	href,
 	parentClass,
 	iconLeft,
 	iconRight,
 	onClick
-}: HeaderBlockProps) {
+}: SettingsHeaderBlockProps) {
 	return (
 		<div className={clsx(parentClass, styles.headerBlock)}>
-			{iconLeft && (
+			{iconLeft && href && (
 				<Link href={href} className={styles.leftBlock}>
 					<Back className={styles.back} />
 					<Left className={styles.left} />
