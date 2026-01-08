@@ -28,7 +28,7 @@ import {
 import { Back, Logo } from '@icons/index';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import styles from './LoginPhone.module.scss';
 
@@ -41,6 +41,7 @@ export const LoginPhone = () => {
 		state => state.auth
 	);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const confirmBtnRef = useRef<HTMLButtonElement>(null);
 	const router = useRouter();
 	const formattedPhone = phone
 		? phone.slice(0, 2) +
@@ -66,11 +67,15 @@ export const LoginPhone = () => {
 	});
 	const disabled = isDisabledCodeAttempts || phone_number.length !== 16;
 
-	// console.log(isDisabledCodeAttempts);
-
 	useEffect(() => {
 		methods.setFocus('phone_number');
 	}, [methods]);
+
+	useEffect(() => {
+		if (isModalOpen && confirmBtnRef.current) {
+			confirmBtnRef?.current.focus();
+		}
+	}, [isModalOpen]);
 
 	const formItem = [
 		{
@@ -224,6 +229,7 @@ export const LoginPhone = () => {
 						color={ButtonColor.PRIMARY}
 						onClick={onConfirm}
 						className={styles.btnConfirm}
+						btnRef={confirmBtnRef}
 					>
 						Верно
 					</Button>
