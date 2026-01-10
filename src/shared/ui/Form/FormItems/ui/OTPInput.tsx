@@ -1,6 +1,6 @@
 'use client';
 
-import clsx from 'clsx';
+import { classNames } from '@/shared/lib/classNames/classNames';
 import { useEffect, useRef, useState } from 'react';
 import {
 	Control,
@@ -123,10 +123,14 @@ export function OTPInput<TFormValues extends FieldValues>({
 			render={({ field, fieldState }) => {
 				return (
 					<div
-						className={clsx(styles.cells, {
-							[styles.hasError]: isError || fieldState?.error,
-							[styles.disabled]: disabled
-						})}
+						className={classNames(
+							styles.cells,
+							{
+								[styles.hasError]: isError || !!fieldState?.error,
+								[styles.disabled]: disabled
+							},
+							[]
+						)}
 					>
 						{Array.from({ length }).map((_, index) => (
 							<input
@@ -147,10 +151,14 @@ export function OTPInput<TFormValues extends FieldValues>({
 									inputRef.current[index] = ref;
 								}}
 								disabled={disabled}
-								className={clsx(styles.cell, styles.input, classNameInput, {
-									[styles.hasError]: isError || fieldState?.error,
-									[styles.disabled]: disabled
-								})}
+								className={classNames(
+									`${styles.cell} ${styles.input}`,
+									{
+										[styles.hasError]: isError || !!fieldState?.error,
+										[styles.disabled]: disabled
+									},
+									[classNameInput]
+								)}
 							/>
 						))}
 					</div>

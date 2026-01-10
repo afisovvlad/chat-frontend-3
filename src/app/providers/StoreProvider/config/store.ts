@@ -1,5 +1,6 @@
-import { authReducer } from '@/features/auth';
+import { authReducer } from '@/entities/Auth/model/authSlice';
 import { citiesReducer } from '@/pages/Cities';
+import { localApi } from '@/shared/api/localApi';
 import { rtkApi } from '@/shared/api/rtkApi';
 import {
 	combineReducers,
@@ -7,7 +8,6 @@ import {
 	ReducersMapObject
 } from '@reduxjs/toolkit';
 import { StateSchema } from './StateSchema';
-import { localApi } from '@/shared/api/localApi';
 
 const rootReducer = combineReducers<ReducersMapObject<StateSchema>>({
 	[localApi.reducerPath]: localApi.reducer,

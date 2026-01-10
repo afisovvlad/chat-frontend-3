@@ -5,6 +5,7 @@
 	font-size: 18px;
 	line-height: 130%;
 	font-weight: inherit;
+	box-sizing: border-box;
 
 	&:disabled {
 		cursor: not-allowed;
@@ -28,9 +29,14 @@
 	display: flex;
 	justify-content: space-between;
 	gap: 10px;
+
+	@media screen and (max-width: 768px) {
+		gap: 5px;
+	}
 }
 
 .cell {
+	flex: 0;
 	width: 60;
 	height: 60;
 	padding: 10px;
@@ -43,6 +49,12 @@
 	vertical-align: middle;
 	border: 1px solid var(--color-primary);
 	border-radius: 8px;
+
+	@media screen and (max-width: 768px) {
+		width: 45px;
+		height: 45px;
+		font-size: 16px;
+	}
 }
 
 .container {

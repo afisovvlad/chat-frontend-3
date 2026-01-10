@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { classNames } from '@/shared/lib/classNames/classNames';
 import { FieldValues, Path, useFormContext } from 'react-hook-form';
 import styles from './styles.module.scss';
 
@@ -24,9 +24,13 @@ export function Label<TFormValues extends FieldValues>({
 
 	return (
 		<label
-			className={clsx(styles.label, classNameParentLabel, {
-				[styles.hasError]: isError
-			})}
+			className={classNames(
+				styles.label,
+				{
+					[styles.hasError]: isError
+				},
+				[classNameParentLabel]
+			)}
 			htmlFor={name}
 		>
 			{errorMessage ?? children}

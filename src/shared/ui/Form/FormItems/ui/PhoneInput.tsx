@@ -1,9 +1,9 @@
 'use client';
 
-import clsx from 'clsx';
 import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form';
 import { FormItemAutocomplete } from '../model/types';
 import styles from './styles.module.scss';
+import { classNames } from '@/shared/lib/classNames/classNames';
 
 interface PhoneInputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
@@ -100,10 +100,14 @@ export function PhoneInput<TFormValues extends FieldValues>({
 						value={inputValue}
 						placeholder={placeholder}
 						autoComplete={FormItemAutocomplete.PHONE}
-						className={clsx(styles.input, classNameInput, {
-							[styles.hasError]: isError,
-							[styles.disabled]: disabled
-						})}
+						className={classNames(
+							styles.input,
+							{
+								[styles.hasError]: isError,
+								[styles.disabled]: disabled
+							},
+							[classNameInput]
+						)}
 						disabled={disabled}
 						onFocus={() => {
 							if (!field.value || field.value === '') {

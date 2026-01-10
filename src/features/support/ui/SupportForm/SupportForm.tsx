@@ -17,11 +17,11 @@ import {
 import { Loader } from '@/shared/ui/Loader';
 import { SuccessBlock } from '@/shared/ui/SuccessBlock';
 import { Text } from '@/shared/ui/Text';
-import clsx from 'clsx';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import styles from './SupportForm.module.scss';
+import { classNames } from '@/shared/lib/classNames/classNames';
 
 interface SupportForm {
 	email: string;
@@ -80,19 +80,24 @@ export function SupportForm({ parentClass }: { parentClass?: string }) {
 	};
 
 	return (
-		<div className={clsx(styles.support, parentClass)}>
+		<div className={classNames(styles.support, {}, [parentClass])}>
 			{isError ? (
 				<ErrorComponent>
 					При отправке произошла ошибка. Попробуйте позже
 				</ErrorComponent>
 			) : isSuccess ? (
-				<SuccessBlock
-					marginTop='341px'
-					title={' Обращение отправлено!'}
-					text={
-						'В ближайшее время Вы получите ответ на электронную почту, указанную в обращении'
-					}
-				/>
+				<>
+					<SuccessBlock
+						marginTop='341px'
+						title={' Обращение отправлено!'}
+						text={
+							'В ближайшее время Вы получите ответ на электронную почту, указанную в обращении'
+						}
+					/>
+					<Link href='/' className={styles.homeLink}>
+						На главную
+					</Link>
+				</>
 			) : (
 				<Form<SupportForm>
 					methods={methods}

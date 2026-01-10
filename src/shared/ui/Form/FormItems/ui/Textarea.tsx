@@ -1,13 +1,12 @@
-import clsx from 'clsx';
 import {
 	FieldValues,
 	Path,
 	RegisterOptions,
 	useFormContext
-	// UseFormRegister
 } from 'react-hook-form';
 import { FormItemAutocomplete } from '../model/types';
 import styles from './styles.module.scss';
+import { classNames } from '@/shared/lib/classNames/classNames';
 
 interface TextareaProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
@@ -42,10 +41,14 @@ export function Textarea<TFormValues extends FieldValues>({
 			placeholder={placeholder}
 			autoComplete={FormItemAutocomplete.OFF}
 			disabled={disabled}
-			className={clsx(styles.textarea, classNameTextarea, {
-				[styles.hasError]: isError,
-				[styles.disabled]: disabled
-			})}
+			className={classNames(
+				styles.textarea,
+				{
+					[styles.hasError]: isError,
+					[styles.disabled]: disabled
+				},
+				[classNameTextarea]
+			)}
 			style={height ? { minHeight: height, maxHeight: height } : {}}
 		/>
 	);

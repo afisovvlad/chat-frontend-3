@@ -1,5 +1,6 @@
 import { RootState } from '@/app/providers/StoreProvider';
-import { authActions } from '@/features/auth';
+import { authActions } from '@/entities/Auth/model/authSlice';
+// import { authActions } from '@/features/auth';
 import {
 	BaseQueryFn,
 	FetchArgs,

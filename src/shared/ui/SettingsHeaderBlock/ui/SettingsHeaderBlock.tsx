@@ -7,10 +7,10 @@ import {
 	TitleTag
 } from '@/shared/ui/Text';
 import { Back, Left, MenuIcon } from '@icons/index';
-import clsx from 'clsx';
 import Link from 'next/link';
 import { Button, ButtonTheme } from '../../Button';
 import styles from './SettingsHeaderBlock.module.scss';
+import { classNames } from '@/shared/lib/classNames/classNames';
 
 export interface SettingsHeaderBlockProps {
 	title: string;
@@ -30,7 +30,7 @@ export function SettingsHeaderBlock({
 	onClick
 }: SettingsHeaderBlockProps) {
 	return (
-		<div className={clsx(parentClass, styles.headerBlock)}>
+		<div className={classNames(styles.headerBlock, {}, [parentClass])}>
 			{iconLeft && href && (
 				<Link href={href} className={styles.leftBlock}>
 					<Back className={styles.back} />

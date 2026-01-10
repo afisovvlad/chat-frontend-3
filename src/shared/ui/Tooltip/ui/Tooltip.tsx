@@ -5,8 +5,8 @@ import {
 	TextSize,
 	TextType
 } from '@/shared/ui/Text';
-import clsx from 'clsx';
 import styles from './Tooltip.module.scss';
+import { classNames } from '@/shared/lib/classNames/classNames';
 
 interface TooltipProps {
 	classNameParent?: string;
@@ -14,7 +14,7 @@ interface TooltipProps {
 
 export default function Tooltip({ classNameParent }: TooltipProps) {
 	return (
-		<div className={clsx(styles.tooltip, classNameParent)}>
+		<div className={classNames(styles.tooltip, {}, [classNameParent])}>
 			<Text
 				type={TextType.TEXT}
 				fontSize={TextSize.S}

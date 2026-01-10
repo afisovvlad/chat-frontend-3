@@ -2,6 +2,7 @@
 
 import { FormSettingsItem } from '@/entities/FormSettingsItem';
 import { useEditProfileMutation } from '@/features/profile/edit/api/editProfile.api';
+import { classNames } from '@/shared/lib/classNames/classNames';
 import { convertDateToNumber } from '@/shared/lib/convertDateToNumber/convertDateToNumber';
 import { convertNumberToDate } from '@/shared/lib/convertNumberToDate/convertNumberToDate';
 import { Button, ButtonType } from '@/shared/ui/Button';
@@ -21,7 +22,6 @@ import {
 	getMonthsOptions,
 	getYearsOptions
 } from '@/shared/utils/dateOptions';
-import clsx from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StylesConfig } from 'react-select';
@@ -59,7 +59,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const year = watch('year')?.value;
 	const dayOptions = getDaysOptions(month, year);
 	const hasError = formState.isSubmitted && (!day || !month || !year);
-
 	const formItem = [
 		{
 			type: FormItemType.TEXT,
@@ -199,18 +198,22 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 		const response = await editProfile({}); // Отправляем пустой {} для получения данных профиля
 		if (response.data) {
 			const data = response.data;
-			const { day, month, year } = data?.birthday
-				? convertNumberToDate(data.birthday)
-				: { day: 1, month: 1, year: 2026 };
-			reset({
-				nickname: data.nickname || '',
-				first_name: data.first_name || '',
-				last_name: data.last_name || '',
-				additional_information: data.additional_information || '',
-				day: { label: String(day), value: String(day) },
-				month: { label: String(month), value: String(month) },
-				year: { label: String(year), value: String(year) }
-			});
+
+			if (data && data.birthday) {
+				const { enteredDay, enteredMonth, enteredYear } = convertNumberToDate(
+					data.birthday
+				);
+
+				reset({
+					nickname: data.nickname || '',
+					first_name: data.first_name || '',
+					last_name: data.last_name || '',
+					additional_information: data.additional_information || '',
+					day: { label: String(enteredDay), value: String(enteredDay) },
+					month: { label: String(enteredMonth), value: String(enteredMonth) },
+					year: { label: String(enteredYear), value: String(enteredYear) }
+				});
+			}
 		}
 	}, [reset, editProfile]);
 
@@ -293,7 +296,7 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 		<Form<EditProfileForm>
 			methods={methods}
 			onSubmit={onSubmit}
-			className={clsx(styles.form, parentClass)}
+			className={classNames(styles.form, {}, [parentClass])}
 		>
 			<p style={{ marginBottom: '30px' }}>Выбрать фотографию</p>
 			{formItem.map(item => (
@@ -311,7 +314,13 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 
 			<fieldset>
 				{hasError ? (
-					<legend className={clsx(styles.birthday, styles.birthdayError)}>
+					<legend
+						className={classNames(
+							`${styles.birthday} ${styles.birthdayError}`,
+							{},
+							[]
+						)}
+					>
 						Пожалуйста, заполните дату рождения
 					</legend>
 				) : (
@@ -323,45 +332,48 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 					<SelectItem<EditProfileForm, DateOption>
 						options={dayOptions}
 						name={'day'}
-						classNameParentSelectWrapper={styles.selectWrapper}
-						classNameParentSelectControl={styles.selectDay}
-						classNameParentSelectMenu={styles.selectMenu}
-						classNameParentSelectMenuList={styles.selectMenuList}
-						classNameParentSelectOption={styles.selectOption}
-						classNameParentSelectSingleValue={styles.selectSingleValue}
-						classNameParentSelectIndicatorSeparator={
+						parentSelectWrapperClass={styles.selectWrapper}
+						parentSelectControlClass={styles.selectDay}
+						parentSelectMenuClass={styles.selectMenu}
+						parentSelectMenuListClass={styles.selectMenuList}
+						parentSelectOptionClass={styles.selectOption}
+						parentSelectSingleValueClass={styles.selectSingleValue}
+						parentSelectIndicatorSeparatorClass={
 							styles.selectIndicatorSeparator
 						}
 						createCustomStyles={createCustomStyles}
 						ariaLabel='Выбор дня месяца'
+						hasError={hasError}
 					/>
 					<SelectItem<EditProfileForm, DateOption>
 						options={getMonthsOptions()}
 						name={'month'}
-						classNameParentSelectControl={styles.selectMonth}
-						classNameParentSelectMenu={styles.selectMenu}
-						classNameParentSelectMenuList={styles.selectMenuList}
-						classNameParentSelectOption={styles.selectOption}
-						classNameParentSelectSingleValue={styles.selectSingleValue}
-						classNameParentSelectIndicatorSeparator={
+						parentSelectControlClass={styles.selectMonth}
+						parentSelectMenuClass={styles.selectMenu}
+						parentSelectMenuListClass={styles.selectMenuList}
+						parentSelectOptionClass={styles.selectOption}
+						parentSelectSingleValueClass={styles.selectSingleValue}
+						parentSelectIndicatorSeparatorClass={
 							styles.selectIndicatorSeparator
 						}
 						createCustomStyles={createCustomStyles}
 						ariaLabel='Выбор месяца'
+						hasError={hasError}
 					/>
 					<SelectItem
 						options={getYearsOptions()}
 						name={'year'}
-						classNameParentSelectControl={styles.selectYear}
-						classNameParentSelectMenu={styles.selectMenu}
-						classNameParentSelectMenuList={styles.selectMenuList}
-						classNameParentSelectOption={styles.selectOption}
-						classNameParentSelectSingleValue={styles.selectSingleValue}
-						classNameParentSelectIndicatorSeparator={
+						parentSelectControlClass={styles.selectYear}
+						parentSelectMenuClass={styles.selectMenu}
+						parentSelectMenuListClass={styles.selectMenuList}
+						parentSelectOptionClass={styles.selectOption}
+						parentSelectSingleValueClass={styles.selectSingleValue}
+						parentSelectIndicatorSeparatorClass={
 							styles.selectIndicatorSeparator
 						}
 						createCustomStyles={createCustomStyles}
 						ariaLabel='Выбор года'
+						hasError={hasError}
 					/>
 				</div>
 			</fieldset>

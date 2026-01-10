@@ -1,11 +1,11 @@
 'use client';
 
+import { classNames } from '@/shared/lib/classNames/classNames';
 import { Input, Label, OTPInput, PhoneInput, Textarea } from '@/shared/ui/Form';
 import {
 	FormItemAutocomplete,
 	FormItemType
 } from '@/shared/ui/Form/FormItems/model/types';
-import clsx from 'clsx';
 import { useEffect } from 'react';
 import {
 	FieldValues,
@@ -46,7 +46,6 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 	classNameParentLabel
 }: FormItemProps<TFormValues>) {
 	const {
-		// register,
 		control,
 		watch,
 		formState: { errors }
@@ -54,8 +53,6 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 	const errorMessage = errors?.[name]?.message as string | undefined;
 	const isError = Boolean(errorMessage);
 	const value = watch(name);
-
-	// console.log(value);
 
 	useEffect(() => {
 		if (onValueChange) {
@@ -73,10 +70,10 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 					name={name}
 					placeholder={placeholder}
 					disabled={disabled}
-					classNameTextarea={clsx(
+					classNameTextarea={classNames(
 						styles.textarea,
-						classNameParentInput,
-						isError && styles.error
+						{ [styles.error]: isError },
+						[classNameParentInput]
 					)}
 					rules={rules}
 				/>
@@ -91,10 +88,10 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 					disabled={disabled}
 					length={length}
 					control={control}
-					classNameInput={clsx(
+					classNameInput={classNames(
 						styles.input,
-						classNameParentInput,
-						isError && styles.error
+						{ [styles.error]: isError },
+						[classNameParentInput]
 					)}
 				/>
 			);
@@ -106,10 +103,10 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 					name={name}
 					placeholder={placeholder}
 					disabled={disabled}
-					classNameInput={clsx(
+					classNameInput={classNames(
 						styles.input,
-						classNameParentInput,
-						isError && styles.error
+						{ [styles.error]: isError },
+						[classNameParentInput]
 					)}
 				/>
 			);
@@ -123,25 +120,25 @@ export default function FormAuthItem<TFormValues extends FieldValues>({
 					disabled={disabled}
 					rules={rules}
 					type={FormItemType.TEXT}
-					classNameInput={clsx(
+					classNameInput={classNames(
 						styles.input,
-						classNameParentInput,
-						isError && styles.error
+						{ [styles.error]: isError },
+						[classNameParentInput]
 					)}
 				/>
 			);
 	}
 
 	return (
-		<div className={clsx(styles.inputWrapper, classNameParentWrapper)}>
+		<div
+			className={classNames(styles.inputWrapper, {}, [classNameParentWrapper])}
+		>
 			<Label
 				classNameParentLabel={classNameParentLabel}
 				name={name}
 				isRequired={isRequired}
 			>
 				{label}
-				{/* {errorMessage ?? label}
-				{isRequired && <span className={styles.required}>*</span>} */}
 			</Label>
 			{inputElement}
 		</div>

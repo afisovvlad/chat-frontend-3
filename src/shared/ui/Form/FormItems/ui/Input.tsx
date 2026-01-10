@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import {
 	FieldValues,
 	Path,
@@ -7,6 +6,7 @@ import {
 } from 'react-hook-form';
 import { FormItemAutocomplete, FormItemType } from '../model/types';
 import styles from './styles.module.scss';
+import { classNames } from '@/shared/lib/classNames/classNames';
 
 interface InputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
@@ -44,10 +44,14 @@ export function Input<TFormValues extends FieldValues>({
 			placeholder={placeholder}
 			disabled={disabled}
 			autoComplete={autoComplete || FormItemAutocomplete.ON}
-			className={clsx(classNameInput, styles.input, {
-				[styles.hasError]: isError,
-				[styles.disabled]: disabled
-			})}
+			className={classNames(
+				styles.input,
+				{
+					[styles.hasError]: isError,
+					[styles.disabled]: disabled
+				},
+				[classNameInput]
+			)}
 		/>
 	);
 }

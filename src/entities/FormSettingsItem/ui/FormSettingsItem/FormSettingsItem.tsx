@@ -1,11 +1,11 @@
 'use client';
 
+import { classNames } from '@/shared/lib/classNames/classNames';
 import { Input, Label, SelectItem, Textarea } from '@/shared/ui/Form';
 import {
 	FormItemAutocomplete,
 	FormItemType
 } from '@/shared/ui/Form/FormItems/model/types';
-import clsx from 'clsx';
 import { useEffect } from 'react';
 import {
 	FieldValues,
@@ -76,11 +76,13 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 					name={name}
 					placeholder={placeholder}
 					disabled={disabled}
-					classNameTextarea={clsx(
+					classNameTextarea={classNames(
 						styles.textarea,
-						classNameParentInput,
-						isError && styles.error,
-						isMessageShort && styles.messageShort
+						{
+							[styles.error]: isError,
+							[styles.messageShort]: isMessageShort
+						},
+						[classNameParentInput]
 					)}
 					rules={rules}
 					height={textareaHeight}
@@ -94,10 +96,10 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 					options={options}
 					name={name}
 					disabled={disabled}
-					classNameSelect={clsx(
+					classNameSelect={classNames(
 						styles.select,
-						classNameParentSelect,
-						isError && styles.error
+						{ [styles.error]: isError },
+						[classNameParentSelect]
 					)}
 				/>
 			);
@@ -110,10 +112,10 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 					disabled={disabled}
 					rules={rules}
 					type={FormItemType.EMAIL}
-					classNameInput={clsx(
+					classNameInput={classNames(
 						styles.input,
-						classNameParentInput,
-						isError && styles.error
+						{ [styles.error]: isError },
+						[classNameParentInput]
 					)}
 				/>
 			);
@@ -127,19 +129,23 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 					disabled={disabled}
 					rules={rules}
 					type={FormItemType.TEXT}
-					classNameInput={clsx(
+					classNameInput={classNames(
 						styles.input,
-						classNameParentInput,
-						isError && styles.error
+						{ [styles.error]: isError },
+						[classNameParentInput]
 					)}
 				/>
 			);
 	}
 
 	return (
-		<div className={clsx(styles.inputWrapper, classNameParentWrapper)}>
+		<div
+			className={classNames(styles.inputWrapper, {}, [classNameParentWrapper])}
+		>
 			<Label
-				classNameParentLabel={clsx(styles.label, classNameParentLabel)}
+				classNameParentLabel={classNames(styles.label, {}, [
+					classNameParentLabel
+				])}
 				name={name}
 				isRequired={isRequired}
 			>
