@@ -53,7 +53,7 @@ export const EnterPhoneForm = () => {
 		name: 'phone_number'
 	});
 	const disabled = isDisabledCodeAttempts || phone_number.length !== 16;
-
+	console.log(phone_number); // показывается при каждом нажатии клавиши
 	useEffect(() => {
 		methods.setFocus('phone_number');
 	}, [methods]);

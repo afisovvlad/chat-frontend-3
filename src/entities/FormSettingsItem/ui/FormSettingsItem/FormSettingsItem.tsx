@@ -96,7 +96,7 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 					options={options}
 					name={name}
 					disabled={disabled}
-					classNameSelect={classNames(
+					parentSelectClass={classNames(
 						styles.select,
 						{ [styles.error]: isError },
 						[classNameParentSelect]
