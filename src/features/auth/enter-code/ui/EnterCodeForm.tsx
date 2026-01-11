@@ -1,8 +1,10 @@
 'use client';
 
-import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
 import { authActions } from '@/entities/Auth/model/authSlice';
 import { useSetAuthStep } from '@/entities/Auth/model/useSetAuthStep';
+import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
+import { LoginCodeForm } from '@/pages/LoginCode/types';
+import { classNames } from '@/shared/lib/classNames/classNames';
 import { formatPhone } from '@/shared/lib/formatPhone/formatPhone';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
@@ -31,14 +33,13 @@ import { InfoCircle } from '@icons/index';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-
+import { TimeLeft } from '../../timer-left/ui/TimeLeft';
 import styles from './EnterCodeForm.module.scss';
-import { classNames } from '@/shared/lib/classNames/classNames';
-import { LoginCodeForm } from '@/pages/LoginCode/types';
 
 export const EnterCodeForm = () => {
 	const [attemptsNumber, setAttemptsNumber] = useState(5);
-	const [timeLeft, setTimeLeft] = useState(60);
+	const [time, setTime] = useState(60);
+	const [finishedTime, setFinishedTime] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
 	const {
 		phone_number,
@@ -69,7 +70,6 @@ export const EnterCodeForm = () => {
 	console.log('is_filled', is_filled);
 
 	const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(async () => {
-		// отправляем код и телефон  на сервер
 		const response = await fetch('/api/auth/setTokens', {
 			method: 'POST',
 			headers: {
@@ -88,7 +88,7 @@ export const EnterCodeForm = () => {
 		} else if (res.errors) {
 			if (attemptsNumber === 1) {
 				dispatch(authActions.disabledCodeAttempts(true));
-				setTimeLeft(600);
+				setTime(600);
 				setError('code', {
 					message: 'Слишком много неверных попыток.'
 				});
@@ -113,18 +113,6 @@ export const EnterCodeForm = () => {
 			setTimeout(() => setSubmitted(false), 0); // отложенный setState
 		}
 	}, [code, submitted, handleSubmit, onSubmit, code_len]);
-
-	useEffect(() => {
-		const timer = setInterval(() => {
-			if (timeLeft > 0) {
-				setTimeLeft(prev => prev - 1);
-			} else {
-				setTimeLeft(0);
-			}
-		}, 1000);
-
-		return () => clearInterval(timer);
-	}, [timeLeft]);
 
 	useEffect(() => {
 		if (attemptsNumber === 0 && disabled === true) {
@@ -201,7 +189,7 @@ export const EnterCodeForm = () => {
 					/>
 				))}
 			</Form>
-			{timeLeft > 0 ? (
+			{!finishedTime ? (
 				<Text
 					type={TextType.TEXT}
 					tag={TextTag.P}
@@ -211,8 +199,8 @@ export const EnterCodeForm = () => {
 					color={TextColor.GRAY}
 					className={styles.timer}
 				>
-					Отправить новый код через 0:
-					{timeLeft < 10 ? `0${timeLeft}` : timeLeft}
+					Отправить новый код через
+					<TimeLeft initialTime={time} setFinishedTime={setFinishedTime} />
 				</Text>
 			) : (
 				<Button
@@ -223,7 +211,8 @@ export const EnterCodeForm = () => {
 					color={ButtonColor.PRIMARY}
 					className={styles.newCode}
 					onClick={() => {
-						setTimeLeft(60);
+						setTime(60);
+						setFinishedTime(false);
 					}}
 				>
 					Отправить новый код
