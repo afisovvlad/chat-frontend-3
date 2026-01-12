@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Close } from '@icons/index';
-import { MODAL_SIZES, ModalSize } from '../model/type';
+import { MODAL_SIZES, ModalBorderRadius, ModalSize } from '../model/type';
 import { FocusTrap } from 'focus-trap-react';
 import {
 	Button,
@@ -20,6 +20,9 @@ export interface ModalProps {
 	closeButton?: boolean;
 	className?: string;
 	size?: ModalSize;
+	overlayMode?: 'full' | 'container';
+	containerRef?: React.RefObject<Element | null>;
+	overlayBorderRadius?: ModalBorderRadius;
 }
 
 interface ModalActionsProps {
@@ -33,23 +36,27 @@ export const Modal = ({
 	children,
 	closeButton,
 	className,
-	size
+	size,
+	overlayMode = 'full', // Значение по умолчанию
+	containerRef,
+	overlayBorderRadius
 }: ModalProps) => {
 	const modalRef = useRef<HTMLDivElement>(null);
 
-	// Управление body.overflow через класс
+	// Управление body.overflow через класс — только в full mode
 	useEffect(() => {
-		if (isOpen) {
+		if (isOpen && overlayMode === 'full') {
 			document.body.classList.add('modal-open');
-		} else {
+		} else if (!isOpen && overlayMode === 'full') {
 			document.body.classList.remove('modal-open');
 		}
 
-		// Cleanup при размонтировании компонента
 		return () => {
-			document.body.classList.remove('modal-open');
+			if (overlayMode === 'full') {
+				document.body.classList.remove('modal-open');
+			}
 		};
-	}, [isOpen]);
+	}, [isOpen, overlayMode]);
 
 	// Escape-закрытие
 	useEffect(() => {
@@ -68,6 +75,12 @@ export const Modal = ({
 			onClose();
 		}
 	};
+
+	// Определяем, куда рендерить portal
+	const portalContainer =
+		overlayMode === 'container' && containerRef?.current
+			? containerRef.current
+			: document.body;
 
 	if (!isOpen) {
 		return null;
@@ -93,7 +106,14 @@ export const Modal = ({
 
 	return createPortal(
 		<div
-			className={cls.overlay}
+			className={classNames(cls.overlay, {
+				[cls['overlay--container']]: overlayMode === 'container'
+			})}
+			style={
+				overlayMode === 'container'
+					? { borderRadius: overlayBorderRadius }
+					: undefined
+			}
 			onClick={handleOverlayClick}
 			role='dialog'
 			aria-modal='true'
@@ -116,7 +136,7 @@ export const Modal = ({
 				</div>
 			</FocusTrap>
 		</div>,
-		document.body
+		portalContainer
 	);
 };
 

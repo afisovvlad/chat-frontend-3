@@ -38,7 +38,6 @@ export const SettingsList = ({ className }: SettingsListProps) => {
 				{settingsListItems.map(item => {
 					const Icon = item.Icon;
 
-					// Пункт "Выйти из аккаунта"
 					if (!item.href) {
 						return (
 							<Button
@@ -62,7 +61,6 @@ export const SettingsList = ({ className }: SettingsListProps) => {
 						);
 					}
 
-					// Обычные ссылки
 					const href = item.href;
 					const isActive = pathname?.startsWith(href) || false;
 

@@ -1,4 +1,5 @@
 .login {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -69,4 +70,13 @@
 
 .logo {
 	font-size: 6rem;
+}
+
+.welcomeContent {
+	padding: 20px;
+	text-align: center;
+}
+
+.btn {
+	width: 200px;
 }
