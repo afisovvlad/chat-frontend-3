@@ -1,5 +1,5 @@
 'use client';
-import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
+import { FormAuthItem } from '@/entities/Auth';
 import { Button, ButtonType } from '@/shared/ui/Button';
 import { ButtonColor, ButtonTheme } from '@/shared/ui/Button/model/type';
 import { Form } from '@/shared/ui/Form';
@@ -139,7 +139,6 @@ export function LoginProfile() {
 				tag={TextTag.P}
 				fontSize={TextSize.S}
 				fontWeight={FontWeight.REGULAR}
-				// textAlign={TextAlign.CENTER}
 				color={TextColor.GRAY}
 				className={styles.text}
 			>

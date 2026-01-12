@@ -1,4 +1,4 @@
-import { SettingsHeaderBlock } from '@/shared/ui/SettingsHeaderBlock';
+import { SettingsHeaderBlock } from '@/entities/SettingsHeaderBlock';
 import styles from './BlackListPage.module.scss';
 
 export function BlackListPage() {

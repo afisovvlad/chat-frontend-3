@@ -1,6 +1,6 @@
 'use client';
 
-import { CreateCustomStylesOptions } from '@/entities/Profile';
+import { CustomStylesOptions } from '@/entities/Profile';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { JSX } from 'react';
 import {
@@ -35,7 +35,7 @@ interface SelectProps<
 	disabled?: boolean;
 	icon?: JSX.Element;
 	createCustomStyles?: (
-		options?: CreateCustomStylesOptions
+		options?: CustomStylesOptions
 	) => StylesConfig<TOption, IsMulti, Group>;
 	menu?: string;
 	ariaLabel?: string;

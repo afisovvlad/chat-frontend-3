@@ -1,5 +1,5 @@
 export type {
 	ProfileSchema,
-	CreateCustomStylesOptions
+	CustomStylesOptions
 } from './model/types/ProfileSchema';
 export { EditProfileForm } from './ui/EditProfileForm/EditProfileForm';

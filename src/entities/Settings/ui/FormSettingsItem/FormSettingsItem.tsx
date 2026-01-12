@@ -13,8 +13,8 @@ import {
 	RegisterOptions,
 	useFormContext
 } from 'react-hook-form';
-import styles from './FormAuthItem.module.scss';
-import { RenderAuthInputByType } from './RenderAuthInputByType';
+import styles from './FormSettingsItem.module.scss';
+import { RenderSettingsInputByType } from './RenderSettingsInputByType';
 
 interface FormItemProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
@@ -25,29 +25,34 @@ interface FormItemProps<TFormValues extends FieldValues> {
 	disabled?: boolean;
 	isRequired?: boolean;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
-	length?: number; // для code
 	classNameParentLabel?: string;
 	classNameParentInput?: string;
 	classNameParentWrapper?: string;
+	classNameParentSelect?: string;
+	isMessageShort?: boolean;
+	textareaHeight?: string | undefined;
 	onValueChange?: (value: string) => void; // для реакции на ввод сразу
+	options?: { value: string; label: string }[] | [];
 }
 
-export function FormAuthItem<TFormValues extends FieldValues>({
+export function FormSettingsItem<TFormValues extends FieldValues>({
 	name,
 	type,
 	label,
 	placeholder,
 	disabled,
 	isRequired,
-	length = 5,
 	onValueChange,
 	rules,
 	classNameParentInput,
 	classNameParentWrapper,
-	classNameParentLabel
+	classNameParentLabel,
+	classNameParentSelect,
+	isMessageShort,
+	textareaHeight,
+	options = []
 }: FormItemProps<TFormValues>) {
 	const {
-		control,
 		watch,
 		formState: { errors }
 	} = useFormContext<TFormValues>();
@@ -61,16 +66,18 @@ export function FormAuthItem<TFormValues extends FieldValues>({
 		}
 	}, [value, onValueChange]);
 
-	const inputElement = RenderAuthInputByType({
-		type,
+	const inputElement = RenderSettingsInputByType({
 		name,
+		type,
 		placeholder,
 		disabled,
 		isError,
-		length,
-		control,
 		rules,
-		classNameParentInput
+		classNameParentInput,
+		classNameParentSelect,
+		isMessageShort,
+		textareaHeight,
+		options
 	});
 
 	return (
@@ -78,7 +85,9 @@ export function FormAuthItem<TFormValues extends FieldValues>({
 			className={classNames(styles.inputWrapper, {}, [classNameParentWrapper])}
 		>
 			<Label
-				classNameParentLabel={classNameParentLabel}
+				classNameParentLabel={classNames(styles.label, {}, [
+					classNameParentLabel
+				])}
 				name={name}
 				isRequired={isRequired}
 			>

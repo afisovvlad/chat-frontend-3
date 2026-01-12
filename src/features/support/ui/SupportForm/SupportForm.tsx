@@ -1,7 +1,8 @@
 'use client';
 
-import { FormSettingsItem } from '@/entities/FormSettingsItem';
+import { FormSettingsItem } from '@/entities/Settings';
 import { useSendSupportMessageMutation } from '@/shared/api/support/supportApi';
+import { classNames } from '@/shared/lib/classNames/classNames';
 import { Button } from '@/shared/ui/Button';
 import {
 	ButtonColor,
@@ -10,18 +11,14 @@ import {
 } from '@/shared/ui/Button/model/type';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form } from '@/shared/ui/Form';
-import {
-	FormItemNames,
-	FormItemType
-} from '@/shared/ui/Form/FormItems/model/types';
 import { Loader } from '@/shared/ui/Loader';
 import { SuccessBlock } from '@/shared/ui/SuccessBlock';
 import { Text } from '@/shared/ui/Text';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { formItems } from '../../model/lib/formItems';
 import styles from './SupportForm.module.scss';
-import { classNames } from '@/shared/lib/classNames/classNames';
 
 interface SupportForm {
 	email: string;
@@ -29,6 +26,7 @@ interface SupportForm {
 }
 
 export function SupportForm({ parentClass }: { parentClass?: string }) {
+	const [responseError, setResponseError] = useState('');
 	const [sendSupportMessage, { isLoading, isError, isSuccess }] =
 		useSendSupportMessageMutation();
 	const methods = useForm<SupportForm>();
@@ -42,30 +40,10 @@ export function SupportForm({ parentClass }: { parentClass?: string }) {
 		name: 'message'
 	});
 	const disabled = !(email?.length > 4 && message?.length > 10);
-
-	const formItem = [
-		{
-			type: FormItemType.EMAIL,
-			name: FormItemNames.EMAIL,
-			label: 'Укажите Ваш e-mail',
-			placeholder: 'e-mail',
-			rules: {
-				required: 'Заполните это поле',
-				pattern: {
-					value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-					message: 'Некорректный e-mail'
-				}
-			}
-		},
-		{
-			type: FormItemType.TEXTAREA,
-			name: FormItemNames.MESSAGE,
-			label: 'Опишите Вашу проблему'
-		}
-	];
-
+	console.log('SupportForm');
 	useEffect(() => {
 		methods.setFocus('email');
+		console.log('useEffect');
 	}, [methods]);
 
 	const onSubmit: SubmitHandler<SupportForm> = async data => {
@@ -75,16 +53,14 @@ export function SupportForm({ parentClass }: { parentClass?: string }) {
 				text: data.message
 			}).unwrap();
 		} catch (e) {
-			console.log(e);
+			setResponseError('При отправке произошла ошибка. Попробуйте позже');
 		}
 	};
 
 	return (
 		<div className={classNames(styles.support, {}, [parentClass])}>
 			{isError ? (
-				<ErrorComponent>
-					При отправке произошла ошибка. Попробуйте позже
-				</ErrorComponent>
+				<ErrorComponent>{responseError}</ErrorComponent>
 			) : isSuccess ? (
 				<>
 					<SuccessBlock
@@ -104,7 +80,7 @@ export function SupportForm({ parentClass }: { parentClass?: string }) {
 					onSubmit={onSubmit}
 					className={styles.form}
 				>
-					{formItem.map(item => (
+					{formItems.map(item => (
 						<FormSettingsItem
 							key={item.name}
 							type={item.type}

@@ -1,3 +1,6 @@
+'use client';
+
+import { classNames } from '@/shared/lib/classNames/classNames';
 import {
 	FieldValues,
 	Path,
@@ -6,7 +9,6 @@ import {
 } from 'react-hook-form';
 import { FormItemAutocomplete } from '../model/types';
 import styles from './styles.module.scss';
-import { classNames } from '@/shared/lib/classNames/classNames';
 
 interface TextareaProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;

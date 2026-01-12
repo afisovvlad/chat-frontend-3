@@ -1,8 +1,8 @@
 'use client';
 
+import { FormAuthItem } from '@/entities/Auth';
 import { authActions } from '@/entities/Auth/model/authSlice';
 import { useSetAuthStep } from '@/entities/Auth/model/useSetAuthStep';
-import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
 import { LoginCodeForm } from '@/pages/LoginCode/types';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { formatPhone } from '@/shared/lib/formatPhone/formatPhone';
@@ -47,6 +47,11 @@ export const EnterCodeForm = () => {
 		is_filled,
 		isDisabledCodeAttempts: disabled
 	} = useAppSelector(state => state.auth);
+	// const { phone_number, code_len, is_filled } = useAppSelector(
+	// 	state => state.auth
+	// );
+	console.log('phone_number', phone_number);
+	console.log('code_len', code_len);
 	const dispatch = useAppDispatch();
 	const router = useRouter();
 	const setStep = useSetAuthStep();
@@ -68,6 +73,11 @@ export const EnterCodeForm = () => {
 	];
 
 	console.log('is_filled', is_filled);
+
+	useEffect(() => {
+		// удалить, для проверки
+		console.log('auth slice', { phone_number, code_len }); //{phone_number: '', code_len: 5
+	}, [phone_number, code_len]);
 
 	const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(async () => {
 		const response = await fetch('/api/auth/setTokens', {

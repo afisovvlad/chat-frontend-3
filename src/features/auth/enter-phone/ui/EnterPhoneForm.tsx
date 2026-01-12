@@ -2,7 +2,7 @@
 
 import { fetchPhone } from '@/entities/Auth/model/authSlice';
 import { useSetAuthStep } from '@/entities/Auth/model/useSetAuthStep';
-import FormAuthItem from '@/entities/Auth/ui/FormAuthItem/FormAuthItem';
+import { FormAuthItem } from '@/entities/Auth';
 import { formatPhone } from '@/shared/lib/formatPhone/formatPhone';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
@@ -28,6 +28,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import styles from './EnterPhoneForm.module.scss';
+import { useSendPhoneMutation } from '../model/api/authApi';
 
 interface LoginPhoneForm {
 	phone_number: string;
@@ -37,6 +38,7 @@ export const EnterPhoneForm = () => {
 	const { isDisabledCodeAttempts, phone_number: phone } = useAppSelector(
 		state => state.auth
 	);
+	const [sendPhone, { isLoading }] = useSendPhoneMutation();
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const confirmBtnRef = useRef<HTMLButtonElement>(null);
 	const setStep = useSetAuthStep();
@@ -82,7 +84,8 @@ export const EnterPhoneForm = () => {
 		// сохраняем phone и step в store и отправляем телефон на сервер
 
 		const formattedPhone = phone_number.replace(/[^\d+]/g, '');
-		dispatch(fetchPhone(formattedPhone));
+		sendPhone({ phone_number: formattedPhone });
+		// dispatch(fetchPhone(formattedPhone));
 		setStep('code');
 		setIsModalOpen(false);
 	};

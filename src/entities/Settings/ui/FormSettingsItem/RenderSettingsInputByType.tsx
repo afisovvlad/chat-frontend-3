@@ -1,77 +1,44 @@
-'use client';
-
+import { FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import { classNames } from '@/shared/lib/classNames/classNames';
-import { Input, Label, SelectItem, Textarea } from '@/shared/ui/Form';
+import { Input, SelectItem, Textarea } from '@/shared/ui/Form';
 import {
 	FormItemAutocomplete,
 	FormItemType
 } from '@/shared/ui/Form/FormItems/model/types';
-import { useEffect } from 'react';
-import {
-	FieldValues,
-	Path,
-	RegisterOptions,
-	useFormContext
-} from 'react-hook-form';
 import styles from './FormSettingsItem.module.scss';
 
-interface FormItemProps<TFormValues extends FieldValues> {
+interface RenderSettingsInputByTypeProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
 	type: FormItemType;
-	label?: string;
 	placeholder?: string;
 	autoComplete?: FormItemAutocomplete;
 	disabled?: boolean;
 	isRequired?: boolean;
+	isError: boolean;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
-	length?: number; // для code
-	classNameParentLabel?: string;
 	classNameParentInput?: string;
-	classNameParentWrapper?: string;
 	classNameParentSelect?: string;
 	isMessageShort?: boolean;
 	textareaHeight?: string | undefined;
-	onValueChange?: (value: string) => void; // для реакции на ввод сразу
 	options?: { value: string; label: string }[] | [];
 }
 
-export function FormSettingsItem<TFormValues extends FieldValues>({
+export function RenderSettingsInputByType<TFormValues extends FieldValues>({
 	name,
 	type,
-	label,
 	placeholder,
 	disabled,
-	isRequired,
-	onValueChange,
+	isError,
 	rules,
 	classNameParentInput,
-	classNameParentWrapper,
-	classNameParentLabel,
 	classNameParentSelect,
 	isMessageShort,
 	textareaHeight,
 	options = []
-}: FormItemProps<TFormValues>) {
-	const {
-		watch,
-		formState: { errors }
-	} = useFormContext<TFormValues>();
-	const errorMessage = errors?.[name]?.message as string | undefined;
-	const isError = Boolean(errorMessage);
-	const value = watch(name);
-
-	useEffect(() => {
-		if (onValueChange) {
-			onValueChange(value ?? '');
-		}
-	}, [value, onValueChange]);
-
-	// ---------- Render switch ----------
-
-	let inputElement;
+}: RenderSettingsInputByTypeProps<TFormValues>) {
 	switch (type) {
 		case FormItemType.TEXTAREA:
-			inputElement = (
+			return (
 				<Textarea
 					name={name}
 					placeholder={placeholder}
@@ -88,10 +55,9 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 					height={textareaHeight}
 				/>
 			);
-			break;
 
 		case FormItemType.SELECT:
-			inputElement = (
+			return (
 				<SelectItem
 					options={options}
 					name={name}
@@ -103,9 +69,8 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 					)}
 				/>
 			);
-			break;
 		case FormItemType.EMAIL:
-			inputElement = (
+			return (
 				<Input
 					name={name}
 					placeholder={placeholder}
@@ -119,10 +84,9 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 					)}
 				/>
 			);
-			break;
 
 		default:
-			inputElement = (
+			return (
 				<Input
 					name={name}
 					placeholder={placeholder}
@@ -137,21 +101,4 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 				/>
 			);
 	}
-
-	return (
-		<div
-			className={classNames(styles.inputWrapper, {}, [classNameParentWrapper])}
-		>
-			<Label
-				classNameParentLabel={classNames(styles.label, {}, [
-					classNameParentLabel
-				])}
-				name={name}
-				isRequired={isRequired}
-			>
-				{label}
-			</Label>
-			{inputElement}
-		</div>
-	);
 }

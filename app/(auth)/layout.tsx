@@ -19,9 +19,7 @@ export default function AuthLayout({ children }: IChildren) {
 					backgroundColor: 'var(--color-violet-20)',
 					backgroundImage: `url('/images/bg/auth-bg.svg')`
 				}}
-				className={classNames(styles.container, {
-					[styles.nogreeting]: step !== 'greeting'
-				})}
+				className={classNames(styles.container, {})}
 			>
 				{children}
 			</div>

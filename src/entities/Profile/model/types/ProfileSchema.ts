@@ -12,6 +12,6 @@ export interface ProfileSchema {
 	phone?: string;
 }
 
-export interface CreateCustomStylesOptions {
+export interface CustomStylesOptions {
 	hasError?: boolean;
 }

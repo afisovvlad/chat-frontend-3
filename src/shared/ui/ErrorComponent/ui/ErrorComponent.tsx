@@ -5,7 +5,7 @@ import {
 	TextSize,
 	TextType
 } from '@/shared/ui/Text';
-import Image from 'next/image';
+import { Error } from '@icons/index';
 import styles from './ErrorComponent.module.scss';
 
 export interface ErrorComponentProps {
@@ -15,12 +15,7 @@ export interface ErrorComponentProps {
 export function ErrorComponent({ children }: ErrorComponentProps) {
 	return (
 		<div className={styles.errorBlock}>
-			<Image
-				src='/images/something-went-wrong.svg'
-				width={200}
-				height={200}
-				alt='Ошибка'
-			/>
+			<Error width={200} height={200} className={styles.errorIcon} />
 			<Text
 				type={TextType.TEXT}
 				fontSize={TextSize.S}

@@ -1,3 +1,4 @@
+import styles from './SettingsHeaderBlock.module.scss';
 import {
 	FontWeight,
 	Text,
@@ -8,9 +9,8 @@ import {
 } from '@/shared/ui/Text';
 import { Back, Left, MenuIcon } from '@icons/index';
 import Link from 'next/link';
-import { Button, ButtonTheme } from '../../Button';
-import styles from './SettingsHeaderBlock.module.scss';
 import { classNames } from '@/shared/lib/classNames/classNames';
+import { Button, ButtonTheme } from '@/shared/ui/Button';
 
 export interface SettingsHeaderBlockProps {
 	title: string;

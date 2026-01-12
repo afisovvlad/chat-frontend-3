@@ -1,6 +1,6 @@
 'use client';
 
-import { FormSettingsItem } from '@/entities/FormSettingsItem';
+import { FormSettingsItem } from '@/entities/Settings';
 import { useEditProfileMutation } from '@/features/profile/edit/api/editProfile.api';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { convertDateToNumber } from '@/shared/lib/convertDateToNumber/convertDateToNumber';
@@ -10,7 +10,6 @@ import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form, SelectItem } from '@/shared/ui/Form';
 import { DateOption } from '@/shared/ui/Form/FormItems/model/selectTypes';
 import {
-	FormItemAutocomplete,
 	FormItemNames,
 	FormItemType
 } from '@/shared/ui/Form/FormItems/model/types';
@@ -24,9 +23,10 @@ import {
 } from '@/shared/utils/dateOptions';
 import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { StylesConfig } from 'react-select';
-import { CreateCustomStylesOptions, ProfileSchema } from '../..';
+import { ProfileSchema } from '../..';
 import styles from './EditProfileForm.module.scss';
+import { createCustomStyles } from './createCustomStyles';
+import { formItems } from '../../model/const/formItems';
 
 interface EditBirthdayForm {
 	day: DateOption | undefined;
@@ -59,141 +59,8 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const year = watch('year')?.value;
 	const dayOptions = getDaysOptions(month, year);
 	const hasError = formState.isSubmitted && (!day || !month || !year);
-	const formItem = [
-		{
-			type: FormItemType.TEXT,
-			name: FormItemNames.FIRST_NAME,
-			label: 'Изменить имя',
-			placeholder: 'Иван',
-			autocomplete: FormItemAutocomplete.NAME,
-			disabled: false,
-			isRequired: false,
-			rules: {
-				required: 'Заполните это поле',
-				minLength: {
-					value: 3,
-					message: 'Минимум 3 буквы'
-				},
-				pattern: {
-					value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-					message: 'Допускаются только буквы'
-				}
-			}
-		},
-		{
-			type: FormItemType.TEXT,
-			name: FormItemNames.LAST_NAME,
-			label: 'Изменить фамилию',
-			placeholder: 'Иванов',
-			autocomplete: FormItemAutocomplete.LAST_NAME,
-			disabled: false,
-			isRequired: false,
-			rules: {
-				required: 'Заполните это поле',
-				minLength: {
-					value: 3,
-					message: 'Минимум 3 буквы'
-				},
-				pattern: {
-					value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-					message: 'Допускаются только буквы'
-				}
-			}
-		},
-		{
-			type: FormItemType.TEXT,
-			name: FormItemNames.NICKNAME,
-			label: 'Изменить никнейм',
-			placeholder: 'ivan',
-			autocomplete: FormItemAutocomplete.NICKNAME,
-			disabled: false,
-			isRequired: false,
-			rules: {
-				required: 'Заполните это поле',
-				minLength: {
-					value: 3,
-					message: 'Минимум 3 буквы'
-				},
-				pattern: {
-					value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-					message: 'Допускаются только буквы'
-				}
-			}
-		}
-	];
 
-	const createCustomStyles = (
-		options: CreateCustomStylesOptions = {}
-	): StylesConfig<DateOption, boolean> => {
-		const { hasError } = options;
-
-		return {
-			control: (base, state) => ({
-				...base,
-				position: 'relative',
-				minHeight: 56,
-				fontFamily: 'inherit',
-				lineHeight: '130%',
-				letterSpacing: '0.4px',
-				borderRadius: state.menuIsOpen ? '8px 8px 0 0' : '8px',
-				border: state.menuIsOpen
-					? '1px solid var(--color-primary)'
-					: `1px solid ${hasError ? 'transparent' : 'var(--settings-border-color)'}`,
-				outline: hasError ? '2px solid var(--color-red)' : 'none',
-				boxShadow: 'none',
-
-				'&:hover': {
-					borderColor: hasError ? 'var(--color-red)' : 'var(--color-primary)'
-				},
-
-				'&:focus': {
-					borderColor: 'var(--color-primary)'
-				}
-			}),
-
-			menu: base => ({
-				...base,
-				minHeight: 140,
-				maxHeight: 140,
-				marginTop: 0,
-				marginBottom: '4px',
-				padding: '4px 6px 4px 10px',
-				border: '1px solid var(--color-primary)',
-				borderTop: 'none ',
-				borderRadius: '0 0 8px 8px',
-				boxShadow: 'none',
-				overflow: 'hidden'
-			}),
-
-			menuList: base => ({
-				...base,
-				maxHeight: 140,
-				overflowY: 'auto'
-			}),
-
-			option: (base, state) => ({
-				...base,
-				padding: '0 0 4px 0',
-				backgroundColor: state.isSelected
-					? 'transparent'
-					: state.isFocused
-						? 'transparent'
-						: 'transparent',
-				color: 'var(--color-black)',
-				cursor: 'pointer'
-			}),
-
-			// singleValue: base => ({
-			// 	...base,
-			// 	color: '#000'
-			// }),
-
-			indicatorSeparator: () => ({
-				display: 'none'
-			})
-		};
-	};
-
+	console.log('EditProfileForm');
 	const fetchProfile = useCallback(async () => {
 		const response = await editProfile({}); // Отправляем пустой {} для получения данных профиля
 		if (response.data) {
@@ -234,8 +101,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 		fetchProfile();
 	}, [fetchProfile]);
 
-	useEffect(() => {});
-
 	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
 		setServerErrorMessage('');
 		const newBirthday =
@@ -269,7 +134,7 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 					Object.entries(serverErrors).forEach(([field, messages]) => {
 						setError(field as keyof EditProfileForm, {
 							type: 'server',
-							message: messages.join(' ') // объединяем все ошибки для одного поля
+							message: messages.join(' ')
 						});
 					});
 				} else {
@@ -277,7 +142,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 				}
 			}
 		} catch (e) {
-			// console.log(e);
 			setServerErrorMessage('Произошла непредвиденная ошибка');
 		}
 	};
@@ -299,7 +163,7 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 			className={classNames(styles.form, {}, [parentClass])}
 		>
 			<p style={{ marginBottom: '30px' }}>Выбрать фотографию</p>
-			{formItem.map(item => (
+			{formItems.map(item => (
 				<FormSettingsItem
 					key={item.name}
 					type={item.type}
