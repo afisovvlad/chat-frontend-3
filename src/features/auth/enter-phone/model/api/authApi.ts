@@ -22,8 +22,6 @@ export const sendPhoneApi = rtkApi.injectEndpoints({
 			async onQueryStarted(_, { dispatch, queryFulfilled }) {
 				try {
 					const data = await queryFulfilled;
-					console.log('phone_number in sendPhoneApi', data.data.phone_number); //+79164572365
-					console.log('code_len in sendPhoneApi', data.data.code_len); // 5
 					dispatch(
 						authActions.setPhoneData({
 							phone_number: data.data.phone_number,

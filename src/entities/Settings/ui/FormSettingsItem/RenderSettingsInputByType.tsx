@@ -13,7 +13,7 @@ interface RenderSettingsInputByTypeProps<TFormValues extends FieldValues> {
 	placeholder?: string;
 	autoComplete?: FormItemAutocomplete;
 	disabled?: boolean;
-	isRequired?: boolean;
+	// isRequired?: boolean;
 	isError: boolean;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
 	classNameParentInput?: string;
@@ -77,7 +77,7 @@ export function RenderSettingsInputByType<TFormValues extends FieldValues>({
 					disabled={disabled}
 					rules={rules}
 					type={FormItemType.EMAIL}
-					classNameInput={classNames(
+					parentInputClass={classNames(
 						styles.input,
 						{ [styles.error]: isError },
 						[classNameParentInput]
@@ -93,7 +93,7 @@ export function RenderSettingsInputByType<TFormValues extends FieldValues>({
 					disabled={disabled}
 					rules={rules}
 					type={FormItemType.TEXT}
-					classNameInput={classNames(
+					parentInputClass={classNames(
 						styles.input,
 						{ [styles.error]: isError },
 						[classNameParentInput]

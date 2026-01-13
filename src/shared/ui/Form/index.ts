@@ -1,9 +1,7 @@
 export { Form } from './FormProvider/ui/Form';
-// export { Checkbox } from './ui/Checkbox';
 export { Input } from './FormItems/ui/Input';
 export { OTPInput } from './FormItems/ui/OTPInput';
 export { PhoneInput } from './FormItems/ui/PhoneInput';
-// export { Radio } from './ui/Radio';
 export { CustomDropdownIndicator } from './FormItems/ui/CustomDropdownIndicator ';
 export { CustomSelectOption } from './FormItems/ui/CustomSelectOption';
 export { Label } from './FormItems/ui/Label';

@@ -5,6 +5,7 @@ import {
 	FieldValues,
 	Path,
 	RegisterOptions,
+	useController,
 	useFormContext
 } from 'react-hook-form';
 import { FormItemAutocomplete } from '../model/types';
@@ -30,11 +31,18 @@ export function Textarea<TFormValues extends FieldValues>({
 	classNameTextarea,
 	height
 }: TextareaProps<TFormValues>) {
-	const {
-		register,
-		formState: { errors }
-	} = useFormContext<TFormValues>();
-	const isError = Boolean(errors?.[name]?.message as string | undefined);
+	const { register, control } = useFormContext<TFormValues>();
+	// const { errors } = useFormState({
+	// 	control,
+	// 	name
+	// });
+	// const isError = Boolean(errors?.[name]?.message as string | undefined);
+	const { fieldState } = useController({ name });
+	const isError = !!fieldState.error;
+
+	console.log('isError in Textarea', isError);
+
+	console.log('Я - Textarea');
 
 	return (
 		<textarea

@@ -17,7 +17,7 @@
 	<Form<SearchForm> onSubmit={onSubmit} methods={methods}>	
 
   // Добавляем необходимые элементы формы			
-			<Label name='search' classNameParentLabel={styles.label}>
+			<Label name='search' parentLabelClass={styles.label}>
 				Введите дату своего рождения
 			</Label>
 
@@ -30,6 +30,6 @@
   3. Все элементы формы находятся в shared/ui/Form/FormItems/ui/
      Провайдер формы - в shared/ui/Form/FormProvider/ui/
 
-4. Все элементы формы могут принимать классы от родителей (названия классов нужно смотреть у каждого конкретного элемента), например, - Label принимает класс от родителя под названием "classNameParentLabel"
+4. Все элементы формы могут принимать классы от родителей (названия классов нужно смотреть у каждого конкретного элемента), например, - Label принимает класс от родителя под названием "parentLabelClass"
 
 5. Для всех полей необходим prop "name". Для элемента Input важен так же prop "type" (по умолчанию - "text").

@@ -1,5 +1,5 @@
-import { SettingsHeaderBlock } from '@/entities/SettingsHeaderBlock';
 import styles from './BlackListPage.module.scss';
+import { SettingsHeaderBlock } from '@/entities/Settings';
 
 export function BlackListPage() {
 	return (

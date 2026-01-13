@@ -1,6 +1,7 @@
 import { useAuthStep } from '@/entities/Auth/model/selectors';
-import { useAuthGoBack } from '@/entities/Auth/model/useAuthGoBack';
+import { useAuthGoBack } from '@/features/auth/model/lib/hooks/useAuthGoBack';
 import { classNames } from '@/shared/lib/classNames/classNames';
+import { Button, ButtonTheme } from '@/shared/ui/Button';
 import {
 	FontWeight,
 	Text,
@@ -10,7 +11,6 @@ import {
 } from '@/shared/ui/Text';
 import { Back, Logo } from '@icons/index';
 import { ReactNode } from 'react';
-import { Button, ButtonTheme } from '@/shared/ui/Button';
 import styles from './LoginWrapper.module.scss';
 
 interface LoginWrapperProps {
@@ -39,7 +39,7 @@ export function LoginWrapper({ children }: LoginWrapperProps) {
 			break;
 	}
 
-	console.log(step);
+	// console.log(step);
 
 	return (
 		<div className={styles.loginWrapper}>

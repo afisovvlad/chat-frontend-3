@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthSchema } from '../types/AuthSchema';
-import { AuthStep } from './authStep';
+import { AuthStep } from '../types/authStep';
 
 const initialState: AuthSchema = {
 	step: 'greeting',
@@ -11,8 +11,8 @@ const initialState: AuthSchema = {
 	code: '',
 	status: 'idle',
 	error: null,
-	isDisabledCodeAttempts: false
-	// is_filled: false
+	isDisabledCodeAttempts: false,
+	is_filled: false
 };
 
 const authSlice = createSlice({

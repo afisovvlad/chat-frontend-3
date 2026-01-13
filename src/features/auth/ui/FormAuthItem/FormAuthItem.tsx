@@ -23,10 +23,10 @@ interface FormItemProps<TFormValues extends FieldValues> {
 	placeholder?: string;
 	autoComplete?: FormItemAutocomplete;
 	disabled?: boolean;
-	isRequired?: boolean;
+	// isRequired?: boolean;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
 	length?: number; // для code
-	classNameParentLabel?: string;
+	parentLabelClass?: string;
 	classNameParentInput?: string;
 	classNameParentWrapper?: string;
 	onValueChange?: (value: string) => void; // для реакции на ввод сразу
@@ -38,13 +38,13 @@ export function FormAuthItem<TFormValues extends FieldValues>({
 	label,
 	placeholder,
 	disabled,
-	isRequired,
+	// isRequired,
 	length = 5,
 	onValueChange,
 	rules,
 	classNameParentInput,
 	classNameParentWrapper,
-	classNameParentLabel
+	parentLabelClass
 }: FormItemProps<TFormValues>) {
 	const {
 		control,
@@ -78,9 +78,9 @@ export function FormAuthItem<TFormValues extends FieldValues>({
 			className={classNames(styles.inputWrapper, {}, [classNameParentWrapper])}
 		>
 			<Label
-				classNameParentLabel={classNameParentLabel}
+				parentLabelClass={parentLabelClass}
 				name={name}
-				isRequired={isRequired}
+				// isRequired={isRequired}
 			>
 				{label}
 			</Label>

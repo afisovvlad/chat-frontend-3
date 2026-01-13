@@ -7,6 +7,7 @@ import {
 	Controller,
 	FieldValues,
 	Path,
+	useController,
 	useFormContext
 } from 'react-hook-form';
 import { FormItemAutocomplete, FormItemType } from '../model/types';
@@ -17,7 +18,7 @@ interface OTPInputProps<TFormValues extends FieldValues> {
 	length: number;
 	disabled?: boolean;
 	placeholder?: string;
-	classNameInput?: string;
+	parentInputClass?: string;
 	control: Control<TFormValues>;
 }
 
@@ -25,16 +26,20 @@ export function OTPInput<TFormValues extends FieldValues>({
 	name,
 	length = 5,
 	placeholder = '',
-	classNameInput,
+	parentInputClass,
 	disabled,
 	control
 }: OTPInputProps<TFormValues>) {
 	const inputRef = useRef<(HTMLInputElement | null)[]>([]);
 	const [OTP, setOTP] = useState<string[]>(Array(length).fill(''));
-	const {
-		formState: { errors }
-	} = useFormContext<TFormValues>();
-	const isError = Boolean(errors?.[name]?.message as string | undefined);
+	// const {
+	// 	formState: { errors }
+	// } = useFormContext<TFormValues>();
+	// const isError = Boolean(errors?.[name]?.message as string | undefined);
+	const { fieldState } = useController({ name });
+	const isError = !!fieldState.error;
+
+	console.log('isError in OTP', isError);
 
 	// автофокус на первом input
 	useEffect(() => {
@@ -42,19 +47,19 @@ export function OTPInput<TFormValues extends FieldValues>({
 	}, []);
 
 	// Синхронизируем OTP с начальным значением из формы
-	useEffect(() => {
-		const initialValue = (control._formValues[name] as string) || '';
-		if (initialValue.length <= length) {
-			const initialOTP = Array.from(
-				{ length },
-				(_, i) => initialValue[i] || ''
-			);
+	// useEffect(() => {
+	// 	const initialValue = (control._formValues[name] as string) || '';
+	// 	if (initialValue.length <= length) {
+	// 		const initialOTP = Array.from(
+	// 			{ length },
+	// 			(_, i) => initialValue[i] || ''
+	// 		);
 
-			setTimeout(() => {
-				setOTP(initialOTP);
-			}, 0);
-		}
-	}, [name, control._formValues, length]);
+	// 		setTimeout(() => {
+	// 			setOTP(initialOTP);
+	// 		}, 0);
+	// 	}
+	// }, [name, control._formValues, length]);
 
 	// Обработчик изменения значения
 	const handleTextChange = (
@@ -157,7 +162,7 @@ export function OTPInput<TFormValues extends FieldValues>({
 										[styles.hasError]: isError || !!fieldState?.error,
 										[styles.disabled]: disabled
 									},
-									[classNameInput]
+									[parentInputClass]
 								)}
 							/>
 						))}

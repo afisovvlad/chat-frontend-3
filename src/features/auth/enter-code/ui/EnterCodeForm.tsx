@@ -1,9 +1,6 @@
 'use client';
 
-import { FormAuthItem } from '@/entities/Auth';
-import { authActions } from '@/entities/Auth/model/authSlice';
-import { useSetAuthStep } from '@/entities/Auth/model/useSetAuthStep';
-import { LoginCodeForm } from '@/pages/LoginCode/types';
+import { LoginCodeForm } from '@/pages/LoginCode/model/types/types';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { formatPhone } from '@/shared/lib/formatPhone/formatPhone';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
@@ -33,6 +30,8 @@ import { InfoCircle } from '@icons/index';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { authActions, FormAuthItem } from '../..';
+import { useSetAuthStep } from '../../model/lib/hooks/useSetAuthStep';
 import { TimeLeft } from '../../timer-left/ui/TimeLeft';
 import styles from './EnterCodeForm.module.scss';
 
@@ -47,11 +46,6 @@ export const EnterCodeForm = () => {
 		is_filled,
 		isDisabledCodeAttempts: disabled
 	} = useAppSelector(state => state.auth);
-	// const { phone_number, code_len, is_filled } = useAppSelector(
-	// 	state => state.auth
-	// );
-	console.log('phone_number', phone_number);
-	console.log('code_len', code_len);
 	const dispatch = useAppDispatch();
 	const router = useRouter();
 	const setStep = useSetAuthStep();
@@ -67,8 +61,8 @@ export const EnterCodeForm = () => {
 		{
 			type: FormItemType.CODE,
 			name: FormItemNames.CODE,
-			label: '',
-			isRequired: false
+			label: ''
+			// isRequired: false
 		}
 	];
 
@@ -116,12 +110,19 @@ export const EnterCodeForm = () => {
 	}, [router, phone_number, code, setError, attemptsNumber, dispatch]);
 
 	useEffect(() => {
+		let timer: NodeJS.Timeout;
 		if (code?.length === code_len && !submitted) {
 			handleSubmit(onSubmit)();
-			setTimeout(() => setSubmitted(true), 0); // отложенный setState
+			timer = setTimeout(() => setSubmitted(true), 0); // отложенный setState
 		} else if (code?.length !== code_len && submitted) {
-			setTimeout(() => setSubmitted(false), 0); // отложенный setState
+			timer = setTimeout(() => setSubmitted(false), 0); // отложенный setState
 		}
+
+		return () => {
+			if (timer) {
+				clearTimeout(timer);
+			}
+		};
 	}, [code, submitted, handleSubmit, onSubmit, code_len]);
 
 	useEffect(() => {
@@ -135,7 +136,7 @@ export const EnterCodeForm = () => {
 			}, 25000); // 600000 - 10 минут
 			return () => clearTimeout(timer);
 		}
-	}, [attemptsNumber, disabled, setError]);
+	}, [attemptsNumber, disabled, setError, dispatch]);
 
 	return (
 		<div className={styles.loginCode}>
@@ -184,7 +185,7 @@ export const EnterCodeForm = () => {
 				methods={methods}
 				onSubmit={onSubmit}
 				className={styles.form}
-				shouldSubmit={code?.length === code_len}
+				// shouldSubmit={code?.length === code_len}
 			>
 				{formItem.map(item => (
 					<FormAuthItem
@@ -194,7 +195,7 @@ export const EnterCodeForm = () => {
 						label={item.label}
 						length={code_len}
 						disabled={disabled}
-						isRequired={item.isRequired}
+						// isRequired={item.isRequired}
 						classNameParentInput={styles.codeInput}
 					/>
 				))}

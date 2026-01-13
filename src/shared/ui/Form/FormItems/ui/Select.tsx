@@ -33,7 +33,6 @@ interface SelectProps<
 	parentSelectIndicatorSeparatorClass?: string;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
 	disabled?: boolean;
-	icon?: JSX.Element;
 	createCustomStyles?: (
 		options?: CustomStylesOptions
 	) => StylesConfig<TOption, IsMulti, Group>;

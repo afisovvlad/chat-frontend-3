@@ -4,11 +4,6 @@ import { Button, ButtonType } from '@/shared/ui/Button';
 import { ButtonColor, ButtonTheme } from '@/shared/ui/Button/model/type';
 import { Form } from '@/shared/ui/Form';
 import {
-	FormItemAutocomplete,
-	FormItemNames,
-	FormItemType
-} from '@/shared/ui/Form/FormItems/model/types';
-import {
 	FontWeight,
 	Text,
 	TextAlign,
@@ -22,7 +17,8 @@ import { Back, Logo } from '@icons/index';
 import Link from 'next/link';
 import { useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { LoginProfileForm } from '../types';
+import { formItems } from '../model/const/formItems';
+import { LoginProfileForm } from '../model/types/types';
 import styles from './LoginProfile.module.scss';
 
 export function LoginProfile() {
@@ -33,45 +29,6 @@ export function LoginProfile() {
 		control: methods.control,
 		name: 'name'
 	});
-
-	const formItem = [
-		{
-			type: FormItemType.TEXT,
-			name: FormItemNames.NAME,
-			label: 'Введите имя',
-			placeholder: '',
-			autocomplete: FormItemAutocomplete.NAME,
-			disabled: false,
-			isRequired: false,
-			rules: {
-				required: 'Заполните это поле',
-				minLength: {
-					value: 3,
-					message: 'Минимум 3 буквы'
-				},
-				pattern: {
-					value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-					message: 'Допускаются только буквы'
-				}
-			}
-		},
-		{
-			type: FormItemType.TEXT,
-			name: FormItemNames.NICKNAME,
-			label: 'Введите никнейм',
-			placeholder: '',
-			autocomplete: FormItemAutocomplete.NICKNAME,
-			disabled: false,
-			isRequired: false,
-			rules: {
-				required: 'Заполните это поле',
-				minLength: {
-					value: 3,
-					message: 'Минимум 3 буквы'
-				}
-			}
-		}
-	];
 
 	const onSubmit: SubmitHandler<LoginProfileForm> = data => {
 		console.log(data);
@@ -110,7 +67,7 @@ export function LoginProfile() {
 				onSubmit={onSubmit}
 				className={styles.form}
 			>
-				{formItem.map(item => (
+				{formItems.map(item => (
 					<FormAuthItem
 						key={item.name}
 						type={item.type}
@@ -119,7 +76,7 @@ export function LoginProfile() {
 						placeholder={item.placeholder}
 						autoComplete={undefined}
 						disabled={item.disabled}
-						isRequired={item.isRequired}
+						// isRequired={item.isRequired}
 						rules={undefined}
 						classNameParentInput={styles.formItem}
 					/>

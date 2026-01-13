@@ -1,12 +1,13 @@
+import { classNames } from '@/shared/lib/classNames/classNames';
 import {
 	FieldValues,
 	Path,
 	RegisterOptions,
+	useController,
 	useFormContext
 } from 'react-hook-form';
 import { FormItemAutocomplete, FormItemType } from '../model/types';
 import styles from './styles.module.scss';
-import { classNames } from '@/shared/lib/classNames/classNames';
 
 interface InputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
@@ -15,7 +16,7 @@ interface InputProps<TFormValues extends FieldValues> {
 	placeholder?: string;
 	disabled?: boolean;
 	autoComplete?: FormItemAutocomplete;
-	classNameInput?: string;
+	parentInputClass?: string;
 }
 
 export function Input<TFormValues extends FieldValues>({
@@ -27,14 +28,19 @@ export function Input<TFormValues extends FieldValues>({
 	placeholder = '',
 	disabled,
 	autoComplete,
-	classNameInput
+	parentInputClass
 }: InputProps<TFormValues>) {
 	const {
-		register,
-		formState: { errors }
+		register
+		// formState: { errors }
 	} = useFormContext<TFormValues>();
-	const isError = Boolean(errors?.[name]?.message as string | undefined);
+	// const isError = Boolean(errors?.[name]?.message as string | undefined);
+	const { fieldState } = useController({ name });
+	const isError = !!fieldState.error;
 
+	// console.log('isError in Input', isError);
+
+	// console.log('Я - Input');
 	return (
 		<input
 			{...register(name, rules)}
@@ -50,7 +56,7 @@ export function Input<TFormValues extends FieldValues>({
 					[styles.hasError]: isError,
 					[styles.disabled]: disabled
 				},
-				[classNameInput]
+				[parentInputClass]
 			)}
 		/>
 	);

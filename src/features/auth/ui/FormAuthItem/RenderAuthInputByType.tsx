@@ -51,7 +51,7 @@ export function RenderAuthInputByType<TFormValues extends FieldValues>({
 					disabled={disabled}
 					length={length}
 					control={control}
-					classNameInput={classNames(
+					parentInputClass={classNames(
 						styles.input,
 						{ [styles.error]: isError },
 						[classNameParentInput]
@@ -65,7 +65,7 @@ export function RenderAuthInputByType<TFormValues extends FieldValues>({
 					name={name}
 					placeholder={placeholder}
 					disabled={disabled}
-					classNameInput={classNames(
+					parentInputClass={classNames(
 						styles.input,
 						{ [styles.error]: isError },
 						[classNameParentInput]
@@ -81,7 +81,7 @@ export function RenderAuthInputByType<TFormValues extends FieldValues>({
 					disabled={disabled}
 					rules={rules}
 					type={FormItemType.TEXT}
-					classNameInput={classNames(
+					parentInputClass={classNames(
 						styles.input,
 						{ [styles.error]: isError },
 						[classNameParentInput]

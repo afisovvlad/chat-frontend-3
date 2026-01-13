@@ -1,14 +1,14 @@
 'use client';
 
 import { FormSettingsItem } from '@/entities/Settings';
-import { useSendSupportMessageMutation } from '@/shared/api/support/supportApi';
+
 import { classNames } from '@/shared/lib/classNames/classNames';
-import { Button } from '@/shared/ui/Button';
 import {
+	Button,
 	ButtonColor,
 	ButtonTheme,
 	ButtonType
-} from '@/shared/ui/Button/model/type';
+} from '@/shared/ui/Button';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form } from '@/shared/ui/Form';
 import { Loader } from '@/shared/ui/Loader';
@@ -17,19 +17,24 @@ import { Text } from '@/shared/ui/Text';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { useSendSupportMessageMutation } from '../../api/supportApi';
 import { formItems } from '../../model/lib/formItems';
+import { ISupportForm } from '../../model/types';
 import styles from './SupportForm.module.scss';
 
-interface SupportForm {
-	email: string;
-	message: string;
-}
+// interface SupportForm {
+// 	email: string;
+// 	message: string;
+// }
 
 export function SupportForm({ parentClass }: { parentClass?: string }) {
 	const [responseError, setResponseError] = useState('');
 	const [sendSupportMessage, { isLoading, isError, isSuccess }] =
 		useSendSupportMessageMutation();
-	const methods = useForm<SupportForm>();
+	const methods = useForm<ISupportForm>({
+		mode: 'onChange'
+	});
+	const { setFocus } = methods;
 
 	const email = useWatch({
 		control: methods.control,
@@ -40,13 +45,15 @@ export function SupportForm({ parentClass }: { parentClass?: string }) {
 		name: 'message'
 	});
 	const disabled = !(email?.length > 4 && message?.length > 10);
-	console.log('SupportForm');
-	useEffect(() => {
-		methods.setFocus('email');
-		console.log('useEffect');
-	}, [methods]);
 
-	const onSubmit: SubmitHandler<SupportForm> = async data => {
+	// console.log('Support Form');
+
+	useEffect(() => {
+		setFocus('email');
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const onSubmit: SubmitHandler<ISupportForm> = async data => {
 		try {
 			await sendSupportMessage({
 				email: data.email,
@@ -75,7 +82,7 @@ export function SupportForm({ parentClass }: { parentClass?: string }) {
 					</Link>
 				</>
 			) : (
-				<Form<SupportForm>
+				<Form<ISupportForm>
 					methods={methods}
 					onSubmit={onSubmit}
 					className={styles.form}

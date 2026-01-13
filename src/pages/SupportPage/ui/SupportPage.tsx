@@ -1,6 +1,6 @@
+import { SettingsHeaderBlock } from '@/entities/Settings';
+import { SupportForm } from '@/features/support';
 import styles from './SupportPage.module.scss';
-import { SupportForm } from '@/features/support/ui';
-import { SettingsHeaderBlock } from '@/entities/SettingsHeaderBlock';
 
 export function SupportPage() {
 	return (

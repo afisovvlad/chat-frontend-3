@@ -1,8 +1,5 @@
 'use client';
 
-import { fetchPhone } from '@/entities/Auth/model/authSlice';
-import { useSetAuthStep } from '@/entities/Auth/model/useSetAuthStep';
-import { FormAuthItem } from '@/entities/Auth';
 import { formatPhone } from '@/shared/lib/formatPhone/formatPhone';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
@@ -12,10 +9,6 @@ import {
 	ButtonTheme,
 	ButtonType
 } from '@/shared/ui/Button';
-import {
-	FormItemNames,
-	FormItemType
-} from '@/shared/ui/Form/FormItems/model/types';
 import { Form } from '@/shared/ui/Form/FormProvider/ui/Form';
 import { Modal } from '@/shared/ui/Modal';
 import {
@@ -27,8 +20,11 @@ import {
 } from '@/shared/ui/Text';
 import { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import styles from './EnterPhoneForm.module.scss';
+import { useSetAuthStep } from '../../model/lib/hooks/useSetAuthStep';
 import { useSendPhoneMutation } from '../model/api/authApi';
+import { formItems } from '../model/const/formItems';
+import styles from './EnterPhoneForm.module.scss';
+import { FormAuthItem } from '../..';
 
 interface LoginPhoneForm {
 	phone_number: string;
@@ -49,6 +45,7 @@ export const EnterPhoneForm = () => {
 			phone_number: formattedPhone || ''
 		}
 	});
+	const { setFocus } = methods;
 	const dispatch = useAppDispatch();
 	const phone_number = useWatch({
 		control: methods.control,
@@ -56,26 +53,17 @@ export const EnterPhoneForm = () => {
 	});
 	const disabled = isDisabledCodeAttempts || phone_number.length !== 16;
 	console.log(phone_number); // показывается при каждом нажатии клавиши
+
 	useEffect(() => {
-		methods.setFocus('phone_number');
-	}, [methods]);
+		setFocus('phone_number');
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	useEffect(() => {
 		if (isModalOpen && confirmBtnRef.current) {
 			confirmBtnRef?.current.focus();
 		}
 	}, [isModalOpen]);
-
-	const formItem = [
-		{
-			type: FormItemType.TEL,
-			name: FormItemNames.PHONE_NUMBER,
-			label: 'Введите номер телефона',
-			placeholder: '+ 7 900 000 00 00',
-			disabled: false,
-			isRequired: false
-		}
-	];
 
 	const onModalClose = () => {
 		setIsModalOpen(false);
@@ -101,7 +89,7 @@ export const EnterPhoneForm = () => {
 				onSubmit={onSubmit}
 				className={styles.form}
 			>
-				{formItem.map(item => (
+				{formItems.map(item => (
 					<FormAuthItem
 						key={item.name}
 						type={item.type}
@@ -110,7 +98,7 @@ export const EnterPhoneForm = () => {
 						placeholder={item.placeholder}
 						autoComplete={undefined}
 						disabled={item.disabled}
-						isRequired={item.isRequired}
+						// isRequired={item.isRequired}
 						rules={undefined}
 						classNameParentInput={styles.formItem}
 					/>

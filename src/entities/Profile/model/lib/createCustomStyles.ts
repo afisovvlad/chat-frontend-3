@@ -1,6 +1,6 @@
 import { DateOption } from '@/shared/ui/Form/FormItems/model/selectTypes';
 import { StylesConfig } from 'react-select';
-import { CustomStylesOptions } from '../../model/types/ProfileSchema';
+import { CustomStylesOptions } from '../types/ProfileSchema';
 
 export const createCustomStyles = (
 	options: CustomStylesOptions = {}

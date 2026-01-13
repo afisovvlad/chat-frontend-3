@@ -1,6 +1,5 @@
 import { RootState } from '@/app/providers/StoreProvider';
-import { authActions } from '@/entities/Auth/model/authSlice';
-// import { authActions } from '@/features/auth';
+
 import {
 	BaseQueryFn,
 	FetchArgs,
@@ -8,6 +7,7 @@ import {
 	FetchBaseQueryError
 } from '@reduxjs/toolkit/query/react';
 import { logoutFromInterceptor } from './services/logoutForInterceptor/logoutForInterceptor';
+import { authActions } from '@/features/auth';
 
 // Интерсептор 1: добавление accessToken в заголовок
 const baseQuery = fetchBaseQuery({

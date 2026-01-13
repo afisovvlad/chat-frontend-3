@@ -13,7 +13,6 @@ import styles from './Form.module.scss';
 interface FormProps<T extends FieldValues> {
 	children: ReactNode;
 	onSubmit: SubmitHandler<T>;
-	shouldSubmit?: boolean;
 	className?: string;
 	methods: UseFormReturn<T>;
 }
@@ -24,10 +23,11 @@ export const Form = <T extends FieldValues>({
 	className,
 	methods
 }: FormProps<T>) => {
+	const { handleSubmit } = methods;
 	return (
 		<FormProvider {...methods}>
 			<form
-				onSubmit={methods.handleSubmit(onSubmit)}
+				onSubmit={handleSubmit(onSubmit)}
 				className={classNames(styles.form, {}, [className])}
 				noValidate
 			>

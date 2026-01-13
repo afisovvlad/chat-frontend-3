@@ -4,16 +4,16 @@ import styles from './styles.module.scss';
 
 interface LabelProps<TFormValues extends FieldValues> {
 	children: React.ReactNode;
-	classNameParentLabel?: string;
+	parentLabelClass?: string;
 	name: Path<TFormValues>;
-	isRequired?: boolean;
+	// isRequired?: boolean;
 }
 
 export function Label<TFormValues extends FieldValues>({
 	children,
-	classNameParentLabel,
-	name,
-	isRequired = false
+	parentLabelClass,
+	name
+	// isRequired = false
 }: LabelProps<TFormValues>) {
 	const {
 		formState: { errors }
@@ -29,14 +29,14 @@ export function Label<TFormValues extends FieldValues>({
 				{
 					[styles.hasError]: isError
 				},
-				[classNameParentLabel]
+				[parentLabelClass]
 			)}
 			htmlFor={name}
 		>
 			{errorMessage ?? children}
-			{isRequired && !errorMessage && (
+			{/* {isRequired && !errorMessage && (
 				<span className={styles.required}>*</span>
-			)}
+			)} */}
 		</label>
 	);
 }

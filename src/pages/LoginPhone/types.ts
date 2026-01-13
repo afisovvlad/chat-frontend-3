@@ -1,3 +1,3 @@
-export type InputType = {
-	name: 'phone' | 'name';
-};
+// export type InputType = {
+// 	name: 'phone' | 'name';
+// };

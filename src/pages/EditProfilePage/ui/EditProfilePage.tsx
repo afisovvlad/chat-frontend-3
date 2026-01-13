@@ -1,9 +1,8 @@
 import styles from './EditProfilePage.module.scss';
-import { EditProfileForm } from '@/features/profile/edit';
-import { SettingsHeaderBlock } from '@/entities/SettingsHeaderBlock';
+import { EditProfileForm } from '@/entities/Profile';
+import { SettingsHeaderBlock } from '@/entities/Settings';
 
 export function EditProfilePage() {
-	console.log('EditProfilePage');
 	return (
 		<section className={styles.editProfile}>
 			<SettingsHeaderBlock

@@ -23,9 +23,9 @@ interface FormItemProps<TFormValues extends FieldValues> {
 	placeholder?: string;
 	autoComplete?: FormItemAutocomplete;
 	disabled?: boolean;
-	isRequired?: boolean;
+	// isRequired?: boolean;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
-	classNameParentLabel?: string;
+	parentLabelClass?: string;
 	classNameParentInput?: string;
 	classNameParentWrapper?: string;
 	classNameParentSelect?: string;
@@ -41,12 +41,12 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 	label,
 	placeholder,
 	disabled,
-	isRequired,
+	// isRequired,
 	onValueChange,
 	rules,
 	classNameParentInput,
 	classNameParentWrapper,
-	classNameParentLabel,
+	parentLabelClass,
 	classNameParentSelect,
 	isMessageShort,
 	textareaHeight,
@@ -85,11 +85,9 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 			className={classNames(styles.inputWrapper, {}, [classNameParentWrapper])}
 		>
 			<Label
-				classNameParentLabel={classNames(styles.label, {}, [
-					classNameParentLabel
-				])}
+				parentLabelClass={classNames(styles.label, {}, [parentLabelClass])}
 				name={name}
-				isRequired={isRequired}
+				// isRequired={isRequired}
 			>
 				{label}
 			</Label>

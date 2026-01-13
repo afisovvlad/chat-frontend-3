@@ -1,7 +1,7 @@
 'use client';
 
 import { FormSettingsItem } from '@/entities/Settings';
-import { useEditProfileMutation } from '@/features/profile/edit/api/editProfile.api';
+import { useEditProfileMutation } from '@/entities/Profile/api/editProfile.api';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { convertDateToNumber } from '@/shared/lib/convertDateToNumber/convertDateToNumber';
 import { convertNumberToDate } from '@/shared/lib/convertNumberToDate/convertNumberToDate';
@@ -24,9 +24,9 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ProfileSchema } from '../..';
-import styles from './EditProfileForm.module.scss';
-import { createCustomStyles } from './createCustomStyles';
 import { formItems } from '../../model/const/formItems';
+import { createCustomStyles } from '../../model/lib/createCustomStyles';
+import styles from './EditProfileForm.module.scss';
 
 interface EditBirthdayForm {
 	day: DateOption | undefined;

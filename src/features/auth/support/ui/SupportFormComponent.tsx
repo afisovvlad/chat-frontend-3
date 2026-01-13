@@ -1,17 +1,11 @@
-import styles from './SupportFormComponent.module.scss';
 import { classNames } from '@/shared/lib/classNames/classNames';
-import {
-	FontWeight,
-	Text,
-	TextAlign,
-	TextType,
-	TitleTag
-} from '@/shared/ui/Text';
-import { Back, Logo } from '@icons/index';
-import { ReactNode } from 'react';
 import { Button, ButtonTheme } from '@/shared/ui/Button';
-import { useAuthGoBack } from '@/entities/Auth/model/useAuthGoBack';
-import { SupportForm } from '@/features/support/ui';
+import { Text, TextAlign, TextType, TitleTag } from '@/shared/ui/Text';
+import { Back, Logo } from '@icons/index';
+import styles from './SupportFormComponent.module.scss';
+
+import { SupportForm } from '@/features/support';
+import { useAuthGoBack } from '../../model/lib/hooks/useAuthGoBack';
 
 export default function SupportFormComponent() {
 	const goBack = useAuthGoBack();

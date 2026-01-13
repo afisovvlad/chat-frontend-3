@@ -1,9 +1,9 @@
+import { SettingsHeaderBlock } from '@/entities/Settings';
 import { Button, ButtonColor, ButtonTheme } from '@/shared/ui/Button';
 import { SettingsList } from '@/shared/ui/SettingsList';
 import { Text, TextSize, TextType } from '@/shared/ui/Text';
 import { Trash } from '@icons/index';
 import cls from './SettingsPage.module.scss';
-import { SettingsHeaderBlock } from '@/entities/SettingsHeaderBlock';
 
 export const SettingsPage = () => {
 	return (
