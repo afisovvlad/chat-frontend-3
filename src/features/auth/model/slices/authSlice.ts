@@ -38,6 +38,11 @@ const authSlice = createSlice({
 			state.code_len = action.payload.code_len;
 		},
 
+		clearPhoneData: state => {
+			delete state.phone_number;
+			delete state.code_len;
+		},
+
 		setStep: (state, action: PayloadAction<AuthStep>) => {
 			const nextStep = action.payload;
 

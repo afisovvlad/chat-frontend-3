@@ -26,7 +26,7 @@ import { useSetAuthStep } from '../../model/lib/hooks/useSetAuthStep';
 import { TimeLeft } from '../../timer-left/ui/TimeLeft';
 import styles from './EnterCodeForm.module.scss';
 
-export const StepCode = () => {
+export const EnterCode = () => {
 	const [time, setTime] = useState(60);
 	const [finishedTime, setFinishedTime] = useState(false);
 	const {

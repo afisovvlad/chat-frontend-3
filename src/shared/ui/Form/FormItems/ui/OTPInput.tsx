@@ -46,21 +46,6 @@ export function OTPInput<TFormValues extends FieldValues>({
 		inputRef.current[0]?.focus();
 	}, []);
 
-	// Синхронизируем OTP с начальным значением из формы
-	// useEffect(() => {
-	// 	const initialValue = (control._formValues[name] as string) || '';
-	// 	if (initialValue.length <= length) {
-	// 		const initialOTP = Array.from(
-	// 			{ length },
-	// 			(_, i) => initialValue[i] || ''
-	// 		);
-
-	// 		setTimeout(() => {
-	// 			setOTP(initialOTP);
-	// 		}, 0);
-	// 	}
-	// }, [name, control._formValues, length]);
-
 	// Обработчик изменения значения
 	const handleTextChange = (
 		inputValue: string,

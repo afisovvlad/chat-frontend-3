@@ -1,7 +1,6 @@
 'use client';
 
 import { formatPhone } from '@/shared/lib/formatPhone/formatPhone';
-import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import {
 	Button,
@@ -34,7 +33,7 @@ export const EnterPhoneForm = () => {
 	const { isDisabledCodeAttempts, phone_number: phone } = useAppSelector(
 		state => state.auth
 	);
-	const [sendPhone, { isLoading }] = useSendPhoneMutation();
+	const [sendPhone] = useSendPhoneMutation();
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const confirmBtnRef = useRef<HTMLButtonElement>(null);
 	const setStep = useSetAuthStep();
@@ -45,13 +44,11 @@ export const EnterPhoneForm = () => {
 		}
 	});
 	const { setFocus } = methods;
-	const dispatch = useAppDispatch();
 	const phone_number = useWatch({
 		control: methods.control,
 		name: 'phone_number'
 	});
 	const disabled = isDisabledCodeAttempts || phone_number.length !== 16;
-	console.log(phone_number); // показывается при каждом нажатии клавиши
 
 	useEffect(() => {
 		setFocus('phone_number');
@@ -70,7 +67,6 @@ export const EnterPhoneForm = () => {
 	const onConfirm = () => {
 		const formattedPhone = phone_number.replace(/[^\d+]/g, '');
 		sendPhone({ phone_number: formattedPhone });
-		// dispatch(fetchPhone(formattedPhone));
 		setStep('code');
 		setIsModalOpen(false);
 	};

@@ -19,19 +19,29 @@ export const sendPhoneApi = rtkApi.injectEndpoints({
 				body: data
 			}),
 			invalidatesTags: ['sendPhone'],
-			async onQueryStarted(_, { dispatch, queryFulfilled }) {
+			async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+				//  optimistic update — СРАЗУ кладём в store
+				dispatch(
+					authActions.setPhoneData({
+						phone_number: arg.phone_number,
+						code_len: 5
+					})
+				);
+				dispatch(authActions.setStep('code'));
+
 				try {
-					const data = await queryFulfilled;
+					const { data } = await queryFulfilled;
+					// обновляем данными сервера
 					dispatch(
 						authActions.setPhoneData({
-							phone_number: data.data.phone_number,
-							code_len: data.data.code_len
+							phone_number: data.phone_number,
+							code_len: data.code_len
 						})
 					);
-
-					dispatch(authActions.setStep('code'));
-				} catch (e) {
-					console.error('sendPhone error', e);
+				} catch (err) {
+					//  rollback при ошибке
+					dispatch(authActions.clearPhoneData());
+					dispatch(authActions.setStep('phone'));
 				}
 			}
 		})

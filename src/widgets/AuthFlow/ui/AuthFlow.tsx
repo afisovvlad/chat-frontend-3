@@ -1,8 +1,7 @@
 'use client';
 
 import { useAuthStep } from '@/entities/Auth/model/selectors';
-import { StepCode } from '@/features/auth/enter-code';
-import { EnterCodeForm } from '@/features/auth/enter-code/ui/EnterCodeForm';
+import { EnterCode } from '@/features/auth/enter-code';
 import { EnterPhoneForm } from '@/features/auth/enter-phone/ui/EnterPhoneForm';
 import { LoginGreeting } from '@/features/auth/greeting/ui/LoginGreeting';
 import { RegisterForm } from '@/features/auth/register/ui/RegisterForm';
@@ -24,7 +23,7 @@ export const AuthFlow = () => {
 		case 'code':
 			return (
 				<LoginWrapper>
-					<StepCode />
+					<EnterCode />
 				</LoginWrapper>
 			);
 		case 'register':

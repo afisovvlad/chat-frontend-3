@@ -3,7 +3,7 @@
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { Form } from '@/shared/ui/Form/FormProvider/ui/Form';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { LoginCodeForm } from '..';
 import { authActions, FormAuthItem } from '../..';
@@ -13,8 +13,8 @@ import styles from './EnterCodeForm.module.scss';
 
 interface EnterCodeFormProps {
 	setTime: (time: number) => void;
-	phone_number: string;
-	code_len: number;
+	phone_number?: string;
+	code_len?: number;
 	is_filled: boolean;
 	disabled: boolean;
 }
@@ -23,11 +23,10 @@ export const EnterCodeForm = ({
 	setTime,
 	phone_number,
 	code_len,
-	is_filled,
+	// is_filled,
 	disabled
 }: EnterCodeFormProps) => {
 	const [attemptsNumber, setAttemptsNumber] = useState(5);
-	const [submitted, setSubmitted] = useState(false);
 	const setStep = useSetAuthStep();
 	const dispatch = useAppDispatch();
 	const router = useRouter();
@@ -37,69 +36,63 @@ export const EnterCodeForm = ({
 		control: methods.control,
 		name: 'code'
 	});
-	console.log('is_filled', is_filled);
+	const submittedRef = useRef(false);
+	// console.log('is_filled', is_filled);
 
-	const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(async () => {
-		const response = await fetch('/api/auth/setTokens', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ phone_number, code })
-		});
-		const res = await response.json();
-		console.log('res in LoginCode', res);
-		if (res.success) {
-			if (res.is_filled) {
-				router.push('/');
-			} else {
-				router.push('/'); // поменять на setStep('register'), когда сделаю регистрацию
-				// setStep('register');
-			}
-		} else if (res.errors) {
-			if (attemptsNumber === 1) {
-				dispatch(authActions.disabledCodeAttempts(true));
-				setTime(600);
-				setError('code', {
-					message: 'Слишком много неверных попыток.'
-				});
-			} else {
-				setError('code', {
-					message: `Код введен неверно. Осталось ${attemptsNumber - 1} попытки`
-				});
-			}
-			setAttemptsNumber(prev => prev - 1);
-		} else {
-			setError('code', {
-				message: `Неизвестная ошибка`
+	const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(
+		async ({ code }) => {
+			const response = await fetch('/api/auth/setTokens', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ phone_number, code })
 			});
-		}
-	}, [
-		phone_number,
-		code,
-		setStep,
-		setTime,
-		router,
-		setError,
-		attemptsNumber,
-		dispatch
-	]);
+			const res = await response.json();
+			console.log('res in LoginCode', res);
+			if (res.success) {
+				if (res.is_filled) {
+					router.push('/');
+				} else {
+					router.push('/'); // поменять на setStep('register'), когда сделаю регистрацию
+					// setStep('register');
+				}
+			} else if (res.errors) {
+				if (attemptsNumber === 1) {
+					dispatch(authActions.disabledCodeAttempts(true));
+					setTime(600);
+					setError('code', {
+						message: 'Слишком много неверных попыток.'
+					});
+				} else {
+					setError('code', {
+						message: `Код введен неверно. Осталось ${attemptsNumber - 1} попытки`
+					});
+				}
+				setAttemptsNumber(prev => prev - 1);
+			} else {
+				setError('code', {
+					message: `Неизвестная ошибка`
+				});
+			}
+		},
+		[phone_number, setStep, setTime, router, setError, attemptsNumber, dispatch]
+	);
 
 	useEffect(() => {
-		let timer: NodeJS.Timeout;
-		if (code?.length === code_len && !submitted) {
-			handleSubmit(onSubmit)();
-			timer = setTimeout(() => setSubmitted(true), 0); // отложенный setState
-		} else if (code?.length !== code_len && submitted) {
-			timer = setTimeout(() => setSubmitted(false), 0); // отложенный setState
+		if (!code_len) {
+			return;
 		}
 
-		return () => {
-			if (timer) {
-				clearTimeout(timer);
-			}
-		};
-	}, [code, submitted, handleSubmit, onSubmit, code_len]);
+		if (code?.length === code_len && !submittedRef.current) {
+			submittedRef.current = true;
+			handleSubmit(onSubmit)();
+		}
+
+		if (code?.length !== code_len) {
+			submittedRef.current = false;
+		}
+	}, [code, handleSubmit, onSubmit, code_len]);
 
 	useEffect(() => {
 		if (attemptsNumber === 0 && disabled === true) {
