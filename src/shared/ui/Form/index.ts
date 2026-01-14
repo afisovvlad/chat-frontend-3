@@ -7,3 +7,8 @@ export { CustomSelectOption } from './FormItems/ui/CustomSelectOption';
 export { Label } from './FormItems/ui/Label';
 export { SelectItem } from './FormItems/ui/Select';
 export { Textarea } from './FormItems/ui/Textarea';
+export { FormItemNames } from './FormItems/model/types';
+export { FormItemType } from './FormItems/model/types';
+export type { FormItemAutocomplete } from './FormItems/model/types';
+export type { SelectOption } from './FormItems/model/selectTypes';
+export type { DateOption } from './FormItems/model/selectTypes';

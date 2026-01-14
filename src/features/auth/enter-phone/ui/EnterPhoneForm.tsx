@@ -20,11 +20,11 @@ import {
 } from '@/shared/ui/Text';
 import { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { FormAuthItem } from '../..';
 import { useSetAuthStep } from '../../model/lib/hooks/useSetAuthStep';
 import { useSendPhoneMutation } from '../model/api/authApi';
 import { formItems } from '../model/const/formItems';
 import styles from './EnterPhoneForm.module.scss';
-import { FormAuthItem } from '../..';
 
 interface LoginPhoneForm {
 	phone_number: string;
@@ -39,7 +39,6 @@ export const EnterPhoneForm = () => {
 	const confirmBtnRef = useRef<HTMLButtonElement>(null);
 	const setStep = useSetAuthStep();
 	const formattedPhone = formatPhone(phone);
-
 	const methods = useForm<LoginPhoneForm>({
 		defaultValues: {
 			phone_number: formattedPhone || ''
@@ -69,8 +68,6 @@ export const EnterPhoneForm = () => {
 		setIsModalOpen(false);
 	};
 	const onConfirm = () => {
-		// сохраняем phone и step в store и отправляем телефон на сервер
-
 		const formattedPhone = phone_number.replace(/[^\d+]/g, '');
 		sendPhone({ phone_number: formattedPhone });
 		// dispatch(fetchPhone(formattedPhone));
@@ -98,7 +95,6 @@ export const EnterPhoneForm = () => {
 						placeholder={item.placeholder}
 						autoComplete={undefined}
 						disabled={item.disabled}
-						// isRequired={item.isRequired}
 						rules={undefined}
 						classNameParentInput={styles.formItem}
 					/>

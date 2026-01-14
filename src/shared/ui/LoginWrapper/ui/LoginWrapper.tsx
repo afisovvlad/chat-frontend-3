@@ -21,6 +21,7 @@ export function LoginWrapper({ children }: LoginWrapperProps) {
 	const goBack = useAuthGoBack();
 	const step = useAuthStep();
 	let title = '';
+
 	switch (step) {
 		case 'phone':
 			title = 'Вход/регистрация';
@@ -39,13 +40,13 @@ export function LoginWrapper({ children }: LoginWrapperProps) {
 			break;
 	}
 
-	// console.log(step);
+	console.log(step);
 
 	return (
 		<div className={styles.loginWrapper}>
 			<Logo
 				className={classNames(styles.logo, {
-					[styles.support]: step === 'support'
+					// [styles.support]: step === 'support'
 				})}
 			/>
 
@@ -57,17 +58,17 @@ export function LoginWrapper({ children }: LoginWrapperProps) {
 				<Back className={styles.iconBack} />
 			</Button>
 
-			{step !== 'support' && (
-				<Text
-					type={TextType.TITLE}
-					tag={TitleTag.H1}
-					fontWeight={FontWeight.SEMI_BOLD}
-					textAlign={TextAlign.CENTER}
-					className={styles.title}
-				>
-					А-Чат
-				</Text>
-			)}
+			{/* {step !== 'support' && ( */}
+			<Text
+				type={TextType.TITLE}
+				tag={TitleTag.H1}
+				fontWeight={FontWeight.SEMI_BOLD}
+				textAlign={TextAlign.CENTER}
+				className={styles.title}
+			>
+				А-Чат
+			</Text>
+			{/* )} */}
 
 			<Text
 				type={TextType.TITLE}

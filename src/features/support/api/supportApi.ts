@@ -1,5 +1,5 @@
 import { rtkApi } from '@/shared/api/rtkApi';
-import { ISupport } from '../model/types';
+import { ISupport } from '../model/types/types';
 
 export const supportApi = rtkApi.injectEndpoints({
 	endpoints: build => ({

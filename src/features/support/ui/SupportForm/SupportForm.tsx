@@ -18,14 +18,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSendSupportMessageMutation } from '../../api/supportApi';
-import { formItems } from '../../model/lib/formItems';
-import { ISupportForm } from '../../model/types';
+import { formItems } from '../../model/const/formItems';
+import { ISupportForm } from '../../model/types/types';
 import styles from './SupportForm.module.scss';
-
-// interface SupportForm {
-// 	email: string;
-// 	message: string;
-// }
 
 export function SupportForm({ parentClass }: { parentClass?: string }) {
 	const [responseError, setResponseError] = useState('');
