@@ -1,5 +1,5 @@
 'use client';
-import { FormAuthItem } from '@/entities/Auth';
+
 import { Button, ButtonType } from '@/shared/ui/Button';
 import { ButtonColor, ButtonTheme } from '@/shared/ui/Button/model/type';
 import { Form } from '@/shared/ui/Form';
@@ -20,6 +20,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { formItems } from '../model/const/formItems';
 import { LoginProfileForm } from '../model/types/types';
 import styles from './LoginProfile.module.scss';
+import { FormAuthItem } from '@/features/auth';
 
 export function LoginProfile() {
 	const [disabled, setDisabled] = useState(true);

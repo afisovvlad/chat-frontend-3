@@ -1,6 +1,5 @@
 'use client';
 
-import { LoginCodeForm } from '@/pages/LoginCode/model/types/types';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { formatPhone } from '@/shared/lib/formatPhone/formatPhone';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
@@ -34,6 +33,7 @@ import { authActions, FormAuthItem } from '../..';
 import { useSetAuthStep } from '../../model/lib/hooks/useSetAuthStep';
 import { TimeLeft } from '../../timer-left/ui/TimeLeft';
 import styles from './EnterCodeForm.module.scss';
+import { LoginCodeForm } from '..';
 
 export const EnterCodeForm = () => {
 	const [attemptsNumber, setAttemptsNumber] = useState(5);
