@@ -14,7 +14,7 @@ import {
 	useFormContext
 } from 'react-hook-form';
 import styles from './FormSettingsItem.module.scss';
-import { RenderSettingsInputByType } from './RenderSettingsInputByType';
+import { RenderSettingsInputByType } from '../RenderSettingsInputByType/RenderSettingsInputByType';
 
 interface FormItemProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
