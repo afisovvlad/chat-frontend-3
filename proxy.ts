@@ -20,9 +20,9 @@ export function proxy(request: NextRequest) {
 	}
 
 	// Неавторизованного пускаем только на /login
-	// if (!accessToken && !isLoginPage) {
-	// 	return NextResponse.redirect(new URL('/login', request.url), 307);
-	// }
+	 if (!accessToken && !isLoginPage) {
+	 	return NextResponse.redirect(new URL('/login', request.url), 307);
+	 }
 
 	// // добавляем accessToken в заголовок
 	if (accessToken && pathname.startsWith('/api/')) {
