@@ -1,4 +1,4 @@
-import { FormItemNames, FormItemType } from '@/shared/ui/Form';
+import { FormItemNames, FormItemType } from '@/shared/ui/FormComponent';
 
 export const formItems = [
 	{

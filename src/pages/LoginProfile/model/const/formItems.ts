@@ -2,7 +2,7 @@ import {
 	FormItemAutocomplete,
 	FormItemNames,
 	FormItemType
-} from '@/shared/ui/Form/FormItems/model/types';
+} from '@/shared/ui/FormComponent/FormItems/model/types';
 
 export const formItems = [
 	{

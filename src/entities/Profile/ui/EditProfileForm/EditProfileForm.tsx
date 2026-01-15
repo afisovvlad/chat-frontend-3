@@ -1,18 +1,18 @@
 'use client';
 
-import { FormSettingsItem } from '@/entities/Settings';
 import { useEditProfileMutation } from '@/entities/Profile/api/editProfile.api';
+import { FormSettingsItem } from '@/entities/Settings';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { convertDateToNumber } from '@/shared/lib/convertDateToNumber/convertDateToNumber';
 import { convertNumberToDate } from '@/shared/lib/convertNumberToDate/convertNumberToDate';
 import { Button, ButtonType } from '@/shared/ui/Button';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
-import { Form, SelectItem } from '@/shared/ui/Form';
-import { DateOption } from '@/shared/ui/Form/FormItems/model/selectTypes';
+import { Form, SelectItem } from '@/shared/ui/FormComponent';
+import { DateOption } from '@/shared/ui/FormComponent/FormItems/model/selectTypes';
 import {
 	FormItemNames,
 	FormItemType
-} from '@/shared/ui/Form/FormItems/model/types';
+} from '@/shared/ui/FormComponent/FormItems/model/types';
 import { Loader } from '@/shared/ui/Loader';
 import { SuccessBlock } from '@/shared/ui/SuccessBlock';
 import {

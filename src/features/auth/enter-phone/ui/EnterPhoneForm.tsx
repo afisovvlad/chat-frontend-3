@@ -8,7 +8,7 @@ import {
 	ButtonTheme,
 	ButtonType
 } from '@/shared/ui/Button';
-import { Form } from '@/shared/ui/Form/FormProvider/ui/Form';
+import { Form } from '@/shared/ui/FormComponent/Form/ui/Form';
 import { Modal } from '@/shared/ui/Modal';
 import {
 	FontWeight,

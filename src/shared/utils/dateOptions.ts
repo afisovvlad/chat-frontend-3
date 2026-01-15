@@ -1,4 +1,4 @@
-import { SelectOption } from '../ui/Form/FormItems/model/selectTypes';
+import { SelectOption } from '../ui/FormComponent/FormItems/model/selectTypes';
 
 export const days = [
 	{ value: '1', label: '1' },

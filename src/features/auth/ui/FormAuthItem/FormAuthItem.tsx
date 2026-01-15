@@ -1,11 +1,11 @@
 'use client';
 
 import { classNames } from '@/shared/lib/classNames/classNames';
-import { Label } from '@/shared/ui/Form';
+import { Label } from '@/shared/ui/FormComponent';
 import {
 	FormItemAutocomplete,
 	FormItemType
-} from '@/shared/ui/Form/FormItems/model/types';
+} from '@/shared/ui/FormComponent/FormItems/model/types';
 import { useEffect } from 'react';
 import {
 	FieldValues,

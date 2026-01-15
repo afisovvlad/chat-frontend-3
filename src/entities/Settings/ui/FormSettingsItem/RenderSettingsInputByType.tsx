@@ -1,10 +1,10 @@
-import { FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import { classNames } from '@/shared/lib/classNames/classNames';
-import { Input, SelectItem, Textarea } from '@/shared/ui/Form';
+import { Input, SelectItem, Textarea } from '@/shared/ui/FormComponent';
 import {
 	FormItemAutocomplete,
 	FormItemType
-} from '@/shared/ui/Form/FormItems/model/types';
+} from '@/shared/ui/FormComponent/FormItems/model/types';
+import { FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import styles from './FormSettingsItem.module.scss';
 
 interface RenderSettingsInputByTypeProps<TFormValues extends FieldValues> {

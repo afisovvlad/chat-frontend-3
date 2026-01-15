@@ -10,7 +10,7 @@ import {
 	ButtonType
 } from '@/shared/ui/Button';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
-import { Form } from '@/shared/ui/Form';
+import { Form } from '@/shared/ui/FormComponent';
 import { Loader } from '@/shared/ui/Loader';
 import { SuccessBlock } from '@/shared/ui/SuccessBlock';
 import { Text } from '@/shared/ui/Text';

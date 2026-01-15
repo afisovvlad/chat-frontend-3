@@ -1,7 +1,7 @@
 'use client';
 
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
-import { Form } from '@/shared/ui/Form/FormProvider/ui/Form';
+import { Form } from '@/shared/ui/FormComponent/Form/ui/Form';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';

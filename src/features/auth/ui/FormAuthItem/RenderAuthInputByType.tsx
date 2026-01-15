@@ -1,6 +1,11 @@
 import { classNames } from '@/shared/lib/classNames/classNames';
-import { Input, OTPInput, PhoneInput, Textarea } from '@/shared/ui/Form';
-import { FormItemType } from '@/shared/ui/Form/FormItems/model/types';
+import {
+	Input,
+	OTPInput,
+	PhoneInput,
+	Textarea
+} from '@/shared/ui/FormComponent';
+import { FormItemType } from '@/shared/ui/FormComponent/FormItems/model/types';
 import { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import styles from './FormAuthItem.module.scss';
 
