@@ -13,8 +13,8 @@ import {
 	RegisterOptions,
 	useFormContext
 } from 'react-hook-form';
-import styles from './FormSettingsItem.module.scss';
 import { RenderSettingsInputByType } from '../RenderSettingsInputByType/RenderSettingsInputByType';
+import styles from './FormSettingsItem.module.scss';
 
 interface FormItemProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
@@ -41,7 +41,6 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 	label,
 	placeholder,
 	disabled,
-	// isRequired,
 	onValueChange,
 	rules,
 	classNameParentInput,
@@ -87,7 +86,6 @@ export function FormSettingsItem<TFormValues extends FieldValues>({
 			<Label
 				parentLabelClass={classNames(styles.label, {}, [parentLabelClass])}
 				name={name}
-				// isRequired={isRequired}
 			>
 				{label}
 			</Label>

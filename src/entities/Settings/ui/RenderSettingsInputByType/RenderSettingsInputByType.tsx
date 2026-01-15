@@ -5,7 +5,7 @@ import {
 	FormItemType
 } from '@/shared/ui/FormComponent/FormItems/model/types';
 import { FieldValues, Path, RegisterOptions } from 'react-hook-form';
-import styles from './FormSettingsItem.module.scss';
+import styles from './RenderSettingsInputByType.module.scss';
 
 interface RenderSettingsInputByTypeProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
