@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { LoginCodeForm } from '..';
-
 import { formItems } from '../model/const/formItems';
 import styles from './EnterCodeForm.module.scss';
 import { authActions, FormAuthItem, useSetAuthStep } from '@/features/auth';

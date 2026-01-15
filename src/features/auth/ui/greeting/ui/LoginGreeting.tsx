@@ -1,6 +1,5 @@
 'use client';
 
-// import { useSetAuthStep } from '@/entities/Auth/model/useSetAuthStep';
 import { Button } from '@/shared/ui/Button';
 import {
 	FontWeight,
@@ -13,8 +12,8 @@ import {
 	TitleTag
 } from '@/shared/ui/Text';
 import { Logo } from '@icons/index';
-import { useSetAuthStep } from '../../model/lib/hooks/useSetAuthStep';
 import styles from './LoginGreeting.module.scss';
+import { useSetAuthStep } from '@/features/auth';
 
 export const LoginGreeting = () => {
 	const setStep = useSetAuthStep();

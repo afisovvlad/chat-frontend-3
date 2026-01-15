@@ -22,9 +22,8 @@ import {
 import { InfoCircle } from '@icons/index';
 import { useState } from 'react';
 import { EnterCodeForm } from '..';
-import { TimeLeft } from '../../timer-left/ui/TimeLeft';
 import styles from './EnterCodeForm.module.scss';
-import { useSetAuthStep } from '@/features/auth';
+import { TimeLeft, useSetAuthStep } from '@/features/auth';
 
 export const EnterCode = () => {
 	const [time, setTime] = useState(60);
