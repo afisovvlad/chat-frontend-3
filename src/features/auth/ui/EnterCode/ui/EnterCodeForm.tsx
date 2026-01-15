@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { LoginCodeForm } from '..';
-import { authActions, FormAuthItem } from '../..';
-import { useSetAuthStep } from '../../model/lib/hooks/useSetAuthStep';
+
 import { formItems } from '../model/const/formItems';
 import styles from './EnterCodeForm.module.scss';
+import { authActions, FormAuthItem, useSetAuthStep } from '@/features/auth';
 
 interface EnterCodeFormProps {
 	setTime: (time: number) => void;

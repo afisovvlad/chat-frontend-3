@@ -1,8 +1,8 @@
 'use client';
 
-import { useAuthStep } from '@/entities/Auth/model/selectors';
-import styles from './layout.module.scss';
+import { useAuthStep } from '@/features/auth/model/selectors/selectors';
 import { classNames } from '@/shared/lib/classNames/classNames';
+import styles from './layout.module.scss';
 
 interface IChildren {
 	children: React.ReactNode;

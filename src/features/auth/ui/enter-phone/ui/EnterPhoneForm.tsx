@@ -19,11 +19,10 @@ import {
 } from '@/shared/ui/Text';
 import { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { FormAuthItem } from '../..';
-import { useSetAuthStep } from '../../model/lib/hooks/useSetAuthStep';
 import { useSendPhoneMutation } from '../model/api/authApi';
 import { formItems } from '../model/const/formItems';
 import styles from './EnterPhoneForm.module.scss';
+import { FormAuthItem, useSetAuthStep } from '@/features/auth';
 
 interface LoginPhoneForm {
 	phone_number: string;

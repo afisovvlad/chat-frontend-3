@@ -1,5 +1,5 @@
-import { useAuthStep } from '@/entities/Auth/model/selectors';
 import { useAuthGoBack } from '@/features/auth/model/lib/hooks/useAuthGoBack';
+import { useAuthStep } from '@/features/auth/model/selectors/selectors';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Button, ButtonTheme } from '@/shared/ui/Button';
 import {

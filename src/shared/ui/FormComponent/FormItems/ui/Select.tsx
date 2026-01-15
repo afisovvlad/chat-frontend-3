@@ -2,7 +2,6 @@
 
 import { CustomStylesOptions } from '@/entities/Profile';
 import { classNames } from '@/shared/lib/classNames/classNames';
-import { JSX } from 'react';
 import {
 	Controller,
 	FieldValues,
@@ -36,7 +35,7 @@ interface SelectProps<
 	createCustomStyles?: (
 		options?: CustomStylesOptions
 	) => StylesConfig<TOption, IsMulti, Group>;
-	menu?: string;
+	// menu: string;
 	ariaLabel?: string;
 	hasError?: boolean;
 }
@@ -95,10 +94,13 @@ export function SelectItem<
 								classNames(
 									styles.control,
 									{
-										[styles.hasError]: (
-											state.selectProps as { hasError?: boolean }
-										).hasError
+										[styles.hasError]: hasError
 									},
+									// {
+									// 	[styles.hasError]: (
+									// 		state.selectProps as { hasError?: boolean }
+									// 	).hasError
+									// },
 									[parentSelectClass, parentSelectControlClass]
 								),
 							menu: () => classNames(styles.menu, {}, [parentSelectMenuClass]),

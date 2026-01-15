@@ -7,7 +7,7 @@ import {
 	FetchBaseQueryError
 } from '@reduxjs/toolkit/query/react';
 import { logoutFromInterceptor } from './services/logoutForInterceptor/logoutForInterceptor';
-import { authActions } from '@/features/auth';
+import { authActions } from '@/features/auth/model/slices/authSlice';
 
 // Интерсептор 1: добавление accessToken в заголовок
 const baseQuery = fetchBaseQuery({

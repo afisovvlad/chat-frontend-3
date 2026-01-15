@@ -1,5 +1,5 @@
-import { authActions } from '@/features/auth/model/slices/authSlice';
 import { rtkApi } from '@/shared/api/rtkApi';
+import { authActions } from '@/features/auth/model/slices/authSlice';
 
 interface SendPhoneRequest {
 	phone_number: string;
