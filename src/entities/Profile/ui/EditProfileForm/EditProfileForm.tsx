@@ -84,7 +84,7 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 		}
 	}, [reset, editProfile]);
 
-	// 🔄 Синхронизация дней при смене месяца / года, - 28, 29, 30 или 31
+	//  Синхронизация дней при смене месяца / года, - 28, 29, 30 или 31
 	useEffect(() => {
 		if (!day || !month || !year) {
 			return;
@@ -199,12 +199,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 						parentSelectWrapperClass={styles.selectWrapper}
 						parentSelectControlClass={styles.selectDay}
 						parentSelectMenuClass={styles.selectMenu}
-						parentSelectMenuListClass={styles.selectMenuList}
-						parentSelectOptionClass={styles.selectOption}
-						parentSelectSingleValueClass={styles.selectSingleValue}
-						parentSelectIndicatorSeparatorClass={
-							styles.selectIndicatorSeparator
-						}
 						createCustomStyles={createCustomStyles}
 						ariaLabel='Выбор дня месяца'
 						hasError={hasError}
@@ -214,12 +208,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 						name={'month'}
 						parentSelectControlClass={styles.selectMonth}
 						parentSelectMenuClass={styles.selectMenu}
-						parentSelectMenuListClass={styles.selectMenuList}
-						parentSelectOptionClass={styles.selectOption}
-						parentSelectSingleValueClass={styles.selectSingleValue}
-						parentSelectIndicatorSeparatorClass={
-							styles.selectIndicatorSeparator
-						}
 						createCustomStyles={createCustomStyles}
 						ariaLabel='Выбор месяца'
 						hasError={hasError}
@@ -229,12 +217,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 						name={'year'}
 						parentSelectControlClass={styles.selectYear}
 						parentSelectMenuClass={styles.selectMenu}
-						parentSelectMenuListClass={styles.selectMenuList}
-						parentSelectOptionClass={styles.selectOption}
-						parentSelectSingleValueClass={styles.selectSingleValue}
-						parentSelectIndicatorSeparatorClass={
-							styles.selectIndicatorSeparator
-						}
 						createCustomStyles={createCustomStyles}
 						ariaLabel='Выбор года'
 						hasError={hasError}

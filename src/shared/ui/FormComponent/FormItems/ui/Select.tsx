@@ -90,17 +90,12 @@ export function SelectItem<
 							DropdownIndicator: CustomDropdownIndicator
 						}}
 						classNames={{
-							control: state =>
+							control: () =>
 								classNames(
 									styles.control,
 									{
 										[styles.hasError]: hasError
 									},
-									// {
-									// 	[styles.hasError]: (
-									// 		state.selectProps as { hasError?: boolean }
-									// 	).hasError
-									// },
 									[parentSelectClass, parentSelectControlClass]
 								),
 							menu: () => classNames(styles.menu, {}, [parentSelectMenuClass]),
