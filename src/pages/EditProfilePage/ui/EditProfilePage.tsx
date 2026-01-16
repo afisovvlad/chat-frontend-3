@@ -9,8 +9,6 @@ export function EditProfilePage() {
 				title={'Редактирование профиля'}
 				href={'/settings'}
 				parentClass={styles.headerBlock}
-				iconLeft
-				iconRight={false}
 			/>
 			<EditProfileForm parentClass={styles.form} />
 		</section>

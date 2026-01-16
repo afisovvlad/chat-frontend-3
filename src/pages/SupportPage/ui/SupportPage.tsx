@@ -9,7 +9,6 @@ export function SupportPage() {
 				title={'Обращение в поддержку'}
 				href={'/settings'}
 				parentClass={styles.headerBlock}
-				iconLeft
 			/>
 			<SupportForm parentClass={styles.form} />
 		</section>

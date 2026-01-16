@@ -8,7 +8,6 @@ export function BlackListPage() {
 				title={'Черный список'}
 				href={'/settings'}
 				parentClass={styles.headerBlock}
-				iconLeft
 			/>
 			<div className={styles.content}>{/* Черный список поместить сюда */}</div>
 		</section>
