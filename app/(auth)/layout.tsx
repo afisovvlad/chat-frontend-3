@@ -1,6 +1,5 @@
 'use client';
 
-import { useAuthStep } from '@/features/auth/model/selectors/selectors';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import styles from './layout.module.scss';
 
@@ -9,9 +8,6 @@ interface IChildren {
 }
 
 export default function AuthLayout({ children }: IChildren) {
-	const step = useAuthStep();
-	// console.log(step);
-	// console.log(step !== 'greeting');
 	return (
 		<div className={styles.authLayout}>
 			<div

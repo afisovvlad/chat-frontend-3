@@ -53,8 +53,8 @@ export const EnterCodeForm = ({
 				if (res.is_filled) {
 					router.push('/');
 				} else {
-					router.push('/'); // поменять на setStep('register'), когда сделаю регистрацию
-					// setStep('register');
+					// router.push('/'); // поменять на setStep('register'), когда сделаю регистрацию
+					setStep('register');
 				}
 			} else if (res.errors) {
 				if (attemptsNumber === 1) {

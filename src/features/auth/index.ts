@@ -1,6 +1,7 @@
 export { useAuthGoBack } from './model/lib/hooks/useAuthGoBack';
 export { useSetAuthStep } from './model/lib/hooks/useSetAuthStep';
-export { useAuthStep } from './model/selectors/selectors';
+export { useAuthStep } from './model/lib/hooks/useAuthStep';
+export { selectAuthStep } from './model/selectors/selectors';
 export { authActions, authReducer } from './model/slices/authSlice';
 export type { AuthSchema } from './model/types/AuthSchema';
 export { EnterPhoneForm } from './ui/EnterPhone/ui/EnterPhoneForm';

@@ -1,5 +1,5 @@
-import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
+import { RootState } from '@/app/providers/StoreProvider';
 
-export const useAuthStep = () => {
-	return useAppSelector(state => state.auth.step);
+export const selectAuthStep = (state: RootState) => {
+	return state.auth.step;
 };

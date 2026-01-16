@@ -1,5 +1,4 @@
 import { useAuthGoBack } from '@/features/auth/model/lib/hooks/useAuthGoBack';
-import { useAuthStep } from '@/features/auth/model/selectors/selectors';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Button, ButtonTheme } from '@/shared/ui/Button';
 import {
@@ -12,6 +11,7 @@ import {
 import { Back, Logo } from '@icons/index';
 import { ReactNode } from 'react';
 import styles from './LoginWrapper.module.scss';
+import { useAuthStep } from '@/features/auth';
 
 interface LoginWrapperProps {
 	children: ReactNode;
