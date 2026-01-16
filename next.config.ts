@@ -30,6 +30,10 @@ const nextConfig: NextConfig = {
 				as: '*.js'
 			}
 		}
+	},
+	// тестовое
+	images: {
+		remotePatterns: [new URL('https://interesnyefakty.org/**')]
 	}
 };
 

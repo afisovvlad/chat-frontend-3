@@ -1,0 +1,11 @@
+.headerBlock {
+	margin-bottom: 16px;
+
+	@media screen and (max-width: 768px) {
+		margin-bottom: 12px;
+	}
+}
+
+.content {
+	padding: 0 16px;
+}

@@ -1,0 +1,50 @@
+body {
+	background: var(--color-white-50);
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.iconPage {
+	width: 486px;
+	height: 368px;
+	margin-bottom: 40px;
+	margin-top: 160px;
+
+	@media (max-width: 450px) {
+		height: 300px;
+	}
+}
+
+.text {
+	margin-bottom: 14px;
+	max-width: 360px;
+	text-align: center;
+}
+
+.button {
+	max-width: 360px;
+	width: 360px;
+	font-weight: 500;
+	letter-spacing: 0.5px;
+
+	&:has(a) {
+		padding: 0;
+	}
+
+	@media (max-width: 450px) {
+		width: 320px;
+	}
+
+	& > a {
+		display: inline-block;
+		width: 100%;
+		height: 100%;
+		color: inherit;
+		padding: 16px 8px;
+	}
+}

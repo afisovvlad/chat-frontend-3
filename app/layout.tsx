@@ -1,6 +1,15 @@
+import { OnlineChecker } from '@/app/providers/OnlineChecker';
 import { StoreProvider } from '@/app/providers/StoreProvider';
 import '@/app/styles/index.scss';
-import { roboto, sfPro } from '@/shared/assets/fonts/index';
+import type { Metadata } from 'next';
+import { roboto, sfPro } from '../public/assets/fonts/index';
+
+export const metadata: Metadata = {
+	title: 'Мессенджер | А-Чат',
+	keywords:
+		'Удобный мессенджер, А-Чат, мессенджер А-Чат, мессенджер для связи, мессенджер для работы, мессенджер для общения',
+	description: 'Мессенджер на все случаи жизни| А-Чат'
+};
 
 interface IChildren {
 	children: React.ReactNode;
@@ -12,7 +21,7 @@ export default function RootLayout({ children }: IChildren) {
 			<head></head>
 			<body>
 				<StoreProvider>
-					<main>{children}</main>
+					<OnlineChecker>{children}</OnlineChecker>
 				</StoreProvider>
 			</body>
 		</html>

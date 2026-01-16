@@ -1,14 +1,71 @@
 .container {
-	width: 100%;
 	margin: 0 auto;
-	padding: 0 16px;
+	max-width: 1200px;
+	display: flex;
+	flex-direction: column;
 
-	@media (min-width: 728px) {
+	@media (max-width: 1200px) {
 		padding: 0 20px;
 	}
 
-	@media (min-width: 1200px) {
-		max-width: var(--width-lg);
-		padding: 0;
+	@media (max-width: 768px) {
+		padding: 16px;
+
+		// padding: 0 16px;
+	}
+}
+
+.sidebar {
+	max-width: none;
+	width: 360px;
+	margin: 0;
+	padding: 0;
+	height: calc(100dvh - var(--app-header-offset));
+	box-sizing: border-box;
+	background-color: var(--color-bg-sidebar);
+	border-radius: 8px;
+	border: 1px solid var(--color-gray-50);
+
+	@media (max-width: 768px) {
+		--app-header-offset: 0;
+
+		width: 100%;
+		background-color: transparent;
+		border: 1px solid transparent;
+	}
+}
+
+.content {
+	max-width: none;
+	width: 744px;
+	height: calc(100dvh - var(--app-header-offset));
+	box-sizing: border-box;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	background-color: var(--color-violet-50);
+	border-radius: 8px;
+	border: 1px solid var(--color-gray-50);
+
+	@media (max-width: 768px) {
+		--app-header-offset: 0;
+
+		width: 100%;
+		display: none; // при разработке логики это свойство убрать,, или изменить согласно логике показа сообщений!!!
+		background-color: transparent;
+		border: 1px solid transparent;
+	}
+}
+
+.wrapper {
+	display: flex;
+	gap: 24px;
+	height: 100%;
+	overflow: hidden;
+	width: 100%;
+
+	@media (max-width: 768px) {
+		flex-direction: column;
+		gap: 0;
 	}
 }

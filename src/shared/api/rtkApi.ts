@@ -1,7 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import baseQueryWithReauth from './baseQuery';
 
 export const rtkApi = createApi({
 	reducerPath: 'rtkApi',
-	baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_BASE_API }),
-	endpoints: builder => ({})
+	baseQuery: baseQueryWithReauth,
+	tagTypes: ['Support', 'sendPhone'],
+	endpoints: _ => ({})
 });

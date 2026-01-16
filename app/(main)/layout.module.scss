@@ -1,3 +1,16 @@
+body {
+	background-color: var(--color-white);
+}
+
 .mainLayout {
-	opacity: 1; //  // тестовый стиль, потом удалить
+	display: flex;
+	gap: 20px;
+	flex: 1;
+	min-height: 0;
+}
+
+.content {
+	flex: 1;
+	overflow-y: auto;
+	border-radius: 8px;
 }
