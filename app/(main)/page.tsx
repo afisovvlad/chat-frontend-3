@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import cls from './page.module.scss';
 
-export default function HomePage() {
+export default function Home() {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [isNewModalOpen, setNewIsModalOpen] = useState<boolean>(false);
 	const onClose = () => {
@@ -23,7 +23,7 @@ export default function HomePage() {
 		setNewIsModalOpen(false);
 	};
 	return (
-		<section className={cls.homePage}>
+		<section className={cls.home}>
 			<Button onClick={() => setIsModalOpen(true)} className={cls.btn}>
 				Удалить элемент
 			</Button>

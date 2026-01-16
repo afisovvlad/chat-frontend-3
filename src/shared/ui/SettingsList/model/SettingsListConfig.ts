@@ -26,25 +26,25 @@ const ORDER: SettingsListItemId[] = [
 
 const config: Record<SettingsListItemId, Omit<SettingsListItem, 'id'>> = {
 	'edit-profile': {
-		slug: 'Edit Profile',
+		slug: 'edit-profile',
 		title: 'Редактирование профиля',
 		Icon: Edit,
 		href: '/settings/edit-profile'
 	},
 	blacklist: {
-		slug: 'Black List',
+		slug: 'black-list',
 		title: 'Чёрный список',
 		Icon: BlackList,
-		href: '/settings/blacklist'
+		href: '/settings/black-list'
 	},
 	support: {
-		slug: 'Support',
+		slug: 'support',
 		title: 'Поддержка',
 		Icon: Support,
 		href: '/settings/support'
 	},
 	logout: {
-		slug: 'Logout',
+		slug: 'logout',
 		title: 'Выйти из аккаунта',
 		Icon: LogoutIcon
 	}

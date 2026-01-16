@@ -1,5 +1,5 @@
 import { classNames, Mods } from '@/shared/lib/classNames/classNames';
-import { ReactNode } from 'react';
+import { ReactNode, RefObject } from 'react';
 
 import {
 	ButtonColor,
@@ -21,6 +21,7 @@ interface ButtonProps {
 	btnType?: ButtonType;
 	children?: ReactNode;
 	onClick?: () => void;
+	btnRef?: RefObject<HTMLButtonElement | null>;
 }
 
 export const Button = (props: ButtonProps) => {
@@ -34,7 +35,8 @@ export const Button = (props: ButtonProps) => {
 		callBtn = false,
 		btnType = ButtonType.BUTTON,
 		children,
-		onClick
+		onClick,
+		btnRef
 	} = props;
 
 	const mods: Mods = {
@@ -52,6 +54,7 @@ export const Button = (props: ButtonProps) => {
 			disabled={disabled}
 			type={btnType}
 			onClick={onClick}
+			ref={btnRef}
 		>
 			{children}
 		</button>

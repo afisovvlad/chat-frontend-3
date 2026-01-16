@@ -30,13 +30,15 @@
 		]
 	},
 	"dependencies": {
-		"@reduxjs/toolkit": "^2.11.0",
+		"@reduxjs/toolkit": "^2.11.0",	
 		"focus-trap-react": "^11.0.4",
 		"next": "16.0.5",
 		"next-plugin-svgr": "^1.1.12",
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
+		"react-hook-form": "^7.68.0",
 		"react-redux": "^9.2.0",
+		"react-select": "^5.10.2",
 		"sass": "^1.94.2",
 		"styled-components": "^6.1.19"
 	},
@@ -44,6 +46,7 @@
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
+		"baseline-browser-mapping": "^2.9.11",
 		"eslint": "^9",
 		"eslint-config-next": "16.0.5",
 		"eslint-config-prettier": "^10.1.8",

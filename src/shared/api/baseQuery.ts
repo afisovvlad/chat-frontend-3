@@ -1,5 +1,5 @@
 import { RootState } from '@/app/providers/StoreProvider';
-import { authActions } from '@/features/auth';
+
 import {
 	BaseQueryFn,
 	FetchArgs,
@@ -7,10 +7,12 @@ import {
 	FetchBaseQueryError
 } from '@reduxjs/toolkit/query/react';
 import { logoutFromInterceptor } from './services/logoutForInterceptor/logoutForInterceptor';
+import { authActions } from '@/features/auth/model/slices/authSlice';
 
 // Интерсептор 1: добавление accessToken в заголовок
 const baseQuery = fetchBaseQuery({
-	baseUrl: process.env.NEXT_PUBLIC_BASE_API as string
+	baseUrl: process.env.NEXT_PUBLIC_BASE_API as string,
+	credentials: 'include'
 });
 
 // Интерсептор 2: refresh при 401
