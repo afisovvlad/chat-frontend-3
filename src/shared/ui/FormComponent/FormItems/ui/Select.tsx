@@ -35,7 +35,6 @@ interface SelectProps<
 	createCustomStyles?: (
 		options?: CustomStylesOptions
 	) => StylesConfig<TOption, IsMulti, Group>;
-	// menu: string;
 	ariaLabel?: string;
 	hasError?: boolean;
 }
