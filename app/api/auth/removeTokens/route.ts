@@ -1,22 +1,21 @@
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function POST() {
-	const cookieStore = await cookies();
+	const response = NextResponse.json({ success: true });
 
 	// Очистка accessToken
-	cookieStore.set('accessToken', '', {
+	response.cookies.set('accessToken', '', {
 		httpOnly: true,
 		secure: true,
 		maxAge: 0
 	});
 
 	// Очистка refreshToken
-	cookieStore.set('refreshToken', '', {
+	response.cookies.set('refreshToken', '', {
 		httpOnly: true,
 		secure: true,
 		maxAge: 0
 	});
 
-	return NextResponse.json({ success: true });
+	return response;
 }

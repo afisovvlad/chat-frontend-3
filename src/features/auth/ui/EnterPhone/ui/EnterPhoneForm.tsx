@@ -1,5 +1,6 @@
 'use client';
 
+import { FormAuthItem, useSetAuthStep } from '@/features/auth';
 import { formatPhone } from '@/shared/lib/formatPhone/formatPhone';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import {
@@ -22,7 +23,6 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSendPhoneMutation } from '../model/api/authApi';
 import { formItems } from '../model/const/formItems';
 import styles from './EnterPhoneForm.module.scss';
-import { FormAuthItem, useSetAuthStep } from '@/features/auth';
 
 interface LoginPhoneForm {
 	phone_number: string;
@@ -63,9 +63,9 @@ export const EnterPhoneForm = () => {
 	const onModalClose = () => {
 		setIsModalOpen(false);
 	};
-	const onConfirm = () => {
+	const onConfirm = async () => {
 		const formattedPhone = phone_number.replace(/[^\d+]/g, '');
-		sendPhone({ phone_number: formattedPhone });
+		await sendPhone({ phone_number: formattedPhone });
 		setStep('code');
 		setIsModalOpen(false);
 	};

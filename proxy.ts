@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export function proxy(request: NextRequest) {
-	const accessToken = request.cookies.get('accessToken')?.value;
-	const { pathname } = request.nextUrl;
+const SKIP_AUTH_PATHS = ['/api/auth/setTokens', '/api/auth/refresh'];
 
-	if (pathname === '/api/auth/setTokens') {
+export function proxy(request: NextRequest) {
+	const { pathname } = request.nextUrl;
+	const hasAccessToken = request.cookies.has('accessToken');
+
+	if (SKIP_AUTH_PATHS.some(path => pathname === path)) {
 		return NextResponse.next();
 	}
 
@@ -15,20 +17,16 @@ export function proxy(request: NextRequest) {
 		pathname.includes('/test');
 
 	// Авторизованный не пускаем на /login
-	if (accessToken && isLoginPage) {
+	if (hasAccessToken && isLoginPage) {
 		return NextResponse.redirect(new URL('/', request.url), 307);
 	}
 
-	// Неавторизованного пускаем только на /login
-	if (!accessToken && !isLoginPage) {
-		return NextResponse.redirect(new URL('/login', request.url), 307);
-	}
+	// чтобы proxy.ts не перехватывал запросы на proxy route.ts, который перенаправляет запросы на бэк
+	const isProxyApi = pathname.startsWith('/api/proxy');
 
-	// // добавляем accessToken в заголовок
-	if (accessToken && pathname.startsWith('/api/')) {
-		const requestHeaders = new Headers(request.headers);
-		requestHeaders.set('Authorization', `Bearer ${accessToken}`);
-		return NextResponse.next({ request: { headers: requestHeaders } });
+	// Неавторизованного пускаем только на /login
+	if (!hasAccessToken && !isLoginPage && !isProxyApi) {
+		return NextResponse.redirect(new URL('/login', request.url), 307);
 	}
 
 	return NextResponse.next();
@@ -36,9 +34,8 @@ export function proxy(request: NextRequest) {
 
 export const config = {
 	matcher: [
-		'/login',
 		// все остальные пути, кроме статики
-		'/((?!_next|images|favicon.ico).*)',
+		'/((?!_next/static|_next/image|favicon.ico|images).*)',
 		'/api/:path*' // если нужен проксинг токена на API
 	]
 };
