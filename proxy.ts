@@ -6,7 +6,7 @@ export function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const hasAccessToken = request.cookies.has('accessToken');
 
-	if (SKIP_AUTH_PATHS.some(path => pathname === path)) {
+	if (SKIP_AUTH_PATHS.some(path => pathname.startsWith(path))) {
 		return NextResponse.next();
 	}
 
@@ -35,7 +35,6 @@ export function proxy(request: NextRequest) {
 export const config = {
 	matcher: [
 		// все остальные пути, кроме статики
-		'/((?!_next/static|_next/image|favicon.ico|images).*)',
-		'/api/:path*' // если нужен проксинг токена на API
+		'/((?!_next/static|_next/image|favicon.ico|images).*)'
 	]
 };

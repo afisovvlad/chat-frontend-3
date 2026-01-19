@@ -7,10 +7,9 @@ export const editProfileApi = rtkApi.injectEndpoints({
 			query: data => ({
 				url: `/auth/messenger/profile/`,
 				method: 'POST',
-				credentials: 'include',
 				body: data
-			})
-			// invalidatesTags: ['EditProfile']
+			}),
+			invalidatesTags: ['EditProfile']
 		})
 	})
 });

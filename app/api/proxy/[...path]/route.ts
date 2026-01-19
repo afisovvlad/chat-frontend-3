@@ -1,25 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-	return handleProxy(request);
-}
-export async function POST(request: NextRequest) {
-	return handleProxy(request);
-}
-export async function PUT(request: NextRequest) {
-	return handleProxy(request);
-}
-export async function DELETE(request: NextRequest) {
-	return handleProxy(request);
-}
+const handler = (request: NextRequest) => handleProxy(request);
+export { handler as DELETE, handler as GET, handler as POST, handler as PUT };
 
-async function handleProxy(request: NextRequest) {
-	const path = request.nextUrl.pathname.replace('/api/proxy', '');
+const excludeHeaders = [
+	'host',
+	'connection',
+	'content-length',
+	'cookie',
+	'accept-encoding',
+	'set-cookie',
+	'transfer-encoding',
+	'content-encoding'
+];
+
+async function handleProxy(request: NextRequest): Promise<NextResponse> {
+	const path = request.nextUrl.pathname.replace(
+		process.env.NEXT_PUBLIC_PROXY_PREFIX as string,
+		''
+	);
 	const targetUrl = `${process.env.NEXT_PUBLIC_BASE_API}${path}/`;
 
 	const accessToken = request.cookies.get('accessToken')?.value;
-	const headers = new Headers(request.headers);
-	if (accessToken) {
+
+	const headers = new Headers();
+	request.headers.forEach((value, key) => {
+		if (!excludeHeaders.includes(key)) {
+			headers.set(key, value);
+		}
+	});
+
+	if (accessToken && !headers.has('Authorization')) {
 		headers.set('Authorization', `Bearer ${accessToken}`);
 	}
 
@@ -32,18 +43,24 @@ async function handleProxy(request: NextRequest) {
 		const res = await fetch(targetUrl, {
 			method: request.method,
 			headers,
-			body,
-			credentials: 'include'
+			body
 		});
+
+		const responseHeaders = new Headers(res.headers);
+		excludeHeaders.forEach(h => responseHeaders.delete(h));
 
 		const response = new NextResponse(res.body, {
 			status: res.status,
 			statusText: res.statusText,
-			headers: res.headers
+			headers: responseHeaders
 		});
 
 		return response;
-	} catch (_) {
+	} catch (error) {
+		if (process.env.NODE_ENV === 'development') {
+			console.error('Proxy error', error);
+		}
+
 		return NextResponse.json({ error: 'Proxy failed' }, { status: 500 });
 	}
 }
