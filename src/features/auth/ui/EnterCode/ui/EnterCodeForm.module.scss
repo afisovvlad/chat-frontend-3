@@ -47,7 +47,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 100%;
+
+	// width: 100%;
 	margin-bottom: 16px;
 }
 
@@ -63,14 +64,12 @@
 }
 
 .tooltip {
-	position: absolute;
-	top: -132px;
-	right: 15.5px;
-
-	// display: none;
+	top: -140px;
+	right: 0;
+	display: none;
 }
 
-.info:hover .tooltip {
+.infoIcon:hover ~ .tooltip {
 	display: inline-block;
 }
 
