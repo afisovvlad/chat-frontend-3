@@ -20,11 +20,10 @@ import {
 	TextTag,
 	TextType
 } from '@/shared/ui/Text';
-import Tooltip from '@/shared/ui/Tooltip/ui/Tooltip';
-import { InfoCircle } from '@icons/index';
 import { useState } from 'react';
 import { EnterCodeForm } from '..';
 import styles from './EnterCode.module.scss';
+import TooltipWrapper from './TooltipWrapper';
 
 export const EnterCode = () => {
 	const [time, setTime] = useState(60);
@@ -62,27 +61,7 @@ export const EnterCode = () => {
 			>
 				{formattedPhone}
 			</Text>
-			<div className={styles.infoWrapper}>
-				<Text
-					type={TextType.TEXT}
-					tag={TextTag.P}
-					fontSize={TextSize.L}
-					fontWeight={FontWeight.MEDIUM}
-					textAlign={TextAlign.CENTER}
-					color={TextColor.BLACK}
-					className={classNames(
-						`${styles.infoText} ${styles.boldText}`,
-						{},
-						[]
-					)}
-				>
-					Введите код
-				</Text>
-
-				<InfoCircle width={24} height={24} className={styles.infoIcon} />
-				<Tooltip parentClass={styles.tooltip} />
-			</div>
-
+			<TooltipWrapper />
 			<EnterCodeForm
 				setTime={setTime}
 				phone_number={phone_number}
@@ -120,7 +99,6 @@ export const EnterCode = () => {
 					Отправить новый код
 				</Button>
 			)}
-
 			<Button
 				onClick={() => {
 					setStep('support');

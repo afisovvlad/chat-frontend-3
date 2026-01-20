@@ -14,34 +14,6 @@
 	margin-bottom: 24px;
 }
 
-.infoWrapper {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.infoText {
-	padding: 8px;
-}
-
-.infoIcon {
-	line-height: 120%;
-	text-align: center;
-	vertical-align: middle;
-	cursor: pointer;
-}
-
-.tooltip {
-	top: -140px;
-	right: 0;
-	display: none;
-}
-
-.infoIcon:hover ~ .tooltip {
-	display: inline-block;
-}
-
 .form {
 	margin: 0 auto;
 }
