@@ -24,7 +24,7 @@ import Tooltip from '@/shared/ui/Tooltip/ui/Tooltip';
 import { InfoCircle } from '@icons/index';
 import { useState } from 'react';
 import { EnterCodeForm } from '..';
-import styles from './EnterCodeForm.module.scss';
+import styles from './EnterCode.module.scss';
 
 export const EnterCode = () => {
 	const [time, setTime] = useState(60);
@@ -95,7 +95,6 @@ export const EnterCode = () => {
 					<Text
 						type={TextType.TEXT}
 						tag={TextTag.P}
-						fontSize={TextSize.L}
 						fontWeight={FontWeight.MEDIUM}
 						textAlign={TextAlign.CENTER}
 						color={TextColor.GRAY}
