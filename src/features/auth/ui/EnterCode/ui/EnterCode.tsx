@@ -1,5 +1,6 @@
 'use client';
 
+import { TimeLeft, useSetAuthStep } from '@/features/auth';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { formatPhone } from '@/shared/lib/formatPhone/formatPhone';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
@@ -23,7 +24,6 @@ import { InfoCircle } from '@icons/index';
 import { useState } from 'react';
 import { EnterCodeForm } from '..';
 import styles from './EnterCodeForm.module.scss';
-import { TimeLeft, useSetAuthStep } from '@/features/auth';
 
 export const EnterCode = () => {
 	const [time, setTime] = useState(60);
@@ -61,7 +61,7 @@ export const EnterCode = () => {
 			>
 				{formattedPhone}
 			</Text>
-			{/* <div className={styles.infoWrapper}> */}
+
 			<Text
 				type={TextType.TEXT}
 				tag={TextTag.P}
@@ -74,8 +74,6 @@ export const EnterCode = () => {
 				Введите код
 				<InfoCircle width={24} height={24} className={styles.infoIcon} />
 			</Text>
-
-			{/* </div> */}
 
 			<EnterCodeForm
 				setTime={setTime}
@@ -94,7 +92,7 @@ export const EnterCode = () => {
 					color={TextColor.GRAY}
 					className={styles.timer}
 				>
-					Отправить новый код через
+					Отправить новый код через&nbsp;
 					<TimeLeft initialTime={time} setFinishedTime={setFinishedTime} />
 				</Text>
 			) : (

@@ -1,5 +1,6 @@
 'use client';
 
+import { authActions, FormAuthItem, useSetAuthStep } from '@/features/auth';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { Form } from '@/shared/ui/FormComponent/Form/ui/Form';
 import { useRouter } from 'next/navigation';
@@ -8,7 +9,6 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { LoginCodeForm } from '..';
 import { formItems } from '../model/const/formItems';
 import styles from './EnterCodeForm.module.scss';
-import { authActions, FormAuthItem, useSetAuthStep } from '@/features/auth';
 
 interface EnterCodeFormProps {
 	setTime: (time: number) => void;
@@ -60,16 +60,17 @@ export const EnterCodeForm = ({
 			} else if (res.errors) {
 				if (attemptsNumber === 1) {
 					dispatch(authActions.disabledCodeAttempts(true));
-					setTime(600);
+					setTime(600); // 10 минут
 					setError('code', {
 						message: 'Слишком много неверных попыток.'
 					});
 				} else {
+					setAttemptsNumber(prev => prev - 1);
+					// setTime(60);
 					setError('code', {
 						message: `Код введен неверно. Осталось ${attemptsNumber - 1} попытки`
 					});
 				}
-				setAttemptsNumber(prev => prev - 1);
 			} else {
 				setError('code', {
 					message: `Неизвестная ошибка`

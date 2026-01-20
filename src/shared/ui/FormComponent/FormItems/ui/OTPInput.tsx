@@ -39,8 +39,6 @@ export function OTPInput<TFormValues extends FieldValues>({
 	const { fieldState } = useController({ name });
 	const isError = !!fieldState.error;
 
-	console.log('isError in OTP', isError);
-
 	// автофокус на первом input
 	useEffect(() => {
 		inputRef.current[0]?.focus();

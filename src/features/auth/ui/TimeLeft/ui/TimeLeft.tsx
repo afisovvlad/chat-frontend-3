@@ -1,3 +1,4 @@
+import { formatTime } from '@/shared/lib/formatTime/formatTime';
 import { useEffect, useState } from 'react';
 import styles from './TimeLeft.module.scss';
 
@@ -8,6 +9,10 @@ interface TimeLeftProps {
 
 export function TimeLeft({ initialTime, setFinishedTime }: TimeLeftProps) {
 	const [timeLeft, setTimeLeft] = useState(initialTime);
+
+	useEffect(() => {
+		setTimeLeft(initialTime);
+	}, [initialTime]);
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -25,7 +30,8 @@ export function TimeLeft({ initialTime, setFinishedTime }: TimeLeftProps) {
 
 	return (
 		<span className={styles.timeLeft}>
-			{timeLeft < 10 ? `0${timeLeft}` : timeLeft}
+			{formatTime(timeLeft)}
+			{/* {timeLeft < 10 ? `0${timeLeft}` : timeLeft} */}
 		</span>
 	);
 }
