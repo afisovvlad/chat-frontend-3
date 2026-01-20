@@ -1,0 +1,73 @@
+.loginWrapper {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+}
+
+.btnBack {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	color: var(--color-black);
+}
+
+.logo {
+	width: 78px;
+	height: 70px;
+	margin-bottom: 32px;
+
+	@media screen and (max-width: 768px) {
+		width: 58px;
+		height: 53px;
+		margin-bottom: 8px;
+
+		&.support {
+			width: 56px;
+			height: 50px;
+			margin-left: auto;
+			margin-bottom: 20px;
+		}
+	}
+}
+
+// .iconBack {}
+
+.title {
+	display: none;
+
+	@media screen and (max-width: 768px) {
+		display: block;
+		margin-bottom: 32px;
+		font-size: 32px;
+		line-height: 100%;
+		letter-spacing: 0;
+	}
+}
+
+.subTitle {
+	margin-bottom: 24px;
+	font-weight: 600;
+	font-size: 32px;
+	line-height: 100%;
+	letter-spacing: 0;
+	vertical-align: middle;
+
+	@media screen and (max-width: 768px) {
+		margin-bottom: 20px;
+		font-weight: 500;
+		font-size: 24px;
+		line-height: 120%;
+
+		&.support {
+			margin-bottom: 16px;
+		}
+	}
+}

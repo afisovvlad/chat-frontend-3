@@ -9,7 +9,9 @@
 	}
 
 	@media (max-width: 768px) {
-		padding: 0 16px;
+		padding: 16px;
+
+		// padding: 0 16px;
 	}
 }
 
@@ -28,6 +30,8 @@
 	@media (max-width: 768px) {
 		--app-header-offset: 0;
 		width: 100%;
+		background-color: transparent;
+		border: 1px solid transparent;
 	}
 }
 
@@ -48,6 +52,8 @@
 
 		width: 100%;
 		display: none; // при разработке логики это свойство убрать,, или изменить согласно логике показа сообщений!!!
+		background-color: transparent;
+		border: 1px solid transparent;
 	}
 }
 

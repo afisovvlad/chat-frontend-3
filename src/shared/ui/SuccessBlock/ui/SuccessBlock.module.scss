@@ -1,0 +1,23 @@
+.successBlock {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	max-width: 328px;
+	margin: 0 auto;
+}
+
+.successIcon {
+	margin-bottom: 10px;
+}
+
+.successTitle {
+	margin-bottom: 24px;
+}
+
+.successText {
+	line-height: 130%;
+	vertical-align: middle;
+	letter-spacing: 0.4px;
+}

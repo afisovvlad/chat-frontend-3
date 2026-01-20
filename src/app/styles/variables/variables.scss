@@ -9,6 +9,8 @@
 	--color-white: #fff;
 	--color-white-50: #fafafc;
 	--color-red: #f00;
+	--color-violet-20: #edebfe;
+	--color-violet-40: #f5f6f8;
 	--color-violet-50: #f5f6f880;
 	--color-violet-500: #7769e1;
 	--color-violet-100: #cec8ff;
@@ -27,10 +29,12 @@
 	--color-green-500: #27c840;
 
 	// используется в основном для границ
+	// используется в основном для границ
 	--color-gray-50: #eee;
 	--border-black: #0000004d;
 
 	// используется в основном для кнопок
+
 	--color-gray-200: #c5c5c5;
 	--color-gray-100: #e4e4e4;
 
@@ -51,6 +55,7 @@
 	--background-primary: var(--color-violet-50);
 	--foreground-primary: var(--color-black); // цвет заголовков
 	--foreground-secondary: var(--color-gray-500); // цвет текста
+	--settings-border-color: transparent; // цвет border в формах settings
 
 	// fonts-family
 	--primary-text-font: roboto;
@@ -76,4 +81,10 @@
 	--font-weight-semi-bold: 600;
 	--font-weight-bold: 700;
 	--font-weight-extra-bold: 800;
+
+	@media screen and (max-width: 768px) {
+		--settings-border-color: var(--color-gray-500);
+		--header-height: 0;
+		--header-margin: 0;
+	}
 }

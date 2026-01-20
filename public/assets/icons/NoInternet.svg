@@ -35,11 +35,11 @@
 <path d="M95.051 248.413C95.9715 248.155 97.0196 248.526 97.9699 249.321C98.9108 250.109 99.6575 251.237 99.9577 252.277L108.769 290.282L98.8417 284.756L69.4043 293.137C67.3727 293.716 65.2346 292.526 64.6561 290.494L57.5204 265.433C56.942 263.402 58.1323 261.264 60.164 260.685L60.179 260.681L60.1928 260.676L95.051 248.413ZM95.9224 251.513L61.0487 263.91L60.6068 264.066L68.008 290.059L99.2609 281.161L103.177 283.34L102.951 282.268L96.5799 251.882L96.4619 251.321L95.9224 251.513Z" fill="white" stroke="white"/>
 <defs>
 <linearGradient id="paint0_linear_1_229280" x1="28.2194" y1="101.117" x2="127.404" y2="140.549" gradientUnits="userSpaceOnUse">
-<stop stop-color="#BCEAEB"/>
+<stop offset="0" stop-color="#BCEAEB"/>
 <stop offset="1" stop-color="#FCECEC"/>
 </linearGradient>
 <linearGradient id="paint1_linear_1_229280" x1="324.649" y1="225.816" x2="371.916" y2="267.991" gradientUnits="userSpaceOnUse">
-<stop stop-color="#BCEAEB"/>
+<stop offset="0" stop-color="#BCEAEB"/>
 <stop offset="1" stop-color="#FCECEC"/>
 </linearGradient>
 <clipPath id="clip0_1_229280">

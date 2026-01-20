@@ -2,12 +2,14 @@
 	font-size: var(--font-size-24);
 	font-weight: 600;
 	color: var(--foreground-primary);
+	word-break: break-word;
 }
 
 .text_text {
 	font-size: var(--font-size-16);
 	font-weight: 400;
 	color: var(--foreground-secondary);
+	word-break: break-word;
 }
 
 // Обрезка: однострочная

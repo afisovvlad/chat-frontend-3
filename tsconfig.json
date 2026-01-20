@@ -20,16 +20,19 @@
 		],
 		"paths": {
 			"@/*": ["./src/*"],
-			"@icons/*": ["./public/assets/icons/*"]
+			"@icons/*": ["./public/assets/icons/*"],
+			"@store": ["./src/app/providers/StoreProvider/config/store"]
 		}
 	},
 	"include": [
+		"src",
 		"next-env.d.ts",
 		"**/*.ts",
 		"**/*.tsx",
 		".next/types/**/*.ts",
 		".next/dev/types/**/*.ts",
-		"**/*.mts"
+		"**/*.mts",
+		"pages/api/auth/removeTokens"
 	],
 	"exclude": ["node_modules"]
 }

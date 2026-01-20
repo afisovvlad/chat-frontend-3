@@ -1,4 +1,4 @@
-import { Login } from '@/pages/Login/ui/Login';
+import { LoginPage } from '@/pages/LoginPage';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -6,12 +6,7 @@ export const metadata: Metadata = {
 	description: 'Вход/Регистрация',
 	keywords: 'А-Чат, вход, регистрация'
 };
-interface pageProps {
-	className?: string;
+
+export default function Login() {
+	return <LoginPage />;
 }
-
-const LoginPage = ({}: pageProps) => {
-	return <Login />;
-};
-
-export default LoginPage;

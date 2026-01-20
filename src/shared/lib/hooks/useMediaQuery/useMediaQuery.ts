@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 
-export const useMediaQuery = (query: string): boolean => {
+type MediaQueryInput = number | string;
+
+export const useMediaQuery = (input: MediaQueryInput = 768): boolean => {
+	const query = typeof input === 'number' ? `(max-width: ${input}px)` : input;
+
 	const [matches, setMatches] = useState(false);
 
 	useEffect(() => {
@@ -13,6 +17,7 @@ export const useMediaQuery = (query: string): boolean => {
 
 		update();
 		media.addEventListener('change', update);
+
 		return () => media.removeEventListener('change', update);
 	}, [query]);
 

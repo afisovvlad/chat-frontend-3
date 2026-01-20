@@ -2,6 +2,22 @@
 	"typescript.tsdk": "node_modules\\typescript\\lib",
 	"cSpell.words": [
 		"akatosphere",
-		"staged"
+		"attempts",
+		"birthday",
+		"filled",
+		"formatted",
+		"greeting",
+		"Loader",
+		"Logo",
+		"nickname",
+		"Props",
+		"Reducer",
+		"Reducers",
+		"slices",
+		"solid",
+		"staged",
+		"submitted",
+		"Theme",
+		"Wrapper"
 	]
 }
