@@ -31,7 +31,6 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { ProfileSchema } from '../..';
 import { formItems } from '../../model/const/formItems';
 import { createCustomStyles } from '../../model/lib/createCustomStyles';
-
 import { AvatarUploader } from '@/shared/ui/AvatarEditor';
 import { AvatarUploaderRef } from '@/shared/ui/AvatarEditor/ui/AvatarUpLoader/AvatarUpLoader';
 import styles from './EditProfileForm.module.scss';
@@ -51,7 +50,9 @@ interface EditProfileFormProps {
 export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverErrorMessage, setServerErrorMessage] = useState('');
+	const [currentAvatar, setCurrentAvatar] = useState<string | null>(null);
 	const [editProfile, { isLoading }] = useEditProfileMutation();
+	const avatarUploaderRef = useRef<AvatarUploaderRef>(null);
 	const methods = useForm<EditProfileForm>({
 		defaultValues: {
 			nickname: '',
@@ -68,12 +69,8 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const dayOptions = getDaysOptions(month, year);
 	const hasError = formState.isSubmitted && (!day || !month || !year);
 
-	const avatarUploaderRef = useRef<AvatarUploaderRef>(null);
-
-	console.log('EditProfileForm');
-
 	const fetchProfile = useCallback(async () => {
-		const response = await editProfile({}); // Отправляем пустой {} для получения данных профиля
+		const response = await editProfile({});
 		if (response.data) {
 			const data = response.data;
 
@@ -115,7 +112,7 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	// Логика загрузки аватара — просто вывод в консоль
 	const handleAvatarChange = (dataUrl: string) => {
 		console.log('Новый аватар:', dataUrl);
-		// Здесь можно отправить на сервер: uploadAvatarMutation({ avatar: dataUrl })
+		setCurrentAvatar(dataUrl);
 	};
 
 	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
@@ -183,7 +180,15 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 				theme={ButtonTheme.CLEAR}
 				color={ButtonColor.TRANSPARENT}
 				btnType={ButtonType.BUTTON}
-				onClick={() => avatarUploaderRef.current?.openFilePicker()}
+				onClick={() => {
+					console.log(
+						'[Avatar Debug] Текущие данные аватара:',
+						currentAvatar || 'не выбран'
+					);
+
+					// Открываем выбор файла
+					avatarUploaderRef.current?.openFilePicker();
+				}}
 			>
 				Выбрать фотографию
 			</Button>

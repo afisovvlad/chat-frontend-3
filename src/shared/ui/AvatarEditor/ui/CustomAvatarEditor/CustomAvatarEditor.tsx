@@ -152,7 +152,6 @@ const CustomAvatarEditorComponent = forwardRef<
 		// === Drag ===
 		const handleDragStart = useCallback(
 			(e: React.MouseEvent | React.TouchEvent) => {
-				e.preventDefault();
 				const startX = 'touches' in e ? e.touches[0].clientX : e.clientX;
 				const startY = 'touches' in e ? e.touches[0].clientY : e.clientY;
 				const startPos = { ...positionRef.current };
@@ -207,13 +206,11 @@ const CustomAvatarEditorComponent = forwardRef<
 			[disableBoundaryChecks, redraw]
 		);
 
-		useImperativeHandle(
-			ref,
-			() => ({
+		useImperativeHandle(ref, () => {
+			return {
 				getImageScaledToCanvas: () => canvasRef.current
-			}),
-			[]
-		);
+			};
+		}, []);
 
 		const dpr =
 			typeof window !== 'undefined' && !disableHiDPIScaling
