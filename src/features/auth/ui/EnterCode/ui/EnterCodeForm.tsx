@@ -51,6 +51,7 @@ export const EnterCodeForm = ({
 			console.log('res in LoginCode', res);
 			if (res.success) {
 				if (res.is_filled) {
+					setStep('greeting');
 					router.push('/');
 				} else {
 					router.push('/'); // поменять на setStep('register'), когда сделаю регистрацию

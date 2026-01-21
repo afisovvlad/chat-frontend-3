@@ -18,7 +18,7 @@
 .sidebar {
 	max-width: none;
 	width: 360px;
-	min-width: 300px;
+	min-width: 360px;
 	margin: 0;
 	padding: 0;
 	height: calc(100dvh - var(--app-header-offset));
@@ -29,9 +29,14 @@
 
 	@media (max-width: 768px) {
 		--app-header-offset: 0;
+
 		width: 100%;
 		background-color: transparent;
 		border: 1px solid transparent;
+	}
+
+	@media (max-width: 420px) {
+		min-width: 280px;
 	}
 }
 

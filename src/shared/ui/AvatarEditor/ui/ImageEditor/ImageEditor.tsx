@@ -7,7 +7,7 @@ import {
 } from 'react';
 
 import { ImageEditorRef } from '../../model/types/types';
-import { useImageEditorConfig } from '../../model/config/ImageEditorConfig';
+import { useImageEditorConfig } from '../../model/lib/useImageEditorConfig/useImageEditorConfig';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { CustomAvatarEditorRef } from '../CustomAvatarEditor/CustomAvatarEditor';
 import { ImageCanvasRenderer } from '../ImageCanvasRenderer/ImageCanvasRenderer';

@@ -31,8 +31,7 @@
 		"**/*.tsx",
 		".next/types/**/*.ts",
 		".next/dev/types/**/*.ts",
-		"**/*.mts",
-		"pages/api/auth/removeTokens"
+		"**/*.mts"
 	],
 	"exclude": ["node_modules"]
 }

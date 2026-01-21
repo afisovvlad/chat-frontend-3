@@ -1,17 +1,9 @@
 'use client';
-import {
-	Text,
-	TextType,
-	TextAlign,
-	TextColor,
-	TextSize
-} from '@/shared/ui/Text';
+import { Text, TextAlign, TextColor, TextSize } from '@/shared/ui/Text';
 import { Container, ContainerType } from '@/shared/ui/Container';
 import Image from 'next/image';
 import cls from './chats.module.scss';
 import { ChatsPage } from '@/pages/Chats';
-import { useState } from 'react';
-
 const Chats = () => {
 	return (
 		<Container type={ContainerType.WRAPPER}>

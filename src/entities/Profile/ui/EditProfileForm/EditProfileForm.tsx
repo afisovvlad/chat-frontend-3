@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { useEditProfileMutation } from '@/entities/Profile/api/editProfile.api';
 import { FormSettingsItem } from '@/entities/Settings';
 import { classNames } from '@/shared/lib/classNames/classNames';
@@ -27,14 +26,14 @@ import {
 	getMonthsOptions,
 	getYearsOptions
 } from '@/shared/utils/dateOptions';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ProfileSchema } from '../..';
 import { formItems } from '../../model/const/formItems';
 import { createCustomStyles } from '../../model/lib/createCustomStyles';
-import {
-	AvatarUploader,
-	AvatarUploaderRef
-} from '@/shared/ui/AvatarEditor/ui/AvatarUpLoader/AvatarUpLoader';
+
+import { AvatarUploader } from '@/shared/ui/AvatarEditor';
+import { AvatarUploaderRef } from '@/shared/ui/AvatarEditor/ui/AvatarUpLoader/AvatarUpLoader';
 import styles from './EditProfileForm.module.scss';
 
 interface EditBirthdayForm {
@@ -53,8 +52,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverErrorMessage, setServerErrorMessage] = useState('');
 	const [editProfile, { isLoading }] = useEditProfileMutation();
-	const avatarUploaderRef = useRef<AvatarUploaderRef>(null);
-
 	const methods = useForm<EditProfileForm>({
 		defaultValues: {
 			nickname: '',
@@ -71,11 +68,9 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const dayOptions = getDaysOptions(month, year);
 	const hasError = formState.isSubmitted && (!day || !month || !year);
 
-	const handleAvatarChange = async (dataUrl: string) => {
-		console.log('Новое изображение аватара:', dataUrl);
-		// вызвать мутацию загрузки аватара, если она есть
-		// Например: await uploadAvatarMutation({ avatar: dataUrl });
-	};
+	const avatarUploaderRef = useRef<AvatarUploaderRef>(null);
+
+	console.log('EditProfileForm');
 
 	const fetchProfile = useCallback(async () => {
 		const response = await editProfile({}); // Отправляем пустой {} для получения данных профиля
@@ -116,6 +111,12 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	useEffect(() => {
 		fetchProfile();
 	}, [fetchProfile]);
+
+	// Логика загрузки аватара — просто вывод в консоль
+	const handleAvatarChange = (dataUrl: string) => {
+		console.log('Новый аватар:', dataUrl);
+		// Здесь можно отправить на сервер: uploadAvatarMutation({ avatar: dataUrl })
+	};
 
 	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
 		setServerErrorMessage('');
@@ -174,12 +175,10 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 
 	return (
 		<>
-			<div>отображение аватара</div>
 			<AvatarUploader
 				ref={avatarUploaderRef}
 				onAvatarChange={handleAvatarChange}
-			></AvatarUploader>
-
+			/>
 			<Button
 				theme={ButtonTheme.CLEAR}
 				color={ButtonColor.TRANSPARENT}
@@ -188,7 +187,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 			>
 				Выбрать фотографию
 			</Button>
-
 			<Form<EditProfileForm>
 				methods={methods}
 				onSubmit={onSubmit}
