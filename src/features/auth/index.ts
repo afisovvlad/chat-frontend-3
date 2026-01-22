@@ -1,12 +1,12 @@
 export { useAuthGoBack } from './model/lib/hooks/useAuthGoBack';
-export { useSetAuthStep } from './model/lib/hooks/useSetAuthStep';
 export { useAuthStep } from './model/lib/hooks/useAuthStep';
+export { useSetAuthStep } from './model/lib/hooks/useSetAuthStep';
 export { selectAuthStep } from './model/selectors/selectors';
 export { authActions, authReducer } from './model/slices/authSlice';
 export type { AuthSchema } from './model/types/AuthSchema';
+export { EnterCode } from './ui/EnterCode/ui/EnterCode/EnterCode';
+export { EnterCodeForm } from './ui/EnterCode/ui/EnterCodeForm/EnterCodeForm';
 export { EnterPhoneForm } from './ui/EnterPhone/ui/EnterPhoneForm';
-export { EnterCode } from './ui/EnterCode/ui/EnterCode';
-export { EnterCodeForm } from './ui/EnterCode/ui/EnterCodeForm';
 export { FormAuthItem } from './ui/FormAuthItem/FormAuthItem';
 export { LoginGreeting } from './ui/Greeting/ui/LoginGreeting';
 export { RegisterForm } from './ui/Register/ui/RegisterForm';

@@ -1,31 +1,3 @@
-// .loginCode {
-// 	position: relative;
-// 	display: flex;
-// 	flex-direction: column;
-// 	justify-content: flex-start;
-// 	align-items: center;
-// 	width: 100%;
-// 	height: 100%;
-// 	padding: 72px 64px 80px;
-// }
-
-// .linkBack {
-// 	position: absolute;
-// 	top: 72px;
-// 	left: 64px;
-// 	color: var(--color-black);
-// }
-
-// .logo {
-// 	margin-bottom: 32px;
-// }
-
-// .title {
-// 	margin-bottom: 24px;
-// 	line-height: 100%;
-// 	vertical-align: middle;
-// }
-
 .messageText {
 	margin-bottom: 8px;
 	line-height: 130%;
@@ -74,10 +46,6 @@
 	display: inline-block;
 }
 
-.form {
-	margin: 0 auto;
-}
-
 .btn {
 	padding: 11px;
 	color: var(--color-primary);
@@ -107,8 +75,4 @@
 	line-height: 120%;
 	letter-spacing: 0.4px;
 	text-align: center;
-}
-
-.codeInput {
-	border-color: var(--color-primary);
 }

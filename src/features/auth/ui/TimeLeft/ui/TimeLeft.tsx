@@ -28,10 +28,5 @@ export function TimeLeft({ initialTime, setFinishedTime }: TimeLeftProps) {
 		}
 	}, [timeLeft, setFinishedTime]);
 
-	return (
-		<span className={styles.timeLeft}>
-			{formatTime(timeLeft)}
-			{/* {timeLeft < 10 ? `0${timeLeft}` : timeLeft} */}
-		</span>
-	);
+	return <span className={styles.timeLeft}>{formatTime(timeLeft)}</span>;
 }

@@ -14,9 +14,11 @@ import {
 import { Logo } from '@icons/index';
 import styles from './LoginGreeting.module.scss';
 import { useSetAuthStep } from '@/features/auth';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 
 export const LoginGreeting = () => {
 	const setStep = useSetAuthStep();
+	const { isDisabledCodeAttempts } = useAppSelector(state => state.auth);
 
 	return (
 		<>
@@ -52,7 +54,12 @@ export const LoginGreeting = () => {
 			>
 				Давай знакомиться
 			</Text>
-			<Button onClick={() => setStep('phone')}>Начать</Button>
+			<Button
+				onClick={() => setStep('phone')}
+				disabled={isDisabledCodeAttempts}
+			>
+				Начать
+			</Button>
 		</>
 	);
 };

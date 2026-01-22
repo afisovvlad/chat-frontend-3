@@ -1,8 +1,9 @@
 'use client';
 
-import { TimeLeft, useSetAuthStep } from '@/features/auth';
+import { authActions, TimeLeft, useSetAuthStep } from '@/features/auth';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { formatPhone } from '@/shared/lib/formatPhone/formatPhone';
+import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { Button } from '@/shared/ui/Button';
 import {
@@ -21,21 +22,28 @@ import {
 	TextType
 } from '@/shared/ui/Text';
 import { InfoCircle } from '@icons/index';
-import { useState } from 'react';
-import { EnterCodeForm } from '..';
-import styles from './EnterCodeForm.module.scss';
+import { useEffect, useState } from 'react';
+import { EnterCodeForm } from '../..';
+import styles from './EnterCode.module.scss';
 
 export const EnterCode = () => {
 	const [time, setTime] = useState(60);
 	const [finishedTime, setFinishedTime] = useState(false);
-	const {
-		phone_number,
-		code_len,
-		is_filled,
-		isDisabledCodeAttempts: disabled
-	} = useAppSelector(state => state.auth);
+	// const [isModalOpen, setIsModalOpen] = useState(false);
+	const { phone_number, code_len, is_filled, isDisabledCodeAttempts } =
+		useAppSelector(state => state.auth);
+	const dispatch = useAppDispatch();
 	const setStep = useSetAuthStep();
 	const formattedPhone = formatPhone(phone_number);
+
+	console.log('time in EnterCode', time);
+	console.log('finishedTime', finishedTime);
+
+	useEffect(() => {
+		if (isDisabledCodeAttempts && finishedTime) {
+			dispatch(authActions.disabledCodeAttempts(false));
+		}
+	}, [finishedTime, isDisabledCodeAttempts, dispatch]);
 
 	return (
 		<div className={styles.loginCode}>
@@ -80,7 +88,9 @@ export const EnterCode = () => {
 				phone_number={phone_number}
 				code_len={code_len}
 				is_filled={is_filled}
-				disabled={disabled}
+				disabled={isDisabledCodeAttempts}
+				finishedTime={finishedTime}
+				// setAttemptCounter={setAttemptCounter}
 			/>
 			{!finishedTime ? (
 				<Text
@@ -104,7 +114,7 @@ export const EnterCode = () => {
 					color={ButtonColor.PRIMARY}
 					className={styles.newCode}
 					onClick={() => {
-						setTime(60);
+						setTime(time);
 						setFinishedTime(false);
 					}}
 				>

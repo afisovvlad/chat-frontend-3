@@ -34,6 +34,7 @@ export const EnterPhoneForm = () => {
 	);
 	const [sendPhone] = useSendPhoneMutation();
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [disabled, setDisabled] = useState(true);
 	const confirmBtnRef = useRef<HTMLButtonElement>(null);
 	const setStep = useSetAuthStep();
 	const formattedPhone = formatPhone(phone);
@@ -47,12 +48,15 @@ export const EnterPhoneForm = () => {
 		control: methods.control,
 		name: 'phone_number'
 	});
-	const disabled = isDisabledCodeAttempts || phone_number.length !== 16;
 
 	useEffect(() => {
 		setFocus('phone_number');
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	useEffect(() => {
+		setDisabled(isDisabledCodeAttempts || phone_number.length !== 16);
+	}, [isDisabledCodeAttempts, phone_number.length]);
 
 	useEffect(() => {
 		if (isModalOpen && confirmBtnRef.current) {

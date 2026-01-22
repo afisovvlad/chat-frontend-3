@@ -1,7 +1,6 @@
 {
 	"typescript.tsdk": "node_modules\\typescript\\lib",
 	"cSpell.words": [
-		"токеном",
 		"akatosphere",
 		"attempts",
 		"birthday",
@@ -14,11 +13,13 @@
 		"Props",
 		"Reducer",
 		"Reducers",
+		"registered",
 		"slices",
 		"solid",
 		"staged",
 		"submitted",
 		"Theme",
-		"Wrapper"
+		"Wrapper",
+		"токеном"
 	]
 }

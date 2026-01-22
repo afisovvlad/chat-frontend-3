@@ -13,13 +13,14 @@ export async function POST(request: NextRequest) {
 
 	if (!res.ok) {
 		const err = await res.json();
+		console.log('err in setTokens', err);
 		return NextResponse.json(
-			{ errors: err.errors || ['Ошибка входа'] },
+			{ errors: err || ['Ошибка входа'] },
 			{ status: 400 }
 		);
 	}
 	const data = await res.json();
-	// console.log('data in setTokens', data);
+	console.log('data in setTokens', data);
 
 	// Создаём ответ
 	const response = NextResponse.json(
