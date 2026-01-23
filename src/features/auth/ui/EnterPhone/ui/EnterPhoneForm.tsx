@@ -42,6 +42,7 @@ export const EnterPhoneForm = ({
 	const confirmBtnRef = useRef<HTMLButtonElement>(null);
 	const setStep = useSetAuthStep();
 	const formattedPhone = formatPhone(phone);
+
 	const isMobile = useMediaQuery();
 	const overlayMode = isMobile ? 'full' : 'container';
 	const borderRadius = isMobile ? '8px' : '16px';
@@ -118,8 +119,8 @@ export const EnterPhoneForm = ({
 				onClose={onModalClose}
 				className={styles.modal}
 				overlayMode={overlayMode}
-				containerRef={containerRef} // ← передаём
-				borderRadius={borderRadius} // ← передаём
+				containerRef={containerRef}
+				borderRadius={borderRadius}
 			>
 				<Text
 					type={TextType.TEXT}

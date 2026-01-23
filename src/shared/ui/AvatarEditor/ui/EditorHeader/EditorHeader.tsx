@@ -1,4 +1,3 @@
-// EditorHeader.tsx
 import { memo } from 'react';
 import { Close } from '@icons/index';
 import { Text, TextColor, TextTag, TextType } from '@/shared/ui/Text';

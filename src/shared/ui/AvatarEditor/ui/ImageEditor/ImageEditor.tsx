@@ -84,7 +84,7 @@ export const ImageEditorInner = forwardRef<ImageEditorRef, ImageEditorProps>(
 				getResult,
 				confirm: handleConfirm
 			}),
-			[getResult, handleConfirm]
+			[]
 		);
 
 		return (

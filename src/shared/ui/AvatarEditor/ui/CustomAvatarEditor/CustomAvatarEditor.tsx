@@ -91,7 +91,7 @@ const CustomAvatarEditorComponent = forwardRef<
 			loadRef.current = false;
 		}, [image]);
 
-		// === Автокоррекция позиции при изменении scale ===
+		//  Автокоррекция позиции при изменении scale
 		useEffect(() => {
 			if (!imgRef.current) {
 				return;
@@ -119,7 +119,7 @@ const CustomAvatarEditorComponent = forwardRef<
 			redraw();
 		}, [scale, width, height, redraw, disableBoundaryChecks]);
 
-		// === Загрузка изображения ===
+		//  Загрузка изображения
 		useEffect(() => {
 			if (loadRef.current) {
 				return;
@@ -149,7 +149,7 @@ const CustomAvatarEditorComponent = forwardRef<
 			}
 		}, [image, onLoadSuccess, redraw]);
 
-		// === Drag ===
+		// Drag
 		const handleDragStart = useCallback(
 			(e: React.MouseEvent | React.TouchEvent) => {
 				const startX = 'touches' in e ? e.touches[0].clientX : e.clientX;

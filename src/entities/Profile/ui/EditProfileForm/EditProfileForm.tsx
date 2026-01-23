@@ -51,8 +51,8 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverErrorMessage, setServerErrorMessage] = useState('');
 	const [currentAvatar, setCurrentAvatar] = useState<string | null>(null);
-	const [editProfile, { isLoading }] = useEditProfileMutation();
 	const avatarUploaderRef = useRef<AvatarUploaderRef>(null);
+	const [editProfile, { isLoading }] = useEditProfileMutation();
 	const methods = useForm<EditProfileForm>({
 		defaultValues: {
 			nickname: '',
@@ -111,6 +111,29 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 
 	// Логика загрузки аватара — просто вывод в консоль
 	const handleAvatarChange = (dataUrl: string) => {
+		// Здесь вы можете:
+		// - отправить на сервер
+		// - сохранить в состоянии
+		// - обновить UI
+
+		// 	 try {
+		//   const res = await fetch(dataUrl);
+		//   const blob = await res.blob();
+		//   const formData = new FormData();
+		//   formData.append('avatar', blob, 'avatar.jpg');
+
+		//   const response = await fetch('/api/v1/auth/messenger/profile/avatar/download/', {
+		//     method: 'PATCH',
+		//     body: formData
+		//   });
+
+		//   if (response.ok) {
+		//     console.log('Аватар успешно загружен');
+		//   }
+		// } catch (error) {
+		//   console.error('Ошибка загрузки аватара:', error);
+		// }
+
 		console.log('Новый аватар:', dataUrl);
 		setCurrentAvatar(dataUrl);
 	};
@@ -186,7 +209,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 						currentAvatar || 'не выбран'
 					);
 
-					// Открываем выбор файла
 					avatarUploaderRef.current?.openFilePicker();
 				}}
 			>
