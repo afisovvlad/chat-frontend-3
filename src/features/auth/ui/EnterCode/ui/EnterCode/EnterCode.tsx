@@ -27,11 +27,15 @@ import { EnterCodeForm } from '../..';
 import styles from './EnterCode.module.scss';
 
 export const EnterCode = () => {
-	const [time, setTime] = useState(60);
+	const {
+		phone_number,
+		code_len,
+		is_filled,
+		isDisabledCodeAttempts,
+		blockingTime
+	} = useAppSelector(state => state.auth);
+	const [time, setTime] = useState(blockingTime);
 	const [finishedTime, setFinishedTime] = useState(false);
-	// const [isModalOpen, setIsModalOpen] = useState(false);
-	const { phone_number, code_len, is_filled, isDisabledCodeAttempts } =
-		useAppSelector(state => state.auth);
 	const dispatch = useAppDispatch();
 	const setStep = useSetAuthStep();
 	const formattedPhone = formatPhone(phone_number);
@@ -40,7 +44,17 @@ export const EnterCode = () => {
 	console.log('finishedTime', finishedTime);
 
 	useEffect(() => {
+		if (finishedTime) {
+			dispatch(authActions.setBlockingTime(0));
+		}
+	}, [finishedTime, dispatch]);
+
+	useEffect(() => {
 		if (isDisabledCodeAttempts && finishedTime) {
+			console.log(
+				'isDisabledCodeAttempts && finishedTime',
+				isDisabledCodeAttempts && finishedTime
+			);
 			dispatch(authActions.disabledCodeAttempts(false));
 		}
 	}, [finishedTime, isDisabledCodeAttempts, dispatch]);

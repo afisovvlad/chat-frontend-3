@@ -24,6 +24,7 @@ export function TimeLeft({ initialTime, setFinishedTime }: TimeLeftProps) {
 
 	useEffect(() => {
 		if (timeLeft === 0) {
+			console.log('in TimeLeft: timeLeft === 0');
 			setFinishedTime(true);
 		}
 	}, [timeLeft, setFinishedTime]);

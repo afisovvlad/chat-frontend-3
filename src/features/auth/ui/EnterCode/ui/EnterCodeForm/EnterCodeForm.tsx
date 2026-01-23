@@ -47,19 +47,18 @@ export const EnterCodeForm = ({
 	const [attemptsNumber, setAttemptsNumber] = useState(5);
 	const [attemptCounter, setAttemptCounter] = useState(0);
 	const [isModalOpen, setIsModalOpen] = useState(attemptCounter > 0);
-	// const [modalText, setModalText] = useState('');
 	const setStep = useSetAuthStep();
 	const dispatch = useAppDispatch();
 	const router = useRouter();
 	const methods = useForm<LoginCodeForm>();
-	const { handleSubmit, setError, clearErrors } = methods;
+	const { handleSubmit, setError, clearErrors, reset } = methods;
 	const code = useWatch({
 		control: methods.control,
 		name: 'code'
 	});
 	// const isModalOpen = attemptCounter > 0;
-	const modalTitle = attemptCounter > 0 ? 'Лимит исчерпан' : '';
-	const modalText = attemptCounter > 0 ? 'Попробуйте позднее' : '';
+	const modalTitle = attemptCounter > 1 ? 'Лимит исчерпан' : '';
+	const modalText = attemptCounter > 1 ? 'Попробуйте позднее' : '';
 	const submittedRef = useRef(false);
 	console.log('attemptsNumber in EnterCodeForm', attemptsNumber);
 	console.log('attemptCounter in EnterCodeForm', attemptCounter);
@@ -74,7 +73,7 @@ export const EnterCodeForm = ({
 				const res = await submitCodeRequest({ phone_number, code });
 
 				console.log(res);
-				console.log(!!res.errors);
+				console.log(res.errors);
 
 				if (res?.success) {
 					await handleSuccessResponse(res.is_filled, setStep, router);
@@ -113,7 +112,7 @@ export const EnterCodeForm = ({
 	);
 
 	useEffect(() => {
-		if (attemptCounter > 0) {
+		if (attemptCounter > 1) {
 			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setIsModalOpen(true);
 		}
@@ -122,6 +121,7 @@ export const EnterCodeForm = ({
 	useEffect(() => {
 		if (finishedTime) {
 			clearErrors('code');
+			reset({});
 		}
 	}, [finishedTime, setError]);
 

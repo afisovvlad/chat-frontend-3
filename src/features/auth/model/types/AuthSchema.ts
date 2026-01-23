@@ -11,4 +11,5 @@ export interface AuthSchema {
 	error: string | null;
 	isDisabledCodeAttempts: boolean;
 	is_filled: boolean;
+	blockingTime: number;
 }
