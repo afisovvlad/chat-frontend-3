@@ -14,7 +14,10 @@ interface TooltipProps {
 
 export default function Tooltip({ parentClass }: TooltipProps) {
 	return (
-		<div className={classNames(styles.tooltip, {}, [parentClass])}>
+		<div
+			className={classNames(styles.tooltip, {}, [parentClass])}
+			role='tooltip'
+		>
 			<Text
 				type={TextType.TEXT}
 				fontSize={TextSize.S}

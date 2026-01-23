@@ -25,3 +25,11 @@
 .tooltipIcon:hover ~ .tooltip {
 	display: inline-block;
 }
+
+/* Для тач-устройств: показывать при активном состоянии */
+@media (hover: none) and (pointer: coarse) {
+	.tooltipIcon:active ~ .tooltip,
+	.tooltipIcon:focus ~ .tooltip {
+		display: inline-block;
+	}
+}
