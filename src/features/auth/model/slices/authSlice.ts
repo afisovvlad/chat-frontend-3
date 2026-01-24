@@ -24,9 +24,7 @@ const authSlice = createSlice({
 			state.isRefreshing = action.payload;
 			state.isRefreshing = action.payload;
 		},
-		logout: () => {
-			return { ...initialState };
-		},
+		logout: () => initialState,
 		disabledCodeAttempts: (state, action: PayloadAction<boolean>) => {
 			state.isDisabledCodeAttempts = action.payload;
 		},

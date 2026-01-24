@@ -12,7 +12,7 @@ import { Button, ButtonColor } from '@/shared/ui/Button';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { ModalBorderRadius, ModalSize } from '@/shared/ui/Modal/model/type';
 import { EditorFooter } from '../EditorFooter/EditorFooter';
-import cls from './avatarUploader.module.scss';
+import cls from './AvatarUploader.module.scss';
 
 export interface AvatarUploaderRef {
 	openFilePicker: () => void;

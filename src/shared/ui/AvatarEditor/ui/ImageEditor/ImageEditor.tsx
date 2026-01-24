@@ -8,7 +8,6 @@ import {
 } from 'react';
 
 import { ImageEditorRef } from '../../model/types/types';
-import { useImageEditorConfig } from '../../model/lib/useImageEditorConfig/useImageEditorConfig';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import {
 	CustomAvatarEditor,
@@ -16,8 +15,9 @@ import {
 } from '../CustomAvatarEditor/CustomAvatarEditor';
 import { EditorHeader } from '../EditorHeader/EditorHeader';
 import { EditorControls } from '../EditorController/EditorControls';
-import { useScaleControl } from '../../model/lib/useScaleControl/useScaleControl';
-import cls from './imageEditor.module.scss';
+import { useScaleControl } from '../../model/lib/hooks/useScaleControl/useScaleControl';
+import { useImageEditorConfig } from '../../model/lib/hooks/useImageEditorConfig/useImageEditorConfig';
+import cls from './ImageEditor.module.scss';
 
 export interface ImageEditorProps {
 	onClose: () => void;

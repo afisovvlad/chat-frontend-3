@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Checked } from '@icons/index';
 import { Button, ButtonTheme, ButtonType } from '@/shared/ui/Button';
-import cls from './editorControls.module.scss';
+import cls from './EditorControls.module.scss';
 
 interface EditorControlsProps {
 	scale: number;

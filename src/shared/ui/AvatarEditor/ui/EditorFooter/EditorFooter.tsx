@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Button, ButtonColor, ButtonTheme } from '@/shared/ui/Button';
-import cls from './editorFooter.module.scss';
+import cls from './EditorFooter.module.scss';
 
 interface EditorFooterProps {
 	onCancel: () => void;

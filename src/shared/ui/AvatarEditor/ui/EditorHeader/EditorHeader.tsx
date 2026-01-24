@@ -7,7 +7,7 @@ import {
 	ButtonSize,
 	ButtonTheme
 } from '@/shared/ui/Button';
-import cls from './editorHeader.module.scss';
+import cls from './EditorHeader.module.scss';
 
 interface EditorHeaderProps {
 	onClose: () => void;
