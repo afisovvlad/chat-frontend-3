@@ -1,0 +1,87 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
+.controlRow {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	@media (max-width: 768px) {
+		padding: 0 68px 24px 68px;
+	}
+}
+
+.zoomControl {
+	flex: 1;
+	text-align: center;
+}
+
+.zoomSlider {
+	width: 100%;
+	appearance: none;
+	height: 6px;
+	background: #ddd;
+	border-radius: 3px;
+	outline: none;
+	transition: background 0.2s;
+
+	&::-webkit-slider-thumb {
+		appearance: none;
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: var(--color-primary);
+		cursor: pointer;
+		box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+	}
+
+	&::-moz-range-thumb {
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: var(--color-primary);
+		cursor: pointer;
+		box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+		border: none;
+	}
+
+	&:focus-visible {
+		@include focus-visible;
+	}
+}
+
+.checkmarkContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.checkmark {
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	transition: background 0.2s;
+
+	&:focus-visible {
+		@include focus-visible;
+	}
+}
+
+.checkIcon {
+	width: 36px;
+	height: 36px;
+}
+
+.checkboxEmpty {
+	width: 36px;
+	height: 36px;
+	border: 2px solid var(--color-primary);
+	border-radius: 50%;
+	background: transparent;
+}
+
+.checkmarkContainer {
+	flex-shrink: 0;
+}

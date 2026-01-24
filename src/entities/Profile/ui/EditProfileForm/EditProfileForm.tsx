@@ -5,7 +5,12 @@ import { FormSettingsItem } from '@/entities/Settings';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { convertDateToNumber } from '@/shared/lib/convertDateToNumber/convertDateToNumber';
 import { convertNumberToDate } from '@/shared/lib/convertNumberToDate/convertNumberToDate';
-import { Button, ButtonType } from '@/shared/ui/Button';
+import {
+	Button,
+	ButtonColor,
+	ButtonTheme,
+	ButtonType
+} from '@/shared/ui/Button';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form, SelectItem } from '@/shared/ui/FormComponent';
 import { DateOption } from '@/shared/ui/FormComponent/FormItems/model/selectTypes';
@@ -21,11 +26,13 @@ import {
 	getMonthsOptions,
 	getYearsOptions
 } from '@/shared/utils/dateOptions';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ProfileSchema } from '../..';
 import { formItems } from '../../model/const/formItems';
 import { createCustomStyles } from '../../model/lib/createCustomStyles';
+import { AvatarUploader } from '@/shared/ui/AvatarEditor';
+import { AvatarUploaderRef } from '@/shared/ui/AvatarEditor/ui/AvatarUpLoader/AvatarUpLoader';
 import styles from './EditProfileForm.module.scss';
 
 interface EditBirthdayForm {
@@ -43,6 +50,8 @@ interface EditProfileFormProps {
 export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverErrorMessage, setServerErrorMessage] = useState('');
+	const [currentAvatar, setCurrentAvatar] = useState<string | null>(null);
+	const avatarUploaderRef = useRef<AvatarUploaderRef>(null);
 	const [editProfile, { isLoading }] = useEditProfileMutation();
 	const methods = useForm<EditProfileForm>({
 		defaultValues: {
@@ -60,9 +69,8 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const dayOptions = getDaysOptions(month, year);
 	const hasError = formState.isSubmitted && (!day || !month || !year);
 
-	console.log('EditProfileForm');
 	const fetchProfile = useCallback(async () => {
-		const response = await editProfile({}); // Отправляем пустой {} для получения данных профиля
+		const response = await editProfile({});
 		if (response.data) {
 			const data = response.data;
 
@@ -100,6 +108,35 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	useEffect(() => {
 		fetchProfile();
 	}, [fetchProfile]);
+
+	// Логика загрузки аватара — просто вывод в консоль
+	const handleAvatarChange = (dataUrl: string) => {
+		// Здесь вы можете:
+		// - отправить на сервер
+		// - сохранить в состоянии
+		// - обновить UI
+
+		// 	 try {
+		//   const res = await fetch(dataUrl);
+		//   const blob = await res.blob();
+		//   const formData = new FormData();
+		//   formData.append('avatar', blob, 'avatar.jpg');
+
+		//   const response = await fetch('/api/v1/auth/messenger/profile/avatar/download/', {
+		//     method: 'PATCH',
+		//     body: formData
+		//   });
+
+		//   if (response.ok) {
+		//     console.log('Аватар успешно загружен');
+		//   }
+		// } catch (error) {
+		//   console.error('Ошибка загрузки аватара:', error);
+		// }
+
+		console.log('Новый аватар:', dataUrl);
+		setCurrentAvatar(dataUrl);
+	};
 
 	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
 		setServerErrorMessage('');
@@ -157,84 +194,104 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	}
 
 	return (
-		<Form<EditProfileForm>
-			methods={methods}
-			onSubmit={onSubmit}
-			className={classNames(styles.form, {}, [parentClass])}
-		>
-			<p style={{ marginBottom: '30px' }}>Выбрать фотографию</p>
-			{formItems.map(item => (
-				<FormSettingsItem
-					key={item.name}
-					type={item.type}
-					name={item.name}
-					label={item.label}
-					placeholder={item.placeholder}
-					autoComplete={undefined}
-					rules={item.rules || undefined}
-					classNameParentInput={styles.formItem}
-				/>
-			))}
-
-			<fieldset>
-				{hasError ? (
-					<legend
-						className={classNames(
-							`${styles.birthday} ${styles.birthdayError}`,
-							{},
-							[]
-						)}
-					>
-						Пожалуйста, заполните дату рождения
-					</legend>
-				) : (
-					<legend className={styles.birthday}>
-						Введите дату своего рождения
-					</legend>
-				)}
-				<div className={styles.selectContainer}>
-					<SelectItem<EditProfileForm, DateOption>
-						options={dayOptions}
-						name={'day'}
-						parentSelectWrapperClass={styles.selectWrapper}
-						parentSelectControlClass={styles.selectDay}
-						parentSelectMenuClass={styles.selectMenu}
-						createCustomStyles={createCustomStyles}
-						ariaLabel='Выбор дня месяца'
-						hasError={hasError}
-					/>
-					<SelectItem<EditProfileForm, DateOption>
-						options={getMonthsOptions()}
-						name={'month'}
-						parentSelectControlClass={styles.selectMonth}
-						parentSelectMenuClass={styles.selectMenu}
-						createCustomStyles={createCustomStyles}
-						ariaLabel='Выбор месяца'
-						hasError={hasError}
-					/>
-					<SelectItem
-						options={getYearsOptions()}
-						name={'year'}
-						parentSelectControlClass={styles.selectYear}
-						parentSelectMenuClass={styles.selectMenu}
-						createCustomStyles={createCustomStyles}
-						ariaLabel='Выбор года'
-						hasError={hasError}
-					/>
-				</div>
-			</fieldset>
-			<FormSettingsItem
-				key={FormItemNames.ADDITIONAL_INFORMATION}
-				type={FormItemType.TEXTAREA}
-				name={FormItemNames.ADDITIONAL_INFORMATION}
-				label={'Напишите пару слов о себе'}
-				rules={{ required: 'Заполните это поле' }}
-				classNameParentInput={styles.formItem}
-				textareaHeight={'56px'}
+		<>
+			<AvatarUploader
+				ref={avatarUploaderRef}
+				onAvatarChange={handleAvatarChange}
 			/>
-			<Button btnType={ButtonType.SUBMIT}>
-				{isLoading ? <Loader width='22px' height='22px' /> : 'Сохранить'}
+			<Button
+				theme={ButtonTheme.CLEAR}
+				color={ButtonColor.TRANSPARENT}
+				btnType={ButtonType.BUTTON}
+				onClick={() => {
+					console.log(
+						'[Avatar Debug] Текущие данные аватара:',
+						currentAvatar || 'не выбран'
+					);
+
+					avatarUploaderRef.current?.openFilePicker();
+				}}
+			>
+				Выбрать фотографию
 			</Button>
-		</Form>
+			<Form<EditProfileForm>
+				methods={methods}
+				onSubmit={onSubmit}
+				className={classNames(styles.form, {}, [parentClass])}
+			>
+				{formItems.map(item => (
+					<FormSettingsItem
+						key={item.name}
+						type={item.type}
+						name={item.name}
+						label={item.label}
+						placeholder={item.placeholder}
+						autoComplete={undefined}
+						rules={item.rules || undefined}
+						classNameParentInput={styles.formItem}
+					/>
+				))}
+
+				<fieldset>
+					{hasError ? (
+						<legend
+							className={classNames(
+								`${styles.birthday} ${styles.birthdayError}`,
+								{},
+								[]
+							)}
+						>
+							Пожалуйста, заполните дату рождения
+						</legend>
+					) : (
+						<legend className={styles.birthday}>
+							Введите дату своего рождения
+						</legend>
+					)}
+					<div className={styles.selectContainer}>
+						<SelectItem<EditProfileForm, DateOption>
+							options={dayOptions}
+							name={'day'}
+							parentSelectWrapperClass={styles.selectWrapper}
+							parentSelectControlClass={styles.selectDay}
+							parentSelectMenuClass={styles.selectMenu}
+							createCustomStyles={createCustomStyles}
+							ariaLabel='Выбор дня месяца'
+							hasError={hasError}
+						/>
+						<SelectItem<EditProfileForm, DateOption>
+							options={getMonthsOptions()}
+							name={'month'}
+							parentSelectControlClass={styles.selectMonth}
+							parentSelectMenuClass={styles.selectMenu}
+							createCustomStyles={createCustomStyles}
+							ariaLabel='Выбор месяца'
+							hasError={hasError}
+						/>
+						<SelectItem
+							options={getYearsOptions()}
+							name={'year'}
+							parentSelectControlClass={styles.selectYear}
+							parentSelectMenuClass={styles.selectMenu}
+							createCustomStyles={createCustomStyles}
+							ariaLabel='Выбор года'
+							hasError={hasError}
+						/>
+					</div>
+				</fieldset>
+				<FormSettingsItem
+					key={FormItemNames.ADDITIONAL_INFORMATION}
+					type={FormItemType.TEXTAREA}
+					name={FormItemNames.ADDITIONAL_INFORMATION}
+					label={'Напишите пару слов о себе'}
+					rules={{ required: 'Заполните это поле' }}
+					classNameParentInput={styles.formItem}
+					textareaHeight={'56px'}
+				/>
+				<Button btnType={ButtonType.SUBMIT}>
+					{isLoading ? <Loader width='22px' height='22px' /> : 'Сохранить'}
+				</Button>
+			</Form>
+		</>
 	);
 }

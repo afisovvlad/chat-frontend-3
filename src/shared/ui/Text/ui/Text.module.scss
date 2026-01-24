@@ -1,29 +1,32 @@
-.text_title {
-	font-size: var(--font-size-24);
-	font-weight: 600;
-	color: var(--foreground-primary);
-}
-
-.text_text {
-	font-size: var(--font-size-16);
-	font-weight: 400;
-	color: var(--foreground-secondary);
-}
-
-// Обрезка: однострочная
-.text_truncate {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
 .text {
+	word-break: break-word; // ← добавлено сюда
+
+	&.text_title {
+		font-size: var(--font-size-24);
+		font-weight: 600;
+		color: var(--foreground-primary);
+	}
+
+	&.text_text {
+		font-size: var(--font-size-16);
+		font-weight: 400;
+		color: var(--foreground-secondary);
+	}
+
+	// Обрезка: однострочная
+	&.text_truncate {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
 	&.clamp-2,
 	&.clamp-3 {
 		display: -webkit-box;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
-		word-break: break-word;
+
+		// word-break уже задан выше, повторять не нужно
 	}
 
 	&.clamp-2 {
