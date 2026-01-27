@@ -52,7 +52,7 @@ export const Button = (props: ButtonProps) => {
 
 	return (
 		<button
-			{...(ariaLabel ? { 'aria-label': ariaLabel } : null)}
+			aria-label={ariaLabel}
 			className={classNames(cls.Button, mods, [className])}
 			disabled={disabled}
 			type={btnType}
