@@ -33,7 +33,21 @@ const nextConfig: NextConfig = {
 	},
 	// тестовое
 	images: {
-		remotePatterns: [new URL('https://interesnyefakty.org/**')]
+		remotePatterns: [
+			{
+				protocol: 'https',
+				hostname: 'api.test.chat.ktsf.ru',
+				port: '',
+				pathname: '/media/**'
+			},
+			{
+				protocol: 'https',
+				hostname: 'interesnyefakty.org',
+				port: '',
+				pathname: '/wp-content/uploads/**'
+			}
+			// ← можно добавить другие хосты при необходимости
+		]
 	}
 };
 

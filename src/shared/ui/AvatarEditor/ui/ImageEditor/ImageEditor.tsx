@@ -21,7 +21,7 @@ import cls from './ImageEditor.module.scss';
 
 export interface ImageEditorProps {
 	onClose: () => void;
-	onConfirm: (dataUrl: string) => void;
+	onConfirm: (file: File) => void;
 	image: string;
 }
 
@@ -50,41 +50,119 @@ export const ImageEditorInner = forwardRef<ImageEditorRef, ImageEditorProps>(
 				const coverScale = Math.max(scaleX, scaleY);
 				setMinScale(coverScale);
 				setMaxScale(Math.min(3, coverScale * 3));
-				setScale(coverScale * 1.51);
+				setScale(coverScale * 1.65);
 			},
 			[setMinScale, setMaxScale, setScale]
 		);
-		useEffect(() => {
-			widthRef.current = width;
-			heightRef.current = height;
-		}, [width, height]);
 
-		const getResult = useCallback((): Promise<string | null> => {
+		// Валидация изображения
+		const validateImageFile = async (file: File): Promise<boolean> => {
 			return new Promise(resolve => {
-				const canvas = canvasRef.current?.getImageScaledToCanvas();
+				const img = new Image();
+				img.onload = () => {
+					resolve(true);
+				};
+				img.onerror = () => {
+					resolve(false);
+				};
+				img.src = URL.createObjectURL(file);
+			});
+		};
+
+		const getResult = useCallback((): Promise<Blob | null> => {
+			return new Promise(resolve => {
+				const canvas = canvasRef.current?.getImageWithoutMask(); //
 				if (!canvas) {
+					console.error('❌ Канвас не найден');
 					resolve(null);
 					return;
 				}
-				resolve(canvas.toDataURL('image/jpeg', 0.85));
+
+				const ctx = canvas.getContext('2d');
+				if (!ctx) {
+					console.error('❌ Не удалось получить контекст канваса');
+					resolve(null);
+					return;
+				}
+
+				// Проверяем, что канвас не пустой
+				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+				const data = imageData.data;
+				let isBlank = true;
+
+				for (let i = 0; i < data.length; i += 4) {
+					if (
+						data[i] !== 0 ||
+						data[i + 1] !== 0 ||
+						data[i + 2] !== 0 ||
+						data[i + 3] !== 0
+					) {
+						isBlank = false;
+						break;
+					}
+				}
+
+				if (isBlank) {
+					console.error('❌ Канвас пустой, невозможно создать изображение');
+					resolve(null);
+					return;
+				}
+
+				canvas.toBlob(
+					blob => {
+						if (!blob) {
+							console.error('❌ Не удалось создать Blob из канваса');
+							resolve(null);
+							return;
+						}
+
+						if (blob.size === 0) {
+							console.error('❌ Созданный Blob пустой');
+							resolve(null);
+							return;
+						}
+
+						resolve(blob);
+					},
+					'image/jpeg', // Явно указываем тип
+					0.92 // Качество 92%
+				);
 			});
 		}, []);
 
 		const handleConfirm = useCallback(async () => {
-			const dataUrl = await getResult();
-			if (dataUrl !== null) {
-				onConfirm(dataUrl);
+			const blob = await getResult();
+			if (!blob) {
+				console.error('❌ Не удалось получить изображение');
+				// Можно показать ошибку пользователю
+				// onClose();
+				return;
 			}
-			onClose();
-		}, [getResult, onConfirm, onClose]);
+
+			// Создаем файл с правильным типом
+			const file = new File([blob], 'avatar.jpg', {
+				type: 'image/jpeg',
+				lastModified: Date.now()
+			});
+
+			// Валидация файла
+			const isValid = await validateImageFile(file);
+			if (!isValid) {
+				console.error('❌ Созданный файл не является валидным изображением');
+				// Можно показать ошибку пользователю
+				// onClose();
+				return;
+			}
+
+			onConfirm(file);
+		}, [getResult, onConfirm]);
 
 		useImperativeHandle(
 			ref,
 			() => ({
-				getResult,
 				confirm: handleConfirm
 			}),
-			[]
+			[handleConfirm]
 		);
 
 		return (

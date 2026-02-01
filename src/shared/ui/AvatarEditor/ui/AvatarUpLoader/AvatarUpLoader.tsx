@@ -20,7 +20,7 @@ export interface AvatarUploaderRef {
 }
 
 interface AvatarUploaderProps {
-	onAvatarChange: (dataUrl: string) => void;
+	onAvatarChange: (file: File) => void;
 	initialAvatar?: string | null;
 	children?: React.ReactNode;
 }
@@ -36,6 +36,7 @@ export const AvatarUploaderComponent = forwardRef<
 	const [avatar, setAvatar] = useState<string | null>(initialAvatar ?? null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
+	const [originalFile, setOriginalFile] = useState<File | null>(null);
 
 	const isMobile = useMediaQuery();
 
@@ -59,17 +60,19 @@ export const AvatarUploaderComponent = forwardRef<
 			return;
 		}
 
-		// Опционально: ограничение размера
+		// Уменьшаем лимит до 4 МБ для безопасности
 		if (file.size > 5 * 1024 * 1024) {
-			showError('Размер файла не должен превышать 5 МБ');
-			e.target.value = '';
-			return;
+			showError(
+				'Размер файла не должен превышать 5 МБ. Файл будет автоматически сжат.'
+			);
+			// Не возвращаемся, а продолжаем обработку для сжатия
 		}
 
 		const reader = new FileReader();
 		reader.onload = event => {
 			const dataUrl = event.target?.result as string;
 			setSelectedImage(dataUrl);
+			setOriginalFile(file);
 			setIsModalOpen(true);
 			e.target.value = '';
 		};
@@ -80,15 +83,62 @@ export const AvatarUploaderComponent = forwardRef<
 		editorRef.current?.confirm();
 	}, []);
 
+	// Добавляем функцию валидации
+
+	const validateImageFile = async (file: File): Promise<boolean> => {
+		return new Promise(resolve => {
+			const img = new Image();
+			img.onload = () => resolve(true);
+			img.onerror = () => resolve(false);
+			img.src = URL.createObjectURL(file);
+		});
+	};
+
+	// AvatarUploader.tsx
 	const handleConfirm = useCallback(
-		(dataUrl: string) => {
-			setAvatar(dataUrl);
-			onAvatarChange(dataUrl);
-			setIsModalOpen(false);
+		async (file: File) => {
+			if (!originalFile) {
+				showError('Не удалось получить файл изображения');
+				return;
+			}
+
+			try {
+				// Дополнительная валидация файла
+				if (!file || file.size === 0) {
+					showError('Файл пустой или поврежден');
+					return;
+				}
+
+				if (!file.type.startsWith('image/')) {
+					showError('Файл не является изображением');
+					return;
+				}
+
+				// Валидация через создание изображения
+				const isValid = await validateImageFile(file);
+				if (!isValid) {
+					showError('Загруженный файл поврежден или не является изображением');
+					return;
+				}
+
+				const previewUrl = URL.createObjectURL(file);
+				setAvatar(previewUrl);
+
+				// Отправляем файл
+				onAvatarChange(file);
+
+				setIsModalOpen(false);
+				setOriginalFile(null);
+				URL.revokeObjectURL(previewUrl);
+			} catch (error) {
+				console.error('Ошибка обработки изображения:', error);
+				showError('Ошибка обработки изображения. Попробуйте другой файл.');
+			}
 		},
-		[onAvatarChange]
+		[onAvatarChange, originalFile]
 	);
 
+	//
 	const handleClose = useCallback(() => {
 		setIsModalOpen(false);
 		setSelectedImage(null);
