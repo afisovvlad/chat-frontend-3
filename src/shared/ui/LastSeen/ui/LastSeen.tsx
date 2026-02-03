@@ -1,6 +1,6 @@
 import { formatLastSeenText } from '@/shared/lib/formatLastSeen/formatLastSeen';
 import { FontWeight, Text, TextColor, TextSize } from '@/shared/ui/Text';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 type LastSeenProps = {
 	wasOnlineAt: number | null; // UNIX (секунды)
@@ -13,19 +13,14 @@ export function LastSeen({
 	isOnline,
 	hasConnection = true
 }: LastSeenProps) {
-	const intervalRef = useRef<NodeJS.Timeout | null>(null);
+	const [_, setTick] = useState(0);
 
 	useEffect(() => {
-		intervalRef.current = setInterval(() => {
-			// Ничего не делаем с состоянием — просто заставляем компонент перерендериться
-			window.dispatchEvent(new Event('tick'));
-		}, 60_000);
+		const interval = setInterval(() => {
+			setTick(prev => prev + 1); // Заставляем компонент обновиться
+		}, 1000);
 
-		return () => {
-			if (intervalRef.current) {
-				clearInterval(intervalRef.current);
-			}
-		};
+		return () => clearInterval(interval);
 	}, []);
 
 	const text = formatLastSeenText(wasOnlineAt, {
