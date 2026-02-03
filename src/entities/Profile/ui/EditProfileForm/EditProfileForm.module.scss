@@ -160,6 +160,12 @@
 	}
 }
 
+.submitButton {
+	&:focus-visible {
+		@include focus-visible;
+	}
+}
+
 .errorModalContent {
 	padding: 24px;
 	text-align: center;

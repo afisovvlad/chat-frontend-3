@@ -13,6 +13,7 @@ export interface ValidationResult {
  * @param file - файл для валидации
  * @returns Promise с результатом валидации
  */
+
 export const validateImageFile = async (
 	file: File
 ): Promise<ValidationResult> => {
@@ -39,7 +40,7 @@ export const validateImageFile = async (
 		if (!file.type.startsWith('image/')) {
 			resolve({
 				valid: false,
-				error: 'Файл должен быть изображением (JPEG, PNG, WEBP, GIF)'
+				error: 'Файл должен быть изображением (JPEG, PNG, WEBP, AVIF)'
 			});
 			return;
 		}
