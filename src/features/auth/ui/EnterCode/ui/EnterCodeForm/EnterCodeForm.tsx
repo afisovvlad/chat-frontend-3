@@ -2,6 +2,7 @@
 
 import { FormAuthItem, useSetAuthStep } from '@/features/auth';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { Button } from '@/shared/ui/Button';
 import { ButtonColor, ButtonTheme } from '@/shared/ui/Button/model/type';
 import { Form } from '@/shared/ui/FormComponent/Form/ui/Form';
@@ -21,8 +22,9 @@ import {
 	handleSuccessResponse,
 	LoginCodeForm,
 	submitCodeRequest
+	// useSuccessResponse
 } from '../..';
-import { formItems } from '../../model/const/formItems';
+import { codeFormItems } from '../../model/const/codeFormItems';
 import styles from './EnterCodeForm.module.scss';
 
 interface EnterCodeFormProps {
@@ -45,7 +47,8 @@ export const EnterCodeForm = ({
 	// setAttemptCounter
 }: EnterCodeFormProps) => {
 	const [attemptsNumber, setAttemptsNumber] = useState(5);
-	const [attemptCounter, setAttemptCounter] = useState(0);
+	// const [attemptCounter, setAttemptCounter] = useState(0);
+	const { attemptCounter } = useAppSelector(state => state.auth);
 	const [isModalOpen, setIsModalOpen] = useState(attemptCounter > 0);
 	const setStep = useSetAuthStep();
 	const dispatch = useAppDispatch();
@@ -76,13 +79,19 @@ export const EnterCodeForm = ({
 				console.log(res.errors);
 
 				if (res?.success) {
-					await handleSuccessResponse(res.is_filled, setStep, router);
+					handleSuccessResponse(
+						res.is_filled,
+						setStep,
+						router,
+						dispatch
+						// setAttemptCounter
+					);
 				} else if (!!res.errors) {
 					await handleErrorResponse(
 						attemptsNumber,
 						attemptCounter,
 						setAttemptsNumber,
-						setAttemptCounter,
+						// setAttemptCounter,
 						setTime,
 						dispatch,
 						setError
@@ -106,7 +115,7 @@ export const EnterCodeForm = ({
 			setError,
 			attemptsNumber,
 			dispatch,
-			setAttemptCounter,
+			// setAttemptCounter,
 			attemptCounter
 		]
 	);
@@ -149,12 +158,12 @@ export const EnterCodeForm = ({
 
 	const onModalClose = () => {
 		setIsModalOpen(false);
-		setAttemptCounter(0);
+		// setAttemptCounter(0);
 	};
 
 	const handleClickSupport = () => {
 		setStep('support');
-		setAttemptCounter(0);
+		// setAttemptCounter(0);
 	};
 
 	return (
@@ -164,7 +173,7 @@ export const EnterCodeForm = ({
 				onSubmit={onSubmit}
 				className={styles.form}
 			>
-				{formItems.map(item => (
+				{codeFormItems.map(item => (
 					<FormAuthItem
 						key={item.name}
 						type={item.type}

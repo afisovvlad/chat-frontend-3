@@ -4,10 +4,11 @@ import {
 	EnterCode,
 	EnterPhoneForm,
 	LoginGreeting,
+	Register,
 	RegisterForm,
-	SupportFormComponent,
 	useAuthStep
 } from '@/features/auth';
+import { SupportForm } from '@/features/support';
 import { LoginWrapper } from '@/shared/ui/LoginWrapper';
 
 export const AuthFlow = () => {
@@ -31,11 +32,16 @@ export const AuthFlow = () => {
 		case 'register':
 			return (
 				<LoginWrapper>
-					<RegisterForm />
+					<Register />
 				</LoginWrapper>
 			);
 		case 'support':
-			return <SupportFormComponent />;
+			return (
+				<LoginWrapper>
+					<SupportForm marginTop='0' />
+				</LoginWrapper>
+			);
+
 		default:
 			return null;
 	}

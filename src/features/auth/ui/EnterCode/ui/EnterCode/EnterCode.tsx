@@ -34,7 +34,7 @@ export const EnterCode = () => {
 		isDisabledCodeAttempts,
 		blockingTime
 	} = useAppSelector(state => state.auth);
-	const [time, setTime] = useState(blockingTime);
+	const [time, setTime] = useState<number>(60);
 	const [finishedTime, setFinishedTime] = useState(false);
 	const dispatch = useAppDispatch();
 	const setStep = useSetAuthStep();
@@ -43,11 +43,11 @@ export const EnterCode = () => {
 	console.log('time in EnterCode', time);
 	console.log('finishedTime', finishedTime);
 
-	useEffect(() => {
-		if (finishedTime) {
-			dispatch(authActions.setBlockingTime(0));
-		}
-	}, [finishedTime, dispatch]);
+	// useEffect(() => {
+	// 	if (finishedTime) {
+	// 		dispatch(authActions.setBlockingTime(0));
+	// 	}
+	// }, [finishedTime, dispatch]);
 
 	useEffect(() => {
 		if (isDisabledCodeAttempts && finishedTime) {
@@ -93,7 +93,7 @@ export const EnterCode = () => {
 				color={TextColor.BLACK}
 				className={classNames(`${styles.infoText} ${styles.boldText}`, {}, [])}
 			>
-				Введите код
+				Введите код&nbsp;
 				<InfoCircle width={24} height={24} className={styles.infoIcon} />
 			</Text>
 

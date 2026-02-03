@@ -13,6 +13,7 @@ const initialState: AuthSchema = {
 	error: null,
 	isDisabledCodeAttempts: false,
 	blockingTime: 0,
+	attemptCounter: 0,
 	is_filled: false
 };
 
@@ -32,9 +33,21 @@ const authSlice = createSlice({
 			state.isDisabledCodeAttempts = action.payload;
 		},
 
-		setBlockingTime: (state, action: PayloadAction<number>) => {
+		setBlockingTime: (state, action: PayloadAction<number | undefined>) => {
 			state.blockingTime = action.payload;
 		},
+		setAttemptCounter: (state, action: PayloadAction<number>) => {
+			state.attemptCounter = action.payload;
+		},
+
+		incrementAttemptCounter: state => {
+			state.attemptCounter += 1;
+		},
+
+		resetAttemptCounter: state => {
+			state.attemptCounter = 0;
+		},
+
 		setPhoneData: (
 			state,
 			action: PayloadAction<{ phone_number: string; code_len: number }>

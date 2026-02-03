@@ -7,16 +7,16 @@ export const handleErrorResponse = async (
 	currentAttempts: number,
 	attemptCounter: number,
 	setAttemptsNumber: React.Dispatch<React.SetStateAction<number>>,
-	setAttemptCounter: React.Dispatch<React.SetStateAction<number>>,
+	// setAttemptCounter: React.Dispatch<React.SetStateAction<number>>,
 	setTime: React.Dispatch<React.SetStateAction<number>>,
 	dispatch: AppDispatch,
 	setError: UseFormSetError<LoginCodeForm>
 ): Promise<void> => {
-	const MINUTES_BLOCK = 600; // 2 минуты
-	const SECONDS_BLOCK = 60;
+	const MINUTES_BLOCK = 60; // 2 минуты
+	const SECONDS_BLOCK = 30;
 	const MAX_BLOCK_DURATION = 3600; // 1 час
 
-	let blockTime: number = SECONDS_BLOCK; // Поставить время из store
+	let blockTime: number = 0; // Поставить время из store
 	let errorMessage: string;
 	let shouldBlock = false;
 	// const attemptCounter = 0;
@@ -35,10 +35,11 @@ export const handleErrorResponse = async (
 			blockTime = MAX_BLOCK_DURATION;
 			shouldBlock = true;
 			errorMessage = 'Лимит исчерпан.';
-			setAttemptsNumber(5);
 		}
 
-		setAttemptCounter(prev => prev + 1);
+		// setAttemptCounter(prev => prev + 1);
+		dispatch(authActions.incrementAttemptCounter());
+		setAttemptsNumber(5);
 	} else {
 		// Обычная ошибка
 		blockTime = SECONDS_BLOCK;
@@ -51,10 +52,12 @@ export const handleErrorResponse = async (
 		setTime(blockTime);
 		dispatch(authActions.disabledCodeAttempts(true));
 		dispatch(authActions.setBlockingTime(blockTime));
+		// dispatch(authActions.setAttemptCounter(attemptCounter));
 
 		// Разблокировка через время
 		setTimeout(() => {
 			dispatch(authActions.disabledCodeAttempts(false));
+			dispatch(authActions.setBlockingTime(0));
 			// setAttemptsNumber(5); // или начальное значение
 		}, blockTime * 1000);
 	}
