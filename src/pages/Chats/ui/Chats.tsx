@@ -3,6 +3,7 @@ import { ChatItemSchema, ChatType } from '@/entities/Chat';
 import { ContactsSchema } from '@/entities/Contacts/model';
 import { ProfileSchema } from '@/entities/Profile';
 import { classNames } from '@/shared/lib/classNames/classNames';
+import { LastSeen } from '@/shared/ui/LastSeen';
 import {
 	mapBlackListToUserCard,
 	mapChatToUserCard,
@@ -262,6 +263,8 @@ const profile: ProfileSchema = {
 	phone: '+7 921 7797979'
 };
 
+const NOW = 1769526541;
+
 export const ChatsPage = ({ className }: ChatsProps) => {
 	return (
 		<div className={classNames(cls.Chats, {}, [className])}>
@@ -294,6 +297,19 @@ export const ChatsPage = ({ className }: ChatsProps) => {
 				userData={mapProfileToUserCard(profile)}
 				type={UserCardType.PROFILE}
 			/>
+			{/* 1. Онлайн */}
+			<LastSeen wasOnlineAt={NOW} isOnline={true} />
+			{/* 2. менее минуты назад */}
+			<LastSeen wasOnlineAt={NOW - 10} isOnline={false} />
+			{/* 2. 10 минут назад (13:32) */}
+			<LastSeen wasOnlineAt={NOW - 10 * 60} isOnline={false} />
+			{/* 3. 12 минут назад (13:30) */}
+			<LastSeen wasOnlineAt={NOW - 12 * 60} isOnline={false} />
+			{/* 4. Вчера 10:23 (25.01.2026 10:23) */}
+			<LastSeen wasOnlineAt={NOW - 27 * 3600 - 19 * 60} isOnline={false} />
+			{/* 5. 16 дней назад */}
+			<LastSeen wasOnlineAt={NOW - 16 * 24 * 3600} isOnline={false} />
+			<LastSeen wasOnlineAt={null} isOnline={false} hasConnection={false} />
 		</div>
 	);
 };
