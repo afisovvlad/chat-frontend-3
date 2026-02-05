@@ -2,7 +2,7 @@ import { BlackListSchema } from '@/entities/BlackList';
 import { ChatItemSchema, ChatType } from '@/entities/Chat';
 import { ContactsSchema } from '@/entities/Contacts/model';
 import { ProfileSchema } from '@/entities/Profile';
-import { sendWS } from '@/shared/api/WS/services/socketClient/socketClient';
+import { connectChat } from '@/shared/api/WS/services/socketClient/socketClient';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import {
 	mapBlackListToUserCard,
@@ -267,25 +267,26 @@ const profile: ProfileSchema = {
 export const ChatsPage = ({ className }: ChatsProps) => {
 	useEffect(() => {
 		const fetchChats = async () => {
-			try {
-				const response = await sendWS({
-					action: 'create_chat',
-					object: {
-						name: 'string',
-						description: 'string',
-						avatar: {
-							filename: 'avatar.png',
-							data: 'iVBORw0KGgoAAAANSUhEUgAAAUAAAAFACAYAAADNkKWqAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjIZJj8LZgAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAgAElEQVR42u2deZxcVZ3/3+fcW1Vd1d3V3VX...'
-						},
-						chat_type: 'private-group',
-						uid_users_list: ['string']
-					}
-				});
+			await connectChat();
+			// try {
+			// 	const response = await sendWS({
+			// 		action: 'create_chat',
+			// 		object: {
+			// 			name: 'string',
+			// 			description: 'string',
+			// 			avatar: {
+			// 				filename: 'avatar.png',
+			// 				data: 'iVBORw0KGgoAAAANSUhEUgAAAUAAAAFACAYAAADNkKWqAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjIZJj8LZgAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAgAElEQVR42u2deZxcVZ3/3+fcW1Vd1d3V3VX...'
+			// 			},
+			// 			chat_type: 'private-group',
+			// 			uid_users_list: ['string']
+			// 		}
+			// 	});
 
-				console.log('✅ Ответ сервера:', response);
-			} catch (error) {
-				console.error('❌ WS Error:', error);
-			}
+			// 	console.log('✅ Ответ сервера:', response);
+			// } catch (error) {
+			// 	console.error('❌ WS Error:', error);
+			// }
 		};
 
 		fetchChats();
