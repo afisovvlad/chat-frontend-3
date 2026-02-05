@@ -9,6 +9,8 @@ export { EnterCodeForm } from './ui/EnterCode/ui/EnterCodeForm/EnterCodeForm';
 export { EnterPhoneForm } from './ui/EnterPhone/ui/EnterPhoneForm';
 export { FormAuthItem } from './ui/FormAuthItem/FormAuthItem';
 export { LoginGreeting } from './ui/Greeting/ui/LoginGreeting';
+export { FinishRegister } from './ui/Register/ui/FinishRegister/FinishRegister';
+export { SupportSuccess } from './ui/SupportSuccess/SupportSuccess';
 export { Register } from './ui/Register/ui/Register/Register';
 export { RegisterForm } from './ui/Register/ui/RegisterForm/RegisterForm';
 export { TimeLeft } from './ui/TimeLeft/ui/TimeLeft';

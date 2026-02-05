@@ -1,0 +1,24 @@
+import { Text, TextType, TitleTag } from '@/shared/ui/Text';
+import { Check, Logo } from '@icons/index';
+import Link from 'next/link';
+import styles from './FinishRegister.module.scss';
+
+export function FinishRegister() {
+	return (
+		<div className={styles.finishRegister}>
+			<Logo className={styles.logo} />
+			<div className={styles.success}>
+				<Check className={styles.checkIcon} />
+			</div>
+			<Text type={TextType.TITLE} tag={TitleTag.H1} className={styles.title}>
+				Поздравляем!
+			</Text>
+			<Text type={TextType.TEXT} className={styles.text}>
+				Регистрация прошла успешно!
+			</Text>
+			<Link href='/' className={styles.link}>
+				Далее
+			</Link>
+		</div>
+	);
+}

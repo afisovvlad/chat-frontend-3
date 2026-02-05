@@ -1,6 +1,6 @@
 'use client';
 
-import { FormAuthItem } from '@/features/auth';
+import { FormAuthItem, useSetAuthStep } from '@/features/auth';
 import {
 	Button,
 	ButtonColor,
@@ -16,31 +16,60 @@ import {
 	TextType
 } from '@/shared/ui/Text';
 import Link from 'next/link';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { RegisterForm } from '../..';
+import { useLazySendNicknameQuery } from '../../api/registerApi';
 import { registerFormItems } from '../../model/const/registerFormItems';
+import { IRegister } from '../../model/types/types';
 import styles from './RegisterForm.module.scss';
 
 export function RegisterForm() {
 	const [disabled, setDisabled] = useState(true);
+	const [responseError, setResponseError] = useState('');
 	const methods = useForm<RegisterForm>();
-	// const {
-	// 	register,
-	// 	handleSubmit,
-	// 	formState: { errors }
-	// } = useForm();
-	// const onSubmit = (data: any) => {
-	// 	console.log(data);
-	// };
+	const { control, setError } = methods;
+	const values = useWatch({ control: control });
+	const name = values.name;
+	const nickname = values.nickname;
+	const [sendNickname, { data, isLoading, error }] = useLazySendNicknameQuery();
+	const setStep = useSetAuthStep();
 
-	const onSubmit = () => {
-		console.log('submit');
+	console.log(data);
+
+	useEffect(() => {
+		if (name?.length >= 3 && nickname.length >= 3) {
+			setDisabled(false);
+		} else {
+			setDisabled(true);
+		}
+	}, [name, nickname]);
+
+	useEffect(() => {
+		if (data?.messages === 'Этот nickname свободен') {
+			setResponseError('');
+			setStep('finish-register');
+		} else if (
+			data?.messages === 'Пользователь с таким ником уже существует.'
+		) {
+			setError('nickname', {
+				message: 'Пользователь с таким ником уже существует.'
+			});
+			setResponseError('Пользователь с таким ником уже существует.');
+		}
+	}, [data, setStep]);
+
+	const onSubmit: SubmitHandler<IRegister> = async data => {
+		try {
+			await sendNickname(data.nickname);
+		} catch (_) {
+			setResponseError('При отправке произошла ошибка. Попробуйте позже');
+		}
 	};
 
 	return (
 		<>
-			<Form<RegisterForm>
+			<Form<IRegister>
 				methods={methods}
 				onSubmit={onSubmit}
 				className={styles.form}
@@ -52,8 +81,8 @@ export function RegisterForm() {
 							type={item.type}
 							name={item.name}
 							label={item.label}
+							rules={item.rules}
 							// disabled={disabled}
-							classNameParentInput={styles.codeInput}
 						/>
 					))}
 				</div>

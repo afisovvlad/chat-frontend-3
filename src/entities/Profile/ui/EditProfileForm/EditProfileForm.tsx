@@ -43,7 +43,7 @@ interface EditProfileFormProps {
 export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverErrorMessage, setServerErrorMessage] = useState('');
-	const [editProfile, { isLoading }] = useEditProfileMutation();
+	const [editProfile, { isLoading, data }] = useEditProfileMutation();
 	const methods = useForm<EditProfileForm>({
 		defaultValues: {
 			nickname: '',
@@ -60,7 +60,8 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const dayOptions = getDaysOptions(month, year);
 	const hasError = formState.isSubmitted && (!day || !month || !year);
 
-	console.log('EditProfileForm');
+	console.log('data', data);
+
 	const fetchProfile = useCallback(async () => {
 		const response = await editProfile({}); // Отправляем пустой {} для получения данных профиля
 		if (response.data) {
