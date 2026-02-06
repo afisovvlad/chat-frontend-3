@@ -1,9 +1,12 @@
+import { useSetAuthStep } from '@/features/auth';
 import { Text, TextType, TitleTag } from '@/shared/ui/Text';
 import { Check, Logo } from '@icons/index';
 import Link from 'next/link';
 import styles from './FinishRegister.module.scss';
 
 export function FinishRegister() {
+	const setStep = useSetAuthStep();
+
 	return (
 		<div className={styles.finishRegister}>
 			<Logo className={styles.logo} />
@@ -16,7 +19,11 @@ export function FinishRegister() {
 			<Text type={TextType.TEXT} className={styles.text}>
 				Регистрация прошла успешно!
 			</Text>
-			<Link href='/' className={styles.link}>
+			<Link
+				href='/'
+				className={styles.link}
+				onClick={() => setStep('greeting')}
+			>
 				Далее
 			</Link>
 		</div>

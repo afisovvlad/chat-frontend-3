@@ -24,8 +24,8 @@ export const registerFormItems = [
 		rules: {
 			required: 'Заполните это поле',
 			minLength: {
-				value: 3,
-				message: 'Минимум 3 символа'
+				value: 5,
+				message: 'Минимум 5 символов'
 			},
 			pattern: {
 				value: /^[a-zA-Z0-9._]+$/,

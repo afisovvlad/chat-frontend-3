@@ -1,5 +1,6 @@
 'use client';
 
+import { useEditProfileMutation } from '@/entities/Profile/api/editProfile.api';
 import { FormAuthItem, useSetAuthStep } from '@/features/auth';
 import {
 	Button,
@@ -8,6 +9,7 @@ import {
 	ButtonType
 } from '@/shared/ui/Button';
 import { Form } from '@/shared/ui/FormComponent';
+import { Loader } from '@/shared/ui/Loader';
 import {
 	FontWeight,
 	Text,
@@ -16,7 +18,7 @@ import {
 	TextType
 } from '@/shared/ui/Text';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { RegisterForm } from '../..';
 import { useLazySendNicknameQuery } from '../../api/registerApi';
@@ -25,45 +27,119 @@ import { IRegister } from '../../model/types/types';
 import styles from './RegisterForm.module.scss';
 
 export function RegisterForm() {
-	const [disabled, setDisabled] = useState(true);
 	const [responseError, setResponseError] = useState('');
 	const methods = useForm<RegisterForm>();
-	const { control, setError } = methods;
+	const { control, setError, clearErrors } = methods;
 	const values = useWatch({ control: control });
 	const name = values.name;
 	const nickname = values.nickname;
-	const [sendNickname, { data, isLoading, error }] = useLazySendNicknameQuery();
+	const [sendNickname, { data: nicknameResponse, error }] =
+		useLazySendNicknameQuery();
 	const setStep = useSetAuthStep();
+	const debounceRef = useRef<NodeJS.Timeout>(null);
+	const isNicknameFree =
+		nicknameResponse?.messages === 'Этот nickname свободен';
+	const [editProfile, { isLoading, data }] = useEditProfileMutation();
 
-	console.log(data);
-
-	useEffect(() => {
-		if (name?.length >= 3 && nickname.length >= 3) {
-			setDisabled(false);
-		} else {
-			setDisabled(true);
+	const disabledSubmit = useMemo(() => {
+		if (!name || !nickname || !isNicknameFree) {
+			return true;
 		}
-	}, [name, nickname]);
+
+		if (name.length < 3 || nickname.length < 5) {
+			return true;
+		}
+
+		return false;
+	}, [name, nickname, isNicknameFree]);
+
+	// console.log('error', error);
+	// console.log(error && (error.originalStatus === 404 || error.status === 500));
+	// console.log(nicknameResponse, 'nicknameResponse');
+	// console.log(responseError, 'responseError');
 
 	useEffect(() => {
-		if (data?.messages === 'Этот nickname свободен') {
-			setResponseError('');
-			setStep('finish-register');
+		if (!nickname || nickname.length < 5) {
+			return;
+		}
+
+		if (debounceRef.current) {
+			clearTimeout(debounceRef.current);
+		}
+
+		debounceRef.current = setTimeout(() => {
+			sendNickname(nickname);
+		}, 500);
+
+		return () => {
+			if (debounceRef.current) {
+				clearTimeout(debounceRef.current);
+			}
+		};
+	}, [nickname, sendNickname]);
+
+	useEffect(() => {
+		setResponseError('');
+
+		if (isNicknameFree) {
+			clearErrors(['name', 'nickname']);
 		} else if (
-			data?.messages === 'Пользователь с таким ником уже существует.'
+			error &&
+			(error.originalStatus === 404 || error.status === 500)
 		) {
-			setError('nickname', {
-				message: 'Пользователь с таким ником уже существует.'
+			console.log('да есть ошибка');
+			setResponseError('Ошибка соединения с сервером. Попробуйте позже.');
+		} else if (error && error.data) {
+			Object.entries(error.data).forEach(([key, messages]) => {
+				const message = Array.isArray(messages)
+					? messages.join(', ')
+					: messages;
+				console.log(key, message, 'key message');
+				if (key === 'nickname' || key === 'name') {
+					setError(key as keyof IRegister, { type: 'server', message });
+				} else {
+					setResponseError(message);
+				}
 			});
-			setResponseError('Пользователь с таким ником уже существует.');
 		}
-	}, [data, setStep]);
+	}, [setStep, setError, clearErrors, error, isNicknameFree]);
 
 	const onSubmit: SubmitHandler<IRegister> = async data => {
+		console.log(data);
+
+		const newData = {
+			first_name: data.name,
+			nickname: data.nickname
+		};
+
 		try {
-			await sendNickname(data.nickname);
-		} catch (_) {
-			setResponseError('При отправке произошла ошибка. Попробуйте позже');
+			const result = await editProfile(newData).unwrap();
+			console.log('result', result);
+
+			if (result) {
+				setStep('finish-register');
+			} else {
+				const error = result.error;
+				if (
+					error &&
+					typeof error === 'object' &&
+					'status' in error &&
+					'data' in error
+				) {
+					const serverErrors = error.data as Record<string, string[]>;
+
+					Object.entries(serverErrors).forEach(([field, messages]) => {
+						setError(field as keyof IRegister, {
+							type: 'server',
+							message: messages.join(' ')
+						});
+					});
+				} else {
+					setResponseError('Произошла непредвиденная ошибка');
+				}
+			}
+		} catch (e) {
+			setResponseError('Произошла непредвиденная ошибка');
 		}
 	};
 
@@ -98,32 +174,29 @@ export function RegisterForm() {
 						Пользовательским соглашением
 					</Link>
 				</Text>
+				{responseError && (
+					<Text
+						color={TextColor.ERROR}
+						type={TextType.TEXT}
+						fontSize={TextSize.M}
+					>
+						{responseError}
+					</Text>
+				)}
 
 				<Button
 					btnType={ButtonType.SUBMIT}
-					disabled={disabled}
+					disabled={disabledSubmit}
 					theme={ButtonTheme.BACKGROUND}
 					color={ButtonColor.PRIMARY}
 				>
-					Зарегистрироваться
+					{isLoading ? (
+						<Loader width='22px' height='22px' />
+					) : (
+						'Зарегистрироваться'
+					)}
 				</Button>
 			</Form>
-
-			{/* <form onSubmit={handleSubmit(data => console.log(data))}>
-				<label htmlFor='firstName'>Введите имя</label>
-				<input {...register('firstName', { required: true })} />	
-				{errors.firstName && <p style={{color: 'red'}}>Name is required.</p>}
-
-				<label htmlFor='lastName'>Введите фамилию</label>
-				<input {...register('lastName', { required: true })} />
-				{errors.lastName && <p style={{color: 'red'}}>Last name is required.</p>}
-
-				<label htmlFor='age'>Введите возраст</label>
-				<input {...register('age', { pattern: /\d+/ })} />
-				{errors.age && <p style={{color: 'red'}}>Please enter number for age.</p>}
-
-				<input type='submit' />
-			</form> */}
 		</>
 	);
 }

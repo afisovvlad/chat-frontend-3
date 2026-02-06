@@ -5,6 +5,7 @@ import { FormSettingsItem } from '@/entities/Settings';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { convertDateToNumber } from '@/shared/lib/convertDateToNumber/convertDateToNumber';
 import { convertNumberToDate } from '@/shared/lib/convertNumberToDate/convertNumberToDate';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { Button, ButtonType } from '@/shared/ui/Button';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form, SelectItem } from '@/shared/ui/FormComponent';
@@ -21,7 +22,7 @@ import {
 	getMonthsOptions,
 	getYearsOptions
 } from '@/shared/utils/dateOptions';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ProfileSchema } from '../..';
 import { formItems } from '../../model/const/formItems';
@@ -59,31 +60,32 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const year = watch('year')?.value;
 	const dayOptions = getDaysOptions(month, year);
 	const hasError = formState.isSubmitted && (!day || !month || !year);
+	const profile = useAppSelector(state => state.profile);
 
-	console.log('data', data);
+	console.log('profile', profile);
 
-	const fetchProfile = useCallback(async () => {
-		const response = await editProfile({}); // Отправляем пустой {} для получения данных профиля
-		if (response.data) {
-			const data = response.data;
+	// const fetchProfile = useCallback(async () => {
+	// 	const response = await editProfile({}); // Отправляем пустой {} для получения данных профиля
+	// 	if (response.data) {
+	// 		const data = response.data;
 
-			if (data && data.birthday) {
-				const { enteredDay, enteredMonth, enteredYear } = convertNumberToDate(
-					data.birthday
-				);
+	// 		if (data && data.birthday) {
+	// 			const { enteredDay, enteredMonth, enteredYear } = convertNumberToDate(
+	// 				data.birthday
+	// 			);
 
-				reset({
-					nickname: data.nickname || '',
-					first_name: data.first_name || '',
-					last_name: data.last_name || '',
-					additional_information: data.additional_information || '',
-					day: { label: String(enteredDay), value: String(enteredDay) },
-					month: { label: String(enteredMonth), value: String(enteredMonth) },
-					year: { label: String(enteredYear), value: String(enteredYear) }
-				});
-			}
-		}
-	}, [reset, editProfile]);
+	// 			reset({
+	// 				nickname: data.nickname || '',
+	// 				first_name: data.first_name || '',
+	// 				last_name: data.last_name || '',
+	// 				additional_information: data.additional_information || '',
+	// 				day: { label: String(enteredDay), value: String(enteredDay) },
+	// 				month: { label: String(enteredMonth), value: String(enteredMonth) },
+	// 				year: { label: String(enteredYear), value: String(enteredYear) }
+	// 			});
+	// 		}
+	// 	}
+	// }, [reset, editProfile]);
 
 	//  Синхронизация дней при смене месяца / года, - 28, 29, 30 или 31
 	useEffect(() => {
@@ -98,9 +100,28 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 		}
 	}, [day, month, year, setValue]);
 
+	// useEffect(() => {
+	// 	fetchProfile();
+	// }, [fetchProfile]);
 	useEffect(() => {
-		fetchProfile();
-	}, [fetchProfile]);
+		if (!profile) {
+			return;
+		}
+
+		const { enteredDay, enteredMonth, enteredYear } = convertNumberToDate(
+			profile.birthday
+		);
+		console.log(profile, 'profile');
+		reset({
+			nickname: profile.nickname || '',
+			first_name: profile.first_name || '',
+			last_name: profile.last_name || '',
+			additional_information: profile.additional_information || '',
+			day: { label: String(enteredDay), value: String(enteredDay) },
+			month: { label: String(enteredMonth), value: String(enteredMonth) },
+			year: { label: String(enteredYear), value: String(enteredYear) }
+		});
+	}, [profile, reset]);
 
 	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
 		setServerErrorMessage('');

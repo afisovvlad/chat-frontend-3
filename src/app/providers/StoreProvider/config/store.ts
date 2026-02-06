@@ -1,3 +1,4 @@
+import { profileReducer } from '@/entities/Profile';
 import { authReducer } from '@/features/auth/model/slices/authSlice';
 import { citiesReducer } from '@/pages/Cities';
 import { localApi } from '@/shared/api/localApi';
@@ -13,13 +14,15 @@ const rootReducer = combineReducers<ReducersMapObject<StateSchema>>({
 	[localApi.reducerPath]: localApi.reducer,
 	[rtkApi.reducerPath]: rtkApi.reducer,
 	cities: citiesReducer,
-	auth: authReducer
+	auth: authReducer,
+	profile: profileReducer
 });
 
 export const makeStore = (initialState?: StateSchema) => {
 	return configureStore({
 		reducer: rootReducer,
 		preloadedState: initialState,
+		devTools: true,
 		middleware: getDefaultMiddleware =>
 			getDefaultMiddleware().concat([localApi.middleware, rtkApi.middleware])
 	});
