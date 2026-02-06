@@ -1,25 +1,33 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useDebounce<Args extends any[]>(
+export function useDebounce<Args extends unknown[]>(
 	callback: (...args: Args) => void,
 	delay: number
 ) {
-	const timer = useRef<NodeJS.Timeout | null>(null);
+	const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const savedCallback = useRef(callback);
+
+	// Синхронизируем callback
+	useEffect(() => {
+		savedCallback.current = callback;
+	}, [callback]);
+
+	// ✅ Cleanup при unmount
+	useEffect(() => {
+		return () => {
+			if (timer.current) {
+				clearTimeout(timer.current);
+			}
+		};
+	}, []);
 
 	return useCallback(
 		(...args: Args) => {
 			if (timer.current) {
 				clearTimeout(timer.current);
 			}
-
-			timer.current = setTimeout(() => {
-				callback(...args);
-			}, delay);
+			timer.current = setTimeout(() => savedCallback.current(...args), delay);
 		},
-		[callback, delay]
+		[delay]
 	);
 }
-
-// пример использования
-// const debouncedFetchData = useDebounce(fetchData, 500);
