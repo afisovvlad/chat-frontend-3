@@ -14,7 +14,7 @@ import {
 	ButtonTheme,
 	ButtonType
 } from '@/shared/ui/Button';
-import { Text, TextSize, TextTag } from '@/shared/ui/Text';
+import { Text, TextSize, TextTag, TextType, TitleTag } from '@/shared/ui/Text';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form, SelectItem } from '@/shared/ui/FormComponent';
 import { DateOption } from '@/shared/ui/FormComponent/FormItems/model/selectTypes';
@@ -446,8 +446,12 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 					borderRadius='8px'
 				>
 					<div className={cls.errorModalContent}>
-						<h3 className={cls.errorTitle}>Ошибка</h3>
-						<p className={cls.errorMessage}>{serverError || avatarError}</p>
+						<Text type={TextType.TITLE} tag={TitleTag.H3} fontSize={TextSize.L}>
+							Ошибка
+						</Text>
+						<Text type={TextType.TEXT} tag={TextTag.P} fontSize={TextSize.M}>
+							{serverError || avatarError}
+						</Text>
 						<Button
 							onClick={handleCloseErrorModal}
 							color={ButtonColor.GREEN}

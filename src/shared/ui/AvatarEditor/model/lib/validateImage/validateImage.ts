@@ -1,18 +1,9 @@
 import { AVATAR_VALIDATION_CONFIG } from '../../constants/constants';
 
-/**
- * Результат валидации файла
- */
 export interface ValidationResult {
 	valid: boolean;
 	error?: string;
 }
-
-/**
- * Валидация изображения
- * @param file - файл для валидации
- * @returns Promise с результатом валидации
- */
 
 export const validateImageFile = async (
 	file: File

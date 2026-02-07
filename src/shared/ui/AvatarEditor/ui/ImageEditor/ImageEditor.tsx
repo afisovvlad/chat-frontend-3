@@ -1,12 +1,13 @@
+'use client';
+
 import {
 	forwardRef,
-	useImperativeHandle,
+	memo,
 	useCallback,
 	useRef,
-	memo,
-	useEffect
+	useState,
+	useImperativeHandle
 } from 'react';
-
 import { ImageEditorRef } from '../../model/types/types';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import {
@@ -17,7 +18,12 @@ import { EditorHeader } from '../EditorHeader/EditorHeader';
 import { EditorControls } from '../EditorController/EditorControls';
 import { useScaleControl } from '../../model/lib/hooks/useScaleControl/useScaleControl';
 import { useImageEditorConfig } from '../../model/lib/hooks/useImageEditorConfig/useImageEditorConfig';
+
+import { Modal } from '@/shared/ui/Modal';
+import { Button, ButtonColor } from '@/shared/ui/Button';
+import { Text, TextSize, TextTag, TextType, TitleTag } from '@/shared/ui/Text';
 import cls from './ImageEditor.module.scss';
+import { validateImageFile } from '../../model/lib/validateImage/validateImage';
 
 export interface ImageEditorProps {
 	onClose: () => void;
@@ -29,133 +35,80 @@ export const ImageEditorInner = forwardRef<ImageEditorRef, ImageEditorProps>(
 	({ onClose, onConfirm, image }, ref) => {
 		const isMobile = useMediaQuery();
 		const { width, height } = useImageEditorConfig();
-		const isDesktop = !isMobile;
-		const canvasRef = useRef<CustomAvatarEditorRef>(null);
-		const widthRef = useRef(width);
-		const heightRef = useRef(height);
-
+		const canvasRef = useRef<CustomAvatarEditorRef>(null); // ✅ Исправлен тип
+		const [error, setError] = useState<string | null>(null);
 		const scaleControl = useScaleControl(1, 1, 3);
 		const { scale, minScale, maxScale, setScale, setMinScale, setMaxScale } =
 			scaleControl;
+		const isDesktop = !isMobile;
 
-		useEffect(() => {
-			widthRef.current = width;
-			heightRef.current = height;
-		}, [width, height]);
+		// ✅ Централизованная обработка ошибок
+		const showError = useCallback((message: string) => {
+			setError(message);
+			const timer = setTimeout(() => setError(null), 3000);
+			return () => clearTimeout(timer);
+		}, []);
 
+		// ✅ Автоустановка scale на основе изображения
 		const handleImageLoad = useCallback(
 			(img: HTMLImageElement) => {
-				const scaleX = widthRef.current / img.width;
-				const scaleY = heightRef.current / img.height;
+				const scaleX = width / img.width;
+				const scaleY = height / img.height;
 				const coverScale = Math.max(scaleX, scaleY);
 				setMinScale(coverScale);
 				setMaxScale(Math.min(3, coverScale * 3));
 				setScale(coverScale * 1.65);
 			},
-			[setMinScale, setMaxScale, setScale]
+			[width, height, setMinScale, setMaxScale, setScale]
 		);
 
-		// Валидация изображения
-		const validateImageFile = async (file: File): Promise<boolean> => {
+		// ✅ Оптимизированный export с обработкой ошибок
+		const getResultBlob = useCallback(async (): Promise<Blob | null> => {
+			const canvas = canvasRef.current?.getImageWithoutMask();
+			if (!canvas) {
+				showError('Не удалось получить изображение. Попробуйте ещё раз');
+				return null;
+			}
+
 			return new Promise(resolve => {
-				const img = new Image();
-				img.onload = () => {
-					resolve(true);
-				};
-				img.onerror = () => {
-					resolve(false);
-				};
-				img.src = URL.createObjectURL(file);
-			});
-		};
-
-		const getResult = useCallback((): Promise<Blob | null> => {
-			return new Promise(resolve => {
-				const canvas = canvasRef.current?.getImageWithoutMask(); //
-				if (!canvas) {
-					console.error('❌ Канвас не найден');
-					resolve(null);
-					return;
-				}
-
-				const ctx = canvas.getContext('2d');
-				if (!ctx) {
-					console.error('❌ Не удалось получить контекст канваса');
-					resolve(null);
-					return;
-				}
-
-				// Проверяем, что канвас не пустой
-				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-				const data = imageData.data;
-				let isBlank = true;
-
-				for (let i = 0; i < data.length; i += 4) {
-					if (
-						data[i] !== 0 ||
-						data[i + 1] !== 0 ||
-						data[i + 2] !== 0 ||
-						data[i + 3] !== 0
-					) {
-						isBlank = false;
-						break;
-					}
-				}
-
-				if (isBlank) {
-					console.error('❌ Канвас пустой, невозможно создать изображение');
-					resolve(null);
-					return;
-				}
-
 				canvas.toBlob(
 					blob => {
 						if (!blob) {
-							console.error('❌ Не удалось создать Blob из канваса');
+							showError('Ошибка создания изображения');
 							resolve(null);
 							return;
 						}
-
 						if (blob.size === 0) {
-							console.error('❌ Созданный Blob пустой');
+							showError('Созданное изображение пустое');
 							resolve(null);
 							return;
 						}
-
 						resolve(blob);
 					},
-					'image/jpeg', // Явно указываем тип
-					0.92 // Качество 92%
+					'image/jpeg',
+					0.92
 				);
 			});
-		}, []);
+		}, [showError]);
 
+		// ✅ Упрощённый confirm с обработкой ошибок
 		const handleConfirm = useCallback(async () => {
-			const blob = await getResult();
+			const blob = await getResultBlob();
 			if (!blob) {
-				console.error('❌ Не удалось получить изображение');
-				// Можно показать ошибку пользователю
-				// onClose();
 				return;
 			}
 
-			// Создаем файл с правильным типом
-			const file = new File([blob], 'avatar.jpg', {
-				type: 'image/jpeg',
-				lastModified: Date.now()
-			});
+			const file = new File([blob], 'avatar.jpg', { type: 'image/jpeg' });
 
-			// Валидация файла
+			// ✅ Централизованная валидация
 			const isValid = await validateImageFile(file);
 			if (!isValid) {
-				console.error('❌ Созданный файл не является валидным изображением');
-				// Можно показать ошибку пользователю
-				// onClose();
+				showError('Файл повреждён. Попробуйте выбрать другое изображение');
 				return;
 			}
 
 			onConfirm(file);
-		}, [getResult, onConfirm]);
+		}, [getResultBlob, onConfirm, showError]);
 
 		useImperativeHandle(
 			ref,
@@ -168,6 +121,7 @@ export const ImageEditorInner = forwardRef<ImageEditorRef, ImageEditorProps>(
 		return (
 			<div className={cls.cropScreen}>
 				<EditorHeader onClose={onClose} />
+
 				<div className={cls.editorContainer}>
 					<div className={cls.editorWrapper}>
 						<CustomAvatarEditor
@@ -184,6 +138,7 @@ export const ImageEditorInner = forwardRef<ImageEditorRef, ImageEditorProps>(
 						/>
 					</div>
 				</div>
+
 				<EditorControls
 					scale={scale}
 					minScale={minScale}
@@ -192,11 +147,40 @@ export const ImageEditorInner = forwardRef<ImageEditorRef, ImageEditorProps>(
 					onConfirm={handleConfirm}
 					isDesktop={isDesktop}
 				/>
+
+				{/* ✅ Модальное окно ошибки */}
+				{error && (
+					<Modal
+						isOpen={!!error}
+						onClose={() => setError(null)}
+						size='wide'
+						borderRadius='8px'
+					>
+						<div className={cls.errorModalContent}>
+							<Text
+								type={TextType.TITLE}
+								tag={TitleTag.H3}
+								fontSize={TextSize.L}
+							>
+								Ошибка обработки
+							</Text>
+							<Text type={TextType.TEXT} tag={TextTag.P} fontSize={TextSize.M}>
+								{error}
+							</Text>
+							<Button
+								onClick={() => setError(null)}
+								color={ButtonColor.GREEN}
+								className={cls.errorCloseBtn}
+							>
+								Закрыть
+							</Button>
+						</div>
+					</Modal>
+				)}
 			</div>
 		);
 	}
 );
 
-ImageEditorInner.displayName = 'ImageEditor';
-
+ImageEditorInner.displayName = 'ImageEditorInner';
 export const ImageEditor = memo(ImageEditorInner);
