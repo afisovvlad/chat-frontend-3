@@ -14,6 +14,7 @@ import {
 import { SentRead, SentTime, Trash, VolumeOff, VolumeOn } from '@icons/index';
 import { ReactNode } from 'react';
 import { Button, ButtonColor, ButtonSize, ButtonTheme } from '../../Button';
+import { LastSeen } from '../../LastSeen';
 import { AVATAR_SIZE, IUserCard, UserCardType } from '../model/types/IUserCard';
 import cls from './UserCard.module.scss';
 
@@ -164,14 +165,10 @@ export const UserCard = ({
 					)}
 					{/* для контактов и черного списка */}
 					{[UserCardType.CONTACT, UserCardType.BLACK_LIST].includes(type) && (
-						<Text
-							className={cls.isOnline}
-							color={TextColor.ACCENT}
-							fontSize={TextSize.S}
-							fontWeight={FontWeight.REGULAR}
-						>
-							{userData.user?.is_online ? 'в сети' : 'не в сети'}
-						</Text>
+						<LastSeen
+							wasOnlineAt={userData.user?.was_online_at || null}
+							isOnline={userData.user?.is_online || null}
+						></LastSeen>
 					)}
 
 					{/* для профиля */}

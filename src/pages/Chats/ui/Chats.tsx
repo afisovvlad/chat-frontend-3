@@ -245,7 +245,7 @@ const blackList: BlackListSchema[] = [
 		birthday: 0,
 		chat_id: 0,
 		is_online: false,
-		was_online_at: 0
+		was_online_at: 1770443292
 	}
 ];
 

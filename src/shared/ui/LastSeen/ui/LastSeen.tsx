@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 type LastSeenProps = {
 	wasOnlineAt: number | null; // UNIX (секунды)
-	isOnline: boolean;
+	isOnline: boolean | null;
 	hasConnection?: boolean;
 };
 
