@@ -111,7 +111,7 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 		const { enteredDay, enteredMonth, enteredYear } = convertNumberToDate(
 			profile.birthday
 		);
-		console.log(profile, 'profile');
+
 		reset({
 			nickname: profile.nickname || '',
 			first_name: profile.first_name || '',
@@ -163,7 +163,7 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 					setServerErrorMessage('Произошла непредвиденная ошибка');
 				}
 			}
-		} catch (e) {
+		} catch (_) {
 			setServerErrorMessage('Произошла непредвиденная ошибка');
 		}
 	};
