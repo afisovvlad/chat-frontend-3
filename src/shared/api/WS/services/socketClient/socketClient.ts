@@ -1,5 +1,8 @@
 import type { WSRequest, WSResponse } from '@/shared/api/WS/types/wsTypes';
 
+let isConnecting = false;
+let connectPromise: Promise<WebSocket> | null = null;
+
 let socket: WebSocket | null = null;
 const subscribers = new Map<string, Set<(data: WSResponse) => void>>();
 const pendingRequests = new Map<string, (response: WSResponse) => void>();
@@ -44,28 +47,32 @@ const ensureFreshToken = async (): Promise<string> => {
 const setupSocket = async (): Promise<WebSocket> => {
 	const token = await ensureFreshToken();
 
-	// Если уже открыт — возвращаем текущий сокет
 	if (socket && socket.readyState === WebSocket.OPEN) {
 		return socket;
 	}
 
-	// Закрываем старый, если сокет завис в состоянии CONNECTING
+	// Mutex: если уже подключаемся — ждём
+	if (isConnecting) {
+		return await connectPromise!;
+	}
+
 	if (socket && socket.readyState === WebSocket.CONNECTING) {
-		// дадим ему умереть, но создадим новый
 		socket.close();
 	}
 
-	const wsUrl = `${process.env.NEXT_PUBLIC_WS_URL}?authorization=${encodeURIComponent(token)}`;
-	socket = new WebSocket(wsUrl);
+	// Создаём новый промис с блокировкой
+	connectPromise = new Promise((resolve, reject) => {
+		isConnecting = true;
 
-	return new Promise((resolve, reject) => {
-		socket!.onopen = () => {
-			// Глобальный обработчик сообщений
+		const wsUrl = `${process.env.NEXT_PUBLIC_WS_URL}?authorization=${encodeURIComponent(token)}`;
+		socket = new WebSocket(wsUrl);
+
+		socket.onopen = () => {
+			// Глобальный onmessage (только один раз!)
 			socket!.onmessage = event => {
 				try {
 					const response: WSResponse = JSON.parse(event.data);
 
-					// 1. pendingRequests (ответы на sendWS)
 					const pendingCb = pendingRequests.get(response.request_uid);
 					if (pendingCb) {
 						pendingCb(response);
@@ -73,32 +80,39 @@ const setupSocket = async (): Promise<WebSocket> => {
 						return;
 					}
 
-					// 2. subscribers по action
 					subscribers.get(response.action)?.forEach(cb => cb(response));
 				} catch (e) {
 					console.error('WS parse error', e);
 				}
 			};
 
+			isConnecting = false;
+			connectPromise = null;
 			resolve(socket!);
 		};
 
-		socket!.onerror = () => {
+		socket.onerror = () => {
+			isConnecting = false;
+			connectPromise = null;
 			socket = null;
 			reject(new Error('WS connection failed'));
 		};
 
-		socket!.onclose = e => {
+		socket.onclose = e => {
 			if (socket && socket.readyState !== WebSocket.OPEN) {
 				socket = null;
 			}
 
-			// если закрытие произошло до onopen
+			isConnecting = false;
+			connectPromise = null;
+
 			if (e.code !== 1000) {
 				reject(new Error(`WS closed: ${e.code}`));
 			}
 		};
 	});
+
+	return connectPromise;
 };
 
 // Подписка по action
