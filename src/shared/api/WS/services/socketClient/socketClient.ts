@@ -81,8 +81,8 @@ const setupSocket = async (): Promise<WebSocket> => {
 					}
 
 					subscribers.get(response.action)?.forEach(cb => cb(response));
-				} catch (e) {
-					console.error('WS parse error', e);
+				} catch (_) {
+					throw new Error('WS Error');
 				}
 			};
 
