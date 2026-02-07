@@ -1,40 +1,47 @@
+'use client';
 import { SettingsHeaderBlock } from '@/entities/Settings';
 import { Button, ButtonColor, ButtonTheme } from '@/shared/ui/Button';
 import { SettingsList } from '@/shared/ui/SettingsList';
-import { Text, TextSize, TextType } from '@/shared/ui/Text';
 import { Trash } from '@icons/index';
+import { Text } from '@/shared/ui/Text';
+import {
+	mapProfileToUserCard,
+	UserCard,
+	UserCardType
+} from '@/shared/ui/UserCard';
+
+import { useGetProfileQuery } from '@/entities/Profile/api/editProfile.api';
 import cls from './SettingsPage.module.scss';
 
 export const SettingsPage = () => {
+	const { data: profile, isLoading, isError } = useGetProfileQuery();
+
 	return (
 		<div className={cls.settings}>
 			<SettingsHeaderBlock title={'Настройки'} />
 
 			<div className={cls.content}>
-				{/* Тестовое наполнение — удалить в проде */}
-				<div className={cls.profileSection}>
-					<div className={cls.avatarWrapper}>
-						<div className={cls.avatar}></div>
-					</div>
-					<div className={cls.profileInfo}>
-						<Text type={TextType.TITLE} fontSize={TextSize.M}>
-							Сергей Иванов
-						</Text>
-						<Text>+7 921 7797979</Text>
-						<Text>@bond777</Text>
-					</div>
-				</div>
+				{isLoading ? (
+					<Text>Загрузка...</Text>
+				) : isError ? (
+					<Text>Ошибка загрузки профиля</Text>
+				) : profile ? (
+					<UserCard
+						userData={mapProfileToUserCard(profile)}
+						type={UserCardType.PROFILE}
+					/>
+				) : null}
 
 				<SettingsList />
-
-				<Button
-					theme={ButtonTheme.CLEAR}
-					color={ButtonColor.DANGER}
-					className={cls.deleteProfile}
-				>
-					<Trash /> Удалить профиль
-				</Button>
 			</div>
+
+			<Button
+				theme={ButtonTheme.CLEAR}
+				color={ButtonColor.DANGER}
+				className={cls.deleteProfile}
+			>
+				<Trash /> Удалить профиль
+			</Button>
 		</div>
 	);
 };

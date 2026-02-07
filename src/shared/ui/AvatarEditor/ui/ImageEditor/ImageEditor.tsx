@@ -1,12 +1,13 @@
+'use client';
+
 import {
 	forwardRef,
-	useImperativeHandle,
+	memo,
 	useCallback,
 	useRef,
-	memo,
-	useEffect
+	useState,
+	useImperativeHandle
 } from 'react';
-
 import { ImageEditorRef } from '../../model/types/types';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import {
@@ -17,11 +18,16 @@ import { EditorHeader } from '../EditorHeader/EditorHeader';
 import { EditorControls } from '../EditorController/EditorControls';
 import { useScaleControl } from '../../model/lib/hooks/useScaleControl/useScaleControl';
 import { useImageEditorConfig } from '../../model/lib/hooks/useImageEditorConfig/useImageEditorConfig';
+
+import { Modal } from '@/shared/ui/Modal';
+import { Button, ButtonColor } from '@/shared/ui/Button';
+import { Text, TextSize, TextTag, TextType, TitleTag } from '@/shared/ui/Text';
 import cls from './ImageEditor.module.scss';
+import { validateImageFile } from '../../model/lib/validateImage/validateImage';
 
 export interface ImageEditorProps {
 	onClose: () => void;
-	onConfirm: (dataUrl: string) => void;
+	onConfirm: (file: File) => void;
 	image: string;
 }
 
@@ -29,67 +35,93 @@ export const ImageEditorInner = forwardRef<ImageEditorRef, ImageEditorProps>(
 	({ onClose, onConfirm, image }, ref) => {
 		const isMobile = useMediaQuery();
 		const { width, height } = useImageEditorConfig();
-		const isDesktop = !isMobile;
-		const canvasRef = useRef<CustomAvatarEditorRef>(null);
-		const widthRef = useRef(width);
-		const heightRef = useRef(height);
-
+		const canvasRef = useRef<CustomAvatarEditorRef>(null); // ✅ Исправлен тип
+		const [error, setError] = useState<string | null>(null);
 		const scaleControl = useScaleControl(1, 1, 3);
 		const { scale, minScale, maxScale, setScale, setMinScale, setMaxScale } =
 			scaleControl;
+		const isDesktop = !isMobile;
 
-		useEffect(() => {
-			widthRef.current = width;
-			heightRef.current = height;
-		}, [width, height]);
+		// ✅ Централизованная обработка ошибок
+		const showError = useCallback((message: string) => {
+			setError(message);
+			const timer = setTimeout(() => setError(null), 3000);
+			return () => clearTimeout(timer);
+		}, []);
 
+		// ✅ Автоустановка scale на основе изображения
 		const handleImageLoad = useCallback(
 			(img: HTMLImageElement) => {
-				const scaleX = widthRef.current / img.width;
-				const scaleY = heightRef.current / img.height;
+				const scaleX = width / img.width;
+				const scaleY = height / img.height;
 				const coverScale = Math.max(scaleX, scaleY);
 				setMinScale(coverScale);
 				setMaxScale(Math.min(3, coverScale * 3));
-				setScale(coverScale * 1.51);
+				setScale(coverScale * 1.65);
 			},
-			[setMinScale, setMaxScale, setScale]
+			[width, height, setMinScale, setMaxScale, setScale]
 		);
-		useEffect(() => {
-			widthRef.current = width;
-			heightRef.current = height;
-		}, [width, height]);
 
-		const getResult = useCallback((): Promise<string | null> => {
-			return new Promise(resolve => {
-				const canvas = canvasRef.current?.getImageScaledToCanvas();
-				if (!canvas) {
-					resolve(null);
-					return;
-				}
-				resolve(canvas.toDataURL('image/jpeg', 0.85));
-			});
-		}, []);
-
-		const handleConfirm = useCallback(async () => {
-			const dataUrl = await getResult();
-			if (dataUrl !== null) {
-				onConfirm(dataUrl);
+		// ✅ Оптимизированный export с обработкой ошибок
+		const getResultBlob = useCallback(async (): Promise<Blob | null> => {
+			const canvas = canvasRef.current?.getImageWithoutMask();
+			if (!canvas) {
+				showError('Не удалось получить изображение. Попробуйте ещё раз');
+				return null;
 			}
-			onClose();
-		}, [getResult, onConfirm, onClose]);
+
+			return new Promise(resolve => {
+				canvas.toBlob(
+					blob => {
+						if (!blob) {
+							showError('Ошибка создания изображения');
+							resolve(null);
+							return;
+						}
+						if (blob.size === 0) {
+							showError('Созданное изображение пустое');
+							resolve(null);
+							return;
+						}
+						resolve(blob);
+					},
+					'image/jpeg',
+					0.92
+				);
+			});
+		}, [showError]);
+
+		// ✅ Упрощённый confirm с обработкой ошибок
+		const handleConfirm = useCallback(async () => {
+			const blob = await getResultBlob();
+			if (!blob) {
+				return;
+			}
+
+			const file = new File([blob], 'avatar.jpg', { type: 'image/jpeg' });
+
+			// ✅ Централизованная валидация
+			const isValid = await validateImageFile(file);
+			if (!isValid) {
+				showError('Файл повреждён. Попробуйте выбрать другое изображение');
+				return;
+			}
+
+			onConfirm(file);
+		}, [getResultBlob, onConfirm, showError]);
 
 		useImperativeHandle(
 			ref,
 			() => ({
-				getResult,
 				confirm: handleConfirm
 			}),
-			[]
+			[handleConfirm]
 		);
 
 		return (
 			<div className={cls.cropScreen}>
 				<EditorHeader onClose={onClose} />
+
 				<div className={cls.editorContainer}>
 					<div className={cls.editorWrapper}>
 						<CustomAvatarEditor
@@ -106,6 +138,7 @@ export const ImageEditorInner = forwardRef<ImageEditorRef, ImageEditorProps>(
 						/>
 					</div>
 				</div>
+
 				<EditorControls
 					scale={scale}
 					minScale={minScale}
@@ -114,11 +147,40 @@ export const ImageEditorInner = forwardRef<ImageEditorRef, ImageEditorProps>(
 					onConfirm={handleConfirm}
 					isDesktop={isDesktop}
 				/>
+
+				{/* ✅ Модальное окно ошибки */}
+				{error && (
+					<Modal
+						isOpen={!!error}
+						onClose={() => setError(null)}
+						size='wide'
+						borderRadius='8px'
+					>
+						<div className={cls.errorModalContent}>
+							<Text
+								type={TextType.TITLE}
+								tag={TitleTag.H3}
+								fontSize={TextSize.L}
+							>
+								Ошибка обработки
+							</Text>
+							<Text type={TextType.TEXT} tag={TextTag.P} fontSize={TextSize.M}>
+								{error}
+							</Text>
+							<Button
+								onClick={() => setError(null)}
+								color={ButtonColor.GREEN}
+								className={cls.errorCloseBtn}
+							>
+								Закрыть
+							</Button>
+						</div>
+					</Modal>
+				)}
 			</div>
 		);
 	}
 );
 
-ImageEditorInner.displayName = 'ImageEditor';
-
+ImageEditorInner.displayName = 'ImageEditorInner';
 export const ImageEditor = memo(ImageEditorInner);

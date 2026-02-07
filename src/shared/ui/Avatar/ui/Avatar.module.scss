@@ -1,5 +1,4 @@
 .avatar {
-	border-radius: 50%;
 	overflow: hidden;
 
 	& > * {
@@ -11,4 +10,8 @@
 		position: static !important;
 		object-fit: cover;
 	}
+}
+
+.square {
+	border-radius: 12px !important; // Только для full variant
 }

@@ -8,6 +8,7 @@
 	backdrop-filter: blur(10px);
 	background: var(--color-white);
 	touch-action: none;
+
 	@media (max-width: 768px) {
 		width: 329px;
 		border-radius: 8px;
@@ -28,13 +29,13 @@
 	background: var(--color-white);
 	max-width: 600px;
 	position: relative;
+
 	@media (max-width: 768px) {
 		border-radius: 8px;
 		padding: 0;
 		width: 329px;
 	}
 }
-
 
 .editorContainer {
 	width: 100%;
@@ -69,4 +70,11 @@
 	}
 }
 
+.errorModalContent {
+	padding: 24px;
+	text-align: center;
+}
 
+.errorCloseBtn {
+	width: 100%;
+}
