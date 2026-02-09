@@ -29,7 +29,6 @@
 	/* ✅ Убираем нативные элементы управления для поиска */
 	appearance: none;
 	appearance: none;
-	appearance: none;
 
 	&::placeholder {
 		color: var(--color-gray-500);
@@ -72,8 +71,8 @@
 	border-radius: 50%;
 	transition: all 0.15s;
 	z-index: 2;
-	opacity: 0; /* ✅ Скрыта по умолчанию */
-	pointer-events: none; /* ✅ Не реагирует на клики когда скрыта */
+	opacity: 0;
+	pointer-events: none;
 
 	&:focus-visible {
 		@include focus-visible;

@@ -1,3 +1,4 @@
+import { SearchIcon } from '@icons/index';
 export { default as AddContact } from './AddContact.svg';
 export { default as Apple } from './Apple.svg';
 export { default as Service } from './Service.svg';
@@ -46,7 +47,7 @@ export { default as Pin } from './Pin.svg';
 export { default as ProfileAvatar } from './ProfileAvatar.svg';
 export { default as Reload } from './Reload.svg';
 export { default as Reply } from './Reply.svg';
-export { default as Search } from './Search.svg';
+export { default as SearchIcon } from './Search.svg';
 export { default as SearchContacts } from './SearchContacts.svg';
 export { default as SelectFile } from './SelectFile.svg';
 export { default as SelectImg } from './SelectImg.svg';
