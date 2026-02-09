@@ -1,3 +1,4 @@
+'use client';
 import { ChatType } from '@/entities/Chat';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Avatar } from '@/shared/ui/Avatar/';
@@ -81,6 +82,7 @@ export const UserCard = ({
 				alt={userData.user?.username}
 				src={userData.user?.avatar_url}
 				size={AVATAR_SIZE[type]}
+				variant='card'
 			/>
 
 			<div className={cls.info}>

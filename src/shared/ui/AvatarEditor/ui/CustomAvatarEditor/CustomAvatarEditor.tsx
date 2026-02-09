@@ -25,6 +25,7 @@ export interface CustomAvatarEditorProps {
 
 export interface CustomAvatarEditorRef {
 	getImageScaledToCanvas(): HTMLCanvasElement | null;
+	getImageWithoutMask(): HTMLCanvasElement | null;
 }
 
 const CustomAvatarEditorComponent = forwardRef<
@@ -74,6 +75,10 @@ const CustomAvatarEditorComponent = forwardRef<
 			if (!ctx) {
 				return;
 			}
+
+			// Очищаем канвас перед отрисовкой
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 			drawAvatarCanvas({
 				ctx,
 				img,
@@ -208,9 +213,46 @@ const CustomAvatarEditorComponent = forwardRef<
 
 		useImperativeHandle(ref, () => {
 			return {
-				getImageScaledToCanvas: () => canvasRef.current
+				getImageScaledToCanvas: () => canvasRef.current,
+				getImageWithoutMask: () => {
+					if (!imgRef.current) {
+						return null;
+					}
+
+					const canvas = document.createElement('canvas');
+					const ctx = canvas.getContext('2d');
+					if (!ctx) {
+						return null;
+					}
+
+					const { width, height, scale } = propsRef.current;
+					const { x, y } = positionRef.current;
+					const dpr =
+						typeof window !== 'undefined' && !disableHiDPIScaling
+							? window.devicePixelRatio || 1
+							: 1;
+
+					canvas.width = width * dpr;
+					canvas.height = height * dpr;
+
+					const imgW = imgRef.current.width * scale;
+					const imgH = imgRef.current.height * scale;
+					const drawX = (width - imgW) / 2 + x;
+					const drawY = (height - imgH) / 2 + y;
+
+					// Рисуем только изображение, без маски и круга
+					ctx.drawImage(
+						imgRef.current,
+						drawX * dpr,
+						drawY * dpr,
+						imgW * dpr,
+						imgH * dpr
+					);
+
+					return canvas;
+				}
 			};
-		}, []);
+		}, [disableHiDPIScaling]);
 
 		const dpr =
 			typeof window !== 'undefined' && !disableHiDPIScaling
