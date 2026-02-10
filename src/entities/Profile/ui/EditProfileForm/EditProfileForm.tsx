@@ -1,9 +1,6 @@
 'use client';
 
-import {
-	useEditProfileMutation
-	// useGetProfileQuery
-} from '@/entities/Profile/api/editProfile.api';
+import { useEditProfileMutation } from '@/entities/Profile/api/editProfile.api';
 import { FormSettingsItem } from '@/entities/Settings';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { convertDateToNumber } from '@/shared/lib/convertDateToNumber/convertDateToNumber';
@@ -59,15 +56,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	// const [serverErrorMessage, setServerErrorMessage] = useState('');
 	const [serverError, setServerError] = useState<string | null>(null);
 	const [editProfile, { isLoading, data }] = useEditProfileMutation();
-
-	// ==================== RTK QUERY ====================
-	// const [editProfile, { isLoading: isSaving }] = useEditProfileMutation();
-	// const {
-	// 	data: profileData,
-	// 	isLoading: isProfileLoading,
-	// 	error: profileError,
-	// 	refetch: refetchProfile
-	// } = useGetProfileQuery();
 
 	// ==================== FORM ====================
 
@@ -161,26 +149,31 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 				};
 
 				const result = await editProfile(newData).unwrap();
-
+				console.log(result, 'result');
 				if (result) {
 					setIsSuccess(true);
-					// await refetchProfile();
 				}
+				// else if (error && typeof error === 'object' && 'data' in error) {
+				// 	const serverErrors = error.data as Record<string, string[]>;
+
+				// 	Object.entries(serverErrors).forEach(([field, messages]) => {
+				// 		setFormError(field as keyof EditProfileForm, {
+				// 			type: 'server',
+				// 			message: messages.join(' ')
+				// 		});
+				// 	});
+				// }
 			} catch (error) {
-				console.error('❌ Ошибка сохранения профиля:', error);
-
-				if (error && typeof error === 'object' && 'data' in error) {
-					const serverErrors = error.data as Record<string, string[]>;
-
-					Object.entries(serverErrors).forEach(([field, messages]) => {
-						setFormError(field as keyof EditProfileForm, {
-							type: 'server',
-							message: messages.join(' ')
-						});
-					});
-				} else {
-					// showErrorModal('Произошла непредвиденная ошибка при сохранении');
-				}
+				setServerError('Произошла непредвиденная ошибка');
+				// if (error && typeof error === 'object' && 'data' in error) {
+				// 	const serverErrors = error.data as Record<string, string[]>;
+				// 	Object.entries(serverErrors).forEach(([field, messages]) => {
+				// 		setFormError(field as keyof EditProfileForm, {
+				// 			type: 'server',
+				// 			message: messages.join(' ')
+				// 		});
+				// 	});
+				// }
 			}
 
 			// } catch (_) {
@@ -204,7 +197,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 
 	return (
 		<>
-			{/* Форма */}
 			<Form<EditProfileForm>
 				methods={methods}
 				onSubmit={onSubmit}

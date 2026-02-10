@@ -1,6 +1,6 @@
-import styles from './EditProfilePage.module.scss';
-import { AvatarProfile, EditProfileForm } from '@/entities/Profile';
+import { EditProfileForm } from '@/entities/Profile';
 import { SettingsHeaderBlock } from '@/entities/Settings';
+import styles from './EditProfilePage.module.scss';
 
 export function EditProfilePage() {
 	return (
@@ -10,7 +10,7 @@ export function EditProfilePage() {
 				href={'/settings'}
 				parentClass={styles.headerBlock}
 			/>
-			<AvatarProfile />
+			{/* <AvatarProfile /> */}
 			<EditProfileForm parentClass={styles.form} />
 		</section>
 	);

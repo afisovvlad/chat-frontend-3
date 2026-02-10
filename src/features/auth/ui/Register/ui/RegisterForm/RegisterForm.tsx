@@ -2,6 +2,7 @@
 
 import { useEditProfileMutation } from '@/entities/Profile/api/editProfile.api';
 import { FormAuthItem, useSetAuthStep } from '@/features/auth';
+import { useDebounce } from '@/shared/lib/hooks/useDebounce/useDebounce';
 import {
 	Button,
 	ButtonColor,
@@ -18,28 +19,30 @@ import {
 	TextType
 } from '@/shared/ui/Text';
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { RegisterForm } from '../..';
 import { useLazySendNicknameQuery } from '../../api/registerApi';
 import { registerFormItems } from '../../model/const/registerFormItems';
-import { IRegister } from '../../model/types/types';
+import { IRegister, RegisterFormType } from '../../model/types/types';
 import styles from './RegisterForm.module.scss';
 
 export function RegisterForm() {
 	const [responseError, setResponseError] = useState('');
-	const methods = useForm<RegisterForm>();
+	const methods = useForm<RegisterFormType>();
 	const { control, setError, clearErrors } = methods;
 	const values = useWatch({ control: control });
 	const name = values.name;
 	const nickname = values.nickname;
-	const [sendNickname, { data: nicknameResponse, error }] =
+	const [sendNickname, { data: nicknameResponse, error: nicknameError }] =
 		useLazySendNicknameQuery();
+	const debouncedSendNickname = useDebounce(sendNickname, 500);
 	const setStep = useSetAuthStep();
-	const debounceRef = useRef<NodeJS.Timeout>(null);
 	const isNicknameFree =
 		nicknameResponse?.messages === 'Этот nickname свободен';
-	const [editProfile, { isLoading, data }] = useEditProfileMutation();
+	const [
+		editProfile,
+		{ data: registerResult, isLoading, error: registerError }
+	] = useEditProfileMutation();
 
 	const disabledSubmit = useMemo(() => {
 		if (!name || !nickname || !isNicknameFree) {
@@ -53,59 +56,55 @@ export function RegisterForm() {
 		return false;
 	}, [name, nickname, isNicknameFree]);
 
-	// console.log('error', error);
-	// console.log(error && (error.originalStatus === 404 || error.status === 500));
-	// console.log(nicknameResponse, 'nicknameResponse');
-	// console.log(responseError, 'responseError');
-
 	useEffect(() => {
 		if (!nickname || nickname.length < 5) {
 			return;
 		}
+		clearErrors(['nickname']);
+		debouncedSendNickname(nickname);
+	}, [nickname, sendNickname, debouncedSendNickname]);
 
-		if (debounceRef.current) {
-			clearTimeout(debounceRef.current);
-		}
-
-		debounceRef.current = setTimeout(() => {
-			sendNickname(nickname);
-		}, 500);
-
-		return () => {
-			if (debounceRef.current) {
-				clearTimeout(debounceRef.current);
-			}
-		};
-	}, [nickname, sendNickname]);
-
+	console.log(nickname);
 	useEffect(() => {
-		setResponseError('');
-
 		if (isNicknameFree) {
 			clearErrors(['name', 'nickname']);
-		} else if (
-			error &&
-			(error.originalStatus === 404 || error.status === 500)
-		) {
-			console.log('да есть ошибка');
-			setResponseError('Ошибка соединения с сервером. Попробуйте позже.');
-		} else if (error && error.data) {
-			Object.entries(error.data).forEach(([key, messages]) => {
-				const message = Array.isArray(messages)
-					? messages.join(', ')
-					: messages;
-				console.log(key, message, 'key message');
-				if (key === 'nickname' || key === 'name') {
-					setError(key as keyof IRegister, { type: 'server', message });
-				} else {
-					setResponseError(message);
-				}
-			});
 		}
-	}, [setStep, setError, clearErrors, error, isNicknameFree]);
+	}, [isNicknameFree, clearErrors]);
+
+	useEffect(() => {
+		if (!nicknameError?.data) {
+			return;
+		}
+
+		Object.entries(nicknameError.data).forEach(([key, messages]) => {
+			console.log(messages);
+			setError('nickname', {
+				type: 'server',
+				message: Array.isArray(messages) ? messages.join(', ') : messages
+			});
+		});
+	}, [nicknameError, setError]);
+
+	// const responseError = useMemo(() => {
+	// 	if (!editProfileError) {
+	// 		return '';
+	// 	}
+
+	// 	if (
+	// 		editProfileError.originalStatus === 404 ||
+	// 		editProfileError.status === 500
+	// 	) {
+	// 		return 'Ошибка соединения с сервером. Попробуйте позже.';
+	// 	}
+
+	// 	return '';
+	// }, [editProfileError]);
+
+	console.log(registerError, 'registerError');
+	console.log(nicknameError, 'nicknameError');
 
 	const onSubmit: SubmitHandler<IRegister> = async data => {
-		console.log(data);
+		setResponseError('');
 
 		const newData = {
 			first_name: data.name,
@@ -113,35 +112,67 @@ export function RegisterForm() {
 		};
 
 		try {
-			const result = await editProfile(newData).unwrap();
-			console.log('result', result);
+			await editProfile(newData);
+			console.log('registerResult', registerResult);
 
-			if (result) {
+			if (registerResult) {
 				setStep('finish-register');
-			} else {
-				const error = result.error;
-				if (
-					error &&
-					typeof error === 'object' &&
-					'status' in error &&
-					'data' in error
-				) {
-					const serverErrors = error.data as Record<string, string[]>;
-
-					Object.entries(serverErrors).forEach(([field, messages]) => {
-						setError(field as keyof IRegister, {
-							type: 'server',
-							message: messages.join(' ')
-						});
-					});
-				} else {
-					setResponseError('Произошла непредвиденная ошибка');
-				}
+			} else if (registerError && registerError.data) {
+				Object.entries(registerError.data).forEach(([key, messages]) => {
+					const message = Array.isArray(messages)
+						? messages.join(', ')
+						: messages;
+					console.log(key, message, 'key message');
+					if (key === 'name') {
+						setError(key as keyof IRegister, { type: 'server', message });
+					} else if (key === 'detail' || key === 'nickname') {
+						setError('nickname', { type: 'server', message });
+					}
+					// else {
+					// 	setResponseError(message);
+					// }
+				});
 			}
-		} catch (e) {
-			setResponseError('Произошла непредвиденная ошибка');
+		} catch (_) {
+			setResponseError('Ошибка соединения с сервером. Попробуйте позже.');
 		}
 	};
+	// const onSubmit: SubmitHandler<IRegister> = async data => {
+	// 	const newData = {
+	// 		first_name: data.name,
+	// 		nickname: data.nickname
+	// 	};
+
+	// 	try {
+	// 		const result = await editProfile(newData).unwrap();
+	// 		console.log('result', result);
+
+	// 		if (result) {
+	// 			setStep('finish-register');
+	// 		} else {
+	// 			const error = result.error;
+	// 			if (
+	// 				error &&
+	// 				typeof error === 'object' &&
+	// 				'status' in error &&
+	// 				'data' in error
+	// 			) {
+	// 				const serverErrors = error.data as Record<string, string[]>;
+
+	// 				Object.entries(serverErrors).forEach(([field, messages]) => {
+	// 					setError(field as keyof IRegister, {
+	// 						type: 'server',
+	// 						message: messages.join(' ')
+	// 					});
+	// 				});
+	// 			} else {
+	// 				setResponseError('Произошла непредвиденная ошибка');
+	// 			}
+	// 		}
+	// 	} catch (e) {
+	// 		setResponseError('Произошла непредвиденная ошибка');
+	// 	}
+	// };
 
 	return (
 		<>
