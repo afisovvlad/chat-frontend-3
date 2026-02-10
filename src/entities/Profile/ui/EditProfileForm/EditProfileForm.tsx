@@ -1,12 +1,22 @@
 'use client';
 
-import { useEditProfileMutation } from '@/entities/Profile/api/editProfile.api';
+import {
+	useEditProfileMutation
+	// useGetProfileQuery
+} from '@/entities/Profile/api/editProfile.api';
 import { FormSettingsItem } from '@/entities/Settings';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { convertDateToNumber } from '@/shared/lib/convertDateToNumber/convertDateToNumber';
 import { convertNumberToDate } from '@/shared/lib/convertNumberToDate/convertNumberToDate';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { Button, ButtonType } from '@/shared/ui/Button';
+// import {
+// 	Button,
+// 	ButtonColor,
+// 	ButtonTheme,
+// 	ButtonType
+// } from '@/shared/ui/Button';
+// import { Text, TextSize, TextTag, TextType, TitleTag } from '@/shared/ui/Text';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form, SelectItem } from '@/shared/ui/FormComponent';
 import { DateOption } from '@/shared/ui/FormComponent/FormItems/model/selectTypes';
@@ -22,12 +32,14 @@ import {
 	getMonthsOptions,
 	getYearsOptions
 } from '@/shared/utils/dateOptions';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ProfileSchema } from '../..';
 import { formItems } from '../../model/const/formItems';
 import { createCustomStyles } from '../../model/lib/createCustomStyles';
-import styles from './EditProfileForm.module.scss';
+import cls from './EditProfileForm.module.scss';
+
+// ==================== ТИПЫ ====================
 
 interface EditBirthdayForm {
 	day: DateOption | undefined;
@@ -41,10 +53,24 @@ interface EditProfileFormProps {
 	parentClass?: string;
 }
 
+// ==================== КОМПОНЕНТ ====================
 export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const [isSuccess, setIsSuccess] = useState(false);
-	const [serverErrorMessage, setServerErrorMessage] = useState('');
+	// const [serverErrorMessage, setServerErrorMessage] = useState('');
+	const [serverError, setServerError] = useState<string | null>(null);
 	const [editProfile, { isLoading, data }] = useEditProfileMutation();
+
+	// ==================== RTK QUERY ====================
+	// const [editProfile, { isLoading: isSaving }] = useEditProfileMutation();
+	// const {
+	// 	data: profileData,
+	// 	isLoading: isProfileLoading,
+	// 	error: profileError,
+	// 	refetch: refetchProfile
+	// } = useGetProfileQuery();
+
+	// ==================== FORM ====================
+
 	const methods = useForm<EditProfileForm>({
 		defaultValues: {
 			nickname: '',
@@ -52,9 +78,11 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 			last_name: '',
 			additional_information: '',
 			birthday: 0
-		}
+		},
+		mode: 'onChange'
 	});
-	const { watch, setValue, setError, formState, reset } = methods;
+
+	const { watch, setValue, setError: setFormError, formState, reset } = methods;
 	const day = watch('day')?.value;
 	const month = watch('month')?.value;
 	const year = watch('year')?.value;
@@ -64,45 +92,37 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 
 	console.log('profile', profile);
 
-	// const fetchProfile = useCallback(async () => {
-	// 	const response = await editProfile({}); // Отправляем пустой {} для получения данных профиля
-	// 	if (response.data) {
-	// 		const data = response.data;
+	// ==================== ЭФФЕКТЫ ====================
+	// Загрузка данных профиля в форму
+	useEffect(() => {
+		if (profile && profile.birthday) {
+			const { enteredDay, enteredMonth, enteredYear } = convertNumberToDate(
+				profile.birthday
+			);
 
-	// 		if (data && data.birthday) {
-	// 			const { enteredDay, enteredMonth, enteredYear } = convertNumberToDate(
-	// 				data.birthday
-	// 			);
+			reset({
+				nickname: profile.nickname || '',
+				first_name: profile.first_name || '',
+				last_name: profile.last_name || '',
+				additional_information: profile.additional_information || '',
+				day: { label: String(enteredDay), value: String(enteredDay) },
+				month: { label: String(enteredMonth), value: String(enteredMonth) },
+				year: { label: String(enteredYear), value: String(enteredYear) }
+			});
+		}
+	}, [profile, reset]);
 
-	// 			reset({
-	// 				nickname: data.nickname || '',
-	// 				first_name: data.first_name || '',
-	// 				last_name: data.last_name || '',
-	// 				additional_information: data.additional_information || '',
-	// 				day: { label: String(enteredDay), value: String(enteredDay) },
-	// 				month: { label: String(enteredMonth), value: String(enteredMonth) },
-	// 				year: { label: String(enteredYear), value: String(enteredYear) }
-	// 			});
-	// 		}
-	// 	}
-	// }, [reset, editProfile]);
-
-	//  Синхронизация дней при смене месяца / года, - 28, 29, 30 или 31
+	// Синхронизация дней при смене месяца/года
 	useEffect(() => {
 		if (!day || !month || !year) {
 			return;
 		}
-
 		const maxDay = getDaysInMonth(Number(month), Number(year));
-
 		if (Number(day) > maxDay) {
 			setValue('day', { label: String(maxDay), value: String(maxDay) });
 		}
 	}, [day, month, year, setValue]);
 
-	// useEffect(() => {
-	// 	fetchProfile();
-	// }, [fetchProfile]);
 	useEffect(() => {
 		if (!profile) {
 			return;
@@ -123,140 +143,161 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 		});
 	}, [profile, reset]);
 
-	const onSubmit: SubmitHandler<EditProfileForm> = async data => {
-		setServerErrorMessage('');
-		const newBirthday =
-			day && month && year && convertDateToNumber({ day, month, year });
+	// ==================== ОТПРАВКА ФОРМЫ ====================
+	const onSubmit: SubmitHandler<EditProfileForm> = useCallback(
+		async data => {
+			setServerError(null);
 
-		const newData = {
-			nickname: data.nickname,
-			first_name: data.first_name,
-			last_name: data.last_name,
-			birthday: newBirthday || 0,
-			additional_information: data.additional_information
-		};
+			try {
+				const newBirthday =
+					day && month && year ? convertDateToNumber({ day, month, year }) : 0;
 
-		try {
-			const result = await editProfile(newData);
+				const newData = {
+					nickname: data.nickname,
+					first_name: data.first_name,
+					last_name: data.last_name,
+					birthday: newBirthday,
+					additional_information: data.additional_information
+				};
 
-			if ('data' in result) {
-				// console.log('success', data);
-				setIsSuccess(true);
-			} else {
-				const error = result.error;
-				// console.log('error', error);
-				if (
-					error &&
-					typeof error === 'object' &&
-					'status' in error &&
-					'data' in error
-				) {
+				const result = await editProfile(newData).unwrap();
+
+				if (result) {
+					setIsSuccess(true);
+					// await refetchProfile();
+				}
+			} catch (error) {
+				console.error('❌ Ошибка сохранения профиля:', error);
+
+				if (error && typeof error === 'object' && 'data' in error) {
 					const serverErrors = error.data as Record<string, string[]>;
 
 					Object.entries(serverErrors).forEach(([field, messages]) => {
-						setError(field as keyof EditProfileForm, {
+						setFormError(field as keyof EditProfileForm, {
 							type: 'server',
 							message: messages.join(' ')
 						});
 					});
 				} else {
-					setServerErrorMessage('Произошла непредвиденная ошибка');
+					// showErrorModal('Произошла непредвиденная ошибка при сохранении');
 				}
 			}
-		} catch (_) {
-			setServerErrorMessage('Произошла непредвиденная ошибка');
-		}
-	};
 
+			// } catch (_) {
+			// 	setServerErrorMessage('Произошла непредвиденная ошибка');
+			// }
+		},
+
+		[day, month, year, editProfile, setFormError]
+	);
+
+	// ==================== РЕНДЕРИНГ ====================
 	if (isSuccess) {
 		return (
-			<SuccessBlock marginTop='100px' title={' Ваш профиль успешно изменен'} />
+			<SuccessBlock marginTop='100px' title='Ваш профиль успешно изменен' />
 		);
 	}
 
-	if (serverErrorMessage) {
-		return <ErrorComponent>{serverErrorMessage}</ErrorComponent>;
+	if (serverError) {
+		return <ErrorComponent>{serverError}</ErrorComponent>;
 	}
 
 	return (
-		<Form<EditProfileForm>
-			methods={methods}
-			onSubmit={onSubmit}
-			className={classNames(styles.form, {}, [parentClass])}
-		>
-			<p style={{ marginBottom: '30px' }}>Выбрать фотографию</p>
-			{formItems.map(item => (
-				<FormSettingsItem
-					key={item.name}
-					type={item.type}
-					name={item.name}
-					label={item.label}
-					placeholder={item.placeholder}
-					autoComplete={undefined}
-					rules={item.rules || undefined}
-					classNameParentInput={styles.formItem}
-				/>
-			))}
+		<>
+			{/* Форма */}
+			<Form<EditProfileForm>
+				methods={methods}
+				onSubmit={onSubmit}
+				className={classNames(cls.form, {}, [parentClass])}
+			>
+				{formItems.map(item => (
+					<FormSettingsItem
+						key={item.name}
+						type={item.type}
+						name={item.name}
+						label={item.label}
+						placeholder={item.placeholder}
+						autoComplete={undefined}
+						rules={item.rules}
+						classNameParentInput={cls.formItem}
+					/>
+				))}
 
-			<fieldset>
-				{hasError ? (
+				{/* Дата рождения */}
+				<fieldset>
 					<legend
 						className={classNames(
-							`${styles.birthday} ${styles.birthdayError}`,
-							{},
+							cls.birthday,
+							{ [cls.birthdayError]: hasError },
 							[]
 						)}
 					>
-						Пожалуйста, заполните дату рождения
+						{hasError
+							? 'Пожалуйста, заполните дату рождения'
+							: 'Введите дату своего рождения'}
 					</legend>
-				) : (
-					<legend className={styles.birthday}>
-						Введите дату своего рождения
-					</legend>
-				)}
-				<div className={styles.selectContainer}>
-					<SelectItem<EditProfileForm, DateOption>
-						options={dayOptions}
-						name={'day'}
-						parentSelectWrapperClass={styles.selectWrapper}
-						parentSelectControlClass={styles.selectDay}
-						parentSelectMenuClass={styles.selectMenu}
-						createCustomStyles={createCustomStyles}
-						ariaLabel='Выбор дня месяца'
-						hasError={hasError}
-					/>
-					<SelectItem<EditProfileForm, DateOption>
-						options={getMonthsOptions()}
-						name={'month'}
-						parentSelectControlClass={styles.selectMonth}
-						parentSelectMenuClass={styles.selectMenu}
-						createCustomStyles={createCustomStyles}
-						ariaLabel='Выбор месяца'
-						hasError={hasError}
-					/>
-					<SelectItem
-						options={getYearsOptions()}
-						name={'year'}
-						parentSelectControlClass={styles.selectYear}
-						parentSelectMenuClass={styles.selectMenu}
-						createCustomStyles={createCustomStyles}
-						ariaLabel='Выбор года'
-						hasError={hasError}
-					/>
-				</div>
-			</fieldset>
-			<FormSettingsItem
-				key={FormItemNames.ADDITIONAL_INFORMATION}
-				type={FormItemType.TEXTAREA}
-				name={FormItemNames.ADDITIONAL_INFORMATION}
-				label={'Напишите пару слов о себе'}
-				rules={{ required: 'Заполните это поле' }}
-				classNameParentInput={styles.formItem}
-				textareaHeight={'56px'}
-			/>
-			<Button btnType={ButtonType.SUBMIT}>
-				{isLoading ? <Loader width='22px' height='22px' /> : 'Сохранить'}
-			</Button>
-		</Form>
+
+					<div className={cls.selectContainer}>
+						<SelectItem<EditProfileForm, DateOption>
+							options={dayOptions}
+							name='day'
+							parentSelectWrapperClass={cls.selectWrapper}
+							parentSelectControlClass={cls.selectDay}
+							parentSelectMenuClass={cls.selectMenu}
+							createCustomStyles={createCustomStyles}
+							ariaLabel='Выбор дня месяца'
+							hasError={hasError}
+						/>
+
+						<SelectItem<EditProfileForm, DateOption>
+							options={getMonthsOptions()}
+							name='month'
+							parentSelectControlClass={cls.selectMonth}
+							parentSelectMenuClass={cls.selectMenu}
+							createCustomStyles={createCustomStyles}
+							ariaLabel='Выбор месяца'
+							hasError={hasError}
+						/>
+
+						<SelectItem
+							options={getYearsOptions()}
+							name='year'
+							parentSelectControlClass={cls.selectYear}
+							parentSelectMenuClass={cls.selectMenu}
+							createCustomStyles={createCustomStyles}
+							ariaLabel='Выбор года'
+							hasError={hasError}
+						/>
+					</div>
+				</fieldset>
+
+				{/* Дополнительная информация */}
+				<FormSettingsItem
+					key={FormItemNames.ADDITIONAL_INFORMATION}
+					type={FormItemType.TEXTAREA}
+					name={FormItemNames.ADDITIONAL_INFORMATION}
+					label='Напишите пару слов о себе'
+					rules={{ required: 'Заполните это поле' }}
+					classNameParentInput={cls.formItem}
+					textareaHeight='56px'
+				/>
+
+				{/* Кнопка сохранения */}
+				<Button
+					btnType={ButtonType.SUBMIT}
+					disabled={false}
+					// disabled={isUploading}
+					className={cls.submitButton}
+				>
+					{isLoading ? (
+						<>
+							<Loader width='22px' height='22px' />
+						</>
+					) : (
+						'Сохранить'
+					)}
+				</Button>
+			</Form>
+		</>
 	);
 }

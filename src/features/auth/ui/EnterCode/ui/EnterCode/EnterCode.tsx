@@ -24,6 +24,7 @@ import {
 import { InfoCircle } from '@icons/index';
 import { useEffect, useState } from 'react';
 import { EnterCodeForm } from '../..';
+import TooltipWrapper from '../TooltipWrapper';
 import styles from './EnterCode.module.scss';
 
 export const EnterCode = () => {
@@ -97,6 +98,8 @@ export const EnterCode = () => {
 				<InfoCircle width={24} height={24} className={styles.infoIcon} />
 			</Text>
 
+			<TooltipWrapper />
+
 			<EnterCodeForm
 				setTime={setTime}
 				phone_number={phone_number}
@@ -135,7 +138,6 @@ export const EnterCode = () => {
 					Отправить новый код
 				</Button>
 			)}
-
 			<Button
 				onClick={() => {
 					setStep('support');

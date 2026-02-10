@@ -59,6 +59,10 @@ export const mapBlackListToUserCard = (user: BlackListSchema): IUserCard => ({
 
 export const mapProfileToUserCard = (user: ProfileSchema): IUserCard => ({
 	user: {
+		avatar: user.avatar,
+		avatar_url: user.avatar_url,
+		avatar_webp: user.avatar_webp,
+		avatar_webp_url: user.avatar_webp_url,
 		nickname: user.nickname,
 		first_name: user.first_name,
 		last_name: user.last_name,

@@ -7,6 +7,7 @@ export { default as Block } from './Block.svg';
 export { default as BookOpen } from './BookOpen.svg';
 export { default as Chat } from './Chat.svg';
 export { default as Check } from './Check.svg';
+export { default as Checked } from './Checked.svg';
 export { default as CheckCircle } from './CheckCircle.svg';
 export { default as Clear } from './Clear.svg';
 export { default as Close } from './Close.svg';

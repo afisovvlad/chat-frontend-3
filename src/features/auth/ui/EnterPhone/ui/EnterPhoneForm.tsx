@@ -22,13 +22,18 @@ import { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSendPhoneMutation } from '../model/api/authApi';
 import { formItems } from '../model/const/formItems';
+import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery'; // ваш хук
 import styles from './EnterPhoneForm.module.scss';
 
 interface LoginPhoneForm {
 	phone_number: string;
 }
 
-export const EnterPhoneForm = () => {
+export const EnterPhoneForm = ({
+	containerRef
+}: {
+	containerRef?: React.RefObject<HTMLDivElement | null>;
+}) => {
 	const { isDisabledCodeAttempts, phone_number: phone } = useAppSelector(
 		state => state.auth
 	);
@@ -38,6 +43,10 @@ export const EnterPhoneForm = () => {
 	const confirmBtnRef = useRef<HTMLButtonElement>(null);
 	const setStep = useSetAuthStep();
 	const formattedPhone = formatPhone(phone);
+
+	const isMobile = useMediaQuery();
+	const overlayMode = isMobile ? 'full' : 'container';
+	const borderRadius = isMobile ? '8px' : '16px';
 	const methods = useForm<LoginPhoneForm>({
 		defaultValues: {
 			phone_number: formattedPhone || ''
@@ -113,6 +122,9 @@ export const EnterPhoneForm = () => {
 				isOpen={isModalOpen}
 				onClose={onModalClose}
 				className={styles.modal}
+				overlayMode={overlayMode}
+				containerRef={containerRef}
+				borderRadius={borderRadius}
 			>
 				<Text
 					type={TextType.TEXT}

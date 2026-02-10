@@ -1,0 +1,80 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
+.modalContent {
+	border-radius: 12px;
+	width: 432px;
+	max-height: 90vh;
+	overflow: auto;
+	backdrop-filter: blur(10px);
+	background: var(--color-white);
+	touch-action: none;
+
+	@media (max-width: 768px) {
+		width: 329px;
+		border-radius: 8px;
+	}
+}
+
+.galleryScreen,
+.cropScreen {
+	padding: 17px 56px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	touch-action: none;
+	user-select: none;
+	pointer-events: auto;
+	border-radius: 12px;
+	background: var(--color-white);
+	max-width: 600px;
+	position: relative;
+
+	@media (max-width: 768px) {
+		border-radius: 8px;
+		padding: 0;
+		width: 329px;
+	}
+}
+
+.editorContainer {
+	width: 100%;
+	min-height: 300px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 12px;
+	overflow: hidden;
+	position: relative;
+
+	@media (max-width: 768px) {
+		min-height: 0;
+		padding: 0 68px;
+	}
+}
+
+.editorWrapper {
+	width: 193px;
+	height: 193px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	margin: 0 auto;
+	touch-action: none;
+	pointer-events: auto;
+
+	@media (min-width: 768px) {
+		width: 320px;
+		height: 320px;
+	}
+}
+
+.errorModalContent {
+	padding: 24px;
+	text-align: center;
+}
+
+.errorCloseBtn {
+	width: 100%;
+}

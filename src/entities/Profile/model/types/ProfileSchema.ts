@@ -22,6 +22,7 @@ export interface ProfileSchema {
 	is_staff: boolean;
 	error: null | string;
 	isLoading: boolean;
+	file_url?: string;
 }
 
 export interface CustomStylesOptions {

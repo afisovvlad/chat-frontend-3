@@ -1,5 +1,3 @@
-'use client';
-
 import {
 	EnterCode,
 	EnterPhoneForm,
@@ -12,7 +10,11 @@ import {
 import { SupportForm } from '@/features/support';
 import { LoginWrapper } from '@/shared/ui/LoginWrapper';
 
-export const AuthFlow = () => {
+interface AuthFlowProps {
+	containerRef?: React.RefObject<HTMLDivElement | null>;
+}
+
+export const AuthFlow = ({ containerRef }: AuthFlowProps) => {
 	const step = useAuthStep();
 
 	switch (step) {
@@ -22,7 +24,7 @@ export const AuthFlow = () => {
 		case 'phone':
 			return (
 				<LoginWrapper>
-					<EnterPhoneForm />
+					<EnterPhoneForm containerRef={containerRef} />
 				</LoginWrapper>
 			);
 

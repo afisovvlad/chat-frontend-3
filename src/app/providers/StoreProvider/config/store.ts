@@ -1,4 +1,8 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import {
+	combineReducers,
+	configureStore,
+	ReducersMapObject
+} from '@reduxjs/toolkit';
 import {
 	persistReducer,
 	persistStore,
@@ -17,6 +21,7 @@ import { profileReducer } from '@/entities/Profile';
 import { citiesReducer } from '@/pages/Cities';
 import { rtkApi } from '@/shared/api/rtkApi';
 import { localApi } from '@/shared/api/localApi';
+import { StateSchema } from './StateSchema';
 
 /* ======================
    Types
@@ -55,7 +60,7 @@ const persistConfig: PersistConfig<RootState> = {
    Root reducer
    ====================== */
 
-const rootReducer = combineReducers({
+const rootReducer = combineReducers<ReducersMapObject<StateSchema>>({
 	[rtkApi.reducerPath]: rtkApi.reducer,
 	[localApi.reducerPath]: localApi.reducer,
 	auth: authReducer,
@@ -131,6 +136,9 @@ export const makeStore = () => {
 // 	});
 // };
 
+// export type AppStore = ReturnType<typeof makeStore>;
+// export type RootState = ReturnType<AppStore['getState']>;
+// export type AppDispatch = AppStore['dispatch'];
 // export type AppStore = ReturnType<typeof makeStore>;
 // export type RootState = ReturnType<AppStore['getState']>;
 // export type AppDispatch = AppStore['dispatch'];
