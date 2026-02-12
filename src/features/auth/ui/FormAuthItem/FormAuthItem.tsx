@@ -53,7 +53,7 @@ export function FormAuthItem<TFormValues extends FieldValues>({
 	const isError = Boolean(errorMessage);
 	const value = watch(name);
 
-	console.log('errors in FormAuthItem', errors);
+	// console.log('errors in FormAuthItem', errors);
 
 	useEffect(() => {
 		if (onValueChange) {

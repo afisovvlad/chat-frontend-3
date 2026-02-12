@@ -47,7 +47,6 @@ export const EnterCodeForm = ({
 	// setAttemptCounter
 }: EnterCodeFormProps) => {
 	const [attemptsNumber, setAttemptsNumber] = useState(5);
-	// const [attemptCounter, setAttemptCounter] = useState(0);
 	const { attemptCounter } = useAppSelector(state => state.auth);
 	const [isModalOpen, setIsModalOpen] = useState(attemptCounter > 0);
 	const setStep = useSetAuthStep();
@@ -63,8 +62,8 @@ export const EnterCodeForm = ({
 	const modalTitle = attemptCounter > 1 ? 'Лимит исчерпан' : '';
 	const modalText = attemptCounter > 1 ? 'Попробуйте позднее' : '';
 	const submittedRef = useRef(false);
-	console.log('attemptsNumber in EnterCodeForm', attemptsNumber);
-	console.log('attemptCounter in EnterCodeForm', attemptCounter);
+	// console.log('attemptsNumber in EnterCodeForm', attemptsNumber);
+	// console.log('attemptCounter in EnterCodeForm', attemptCounter);
 	// console.log('is_filled', is_filled);
 
 	const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(
@@ -75,8 +74,8 @@ export const EnterCodeForm = ({
 				}
 				const res = await submitCodeRequest({ phone_number, code });
 
-				console.log(res);
-				console.log(res.errors);
+				// console.log(res);
+				// console.log(res.errors);
 
 				if (res?.success) {
 					handleSuccessResponse(
@@ -234,176 +233,3 @@ export const EnterCodeForm = ({
 		</>
 	);
 };
-
-// const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(
-// 	async ({ code }) => {
-// 		const response = await fetch('/api/auth/setTokens', {
-// 			method: 'POST',
-// 			headers: {
-// 				'Content-Type': 'application/json'
-// 			},
-// 			body: JSON.stringify({ phone_number, code })
-// 		});
-// 		const res = await response.json();
-
-// 		if (res.success) {
-// 			if (res.is_filled) {
-// 				setStep('greeting');
-// 				router.push('/');
-// 			} else {
-// 			  setStep('register');
-// 			}
-// 		} else if (res.errors) {
-// 			if (attemptsNumber === 1) {
-// 				dispatch(authActions.disabledCodeAttempts(true));
-// 				 setTimeout(() => {
-// 					dispatch(authActions.disabledCodeAttempts(false));
-// 				}, minutesBlock * 1000);
-// 				setTime(minutesBlock); // 2 минут
-// 				setError('code', {
-// 					message: res.errors.message || 'Слишком много неверных попыток.'
-// 				});
-// 			} else {
-// 				setAttemptsNumber(prev => prev - 1);
-// 				setError('code', {
-// 					message:
-// 						res.errors.message ||
-// 						`Код введен неверно. Осталось ${attemptsNumber - 1} попытки`
-// 				});
-// 			}
-// 		} else {
-// 			setError('code', {
-// 				message: `Неизвестная ошибка`
-// 			});
-// 		}
-// 	},
-// 	[phone_number, setStep, setTime, router, setError, attemptsNumber, dispatch]
-// );
-
-// const onSubmit = useCallback<SubmitHandler<LoginCodeForm>>(
-// 	async ({ code }) => {
-// 		try {
-// 			const res = await submitCode({ phone_number, code });
-// 			console.log('res in LoginCode', res);
-
-// 			if (res.success) {
-// 				setStep(res.is_filled ? 'greeting' : 'register');
-// 				router.push('/');
-// 				return;
-// 			}
-
-// 			if (res.errors) {
-// 				console.log(res.errors, 'res.errors');
-// 				console.log('attemptsNumber', attemptsNumber);
-
-// 				if (attemptsNumber === 1) {
-// 					dispatch(authActions.disabledCodeAttempts(true));
-// 					setTimeout(() => {
-// 						dispatch(authActions.disabledCodeAttempts(false));
-// 					}, minutesBlock * 1000);
-// 					setTime(minutesBlock); // 10 минут
-// 					setError('code', {
-// 						message: res.errors.message || 'Слишком много неверных попыток.'
-// 					});
-// 				} else if (attemptsNumber > 1) {
-// 					setAttemptsNumber(prev => prev - 1);
-// 					setError('code', {
-// 						message:
-// 							res.errors.message ||
-// 							`Код введен неверно. Осталось попыток: ${attemptsNumber - 1} `
-// 					});
-// 				} else {
-// 					dispatch(authActions.disabledCodeAttempts(true));
-// 					setTimeout(() => {
-// 						dispatch(authActions.disabledCodeAttempts(false));
-// 					}, res.errors?.block_duration_seconds * 1000);
-// 					setTime(res.errors?.block_duration_seconds); // цифра с сервера
-
-// 					setError('code', {
-// 						message: res.errors.message || 'Слишком много неверных попыток'
-// 					});
-// 				}
-// 				// handleAttemptsError(
-// 				// 	res.errors.message,
-// 				// 	attemptsNumber === 1
-// 				// 		? minutesBlock
-// 				// 		: attemptsNumber < 1
-// 				// 			? res.errors?.block_duration_seconds
-// 				// 			: secondsBlock
-// 				// );
-// 				startUnblockTimer(
-// 					attemptsNumber === 1
-// 						? minutesBlock
-// 						: attemptsNumber < 1
-// 							? res.errors?.block_duration_seconds
-// 							: secondsBlock
-// 				);
-// 				return;
-// 			}
-
-// 			setError('code', { message: 'Неизвестная ошибка' });
-// 		} catch (e) {
-// 			setError('code', { message: 'Ошибка сети. Попробуйте позже' });
-// 		}
-// 	},
-// 	// async ({ code }) => {
-// 	// 	try {
-// 	// 		const response = await fetch('/api/auth/setTokens', {
-// 	// 			method: 'POST',
-// 	// 			headers: {
-// 	// 				'Content-Type': 'application/json'
-// 	// 			},
-// 	// 			body: JSON.stringify({ phone_number, code })
-// 	// 		});
-// 	// 		const res = await response.json();
-// 	// 		console.log('res in LoginCode', res);
-// 	// 		if (res.success) {
-// 	// 			if (res.is_filled) {
-// 	// 				setStep('greeting');
-// 	// 				router.push('/');
-// 	// 			} else {
-// 	// 				router.push('/'); // поменять на setStep('register'), когда сделаю регистрацию
-// 	// 				// setStep('register');
-// 	// 			}
-// 	// 		} else if (res.errors) {
-// 	// 			console.log('res.errors.message');
-// 	// 			console.log(res.errors);
-// 	// 			if (attemptsNumber === 1) {
-// 	// 				dispatch(authActions.disabledCodeAttempts(true));
-// 	// 				const timer = setTimeout(
-// 	// 					() => {
-// 	// 						dispatch(authActions.disabledCodeAttempts(false));
-// 	// 					},
-// 	// 					2 * 60 * 1000
-// 	// 				);
-// 	// 				setTime(120); // 2 минут
-// 	// 				// setTime(600); // 10 минут
-// 	// 				setError('code', {
-// 	// 					message: res.errors || 'Слишком много неверных попыток.'
-// 	// 				});
-// 	// 			} else {
-// 	// 				setAttemptsNumber(prev => prev - 1);
-// 	// 				setError('code', {
-// 	// 					message:
-// 	// 						res.errors ||
-// 	// 						`Код введен неверно. Осталось ${attemptsNumber - 1} попытки`
-// 	// 				});
-// 	// 			}
-// 	// 		}
-// 	// 	} catch (_) {
-// 	// 		setError('code', {
-// 	// 			message: `Неизвестная ошибка`
-// 	// 		});
-// 	// 	}
-// 	// },
-// 	[
-// 		phone_number,
-// 		setStep,
-// 		setError,
-// 		router,
-// 		startUnblockTimer,
-// 		attemptsNumber,
-// 		dispatch,
-// 		setTime
-// 	]
-// );
