@@ -1,0 +1,21 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
+.chatItem {
+	width: 100%;
+	cursor: pointer;
+	border-radius: 8px;
+	padding: 8px;
+}
+
+.itemContent {
+	width: 100%;
+}
+
+.userCard {
+	width: 100%;
+}
+
+.info {
+	flex: 1;
+	overflow: hidden;
+}

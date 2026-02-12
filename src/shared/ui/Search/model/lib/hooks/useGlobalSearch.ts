@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useDebounce } from '@/shared/lib/hooks/useDebounce/useDebounce';
 
 /**
@@ -12,6 +12,9 @@ export function useGlobalSearch<T>(
 	const [results, setResults] = useState<T[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
+
+	// ✅ Мемоизируем результаты для предотвращения лишних ререндеров
+	const memoizedResults = useMemo(() => results, [results]);
 
 	// Дебаунсированный поиск
 	const debouncedSearch = useDebounce(async (term: string) => {
@@ -49,12 +52,23 @@ export function useGlobalSearch<T>(
 		setError(null);
 	}, []);
 
-	return {
-		searchTerm,
-		results,
-		isLoading,
-		error,
-		handleSearchChange,
-		handleClear
-	} as const;
+	// ✅ Мемоизируем возвращаемый объект для предотвращения лишних ререндеров
+	return useMemo(
+		() => ({
+			searchTerm,
+			results: memoizedResults,
+			isLoading,
+			error,
+			handleSearchChange,
+			handleClear
+		}),
+		[
+			searchTerm,
+			memoizedResults,
+			isLoading,
+			error,
+			handleSearchChange,
+			handleClear
+		]
+	);
 }

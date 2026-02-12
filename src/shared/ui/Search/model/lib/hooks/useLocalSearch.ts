@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useDebounce } from '@/shared/lib/hooks/useDebounce/useDebounce';
 
 /**
@@ -11,6 +11,9 @@ export function useLocalSearch<T>(
 ) {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [filteredData, setFilteredData] = useState<T[]>([]);
+
+	// ✅ Мемоизируем результаты для предотвращения лишних ререндеров
+	const memoizedFilteredData = useMemo(() => filteredData, [filteredData]);
 
 	// Дебаунсированный колбэк для фильтрации
 	const debouncedFilter = useDebounce((term: string) => {
@@ -38,10 +41,14 @@ export function useLocalSearch<T>(
 		setFilteredData([]);
 	}, []);
 
-	return {
-		searchTerm,
-		filteredData,
-		handleSearchChange,
-		handleClear
-	} as const;
+	// ✅ Мемоизируем возвращаемый объект для предотвращения лишних ререндеров
+	return useMemo(
+		() => ({
+			searchTerm,
+			filteredData: memoizedFilteredData,
+			handleSearchChange,
+			handleClear
+		}),
+		[searchTerm, memoizedFilteredData, handleSearchChange, handleClear]
+	);
 }

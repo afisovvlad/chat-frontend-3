@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useDebounce } from '@/shared/lib/hooks/useDebounce/useDebounce';
 
 /**
@@ -36,6 +36,9 @@ export function useHybridSearch<T>(
 	const [isGlobal, setIsGlobal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
+
+	// ✅ Мемоизируем результаты для предотвращения лишних ререндеров
+	const memoizedResults = useMemo(() => results, [results]);
 
 	// Дебаунсированный локальный поиск
 	const debouncedLocalSearch = useDebounce((term: string) => {
@@ -113,13 +116,25 @@ export function useHybridSearch<T>(
 		setError(null);
 	}, []);
 
-	return {
-		searchTerm,
-		results,
-		isGlobal,
-		isLoading,
-		error,
-		handleSearchChange,
-		handleClear
-	} as const;
+	// ✅ Мемоизируем возвращаемый объект для предотвращения лишних ререндеров
+	return useMemo(
+		() => ({
+			searchTerm,
+			results: memoizedResults,
+			isGlobal,
+			isLoading,
+			error,
+			handleSearchChange,
+			handleClear
+		}),
+		[
+			searchTerm,
+			memoizedResults,
+			isGlobal,
+			isLoading,
+			error,
+			handleSearchChange,
+			handleClear
+		]
+	);
 }

@@ -15,9 +15,9 @@
 
 	// Обрезка: однострочная
 	&.text_truncate {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		white-space: nowrap; /* запрещает перенос строк */
+		overflow: hidden; /* скрывает выходящий за границы текст */
+		text-overflow: ellipsis; /* добавляет многоточие в конце обрезанного текста */
 	}
 
 	&.clamp-2,

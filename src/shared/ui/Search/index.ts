@@ -1,8 +1,7 @@
 export { Search } from './ui/Search/Search';
-export { SearchInput } from './ui/SearchInput/SearchInput';
 
 // Фильтры
-export { filterChats } from './model/lib/filter/filterChats';
+export { filterByName } from './model/lib/filter/filterByName';
 export { filterContacts } from './model/lib/filter/filterContacts';
 export { filterByField } from './model/lib/filter/filterByField';
 
