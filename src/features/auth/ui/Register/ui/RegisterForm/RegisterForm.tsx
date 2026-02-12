@@ -21,7 +21,7 @@ import {
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { useLazySendNicknameQuery } from '../../api/registerApi';
+import { useSendNicknameMutation } from '../../api/registerApi';
 import { registerFormItems } from '../../model/const/registerFormItems';
 import { IRegister, RegisterFormType } from '../../model/types/types';
 import styles from './RegisterForm.module.scss';
@@ -34,8 +34,8 @@ export function RegisterForm() {
 	const name = values.name;
 	const nickname = values.nickname;
 	const [sendNickname, { data: nicknameResponse, error: nicknameError }] =
-		useLazySendNicknameQuery();
-	const debouncedSendNickname = useDebounce(sendNickname, 500);
+		useSendNicknameMutation();
+	const debouncedSendNickname = useDebounce(sendNickname, 400);
 	const setStep = useSetAuthStep();
 	const isNicknameFree =
 		nicknameResponse?.messages === 'Этот nickname свободен';
@@ -62,9 +62,8 @@ export function RegisterForm() {
 		}
 		clearErrors(['nickname']);
 		debouncedSendNickname(nickname);
-	}, [nickname, sendNickname, debouncedSendNickname]);
+	}, [nickname, debouncedSendNickname, clearErrors]);
 
-	console.log(nickname);
 	useEffect(() => {
 		if (isNicknameFree) {
 			clearErrors(['name', 'nickname']);
@@ -77,31 +76,12 @@ export function RegisterForm() {
 		}
 
 		Object.entries(nicknameError.data).forEach(([key, messages]) => {
-			console.log(messages);
 			setError('nickname', {
 				type: 'server',
 				message: Array.isArray(messages) ? messages.join(', ') : messages
 			});
 		});
 	}, [nicknameError, setError]);
-
-	// const responseError = useMemo(() => {
-	// 	if (!editProfileError) {
-	// 		return '';
-	// 	}
-
-	// 	if (
-	// 		editProfileError.originalStatus === 404 ||
-	// 		editProfileError.status === 500
-	// 	) {
-	// 		return 'Ошибка соединения с сервером. Попробуйте позже.';
-	// 	}
-
-	// 	return '';
-	// }, [editProfileError]);
-
-	console.log(registerError, 'registerError');
-	console.log(nicknameError, 'nicknameError');
 
 	const onSubmit: SubmitHandler<IRegister> = async data => {
 		setResponseError('');
@@ -113,7 +93,6 @@ export function RegisterForm() {
 
 		try {
 			await editProfile(newData);
-			console.log('registerResult', registerResult);
 
 			if (registerResult) {
 				setStep('finish-register');
@@ -122,57 +101,18 @@ export function RegisterForm() {
 					const message = Array.isArray(messages)
 						? messages.join(', ')
 						: messages;
-					console.log(key, message, 'key message');
+
 					if (key === 'name') {
 						setError(key as keyof IRegister, { type: 'server', message });
 					} else if (key === 'detail' || key === 'nickname') {
 						setError('nickname', { type: 'server', message });
 					}
-					// else {
-					// 	setResponseError(message);
-					// }
 				});
 			}
 		} catch (_) {
 			setResponseError('Ошибка соединения с сервером. Попробуйте позже.');
 		}
 	};
-	// const onSubmit: SubmitHandler<IRegister> = async data => {
-	// 	const newData = {
-	// 		first_name: data.name,
-	// 		nickname: data.nickname
-	// 	};
-
-	// 	try {
-	// 		const result = await editProfile(newData).unwrap();
-	// 		console.log('result', result);
-
-	// 		if (result) {
-	// 			setStep('finish-register');
-	// 		} else {
-	// 			const error = result.error;
-	// 			if (
-	// 				error &&
-	// 				typeof error === 'object' &&
-	// 				'status' in error &&
-	// 				'data' in error
-	// 			) {
-	// 				const serverErrors = error.data as Record<string, string[]>;
-
-	// 				Object.entries(serverErrors).forEach(([field, messages]) => {
-	// 					setError(field as keyof IRegister, {
-	// 						type: 'server',
-	// 						message: messages.join(' ')
-	// 					});
-	// 				});
-	// 			} else {
-	// 				setResponseError('Произошла непредвиденная ошибка');
-	// 			}
-	// 		}
-	// 	} catch (e) {
-	// 		setResponseError('Произошла непредвиденная ошибка');
-	// 	}
-	// };
 
 	return (
 		<>
@@ -189,7 +129,6 @@ export function RegisterForm() {
 							name={item.name}
 							label={item.label}
 							rules={item.rules}
-							// disabled={disabled}
 						/>
 					))}
 				</div>

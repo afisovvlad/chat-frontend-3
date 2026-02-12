@@ -21,7 +21,6 @@ import {
 	TextTag,
 	TextType
 } from '@/shared/ui/Text';
-import { InfoCircle } from '@icons/index';
 import { useEffect, useState } from 'react';
 import { EnterCodeForm } from '../..';
 import TooltipWrapper from '../TooltipWrapper';
@@ -85,7 +84,7 @@ export const EnterCode = () => {
 				{formattedPhone}
 			</Text>
 
-			<Text
+			{/* <Text
 				type={TextType.TEXT}
 				tag={TextTag.P}
 				fontSize={TextSize.L}
@@ -96,7 +95,7 @@ export const EnterCode = () => {
 			>
 				Введите код&nbsp;
 				<InfoCircle width={24} height={24} className={styles.infoIcon} />
-			</Text>
+			</Text> */}
 
 			<TooltipWrapper />
 
