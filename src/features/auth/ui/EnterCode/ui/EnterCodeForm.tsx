@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { LoginCodeForm } from '..';
-import { formItems } from '../model/const/formItems';
 import styles from './EnterCodeForm.module.scss';
 import { authActions, FormAuthItem, useSetAuthStep } from '@/features/auth';
+import { codeFormItems } from '../model/const/codeFormItems';
 
 interface EnterCodeFormProps {
 	setTime: (time: number) => void;
@@ -113,7 +113,8 @@ export const EnterCodeForm = ({
 			onSubmit={onSubmit}
 			className={styles.form}
 		>
-			{formItems.map(item => (
+			{codeFormItems.map(item => (
+				// {formItems.map(item => (
 				<FormAuthItem
 					key={item.name}
 					type={item.type}

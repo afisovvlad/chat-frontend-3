@@ -250,6 +250,7 @@ const blackList: BlackListSchema[] = [
 ];
 
 const profile: ProfileSchema = {
+	username: '+79217797979',
 	nickname: '@bond777',
 	first_name: 'Денис',
 	last_name: 'Акатов',
@@ -260,7 +261,18 @@ const profile: ProfileSchema = {
 	gender: 'male',
 	country: '',
 	city_id: 0,
-	phone: '+7 921 7797979'
+	phone: '+79217797979',
+	gender_label: '',
+	country_label: '',
+	city: '',
+	avatar: null,
+	avatar_url: null,
+	avatar_webp: null,
+	avatar_webp_url: null,
+	is_filled: true,
+	is_staff: false,
+	error: null,
+	isLoading: false
 };
 
 const NOW = 1769526541;
