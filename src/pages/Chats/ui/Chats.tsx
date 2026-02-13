@@ -1,43 +1,34 @@
 'use client';
 
-import { useState, useCallback, memo } from 'react';
+import { useEffect, memo } from 'react';
+import { useParams } from 'next/navigation';
 import { Container, ContainerType } from '@/shared/ui/Container';
 import { ChatWidget } from '@/widgets/Chat';
 import { ChatList } from '@/entities/Chat';
-import { NotMessage } from '@/shared/ui/NotMessage/NotMessage';
+import NotMessage from '@/shared/ui/NotMessage/NotMessage';
 
 import cls from './Chats.module.scss';
 
 const ChatsPageComponent = () => {
-	const [searchQuery, setSearchQuery] = useState('');
-	const [selectedChatUid, setSelectedChatUid] = useState<string | null>(null);
+	const params = useParams();
+	const chatUid = params?.uid as string | undefined;
 
-	const handleSearchChange = useCallback((query: string) => {
-		setSearchQuery(query);
-	}, []);
-
-	const handleChatSelect = useCallback((chatUid: string) => {
-		// Логирование только в режиме разработки
-		if (process.env.NODE_ENV === 'development') {
+	// Логирование только в режиме разработки
+	useEffect(() => {
+		if (process.env.NODE_ENV === 'development' && chatUid) {
 			console.log('✅ Выбран чат с UID:', chatUid);
 		}
-		setSelectedChatUid(chatUid);
-	}, []);
+	}, [chatUid]);
 
 	return (
 		<Container type={ContainerType.WRAPPER}>
 			<Container type={ContainerType.SIDEBAR}>
-				<ChatList
-					onSelectChat={handleChatSelect}
-					selectedChatUid={selectedChatUid}
-					searchQuery={searchQuery}
-					onSearchChange={handleSearchChange}
-				/>
+				<ChatList selectedChatUid={chatUid ?? null} />
 			</Container>
 
 			<Container type={ContainerType.CONTENT}>
-				{selectedChatUid ? (
-					<ChatWidget chatUid={selectedChatUid} />
+				{chatUid ? (
+					<ChatWidget chatUid={chatUid} />
 				) : (
 					<div className={cls.emptyState}>
 						<NotMessage />

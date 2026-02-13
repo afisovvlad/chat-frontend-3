@@ -1,22 +1,30 @@
-import type { Chat, ChatMessage } from '../../model/types/chat.types';
+import type { Chat, ChatMessage } from '../types/chat.types';
 import type { IUserCard } from '@/shared/ui/UserCard';
-import { ChatType as UserCardChatType } from '../../model/types/chat.types';
+import { ChatType, ChatType as UserCardChatType } from '../types/chat.types';
 
 const mapChatType = (type: string): UserCardChatType | undefined => {
+	// Опционально: логирование неизвестных типов
+	if (!Object.values(ChatType).includes(type as ChatType)) {
+		if (process.env.NODE_ENV === 'development') {
+			console.warn(`Неизвестный тип чата: "${type}"`);
+		}
+		return undefined;
+	}
+
 	switch (type) {
-		case 'chat':
+		case ChatType.CHAT:
 			return UserCardChatType.CHAT;
-		case 'public-group':
+		case ChatType.PUBLIC_GROUP:
 			return UserCardChatType.PUBLIC_GROUP;
-		case 'private-group':
+		case ChatType.PRIVATE_GROUP:
 			return UserCardChatType.PRIVATE_GROUP;
-		case 'public-channel':
+		case ChatType.PUBLIC_CHANNEL:
 			return UserCardChatType.PUBLIC_CHANNEL;
-		case 'private-channel':
+		case ChatType.PRIVATE_CHANNEL:
 			return UserCardChatType.PRIVATE_CHANNEL;
-		case 'group':
+		case ChatType.GROUP:
 			return UserCardChatType.GROUP;
-		case 'channel':
+		case ChatType.CHANNEL:
 			return UserCardChatType.CHANNEL;
 		default:
 			return undefined;
@@ -56,19 +64,15 @@ export const mapChatToUserCard = (chat: Chat): IUserCard => {
 	const chatData = chat.chat;
 	const chatName = chat.name || '';
 
-	// Определяем имя для отображения
 	let firstName = '';
 	let lastName = '';
 	let nickname = chatName;
 
-	// Если это личный чат и есть данные пользователя
 	if (!chat.is_group) {
 		firstName = chatData.first_name || '';
 		lastName = chatData.last_name || '';
 		nickname = chatData.nickname || chatName;
 	} else {
-		// Для групповых чатов используем название чата
-		// Передаём название в first_name для отображения
 		firstName = chatName;
 		lastName = '';
 		nickname = chatName;

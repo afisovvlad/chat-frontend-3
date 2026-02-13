@@ -1,9 +1,8 @@
-import { memo } from 'react';
 import Image from 'next/image';
 import { Text, TextAlign, TextColor, TextSize } from '../Text';
 import cls from './NotMessage.module.scss';
 
-const NotMessageComponent = () => {
+const NotMessage = () => {
 	return (
 		<div className={cls.wrapper}>
 			<Image
@@ -32,6 +31,4 @@ const NotMessageComponent = () => {
 	);
 };
 
-export const NotMessage = memo(NotMessageComponent);
-
-NotMessage.displayName = 'NotMessage';
+export default NotMessage;

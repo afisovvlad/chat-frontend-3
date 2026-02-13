@@ -1,12 +1,18 @@
-import { memo, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Text, TextAlign, TextColor, TextSize } from '../Text';
 import { Button, ButtonColor, ButtonTheme, ButtonType } from '../Button';
 import cls from './EmptyChats.module.scss';
 
-const EmptyChatsComponent = () => {
+const EmptyChats = () => {
 	const router = useRouter();
+
+	const buttonRef = useRef<HTMLButtonElement>(null);
+
+	useEffect(() => {
+		buttonRef.current?.focus();
+	}, []);
 
 	const handleStartChat = useCallback(() => {
 		router.push('/contacts');
@@ -39,10 +45,12 @@ const EmptyChatsComponent = () => {
 				</div>
 			</div>
 			<Button
+				onClick={handleStartChat}
+				btnRef={buttonRef}
+				ariaLabel='Начать новый чат'
 				theme={ButtonTheme.BACKGROUND}
 				btnType={ButtonType.BUTTON}
 				color={ButtonColor.PRIMARY}
-				onClick={handleStartChat}
 			>
 				Начать чат
 			</Button>
@@ -50,6 +58,4 @@ const EmptyChatsComponent = () => {
 	);
 };
 
-export const EmptyChats = memo(EmptyChatsComponent);
-
-EmptyChats.displayName = 'EmptyChats';
+export default EmptyChats;

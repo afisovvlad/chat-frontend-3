@@ -1,6 +1,3 @@
-'use client';
-
-import { memo, useMemo } from 'react';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { ContainerType } from '../model/enum';
 import cls from './Container.module.scss';
@@ -11,22 +8,11 @@ interface ContainerProps {
 	type?: ContainerType;
 }
 
-const ContainerComponent = ({
+export function Container({
 	children,
 	className,
 	type = ContainerType.MAIN
-}: ContainerProps) => {
-	// Мемоизируем модификаторы для предотвращения пересоздания объекта
-	const mods = useMemo(() => {
-		if (type === ContainerType.WRAPPER) {
-			return {};
-		}
-		return {
-			[cls.sidebar]: type === ContainerType.SIDEBAR,
-			[cls.content]: type === ContainerType.CONTENT
-		};
-	}, [type]);
-
+}: ContainerProps) {
 	// Для WRAPPER — отдельный класс
 	if (type === ContainerType.WRAPPER) {
 		return (
@@ -35,14 +21,14 @@ const ContainerComponent = ({
 	}
 
 	// Для остальных — классический container с модификаторами
+	const mods = {
+		[cls.sidebar]: type === ContainerType.SIDEBAR,
+		[cls.content]: type === ContainerType.CONTENT
+	};
+
 	return (
 		<div className={classNames(cls.container, mods, [className])}>
 			{children}
 		</div>
 	);
-};
-
-// Оборачиваем в memo для предотвращения лишних ререндеров
-export const Container = memo(ContainerComponent);
-
-Container.displayName = 'Container';
+}

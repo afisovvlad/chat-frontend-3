@@ -1,33 +1,41 @@
 'use client';
 
-import { memo, useMemo, useCallback } from 'react';
+import { memo, useMemo } from 'react';
 import { ChatListItem } from '../ChatListItem/ChatListItem';
 import { Search } from '@/shared/ui/Search';
+import { useGetChatsQuery } from '../../api/chatApi';
+import { useChatSearch } from '../../model/lib/hooks/useChatSearch';
+import { ChatListSkeleton } from '../ChatListSkeleton/ChatListSkeleton';
 import { mockChats } from '../../mock/mockData';
-import { EmptyChats } from '@/shared/ui/EmptyChats/EmptyChats';
+import EmptyChats from '@/shared/ui/EmptyChats/EmptyChats';
 import cls from './ChatList.module.scss';
 
-export interface ChatListProps {
-	searchQuery?: string;
-	onSearchChange?: (value: string) => void;
-	onSearchClear?: () => void;
-	onSelectChat: (uid: string) => void;
+interface ChatListProps {
 	selectedChatUid?: string | null;
 }
 
-const ChatListComponent = ({
-	searchQuery = '',
-	onSearchChange,
-	onSearchClear,
-	onSelectChat,
-	selectedChatUid = null
-}: ChatListProps) => {
+export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
+	const { searchQuery, debouncedQuery, handleSearchChange, handleSearchClear } =
+		useChatSearch({
+			debounceDelay: 300
+		});
+
+	const {
+		data: chatsResponse,
+		isLoading,
+		isFetching
+	} = useGetChatsQuery({
+		search: debouncedQuery || undefined,
+		pageSize: 50
+	});
+
+	// Фильтрация моковых данных по поисковому запросу
 	const filteredChats = useMemo(() => {
-		if (!searchQuery.trim()) {
+		if (!debouncedQuery.trim()) {
 			return mockChats;
 		}
 
-		const term = searchQuery.toLowerCase().trim();
+		const term = debouncedQuery.toLowerCase().trim();
 		return mockChats.filter(chat => {
 			const name = chat.name.toLowerCase();
 			const username = chat.chat.username?.toLowerCase() || '';
@@ -47,68 +55,65 @@ const ChatListComponent = ({
 				messageContent.includes(term)
 			);
 		});
-	}, [searchQuery]);
+	}, [debouncedQuery]);
 
-	const handleSelectChat = useCallback(
-		(uid: string) => {
-			onSelectChat(uid);
-		},
-		[onSelectChat]
-	);
+	//!! данные с сервера (раскомментировать когда готово)
+	// const chats = chatsResponse?.results ?? [];
 
-	const handleChange = useCallback(
-		(value: string) => {
-			onSearchChange?.(value);
-		},
-		[onSearchChange]
-	);
+	// данный с моковой фильтрацией
+	const chats = filteredChats;
 
-	const handleClear = useCallback(() => {
-		onSearchClear?.();
-	}, [onSearchClear]);
+	const isEmpty = !isLoading && chats.length === 0;
 
-	const containerClass = useMemo(() => cls.chatList, []);
+	const showSkeleton = isLoading || (isFetching && debouncedQuery !== '');
 
-	const emptyState = useMemo(
-		() => (
-			<div className={cls.empty} role='status' aria-live='polite'>
-				<EmptyChats />
-			</div>
-		),
-		[]
-	);
-
-	const chatList = useMemo(
-		() => (
-			<div className={cls.list} role='list'>
-				{filteredChats.map(chat => (
-					<ChatListItem
-						key={chat.id}
-						chat={chat}
-						isActive={selectedChatUid === chat.chat.uid}
-						onSelect={handleSelectChat}
+	if (showSkeleton) {
+		return (
+			<div className={cls.chatList}>
+				<div className={cls.search}>
+					<Search
+						value={searchQuery}
+						onChange={handleSearchChange}
+						placeholder='Поиск чатов...'
+						showIcon={true}
 					/>
-				))}
+				</div>
+				<div className={cls.list} role='listbox'>
+					<ChatListSkeleton count={8} />
+				</div>
 			</div>
-		),
-		[filteredChats, selectedChatUid, handleSelectChat]
-	);
+		);
+	}
 
 	return (
-		<div className={containerClass} aria-label='Список чатов'>
+		<div className={cls.chatList} aria-label='Список чатов'>
 			<div className={cls.search}>
 				<Search
 					value={searchQuery}
-					onChange={handleChange}
-					onClear={handleClear}
+					onChange={handleSearchChange}
+					onClear={handleSearchClear}
 					placeholder='Поиск чатов...'
 					showIcon={true}
 				/>
 			</div>
 
-			{filteredChats.length === 0 ? emptyState : chatList}
+			{isEmpty ? (
+				<div className={cls.empty} role='status' aria-live='polite'>
+					<EmptyChats />
+				</div>
+			) : (
+				<div className={cls.list} role='listbox' aria-multiselectable='false'>
+					{chats.map(chat => (
+						<ChatListItem
+							key={chat.id}
+							chat={chat}
+							isActive={selectedChatUid === chat.chat.uid}
+						/>
+					))}
+				</div>
+			)}
 		</div>
 	);
-};
-export const ChatList = memo(ChatListComponent);
+});
+
 ChatList.displayName = 'ChatList';

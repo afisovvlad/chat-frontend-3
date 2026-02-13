@@ -27,10 +27,6 @@ export interface SearchProps extends Omit<
 	onClear?: () => void;
 }
 
-/**
- * Оптимизированный компонент поиска
- * Минимизирует перерисовки при вводе текста
- */
 export const Search = memo(
 	forwardRef<HTMLInputElement, SearchProps>(
 		(
@@ -49,13 +45,11 @@ export const Search = memo(
 			},
 			ref
 		) => {
-			// ✅ Мемоизируем вычисляемые значения
 			const showClearButton = useMemo(
 				() => !disableClear && value.trim().length > 0,
 				[disableClear, value]
 			);
 
-			// ✅ Стабильные обработчики
 			const handleClear = useCallback(() => {
 				onChange('');
 				onClear?.();
@@ -79,7 +73,6 @@ export const Search = memo(
 				[onChange]
 			);
 
-			// ✅ Мемоизируем классы для предотвращения лишних ререндеров дочерних элементов
 			const containerClass = useMemo(
 				() => classNames(cls.container, {}, [className]),
 				[className]
@@ -130,8 +123,3 @@ export const Search = memo(
 );
 
 Search.displayName = 'Search';
-
-// Добавляем displayName для лучшей отладки в React DevTools
-if (process.env.NODE_ENV !== 'production') {
-	Search.displayName = 'Search';
-}

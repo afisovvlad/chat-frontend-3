@@ -37,14 +37,7 @@ export interface Chat {
 	notifications: boolean;
 	new_message_count: number;
 	name: string;
-	chat_type:
-		| 'chat'
-		| 'group'
-		| 'channel'
-		| 'public-group'
-		| 'private-group'
-		| 'public-channel'
-		| 'private-channel';
+	chat_type: ChatType;
 	chat_key: string;
 	last_activity_at: number;
 	last_seen_message: ChatMessage | null;
@@ -79,7 +72,7 @@ export enum ChatType {
 	PRIVATE_CHANNEL = 'private-channel'
 }
 
-interface ChatItemInfo {
+export interface ChatItemInfo {
 	uid: string;
 	username: string;
 	nickname: string;

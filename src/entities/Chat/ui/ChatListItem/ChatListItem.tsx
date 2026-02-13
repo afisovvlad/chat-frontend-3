@@ -1,30 +1,22 @@
 'use client';
 
-import { memo, useMemo, useCallback } from 'react';
+import { memo, useMemo } from 'react';
+import Link from 'next/link';
 import { UserCard, UserCardType } from '@/shared/ui/UserCard';
-import { Button, ButtonColor, ButtonType } from '@/shared/ui/Button';
 import type { Chat } from '../../model/types/chat.types';
-import { mapChatToUserCard } from '../../lib/mapper/chatMapper';
+import { mapChatToUserCard } from '../../model/mapper/chatMapper';
 import cls from './ChatListItem.module.scss';
 
-interface ChatListItemProps {
+export interface ChatListItemProps {
 	chat: Chat;
 	isActive: boolean;
-	onSelect: (uid: string) => void;
 }
 
-const ChatListItemComponent = ({
-	chat,
-	isActive,
-	onSelect
-}: ChatListItemProps) => {
+export const ChatListItem = memo(({ chat, isActive }: ChatListItemProps) => {
 	const uid = useMemo(() => chat.chat.uid, [chat.chat.uid]);
-
 	const userCardData = useMemo(() => mapChatToUserCard(chat), [chat]);
 
-	const handleClick = useCallback(() => {
-		onSelect(uid);
-	}, [onSelect, uid]);
+	const href = useMemo(() => `/chats/${uid}`, [uid]);
 
 	const itemClass = useMemo(
 		() => `${cls.chatItem} ${isActive ? cls.chatItemActive : ''}`,
@@ -32,12 +24,11 @@ const ChatListItemComponent = ({
 	);
 
 	return (
-		<Button
+		<Link
+			href={href}
 			className={itemClass}
-			onClick={handleClick}
 			aria-label={`Чат с ${chat.name}`}
-			color={ButtonColor.TRANSPARENT}
-			btnType={ButtonType.BUTTON}
+			prefetch={false}
 		>
 			<div className={cls.itemContent}>
 				<div className={cls.userCard}>
@@ -48,10 +39,8 @@ const ChatListItemComponent = ({
 					/>
 				</div>
 			</div>
-		</Button>
+		</Link>
 	);
-};
-
-export const ChatListItem = memo(ChatListItemComponent);
+});
 
 ChatListItem.displayName = 'ChatListItem';

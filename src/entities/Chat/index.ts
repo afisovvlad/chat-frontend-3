@@ -1,15 +1,18 @@
-export { ChatList, ChatListItem } from './ui';
-export type { ChatListProps } from './ui';
-
-export { chatApi, useGetChatsQuery, useGetChatByIdQuery } from './api/chatApi';
+export { ChatListItem } from './ui/ChatListItem/ChatListItem';
+export { ChatList } from './ui/ChatList/ChatList';
+export type { ChatListProps } from './ui/ChatList/ChatList';
 
 export type {
-	Chat,
+	ChatMessage,
 	ChatUser,
+	Chat,
 	ChatListResponse,
-	GetChatsRequest
-} from './model';
+	GetChatsRequest,
+	ChatItemSchema
+} from './model/types/chat.types';
 
-export { ChatType } from './model';
+export { ChatType } from './model/types/chat.types';
 
-export { mapChatToUserCard } from './lib/mapper/chatMapper';
+export { mapChatToUserCard } from './model/mapper/chatMapper';
+
+export { chatApi, useGetChatsQuery, useGetChatByIdQuery } from './api/chatApi';
