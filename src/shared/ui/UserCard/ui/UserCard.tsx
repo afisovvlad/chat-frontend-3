@@ -94,6 +94,7 @@ export const UserCard = ({
 							tag={TitleTag.H3}
 							type={TextType.TITLE}
 							className={cls.name}
+							truncate
 						>
 							{userData.user?.first_name} {userData.user?.last_name}
 						</Text>

@@ -25,7 +25,7 @@ const chats: ChatItemSchema[] = [
 			uid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
 			username: 'Владлен',
 			nickname: 'afisovvlad',
-			first_name: 'Владислав',
+			first_name: 'Владислав1212312312312312312',
 			last_name: 'Афисов',
 			avatar: 'string',
 			avatar_url:
