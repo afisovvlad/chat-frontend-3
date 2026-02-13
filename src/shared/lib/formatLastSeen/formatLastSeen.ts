@@ -1,6 +1,6 @@
 type Options = {
 	now?: number;
-	isOnline?: boolean;
+	isOnline?: boolean | null;
 	hasConnection?: boolean;
 };
 

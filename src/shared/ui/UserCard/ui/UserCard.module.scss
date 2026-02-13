@@ -47,12 +47,16 @@
 .leftHeader {
 	display: flex;
 	align-items: center;
+	flex: 1;
+	min-width: 0;
 
 	.notification {
+		flex-shrink: 0;
 		width: 15px;
 		height: 15px;
 		margin-left: 6px;
 		margin-top: 3px;
+		margin-right: 10px;
 
 		& > svg {
 			color: var(--color-gray-500);
@@ -62,6 +66,7 @@
 
 .rightHeader {
 	display: flex;
+	flex-shrink: 0;
 	gap: 5px;
 
 	.status {
