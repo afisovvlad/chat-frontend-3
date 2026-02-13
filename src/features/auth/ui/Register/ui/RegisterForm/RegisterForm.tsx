@@ -19,30 +19,39 @@ import {
 	TextType
 } from '@/shared/ui/Text';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSendNicknameMutation } from '../../api/registerApi';
 import { registerFormItems } from '../../model/const/registerFormItems';
 import { IRegister, RegisterFormType } from '../../model/types/types';
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import type { SerializedError } from '@reduxjs/toolkit';
 import styles from './RegisterForm.module.scss';
 
 export function RegisterForm() {
-	const [responseError, setResponseError] = useState('');
+	const [responseError, setResponseError] = useState<string | null>(null);
 	const methods = useForm<RegisterFormType>();
 	const { control, setError, clearErrors } = methods;
 	const values = useWatch({ control: control });
 	const name = values.name;
 	const nickname = values.nickname;
-	const [sendNickname, { data: nicknameResponse, error: nicknameError }] =
-		useSendNicknameMutation();
-	const debouncedSendNickname = useDebounce(sendNickname, 400);
+	const [
+		sendNickname,
+		{ data: nicknameResponse, isLoading: nicknameLoading, error: nicknameError }
+	] = useSendNicknameMutation();
+	const handleSendNickname = useCallback(
+		(value: string) => {
+			setResponseError('');
+			sendNickname(value);
+		},
+		[sendNickname]
+	);
+	const debouncedSendNickname = useDebounce(handleSendNickname, 400);
 	const setStep = useSetAuthStep();
 	const isNicknameFree =
 		nicknameResponse?.messages === 'Этот nickname свободен';
-	const [
-		editProfile,
-		{ data: registerResult, isLoading, error: registerError }
-	] = useEditProfileMutation();
+	const [editProfile, { isLoading }] = useEditProfileMutation();
+	const errorMessage = isLoading || nicknameLoading ? null : responseError;
 
 	const disabledSubmit = useMemo(() => {
 		if (!name || !nickname || !isNicknameFree) {
@@ -71,16 +80,22 @@ export function RegisterForm() {
 	}, [isNicknameFree, clearErrors]);
 
 	useEffect(() => {
-		if (!nicknameError?.data) {
+		if (!nicknameError) {
 			return;
 		}
 
-		Object.entries(nicknameError.data).forEach(([key, messages]) => {
-			setError('nickname', {
-				type: 'server',
-				message: Array.isArray(messages) ? messages.join(', ') : messages
+		if ('data' in nicknameError && nicknameError.data) {
+			const errorData = nicknameError.data as Record<string, unknown>;
+
+			Object.entries(errorData).forEach(([key, messages]) => {
+				setError('nickname', {
+					type: 'server',
+					message: Array.isArray(messages)
+						? messages.join(', ')
+						: String(messages)
+				});
 			});
-		});
+		}
 	}, [nicknameError, setError]);
 
 	const onSubmit: SubmitHandler<IRegister> = async data => {
@@ -92,25 +107,40 @@ export function RegisterForm() {
 		};
 
 		try {
-			await editProfile(newData);
+			const result = await editProfile(newData).unwrap();
 
-			if (registerResult) {
+			if (result) {
 				setStep('finish-register');
-			} else if (registerError && registerError.data) {
-				Object.entries(registerError.data).forEach(([key, messages]) => {
+			}
+		} catch (error: unknown) {
+			const err = error as FetchBaseQueryError | SerializedError;
+
+			if ('originalStatus' in err && err?.originalStatus === 404) {
+				setResponseError('Запрашиваемая страница не найдена.');
+			} else if ('status' in err && err.status === 500) {
+				setResponseError('Ошибка соединения с сервером. Попробуйте позже.');
+			} else if ('data' in err && err.data) {
+				const errorData = err.data as Record<string, unknown>;
+				Object.entries(errorData).forEach(([key, messages]) => {
 					const message = Array.isArray(messages)
 						? messages.join(', ')
-						: messages;
+						: String(messages);
 
 					if (key === 'name') {
-						setError(key as keyof IRegister, { type: 'server', message });
+						setError('name', {
+							type: 'server',
+							message
+						});
 					} else if (key === 'detail' || key === 'nickname') {
-						setError('nickname', { type: 'server', message });
+						setError('nickname', {
+							type: 'server',
+							message
+						});
 					}
 				});
+			} else {
+				setResponseError('Произошла непредвиденная ошибка. Попробуйте позже.');
 			}
-		} catch (_) {
-			setResponseError('Ошибка соединения с сервером. Попробуйте позже.');
 		}
 	};
 
@@ -144,13 +174,13 @@ export function RegisterForm() {
 						Пользовательским соглашением
 					</Link>
 				</Text>
-				{responseError && (
+				{errorMessage && (
 					<Text
 						color={TextColor.ERROR}
 						type={TextType.TEXT}
 						fontSize={TextSize.M}
 					>
-						{responseError}
+						{errorMessage}
 					</Text>
 				)}
 

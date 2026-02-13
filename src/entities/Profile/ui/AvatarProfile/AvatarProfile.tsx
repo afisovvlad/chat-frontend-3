@@ -77,21 +77,21 @@ export function AvatarProfile() {
 	}, []);
 
 	// Обработчик изменения аватара
-	const handleAvatarChange = useCallback(
-		async (file: File) => {
-			try {
-				// Используем функцию из хука
-				await uploadAvatarFile(file);
+	// const handleAvatarChange = useCallback(
+	// 	async (file: File) => {
+	// 		try {
+	// 			// Используем функцию из хука
+	// 			await uploadAvatarFile(file);
 
-				// Если хук вернул URL, устанавливаем превью
-				// (это произойдет автоматически через эффект ниже)
-			} catch (error) {
-				// Ошибка уже обработана в хуке, не нужно ничего делать
-				// Модальное окно покажется через эффект ниже
-			}
-		},
-		[uploadAvatarFile]
-	);
+	// 			// Если хук вернул URL, устанавливаем превью
+	// 			// (это произойдет автоматически через эффект ниже)
+	// 		} catch (error) {
+	// 			// Ошибка уже обработана в хуке, не нужно ничего делать
+	// 			// Модальное окно покажется через эффект ниже
+	// 		}
+	// 	},
+	// 	[uploadAvatarFile]
+	// );
 
 	// useEffect(() => {
 	// 	if (avatarUrl) {
@@ -124,13 +124,13 @@ export function AvatarProfile() {
 	// 	}
 	// }, [profileData?.avatar_url]);
 
-	const isUploading = isAvatarUploading || isSaving;
+	// const isUploading = isAvatarUploading || isSaving;
 
 	return (
 		<>
 			<div className={cls.avatarContainer}>
 				<div className={cls.avatarWrapper}>
-					{isUploading ? (
+					{/* {isUploading ? (
 						<div className={cls.loading}>
 							<Loader width='40px' height='40px' />
 							<Text className={cls.loadingText}>
@@ -144,11 +144,11 @@ export function AvatarProfile() {
 							variant={avatarVariant}
 							alt='Аватар пользователя'
 						/>
-					)}
+					)} */}
 				</div>
 				{/* Загрузчик аватара */}
 				<div className={cls.btnWrapper}>
-					<AvatarUploader
+					{/* <AvatarUploader
 						ref={avatarUploaderRef}
 						onAvatarChange={handleAvatarChange}
 					/>
@@ -165,7 +165,7 @@ export function AvatarProfile() {
 						>
 							{isMobile ? 'Изменить фото' : 'Выбрать фотографию'}
 						</Button>
-					)}
+					)} */}
 				</div>
 			</div>
 
@@ -182,9 +182,9 @@ export function AvatarProfile() {
 						<Text type={TextType.TITLE} tag={TitleTag.H3} fontSize={TextSize.L}>
 							Ошибка
 						</Text>
-						<Text type={TextType.TEXT} tag={TextTag.P} fontSize={TextSize.M}>
+						{/* <Text type={TextType.TEXT} tag={TextTag.P} fontSize={TextSize.M}>
 							{serverError || avatarError}
-						</Text>
+						</Text> */}
 						<Button
 							onClick={handleCloseErrorModal}
 							color={ButtonColor.GREEN}
