@@ -1,3 +1,5 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
 .wrapper {
 	display: flex;
 	flex-direction: column;
@@ -20,4 +22,10 @@
 	align-items: center;
 	justify-content: center;
 	gap: 8px;
+}
+
+.btn {
+	&:focus-visible {
+		@include focus-visible;
+	}
 }

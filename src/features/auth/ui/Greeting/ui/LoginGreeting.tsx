@@ -66,6 +66,7 @@ export const LoginGreeting = () => {
 			<Button
 				onClick={handleStart}
 				btnRef={buttonRef}
+				className={styles.btn}
 				ariaLabel='Начать регистрацию'
 			>
 				Начать

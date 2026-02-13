@@ -51,6 +51,7 @@ const EmptyChats = () => {
 				theme={ButtonTheme.BACKGROUND}
 				btnType={ButtonType.BUTTON}
 				color={ButtonColor.PRIMARY}
+				className={cls.btn}
 			>
 				Начать чат
 			</Button>

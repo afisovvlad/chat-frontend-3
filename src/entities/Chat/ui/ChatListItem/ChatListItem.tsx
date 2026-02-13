@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { UserCard, UserCardType } from '@/shared/ui/UserCard';
 import type { Chat } from '../../model/types/chat.types';
 import { mapChatToUserCard } from '../../model/mapper/chatMapper';
+
 import cls from './ChatListItem.module.scss';
 
 export interface ChatListItemProps {
