@@ -1,17 +1,12 @@
-import React, { memo } from 'react';
-import {
-	forwardRef,
-	useCallback,
-	useImperativeHandle,
-	useRef,
-	useState
-} from 'react';
+import React, { memo, useCallback, useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle } from 'react';
 import { Modal } from '@/shared/ui/Modal';
 import { ImageEditor, ImageEditorRef } from '@/shared/ui/AvatarEditor';
 import { Button, ButtonColor } from '@/shared/ui/Button';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
-import { ModalBorderRadius, ModalSize } from '@/shared/ui/Modal/model/type';
+import { Text, TextSize, TextTag, TextType, TitleTag } from '@/shared/ui/Text';
 import { EditorFooter } from '../EditorFooter/EditorFooter';
+import { validateImageFile } from '../../model/lib/validateImage/validateImage';
 import cls from './AvatarUploader.module.scss';
 
 export interface AvatarUploaderRef {
@@ -20,7 +15,7 @@ export interface AvatarUploaderRef {
 }
 
 interface AvatarUploaderProps {
-	onAvatarChange: (dataUrl: string) => void;
+	onAvatarChange: (file: File) => void;
 	initialAvatar?: string | null;
 	children?: React.ReactNode;
 }
@@ -28,70 +23,72 @@ interface AvatarUploaderProps {
 export const AvatarUploaderComponent = forwardRef<
 	AvatarUploaderRef,
 	AvatarUploaderProps
->(({ onAvatarChange, initialAvatar, children }, ref) => {
+>(({ onAvatarChange, children }, ref) => {
 	const editorRef = useRef<ImageEditorRef>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const modalContainerRef = useRef<HTMLDivElement>(null);
 	const [error, setError] = useState<string | null>(null);
-	const [avatar, setAvatar] = useState<string | null>(initialAvatar ?? null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
+	const [originalFile, setOriginalFile] = useState<File | null>(null);
 
 	const isMobile = useMediaQuery();
 
-	const modalBorderRadius: ModalBorderRadius = isMobile ? '8px' : '12px';
-	const modalSize: ModalSize = isMobile ? 'mobileNarrow' : 'extraWide';
-
-	const showError = (message: string) => {
+	const showError = useCallback((message: string) => {
 		setError(message);
-	};
-
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (!file) {
-			e.target.value = '';
-			return;
-		}
-
-		if (!file.type.startsWith('image/')) {
-			showError('Пожалуйста, выберите изображение (JPEG, PNG и т.д.)');
-			e.target.value = '';
-			return;
-		}
-
-		// Опционально: ограничение размера
-		if (file.size > 5 * 1024 * 1024) {
-			showError('Размер файла не должен превышать 5 МБ');
-			e.target.value = '';
-			return;
-		}
-
-		const reader = new FileReader();
-		reader.onload = event => {
-			const dataUrl = event.target?.result as string;
-			setSelectedImage(dataUrl);
-			setIsModalOpen(true);
-			e.target.value = '';
-		};
-		reader.readAsDataURL(file);
-	};
-
-	const handleConfirmClick = useCallback(() => {
-		editorRef.current?.confirm();
+		setTimeout(() => setError(null), 5000);
 	}, []);
 
-	const handleConfirm = useCallback(
-		(dataUrl: string) => {
-			setAvatar(dataUrl);
-			onAvatarChange(dataUrl);
-			setIsModalOpen(false);
+	const handleFileSelect = useCallback(
+		async (file: File) => {
+			const validation = await validateImageFile(file);
+			if (!validation.valid) {
+				showError(validation.error!);
+				return;
+			}
+
+			const dataUrl = await new Promise<string>((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = () => resolve(reader.result as string);
+				reader.onerror = reject;
+				reader.readAsDataURL(file);
+			});
+
+			setSelectedImage(dataUrl);
+			setOriginalFile(file);
+			setIsModalOpen(true);
 		},
-		[onAvatarChange]
+		[showError]
+	);
+
+	const handleFileChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const file = e.target.files?.[0];
+			if (file) {
+				handleFileSelect(file);
+			}
+			e.target.value = ''; // Reset
+		},
+		[handleFileSelect]
+	);
+
+	const handleConfirm = useCallback(
+		async (editedFile: File) => {
+			if (!originalFile) {
+				return showError('Файл потерян');
+			}
+
+			onAvatarChange(editedFile);
+			setIsModalOpen(false);
+			setSelectedImage(null);
+			setOriginalFile(null);
+		},
+		[onAvatarChange, originalFile, showError]
 	);
 
 	const handleClose = useCallback(() => {
 		setIsModalOpen(false);
 		setSelectedImage(null);
+		setOriginalFile(null);
 	}, []);
 
 	const openFilePicker = useCallback(() => {
@@ -104,15 +101,16 @@ export const AvatarUploaderComponent = forwardRef<
 			openFilePicker,
 			close: handleClose
 		}),
-		[handleClose, openFilePicker]
+		[openFilePicker, handleClose]
 	);
 
 	return (
 		<>
 			{children}
+
 			<input
 				type='file'
-				accept='image/*'
+				accept='image/jpeg,image/png,image/webp,image/avif'
 				onChange={handleFileChange}
 				ref={fileInputRef}
 				className={cls.visuallyHidden}
@@ -120,19 +118,14 @@ export const AvatarUploaderComponent = forwardRef<
 				aria-hidden='true'
 			/>
 
-			{isMobile && (
-				<div ref={modalContainerRef} className={cls.modalContainer} />
-			)}
-
 			<Modal
 				isOpen={isModalOpen}
 				onClose={handleClose}
-				size={modalSize}
-				borderRadius={modalBorderRadius}
-				containerRef={isMobile ? modalContainerRef : undefined}
+				size={isMobile ? 'mobileNarrow' : 'extraWide'}
+				borderRadius={isMobile ? '8px' : '12px'}
 				overlayClassName={isMobile ? cls.avatarModalOverlay : undefined}
 			>
-				{selectedImage && isModalOpen && (
+				{selectedImage && (
 					<ImageEditor
 						ref={editorRef}
 						image={selectedImage}
@@ -142,21 +135,29 @@ export const AvatarUploaderComponent = forwardRef<
 				)}
 			</Modal>
 
+			{/* Mobile footer */}
 			{isMobile && isModalOpen && (
-				<EditorFooter onCancel={handleClose} onConfirm={handleConfirmClick} />
+				<EditorFooter
+					onCancel={handleClose}
+					onConfirm={() => editorRef.current?.confirm()}
+				/>
 			)}
-			{/* Модальное окно ошибки */}
+
+			{/* Error modal */}
 			{error && (
 				<Modal
 					isOpen={!!error}
 					onClose={() => setError(null)}
-					closeButton
 					size='wide'
 					borderRadius='8px'
 				>
 					<div className={cls.errorModalContent}>
-						<h3 className={cls.errorTitle}>Ошибка загрузки</h3>
-						<p className={cls.errorMessage}>{error}</p>
+						<Text type={TextType.TITLE} tag={TitleTag.H3} fontSize={TextSize.L}>
+							Ошибка загрузки
+						</Text>
+						<Text type={TextType.TEXT} tag={TextTag.P} fontSize={TextSize.M}>
+							{error}
+						</Text>
 						<Button
 							onClick={() => setError(null)}
 							color={ButtonColor.GREEN}
@@ -171,6 +172,5 @@ export const AvatarUploaderComponent = forwardRef<
 	);
 });
 
-AvatarUploaderComponent.displayName = 'AvatarUploader';
-
+AvatarUploaderComponent.displayName = 'AvatarUploaderComponent';
 export const AvatarUploader = memo(AvatarUploaderComponent);

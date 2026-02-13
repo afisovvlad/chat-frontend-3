@@ -1,5 +1,4 @@
 export interface ImageEditorRef {
-	getResult: () => Promise<string | null>;
 	confirm: () => Promise<void>;
 }
 

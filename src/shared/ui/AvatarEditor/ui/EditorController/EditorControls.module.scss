@@ -1,5 +1,6 @@
 @use '@/app/styles/mixins/mixin.scss' as *;
 
+// Базовые стили компонентов
 .controlRow {
 	display: flex;
 	align-items: center;
@@ -22,7 +23,7 @@
 	background: #ddd;
 	border-radius: 3px;
 	outline: none;
-	transition: background 0.2s;
+	transition: background 2s;
 
 	&::-webkit-slider-thumb {
 		appearance: none;
@@ -49,13 +50,6 @@
 	}
 }
 
-.checkmarkContainer {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-}
-
 .checkmark {
 	width: 44px;
 	height: 44px;
@@ -64,16 +58,33 @@
 	justify-content: center;
 	align-items: center;
 	cursor: pointer;
-	transition: background 0.2s;
+	background: transparent !important;
+	border: none;
+	padding: 0;
+	position: relative;
+	touch-action: manipulation;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	transition: transform 0.15s ease;
 
+	// Эффект нажатия для всех устройств
+	&:active {
+		transform: scale(0.95);
+	}
+
+	// Фокус для клавиатуры
 	&:focus-visible {
 		@include focus-visible;
 	}
-}
 
-.checkIcon {
-	width: 36px;
-	height: 36px;
+	// Ховер для десктопа
+	@media (hover: hover) and (pointer: fine) {
+		&:hover {
+			.checkboxEmpty {
+				background: var(--color-violet-100);
+			}
+		}
+	}
 }
 
 .checkboxEmpty {
@@ -82,4 +93,72 @@
 	border: 2px solid var(--color-primary);
 	border-radius: 50%;
 	background: transparent;
+	transition: all 0.2s ease;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	// Анимация при клике
+	.checkmarkActive & {
+		opacity: 0;
+		transform: scale(0.7);
+	}
+
+	// Эффект при нажатии (для всех устройств)
+	.checkmark:active & {
+		transform: scale(0.92);
+		border-color: var(--color-primary);
+	}
+
+	// Эффект ховера для десктопа
+	@media (hover: hover) and (pointer: fine) {
+		.checkmark:hover & {
+			background: var(--color-violet-100);
+			border-color: var(--color-primary);
+		}
+	}
+}
+
+.checkIcon {
+	width: 36px;
+	height: 36px;
+	color: var(--color-primary);
+	transition:
+		transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+		opacity 0.3s ease;
+	transform: scale(0.8);
+	opacity: 0;
+	pointer-events: none;
+}
+
+.checkmarkActive .checkIcon {
+	opacity: 1;
+	transform: scale(1);
+}
+
+@media (max-width: 768px) {
+	.checkmark {
+		width: 40px;
+		height: 40px;
+
+		&:active {
+			transform: scale(0.92);
+			background: var(--color-violet-100);
+		}
+	}
+
+	.checkboxEmpty {
+		width: 32px;
+		height: 32px;
+		border-width: 2px;
+
+		.checkmark:active & {
+			background: var(--color-violet-100);
+		}
+	}
+
+	.checkIcon {
+		width: 32px;
+		height: 32px;
+	}
 }
