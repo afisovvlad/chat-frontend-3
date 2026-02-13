@@ -5,6 +5,7 @@ import { Avatar } from '@/shared/ui/Avatar/';
 import {
 	FontWeight,
 	Text,
+	TextAlign,
 	TextClamp,
 	TextColor,
 	TextSize,
@@ -94,6 +95,7 @@ export const UserCard = ({
 							fontWeight={FontWeight.MEDIUM}
 							tag={TitleTag.H3}
 							type={TextType.TITLE}
+							truncate
 							className={cls.name}
 						>
 							{userData.user?.first_name} {userData.user?.last_name}
@@ -146,6 +148,7 @@ export const UserCard = ({
 								color={TextColor.GRAY}
 								fontSize={TextSize.S}
 								fontWeight={FontWeight.REGULAR}
+								textAlign={TextAlign.LEFT}
 								maxLines={TextClamp.LINES_2}
 							>
 								{userData.last_message?.content}

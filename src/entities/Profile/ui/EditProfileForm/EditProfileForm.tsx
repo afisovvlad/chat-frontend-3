@@ -41,6 +41,7 @@ import { Avatar } from '@/shared/ui/Avatar';
 import { Modal } from '@/shared/ui/Modal';
 import { useAvatarUpload } from '@/shared/ui/AvatarEditor/model/lib/hooks/useAvatarUpload/useAvatarUpload';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
+
 import cls from './EditProfileForm.module.scss';
 
 // ==================== ТИПЫ ====================
@@ -75,6 +76,7 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 		error: profileError,
 		refetch: refetchProfile
 	} = useGetProfileQuery();
+	console.log(profileData, 'data');
 
 	const isMobile = useMediaQuery();
 	const avatarSize = isMobile ? 200 : 180; // Размер аватара для мобильной версии
