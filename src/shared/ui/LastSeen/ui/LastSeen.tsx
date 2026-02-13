@@ -16,12 +16,15 @@ export function LastSeen({
 	const [_, setTick] = useState(0);
 
 	useEffect(() => {
-		const interval = setInterval(() => {
-			setTick(prev => prev + 1); // Заставляем компонент обновиться
-		}, 1000);
+		// Обновляем только когда пользователь не в сети и есть соединение
+		if (!isOnline && hasConnection) {
+			const interval = setInterval(() => {
+				setTick(prev => prev + 1);
+			}, 60000); // Обновляем раз в минуту вместо секунды
 
-		return () => clearInterval(interval);
-	}, []);
+			return () => clearInterval(interval);
+		}
+	}, [isOnline, hasConnection]);
 
 	const text = formatLastSeenText(wasOnlineAt, {
 		isOnline,
