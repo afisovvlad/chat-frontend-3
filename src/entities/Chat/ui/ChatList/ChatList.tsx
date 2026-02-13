@@ -10,7 +10,7 @@ import { mockChats } from '../../mock/mockData';
 import EmptyChats from '@/shared/ui/EmptyChats/EmptyChats';
 import cls from './ChatList.module.scss';
 
-interface ChatListProps {
+export interface ChatListProps {
 	selectedChatUid?: string | null;
 }
 
