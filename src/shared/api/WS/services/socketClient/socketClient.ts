@@ -10,6 +10,10 @@ const pendingRequests = new Map<string, (response: WSResponse) => void>();
 let currentToken: string | null = null;
 let tokenExpiry = 0; // 9 мин TTL
 
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 5;
+const RECONNECT_DELAY = 1000;
+
 // получение токена
 const getAccessToken = async (): Promise<string | null> => {
 	try {
@@ -96,12 +100,32 @@ const setupSocket = async (): Promise<WebSocket> => {
 			connectPromise = null;
 			socket = null;
 			reject(new Error('WS connection failed'));
+
+			if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+				reconnectAttempts++;
+				setTimeout(() => {
+					setupSocket();
+				}, RECONNECT_DELAY * reconnectAttempts);
+			}
 		};
 
 		socket.onclose = e => {
 			if (socket && socket.readyState !== WebSocket.OPEN) {
 				socket = null;
 			}
+
+			// Отменяем все ожидающие запросы
+			pendingRequests.forEach((reject, uid) => {
+				reject({
+					request_uid: uid,
+					action: 'error',
+					status: 'error'
+				});
+			});
+			pendingRequests.clear();
+
+			// Очищаем подписки
+			subscribers.clear();
 
 			isConnecting = false;
 			connectPromise = null;
@@ -136,37 +160,47 @@ export const subscribeWS = <T = WSResponse>(
 // Отправка запроса с ожиданием ответа по request_uid
 export const sendWS = async <T = WSResponse>(
 	request: WSRequest
-): Promise<T> => {
-	const ws = await setupSocket();
+): Promise<T | undefined> => {
+	try {
+		const ws = await setupSocket();
 
-	if (!ws || ws.readyState !== WebSocket.OPEN) {
-		throw new Error('WS not connected');
-	}
-
-	return new Promise((resolve, reject) => {
-		const requestUid = crypto.randomUUID();
-		request.request_uid = requestUid;
-		pendingRequests.set(requestUid, resolve as (res: WSResponse) => void);
-
-		ws.send(JSON.stringify(request));
-
-		// Таймаут ответа
-		const timeoutId = setTimeout(() => {
-			if (pendingRequests.has(requestUid)) {
-				pendingRequests.delete(requestUid);
-				reject(new Error(`Timeout: ${request.action}`));
-			}
-		}, 10000);
-
-		// На случай, если resolve вызовут до таймаута
-		const originalResolve = pendingRequests.get(requestUid);
-		if (originalResolve) {
-			pendingRequests.set(requestUid, (res: WSResponse) => {
-				clearTimeout(timeoutId);
-				originalResolve(res);
-			});
+		if (!ws || ws.readyState !== WebSocket.OPEN) {
+			throw new Error('WS not connected');
 		}
-	});
+
+		return new Promise((resolve, reject) => {
+			const requestUid = crypto.randomUUID();
+
+			// для иммутабельности
+			const requestWithUid = {
+				...request,
+				request_uid: requestUid
+			};
+
+			pendingRequests.set(requestUid, resolve as (res: WSResponse) => void);
+
+			ws.send(JSON.stringify(requestWithUid));
+
+			// Таймаут ответа
+			const timeoutId = setTimeout(() => {
+				if (pendingRequests.has(requestUid)) {
+					pendingRequests.delete(requestUid);
+					reject(new Error(`Timeout: ${request.action}`));
+				}
+			}, 10000);
+
+			// На случай, если resolve вызовут до таймаута
+			const originalResolve = pendingRequests.get(requestUid);
+			if (originalResolve) {
+				pendingRequests.set(requestUid, (res: WSResponse) => {
+					clearTimeout(timeoutId);
+					originalResolve(res);
+				});
+			}
+		});
+	} catch (error) {
+		throw error;
+	}
 };
 
 // Отключение и cleanup
