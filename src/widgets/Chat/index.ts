@@ -1,1 +1,1 @@
-export { default as Chat } from './ui/Chat';
+export { ChatWidget } from './ui/ChatWidget';

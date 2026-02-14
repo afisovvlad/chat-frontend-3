@@ -1,5 +1,5 @@
 .text {
-	word-break: break-word; // ← добавлено сюда
+	word-break: break-word;
 
 	&.text_title {
 		font-size: var(--font-size-24);
@@ -25,8 +25,6 @@
 		display: -webkit-box;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
-
-		// word-break уже задан выше, повторять не нужно
 	}
 
 	&.clamp-2 {

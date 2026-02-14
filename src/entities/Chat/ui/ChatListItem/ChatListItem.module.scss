@@ -1,0 +1,61 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
+.chatItem {
+	display: block;
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+	text-decoration: none;
+	color: inherit;
+	background: transparent;
+	border: none;
+	outline: none;
+	transition: none;
+
+	&:link,
+	&:visited,
+	&:hover,
+	&:active,
+	&:focus {
+		text-decoration: none;
+		color: inherit;
+		background: transparent;
+		border: none;
+		outline: none;
+		box-shadow: none;
+	}
+
+	&:hover {
+		background: transparent;
+	}
+
+	&:active {
+		transform: none;
+	}
+
+	&:focus-visible {
+		outline: none;
+		box-shadow: none;
+	}
+}
+
+.chatItemActive {
+	// при необходимости, если надо будет реализоввать поведение активного чата
+	opacity: 1;
+}
+
+.itemContent {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.userCard {
+	width: 100%;
+}
+
+.info {
+	flex: 1;
+	overflow: hidden;
+}
