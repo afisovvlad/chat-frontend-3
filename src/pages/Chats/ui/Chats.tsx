@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, memo } from 'react';
-import { useParams } from 'next/navigation';
-import { Container, ContainerType } from '@/shared/ui/Container';
-import { ChatWidget } from '@/widgets/Chat';
 import { ChatList } from '@/entities/Chat';
+import { Container, ContainerType } from '@/shared/ui/Container';
 import NotMessage from '@/shared/ui/NotMessage/NotMessage';
+import { ChatWidget } from '@/widgets/Chat';
+import { memo, useEffect } from 'react';
 
+import { useParams } from 'next/navigation';
 import cls from './Chats.module.scss';
 
 const ChatsPageComponent = () => {
