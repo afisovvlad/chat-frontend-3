@@ -4,6 +4,13 @@ import baseQueryWithReauth from './baseQuery';
 export const rtkApi = createApi({
 	reducerPath: 'rtkApi',
 	baseQuery: baseQueryWithReauth,
-	tagTypes: ['Support', 'sendPhone', 'EditProfile'],
+	tagTypes: [
+		'Support',
+		'sendPhone',
+		'EditProfile',
+		'Profile',
+		'Chats',
+		'Messages'
+	],
 	endpoints: _ => ({})
 });

@@ -1,9 +1,11 @@
+'use client';
 import { ChatType } from '@/entities/Chat';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Avatar } from '@/shared/ui/Avatar/';
 import {
 	FontWeight,
 	Text,
+	TextAlign,
 	TextClamp,
 	TextColor,
 	TextSize,
@@ -81,6 +83,7 @@ export const UserCard = ({
 				alt={userData.user?.username}
 				src={userData.user?.avatar_url}
 				size={AVATAR_SIZE[type]}
+				variant='card'
 			/>
 
 			<div className={cls.info}>
@@ -92,6 +95,7 @@ export const UserCard = ({
 							fontWeight={FontWeight.MEDIUM}
 							tag={TitleTag.H3}
 							type={TextType.TITLE}
+							truncate
 							className={cls.name}
 						>
 							{userData.user?.first_name} {userData.user?.last_name}
@@ -144,6 +148,7 @@ export const UserCard = ({
 								color={TextColor.GRAY}
 								fontSize={TextSize.S}
 								fontWeight={FontWeight.REGULAR}
+								textAlign={TextAlign.LEFT}
 								maxLines={TextClamp.LINES_2}
 							>
 								{userData.last_message?.content}
