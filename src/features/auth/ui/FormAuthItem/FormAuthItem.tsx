@@ -24,7 +24,7 @@ interface FormItemProps<TFormValues extends FieldValues> {
 	autoComplete?: FormItemAutocomplete;
 	disabled?: boolean;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
-	length?: number; // для code
+	// length?: number; // для code
 	parentLabelClass?: string;
 	classNameParentInput?: string;
 	classNameParentWrapper?: string;
@@ -37,7 +37,7 @@ export function FormAuthItem<TFormValues extends FieldValues>({
 	label,
 	placeholder,
 	disabled,
-	length = 5,
+	// length = 5,
 	onValueChange,
 	rules,
 	classNameParentInput,
@@ -67,7 +67,7 @@ export function FormAuthItem<TFormValues extends FieldValues>({
 		placeholder,
 		disabled,
 		isError,
-		length,
+		// length,
 		control,
 		rules,
 		classNameParentInput

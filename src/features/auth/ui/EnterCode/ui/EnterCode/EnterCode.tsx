@@ -23,13 +23,13 @@ import {
 } from '@/shared/ui/Text';
 import { useEffect, useState } from 'react';
 import { EnterCodeForm } from '../..';
-import TooltipWrapper from '../TooltipWrapper';
+import TooltipWrapper from '../TooltipWrapper/TooltipWrapper';
 import styles from './EnterCode.module.scss';
 
 export const EnterCode = () => {
 	const {
 		phone_number,
-		code_len,
+		// code_len,
 		is_filled,
 		isDisabledCodeAttempts,
 		blockingTime
@@ -40,8 +40,8 @@ export const EnterCode = () => {
 	const setStep = useSetAuthStep();
 	const formattedPhone = formatPhone(phone_number);
 
-	console.log('time in EnterCode', time);
-	console.log('finishedTime', finishedTime);
+	// console.log('time in EnterCode', time);
+	// console.log('finishedTime', finishedTime);
 
 	// useEffect(() => {
 	// 	if (finishedTime) {
@@ -102,7 +102,7 @@ export const EnterCode = () => {
 			<EnterCodeForm
 				setTime={setTime}
 				phone_number={phone_number}
-				code_len={code_len}
+				// code_len={code_len}
 				is_filled={is_filled}
 				disabled={isDisabledCodeAttempts}
 				finishedTime={finishedTime}

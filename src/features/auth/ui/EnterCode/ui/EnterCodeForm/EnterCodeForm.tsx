@@ -30,7 +30,7 @@ import styles from './EnterCodeForm.module.scss';
 interface EnterCodeFormProps {
 	setTime: React.Dispatch<React.SetStateAction<number>>;
 	phone_number?: string;
-	code_len?: number;
+	// code_len?: number;
 	is_filled: boolean;
 	disabled: boolean;
 	finishedTime: boolean;
@@ -40,7 +40,7 @@ interface EnterCodeFormProps {
 export const EnterCodeForm = ({
 	setTime,
 	phone_number,
-	code_len,
+	// code_len,
 	// is_filled,
 	disabled,
 	finishedTime
@@ -72,6 +72,8 @@ export const EnterCodeForm = ({
 				if (!phone_number) {
 					return;
 				}
+
+				// console.log(code);
 				const res = await submitCodeRequest({ phone_number, code });
 
 				// console.log(res);
@@ -134,19 +136,15 @@ export const EnterCodeForm = ({
 	}, [finishedTime, setError]);
 
 	useEffect(() => {
-		if (!code_len) {
-			return;
-		}
-
-		if (code?.length === code_len && !submittedRef.current) {
+		if (code?.length === 5 && !submittedRef.current) {
 			submittedRef.current = true;
 			handleSubmit(onSubmit)();
 		}
 
-		if (code?.length !== code_len) {
+		if (code?.length !== 5) {
 			submittedRef.current = false;
 		}
-	}, [code, handleSubmit, onSubmit, code_len]);
+	}, [code, handleSubmit, onSubmit]);
 
 	// useEffect(() => {
 	// 	if (attemptCounter > 0) {
@@ -178,7 +176,7 @@ export const EnterCodeForm = ({
 						type={item.type}
 						name={item.name}
 						label={item.label}
-						length={code_len}
+						// length={code_len}
 						disabled={disabled}
 						classNameParentInput={styles.codeInput}
 					/>

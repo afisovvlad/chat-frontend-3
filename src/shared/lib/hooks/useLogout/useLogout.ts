@@ -2,6 +2,7 @@
 import { authActions } from '@/features/auth';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '../useAppDispatch/useAppDispatch';
+import { profileActions } from '@/entities/Profile';
 
 export function useLogout() {
 	const router = useRouter();
@@ -16,6 +17,7 @@ export function useLogout() {
 
 			// 2. обновляем store
 			dispatch(authActions.logout());
+			dispatch(profileActions.clearProfile());
 
 			// 3. редирект
 			router.push('/login');

@@ -7,8 +7,8 @@ const initialState: AuthSchema = {
 	stepHistory: ['greeting'],
 	isRefreshing: false,
 	phone_number: '',
-	code_len: 5,
-	code: '',
+	// code_len: 5,
+	// code: '',
 	status: 'idle',
 	error: null,
 	isDisabledCodeAttempts: false,
@@ -26,7 +26,9 @@ const authSlice = createSlice({
 			state.isRefreshing = action.payload;
 			state.isRefreshing = action.payload;
 		},
+
 		logout: () => initialState,
+
 		disabledCodeAttempts: (state, action: PayloadAction<boolean>) => {
 			state.isDisabledCodeAttempts = action.payload;
 		},
@@ -34,6 +36,7 @@ const authSlice = createSlice({
 		setBlockingTime: (state, action: PayloadAction<number | undefined>) => {
 			state.blockingTime = action.payload;
 		},
+
 		setAttemptCounter: (state, action: PayloadAction<number>) => {
 			state.attemptCounter = action.payload;
 		},
@@ -48,15 +51,16 @@ const authSlice = createSlice({
 
 		setPhoneData: (
 			state,
-			action: PayloadAction<{ phone_number: string; code_len: number }>
+			action: PayloadAction<{ phone_number: string }>
+			// action: PayloadAction<{ phone_number: string; code_len: number }>
 		) => {
 			state.phone_number = action.payload.phone_number;
-			state.code_len = action.payload.code_len;
+			// state.code_len = action.payload.code_len;
 		},
 
 		clearPhoneData: state => {
 			delete state.phone_number;
-			delete state.code_len;
+			// delete state.code_len;
 		},
 
 		setStep: (state, action: PayloadAction<AuthStep>) => {

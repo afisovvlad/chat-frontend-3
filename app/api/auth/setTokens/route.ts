@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
 	const { phone_number, code } = await request.json();
+	console.log('phone_number, code', phone_number, code);
 	const res = await fetch(
 		`${process.env.NEXT_PUBLIC_BASE_API}/${process.env.NEXT_PUBLIC_TOKEN}`,
 		{

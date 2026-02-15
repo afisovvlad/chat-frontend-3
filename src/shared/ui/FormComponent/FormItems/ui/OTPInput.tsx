@@ -15,7 +15,7 @@ import styles from './styles.module.scss';
 
 interface OTPInputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
-	length: number;
+	// length: number;
 	disabled?: boolean;
 	placeholder?: string;
 	parentInputClass?: string;
@@ -24,7 +24,7 @@ interface OTPInputProps<TFormValues extends FieldValues> {
 
 export function OTPInput<TFormValues extends FieldValues>({
 	name,
-	length = 5,
+	// length = 5,
 	placeholder = '',
 	parentInputClass,
 	disabled,
@@ -65,7 +65,7 @@ export function OTPInput<TFormValues extends FieldValues>({
 		onChange(combinedValue);
 
 		// Автоматический фокус
-		if (digit && index < length - 1) {
+		if (digit && index < 4) {
 			setTimeout(() => {
 				inputRef.current[index + 1]?.focus();
 			}, 0);
@@ -104,7 +104,7 @@ export function OTPInput<TFormValues extends FieldValues>({
 			rules={{
 				required: 'Заполните это поле',
 				minLength: {
-					value: length,
+					value: 5,
 					message: `Пожалуйста, введите все  цифры`
 				}
 			}}
@@ -120,7 +120,7 @@ export function OTPInput<TFormValues extends FieldValues>({
 							[]
 						)}
 					>
-						{Array.from({ length }).map((_, index) => (
+						{Array.from([1, 1, 1, 1, 1]).map((_, index) => (
 							<input
 								key={index}
 								type={FormItemType.TEXT}
