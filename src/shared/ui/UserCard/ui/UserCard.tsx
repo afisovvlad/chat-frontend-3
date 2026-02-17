@@ -98,7 +98,6 @@ export const UserCard = ({
 							type={TextType.TITLE}
 							truncate
 							className={cls.name}
-							truncate
 						>
 							{userData.user?.first_name} {userData.user?.last_name}
 						</Text>
