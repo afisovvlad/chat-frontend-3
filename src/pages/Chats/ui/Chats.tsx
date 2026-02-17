@@ -2,12 +2,12 @@
 
 import { ChatList } from '@/entities/Chat';
 import { Container, ContainerType } from '@/shared/ui/Container';
-import NotMessage from '@/shared/ui/NotMessage/NotMessage';
 import { ChatWidget } from '@/widgets/Chat';
 import { useParams } from 'next/navigation';
 import { memo } from 'react';
 
 import cls from './Chats.module.scss';
+import { MessagesPage } from '@/pages/MessagesPage/MessagesPage';
 
 const ChatsPageComponent = () => {
 	const params = useParams();
@@ -24,7 +24,8 @@ const ChatsPageComponent = () => {
 					<ChatWidget chatUid={chatUid} />
 				) : (
 					<div className={cls.emptyState}>
-						<NotMessage />
+						<MessagesPage />
+						{/* <NotMessage /> */}
 					</div>
 				)}
 			</Container>
