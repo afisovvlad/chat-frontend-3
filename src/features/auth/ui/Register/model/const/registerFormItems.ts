@@ -28,7 +28,7 @@ export const registerFormItems = [
 				message: 'Минимум 5 символов'
 			},
 			pattern: {
-				value: /^[a-zA-Z0-9._]+$/,
+				value: /^[a-zA-Z0-9._-]+$/,
 				message: 'Допускаются только латинские буквы и цифры'
 			}
 		}

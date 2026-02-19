@@ -38,8 +38,6 @@
 	position: absolute;
 	top: -132px;
 	right: 15.5px;
-
-	// display: none;
 }
 
 .info:hover .tooltip {
@@ -75,10 +73,4 @@
 	line-height: 120%;
 	letter-spacing: 0.4px;
 	text-align: center;
-
-	// =======
-	// .codeInput {
-	// 	padding: 12px;
-	// 	border-color: var(--color-primary);
-	// >>>>>>> dev:src/features/auth/ui/EnterCode/ui/EnterCodeForm.module.scss
 }

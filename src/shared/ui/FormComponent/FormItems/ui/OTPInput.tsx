@@ -8,14 +8,12 @@ import {
 	FieldValues,
 	Path,
 	useController
-	// useFormContext
 } from 'react-hook-form';
 import { FormItemAutocomplete, FormItemType } from '../model/types';
 import styles from './styles.module.scss';
 
 interface OTPInputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
-	// length: number;
 	disabled?: boolean;
 	placeholder?: string;
 	parentInputClass?: string;
@@ -24,7 +22,6 @@ interface OTPInputProps<TFormValues extends FieldValues> {
 
 export function OTPInput<TFormValues extends FieldValues>({
 	name,
-	// length = 5,
 	placeholder = '',
 	parentInputClass,
 	disabled,
@@ -32,10 +29,6 @@ export function OTPInput<TFormValues extends FieldValues>({
 }: OTPInputProps<TFormValues>) {
 	const inputRef = useRef<(HTMLInputElement | null)[]>([]);
 	const [OTP, setOTP] = useState<string[]>(Array(length).fill(''));
-	// const {
-	// 	formState: { errors }
-	// } = useFormContext<TFormValues>();
-	// const isError = Boolean(errors?.[name]?.message as string | undefined);
 	const { fieldState } = useController({ name });
 	const isError = !!fieldState.error;
 

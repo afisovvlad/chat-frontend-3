@@ -1,7 +1,6 @@
 'use client';
 
 import { FormSettingsItem } from '@/entities/Settings';
-
 import { useSetAuthStep } from '@/features/auth';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import {

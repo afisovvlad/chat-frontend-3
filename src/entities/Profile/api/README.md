@@ -71,4 +71,10 @@ return;
 
 data - ответ сервера при успехе,
 isLoading - ожидание ответа сервера,
-error - ответ сервера при ошибке 
+error - ответ сервера при ошибке
+
+ПРИ ВЫХОДЕ ИЛИ УДАЛЕНИИ ПРОФИЛЯ необходимо добавить:
+dispatch(rtkApi.util.resetApiState());
+dispatch(localApi.util.resetApiState());
+// очистка persistor
+await persistor.purge();

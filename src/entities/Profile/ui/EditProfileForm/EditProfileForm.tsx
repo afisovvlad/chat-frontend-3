@@ -7,13 +7,6 @@ import { convertDateToNumber } from '@/shared/lib/convertDateToNumber/convertDat
 import { convertNumberToDate } from '@/shared/lib/convertNumberToDate/convertNumberToDate';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { Button, ButtonType } from '@/shared/ui/Button';
-// import {
-// 	Button,
-// 	ButtonColor,
-// 	ButtonTheme,
-// 	ButtonType
-// } from '@/shared/ui/Button';
-// import { Text, TextSize, TextTag, TextType, TitleTag } from '@/shared/ui/Text';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form, SelectItem } from '@/shared/ui/FormComponent';
 import { DateOption } from '@/shared/ui/FormComponent/FormItems/model/selectTypes';
@@ -53,7 +46,6 @@ interface EditProfileFormProps {
 // ==================== КОМПОНЕНТ ====================
 export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const [isSuccess, setIsSuccess] = useState(false);
-	// const [serverErrorMessage, setServerErrorMessage] = useState('');
 	const [serverError, setServerError] = useState<string | null>(null);
 	const [editProfile, { isLoading, data }] = useEditProfileMutation();
 

@@ -18,23 +18,25 @@ import {
 	TextSize,
 	TextType
 } from '@/shared/ui/Text';
+import type { SerializedError } from '@reduxjs/toolkit';
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSendNicknameMutation } from '../../api/registerApi';
 import { registerFormItems } from '../../model/const/registerFormItems';
-import { IRegister, RegisterFormType } from '../../model/types/types';
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import type { SerializedError } from '@reduxjs/toolkit';
+import { getServerErrorMessage } from '../../model/lib/getServerErrorMessage';
+import { IRegister } from '../../model/types/types';
 import styles from './RegisterForm.module.scss';
 
 export function RegisterForm() {
 	const [responseError, setResponseError] = useState<string | null>(null);
-	const methods = useForm<RegisterFormType>();
+	const methods = useForm<IRegister>({
+		mode: 'onBlur'
+	});
 	const { control, setError, clearErrors } = methods;
-	const values = useWatch({ control: control });
-	const name = values.name;
-	const nickname = values.nickname;
+	const name = useWatch({ control, name: 'name' });
+	const nickname = useWatch({ control, name: 'nickname' });
 	const [
 		sendNickname,
 		{ data: nicknameResponse, isLoading: nicknameLoading, error: nicknameError }
@@ -52,18 +54,12 @@ export function RegisterForm() {
 		nicknameResponse?.messages === 'Этот nickname свободен';
 	const [editProfile, { isLoading }] = useEditProfileMutation();
 	const errorMessage = isLoading || nicknameLoading ? null : responseError;
-
-	const disabledSubmit = useMemo(() => {
-		if (!name || !nickname || !isNicknameFree) {
-			return true;
-		}
-
-		if (name.length < 3 || nickname.length < 5) {
-			return true;
-		}
-
-		return false;
-	}, [name, nickname, isNicknameFree]);
+	const disabledSubmit =
+		!name ||
+		!nickname ||
+		!isNicknameFree ||
+		name.length < 3 ||
+		nickname.length < 5;
 
 	useEffect(() => {
 		if (!nickname || nickname.length < 5) {
@@ -75,7 +71,7 @@ export function RegisterForm() {
 
 	useEffect(() => {
 		if (isNicknameFree) {
-			clearErrors(['name', 'nickname']);
+			clearErrors();
 		}
 	}, [isNicknameFree, clearErrors]);
 
@@ -84,18 +80,7 @@ export function RegisterForm() {
 			return;
 		}
 
-		if ('data' in nicknameError && nicknameError.data) {
-			const errorData = nicknameError.data as Record<string, unknown>;
-
-			Object.entries(errorData).forEach(([key, messages]) => {
-				setError('nickname', {
-					type: 'server',
-					message: Array.isArray(messages)
-						? messages.join(', ')
-						: String(messages)
-				});
-			});
-		}
+		getServerErrorMessage(nicknameError, setResponseError, setError);
 	}, [nicknameError, setError]);
 
 	const onSubmit: SubmitHandler<IRegister> = async data => {
@@ -114,33 +99,7 @@ export function RegisterForm() {
 			}
 		} catch (error: unknown) {
 			const err = error as FetchBaseQueryError | SerializedError;
-
-			if ('originalStatus' in err && err?.originalStatus === 404) {
-				setResponseError('Запрашиваемая страница не найдена.');
-			} else if ('status' in err && err.status === 500) {
-				setResponseError('Ошибка соединения с сервером. Попробуйте позже.');
-			} else if ('data' in err && err.data) {
-				const errorData = err.data as Record<string, unknown>;
-				Object.entries(errorData).forEach(([key, messages]) => {
-					const message = Array.isArray(messages)
-						? messages.join(', ')
-						: String(messages);
-
-					if (key === 'name') {
-						setError('name', {
-							type: 'server',
-							message
-						});
-					} else if (key === 'detail' || key === 'nickname') {
-						setError('nickname', {
-							type: 'server',
-							message
-						});
-					}
-				});
-			} else {
-				setResponseError('Произошла непредвиденная ошибка. Попробуйте позже.');
-			}
+			getServerErrorMessage(err, setResponseError, setError);
 		}
 	};
 

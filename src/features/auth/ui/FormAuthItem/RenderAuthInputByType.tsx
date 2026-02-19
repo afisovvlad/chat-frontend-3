@@ -15,7 +15,6 @@ interface RenderAuthInputProps<TFormValues extends FieldValues> {
 	placeholder?: string;
 	disabled?: boolean;
 	isError: boolean;
-	// length: number;
 	control: Control<TFormValues>;
 	rules?: RegisterOptions<TFormValues, Path<TFormValues>>;
 	classNameParentInput?: string;
@@ -27,7 +26,6 @@ export function RenderAuthInputByType<TFormValues extends FieldValues>({
 	placeholder,
 	disabled,
 	isError,
-	// length,
 	control,
 	rules,
 	classNameParentInput
@@ -54,7 +52,6 @@ export function RenderAuthInputByType<TFormValues extends FieldValues>({
 					name={name}
 					placeholder={placeholder}
 					disabled={disabled}
-					// length={length}
 					control={control}
 					parentInputClass={classNames(
 						styles.input,

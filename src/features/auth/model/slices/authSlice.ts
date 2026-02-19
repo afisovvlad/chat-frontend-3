@@ -7,8 +7,6 @@ const initialState: AuthSchema = {
 	stepHistory: ['greeting'],
 	isRefreshing: false,
 	phone_number: '',
-	// code_len: 5,
-	// code: '',
 	status: 'idle',
 	error: null,
 	isDisabledCodeAttempts: false,
@@ -49,18 +47,12 @@ const authSlice = createSlice({
 			state.attemptCounter = 0;
 		},
 
-		setPhoneData: (
-			state,
-			action: PayloadAction<{ phone_number: string }>
-			// action: PayloadAction<{ phone_number: string; code_len: number }>
-		) => {
+		setPhoneData: (state, action: PayloadAction<{ phone_number: string }>) => {
 			state.phone_number = action.payload.phone_number;
-			// state.code_len = action.payload.code_len;
 		},
 
 		clearPhoneData: state => {
 			delete state.phone_number;
-			// delete state.code_len;
 		},
 
 		setStep: (state, action: PayloadAction<AuthStep>) => {

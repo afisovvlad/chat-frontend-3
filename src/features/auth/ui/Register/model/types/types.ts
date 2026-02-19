@@ -6,8 +6,3 @@ export interface IRegister {
 export interface RegisterResponse {
 	messages: string;
 }
-
-export type RegisterFormType = {
-	name: string;
-	nickname: string;
-};
