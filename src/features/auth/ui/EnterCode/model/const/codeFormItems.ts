@@ -1,6 +1,6 @@
 import { FormItemNames, FormItemType } from '@/shared/ui/FormComponent';
 
-export const formItems = [
+export const codeFormItems = [
 	{
 		type: FormItemType.CODE,
 		name: FormItemNames.CODE,

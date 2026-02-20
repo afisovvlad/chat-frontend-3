@@ -4,4 +4,6 @@ export type AuthStep =
 	| 'code'
 	| 'register'
 	| 'support'
-	| 'success';
+	| 'success'
+	| 'finish-register'
+	| 'success-support';

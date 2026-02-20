@@ -12,7 +12,7 @@ export function proxy(request: NextRequest) {
 
 	const isLoginPage =
 		pathname.includes('/login') ||
-		pathname.includes('/registration') ||
+		// pathname.includes('/registration') ||
 		pathname.includes('/user-agreement') ||
 		pathname.includes('/test');
 

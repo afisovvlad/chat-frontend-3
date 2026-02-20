@@ -1,10 +1,18 @@
 interface DateOptions {
-	enteredDay: string | undefined;
-	enteredMonth: string | undefined;
-	enteredYear: string | undefined;
+	enteredDay: string;
+	enteredMonth: string;
+	enteredYear: string;
 }
 
-export const convertNumberToDate = (num: number): DateOptions => {
+export const convertNumberToDate = (num?: number): DateOptions => {
+	if (!num) {
+		return {
+			enteredDay: '',
+			enteredMonth: '',
+			enteredYear: ''
+		};
+	}
+
 	const date = new Date(num * 1000);
 	const utcDay = date.getUTCDate();
 	const utcMonth = date.getUTCMonth();

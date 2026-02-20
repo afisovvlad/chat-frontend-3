@@ -1,5 +1,9 @@
 'use client';
+import { persistor } from '@/app/providers/StoreProvider/config/store';
+import { profileActions } from '@/entities/Profile';
 import { authActions } from '@/features/auth';
+import { localApi } from '@/shared/api/localApi';
+import { rtkApi } from '@/shared/api/rtkApi';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '../useAppDispatch/useAppDispatch';
 
@@ -16,6 +20,11 @@ export function useLogout() {
 
 			// 2. обновляем store
 			dispatch(authActions.logout());
+			dispatch(profileActions.clearProfile());
+			dispatch(rtkApi.util.resetApiState());
+			dispatch(localApi.util.resetApiState());
+
+			await persistor.purge();
 
 			// 3. редирект
 			router.push('/login');

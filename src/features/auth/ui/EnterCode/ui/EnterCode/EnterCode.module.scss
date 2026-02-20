@@ -14,8 +14,34 @@
 	margin-bottom: 24px;
 }
 
-.form {
-	margin: 0 auto;
+.infoWrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	margin-bottom: 16px;
+}
+
+.infoText {
+	padding: 8px;
+}
+
+.infoIcon {
+	line-height: 120%;
+	text-align: center;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.tooltip {
+	position: absolute;
+	top: -132px;
+	right: 15.5px;
+}
+
+.info:hover .tooltip {
+	display: inline-block;
 }
 
 .btn {

@@ -10,7 +10,7 @@ export function SupportPage() {
 				href={'/settings'}
 				parentClass={styles.headerBlock}
 			/>
-			<SupportForm parentClass={styles.form} />
+			<SupportForm parentClass={styles.form} marginTop='341px' />
 		</section>
 	);
 }

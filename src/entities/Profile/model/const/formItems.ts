@@ -56,12 +56,12 @@ export const formItems = [
 		rules: {
 			required: 'Заполните это поле',
 			minLength: {
-				value: 3,
-				message: 'Минимум 3 буквы'
+				value: 5,
+				message: 'Минимум 5 знаков'
 			},
 			pattern: {
-				value: /^[a-zA-Zа-яёА-ЯЁ]+$/,
-				message: 'Допускаются только буквы'
+				value: /^[a-zA-Z0-9._]+$/,
+				message: 'Допускаются буквы, цифры, нижнее подчеркивание'
 			}
 		}
 	}
