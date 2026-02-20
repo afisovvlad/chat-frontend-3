@@ -5,7 +5,6 @@ import { ChatListItem } from '../ChatListItem/ChatListItem';
 import { Search } from '@/shared/ui/Search';
 import { useGetChatsQuery } from '../../api/chatApi';
 import { useChatSearch } from '../../model/lib/hooks/useChatSearch';
-
 import { mockChats } from '../../mock/mockData';
 import EmptyChats from '@/shared/ui/EmptyChats/EmptyChats';
 import { UserCardSkeleton } from '@/shared/ui/Skeleton';
