@@ -35,6 +35,6 @@ export function proxy(request: NextRequest) {
 export const config = {
 	matcher: [
 		// все остальные пути, кроме статики
-		'/((?!_next/static|_next/image|favicon.ico|images).*)'
+		'/((?!_next/static|_next/image|favicon.ico|images|manifest.json|favicon/).*)'
 	]
 };

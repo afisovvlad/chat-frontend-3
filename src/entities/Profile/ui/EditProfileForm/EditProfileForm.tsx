@@ -27,6 +27,13 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { ProfileSchema } from '../..';
 import { formItems } from '../../model/const/formItems';
 import { createCustomStyles } from '../../model/lib/createCustomStyles';
+import { AvatarUploader } from '@/shared/ui/AvatarEditor';
+import { AvatarUploaderRef } from '@/shared/ui/AvatarEditor/ui/AvatarUpLoader/AvatarUpLoader';
+import { Avatar } from '@/shared/ui/Avatar';
+import { Modal } from '@/shared/ui/Modal';
+import { useAvatarUpload } from '@/shared/ui/AvatarEditor/model/lib/hooks/useAvatarUpload/useAvatarUpload';
+import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
+
 import cls from './EditProfileForm.module.scss';
 
 // ==================== ТИПЫ ====================
@@ -48,6 +55,43 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverError, setServerError] = useState<string | null>(null);
 	const [editProfile, { isLoading, data }] = useEditProfileMutation();
+	const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+	const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
+
+	const avatarUploaderRef = useRef<AvatarUploaderRef>(null);
+
+	// ==================== RTK QUERY ====================
+	const [editProfile, { isLoading: isSaving }] = useEditProfileMutation();
+	const {
+		data: profileData,
+		isLoading: isProfileLoading,
+		error: profileError,
+		refetch: refetchProfile
+	} = useGetProfileQuery();
+	console.log(profileData, 'data');
+
+	const isMobile = useMediaQuery();
+	const avatarSize = isMobile ? 200 : 180; // Размер аватара для мобильной версии
+	const avatarVariant = isMobile ? 'full' : 'card';
+	// ==================== ХУК ЗАГРУЗКИ АВАТАРА ====================
+	// Используем хук для загрузки аватара
+	// После успешной загрузки обновляем профиль
+	const {
+		upload: uploadAvatarFile, // Функция загрузки
+		isUploading: isAvatarUploading, // Статус загрузки
+		error: avatarError, // Ошибка
+		clearError: clearAvatarError, // Очистка ошибки
+		avatarUrl // URL загруженного аватара
+	} = useAvatarUpload(() => {
+		// Callback после успешной загрузки
+		refetchProfile();
+	});
+
+	// ==================== ПРОИЗВОДНОЕ СОСТОЯНИЕ ====================
+	const currentAvatar = useMemo(() => {
+		// Приоритет: 1. preview (после загрузки), 2. из профиля
+		return avatarPreviewUrl || profileData?.avatar_url || null;
+	}, [avatarPreviewUrl, profileData?.avatar_url]);
 
 	// ==================== FORM ====================
 

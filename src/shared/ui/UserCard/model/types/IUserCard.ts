@@ -41,6 +41,8 @@ interface LastMessage {
 
 enum ChatType {
 	CHAT = 'chat',
+	GROUP = 'group',
+	CHANNEL = 'channel',
 	PUBLIC_GROUP = 'public-group',
 	PRIVATE_GROUP = 'private-group',
 	PUBLIC_CHANNEL = 'public-channel',

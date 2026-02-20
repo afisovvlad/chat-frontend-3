@@ -5,6 +5,7 @@ import { Avatar } from '@/shared/ui/Avatar/';
 import {
 	FontWeight,
 	Text,
+	TextAlign,
 	TextClamp,
 	TextColor,
 	TextSize,
@@ -15,6 +16,7 @@ import {
 import { SentRead, SentTime, Trash, VolumeOff, VolumeOn } from '@icons/index';
 import { ReactNode } from 'react';
 import { Button, ButtonColor, ButtonSize, ButtonTheme } from '../../Button';
+import { LastSeen } from '../../LastSeen';
 import { AVATAR_SIZE, IUserCard, UserCardType } from '../model/types/IUserCard';
 import cls from './UserCard.module.scss';
 
@@ -94,6 +96,7 @@ export const UserCard = ({
 							fontWeight={FontWeight.MEDIUM}
 							tag={TitleTag.H3}
 							type={TextType.TITLE}
+							truncate
 							className={cls.name}
 						>
 							{userData.user?.first_name} {userData.user?.last_name}
@@ -146,6 +149,7 @@ export const UserCard = ({
 								color={TextColor.GRAY}
 								fontSize={TextSize.S}
 								fontWeight={FontWeight.REGULAR}
+								textAlign={TextAlign.LEFT}
 								maxLines={TextClamp.LINES_2}
 							>
 								{userData.last_message?.content}
@@ -166,14 +170,10 @@ export const UserCard = ({
 					)}
 					{/* для контактов и черного списка */}
 					{[UserCardType.CONTACT, UserCardType.BLACK_LIST].includes(type) && (
-						<Text
-							className={cls.isOnline}
-							color={TextColor.ACCENT}
-							fontSize={TextSize.S}
-							fontWeight={FontWeight.REGULAR}
-						>
-							{userData.user?.is_online ? 'в сети' : 'не в сети'}
-						</Text>
+						<LastSeen
+							wasOnlineAt={userData.user?.was_online_at || null}
+							isOnline={userData.user?.is_online || null}
+						></LastSeen>
 					)}
 
 					{/* для профиля */}
