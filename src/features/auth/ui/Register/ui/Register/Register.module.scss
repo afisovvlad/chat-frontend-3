@@ -1,0 +1,13 @@
+.title {
+	margin-bottom: 24px;
+}
+
+.text {
+	margin-bottom: 24px;
+	text-align: center;
+	letter-spacing: 0.4px;
+
+	@media screen and (max-width: 768px) {
+		margin-bottom: 20px;
+	}
+}

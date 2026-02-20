@@ -1,3 +1,4 @@
+import { ProfileSchema } from '@/entities/Profile';
 import { AuthSchema } from '@/features/auth';
 import { CitiesSchema } from '@/pages/Cities';
 import { localApi } from '@/shared/api/localApi';
@@ -8,4 +9,5 @@ export interface StateSchema {
 	routeApi: ReturnType<typeof localApi.reducer>;
 	cities: CitiesSchema;
 	auth: AuthSchema;
+	profile: ProfileSchema;
 }

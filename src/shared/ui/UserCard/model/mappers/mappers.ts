@@ -59,10 +59,11 @@ export const mapBlackListToUserCard = (user: BlackListSchema): IUserCard => ({
 
 export const mapProfileToUserCard = (user: ProfileSchema): IUserCard => ({
 	user: {
-		avatar: user.avatar,
-		avatar_url: user.avatar_url,
-		avatar_webp: user.avatar_webp,
-		avatar_webp_url: user.avatar_webp_url,
+		username: user.username,
+		avatar: user.avatar ?? undefined,
+		avatar_url: user.avatar_url ?? undefined,
+		avatar_webp: user.avatar_webp ?? undefined,
+		avatar_webp_url: user.avatar_webp_url ?? undefined,
 		nickname: user.nickname,
 		first_name: user.first_name,
 		last_name: user.last_name,
@@ -70,9 +71,9 @@ export const mapProfileToUserCard = (user: ProfileSchema): IUserCard => ({
 		additional_information: user.additional_information,
 		birthday: user.birthday,
 		email: user.email,
-		gender: user.gender,
+		gender: user.gender === '' ? undefined : user.gender,
 		country: user.country,
-		city_id: user.city_id,
+		city_id: user.city_id === null ? undefined : user.city_id,
 		phone: user.phone
 	}
 });
