@@ -1,20 +1,12 @@
 'use client';
 
-import {
-	useEditProfileMutation,
-	useGetProfileQuery
-} from '@/entities/Profile/api/editProfile.api';
+import { useEditProfileMutation } from '@/entities/Profile/api/editProfile.api';
 import { FormSettingsItem } from '@/entities/Settings';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { convertDateToNumber } from '@/shared/lib/convertDateToNumber/convertDateToNumber';
 import { convertNumberToDate } from '@/shared/lib/convertNumberToDate/convertNumberToDate';
-import {
-	Button,
-	ButtonColor,
-	ButtonTheme,
-	ButtonType
-} from '@/shared/ui/Button';
-import { Text, TextSize, TextTag, TextType, TitleTag } from '@/shared/ui/Text';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
+import { Button, ButtonType } from '@/shared/ui/Button';
 import { ErrorComponent } from '@/shared/ui/ErrorComponent';
 import { Form, SelectItem } from '@/shared/ui/FormComponent';
 import { DateOption } from '@/shared/ui/FormComponent/FormItems/model/selectTypes';
@@ -30,7 +22,7 @@ import {
 	getMonthsOptions,
 	getYearsOptions
 } from '@/shared/utils/dateOptions';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ProfileSchema } from '../..';
 import { formItems } from '../../model/const/formItems';
@@ -60,9 +52,9 @@ interface EditProfileFormProps {
 
 // ==================== КОМПОНЕНТ ====================
 export function EditProfileForm({ parentClass }: EditProfileFormProps) {
-	// ==================== СОСТОЯНИЯ ====================
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverError, setServerError] = useState<string | null>(null);
+	const [editProfile, { isLoading, data }] = useEditProfileMutation();
 	const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 	const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
 
@@ -102,6 +94,7 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	}, [avatarPreviewUrl, profileData?.avatar_url]);
 
 	// ==================== FORM ====================
+
 	const methods = useForm<EditProfileForm>({
 		defaultValues: {
 			nickname: '',
@@ -119,55 +112,29 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const year = watch('year')?.value;
 	const dayOptions = getDaysOptions(month, year);
 	const hasError = formState.isSubmitted && (!day || !month || !year);
+	const profile = useAppSelector(state => state.profile);
 
-	// ==================== ХЕНДЛЕРЫ ====================
-	const showErrorModal = useCallback((message: string) => {
-		setServerError(message);
-		setIsErrorModalOpen(true);
-	}, []);
-
-	const handleCloseErrorModal = useCallback(() => {
-		setServerError(null);
-		setIsErrorModalOpen(false);
-		clearAvatarError();
-	}, [clearAvatarError]);
-
-	// Обработчик изменения аватара
-	const handleAvatarChange = useCallback(
-		async (file: File) => {
-			try {
-				// Используем функцию из хука
-				await uploadAvatarFile(file);
-
-				// Если хук вернул URL, устанавливаем превью
-				// (это произойдет автоматически через эффект ниже)
-			} catch (error) {
-				// Ошибка уже обработана в хуке, не нужно ничего делать
-				// Модальное окно покажется через эффект ниже
-			}
-		},
-		[uploadAvatarFile]
-	);
+	console.log('profile', profile);
 
 	// ==================== ЭФФЕКТЫ ====================
 	// Загрузка данных профиля в форму
 	useEffect(() => {
-		if (profileData && profileData.birthday) {
+		if (profile && profile.birthday) {
 			const { enteredDay, enteredMonth, enteredYear } = convertNumberToDate(
-				profileData.birthday
+				profile.birthday
 			);
 
 			reset({
-				nickname: profileData.nickname || '',
-				first_name: profileData.first_name || '',
-				last_name: profileData.last_name || '',
-				additional_information: profileData.additional_information || '',
+				nickname: profile.nickname || '',
+				first_name: profile.first_name || '',
+				last_name: profile.last_name || '',
+				additional_information: profile.additional_information || '',
 				day: { label: String(enteredDay), value: String(enteredDay) },
 				month: { label: String(enteredMonth), value: String(enteredMonth) },
 				year: { label: String(enteredYear), value: String(enteredYear) }
 			});
 		}
-	}, [profileData, reset]);
+	}, [profile, reset]);
 
 	// Синхронизация дней при смене месяца/года
 	useEffect(() => {
@@ -180,37 +147,25 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 		}
 	}, [day, month, year, setValue]);
 
-	// Установка превью после успешной загрузки
 	useEffect(() => {
-		if (avatarUrl) {
-			setAvatarPreviewUrl(avatarUrl);
+		if (!profile) {
+			return;
 		}
-	}, [avatarUrl]);
 
-	// Показ ошибки загрузки аватара
-	useEffect(() => {
-		if (avatarError) {
-			showErrorModal(avatarError);
-		}
-	}, [avatarError, showErrorModal]);
+		const { enteredDay, enteredMonth, enteredYear } = convertNumberToDate(
+			profile.birthday
+		);
 
-	// Показ ошибки загрузки профиля
-	useEffect(() => {
-		if (profileError) {
-			const message =
-				profileError instanceof Error
-					? profileError.message
-					: 'Ошибка загрузки данных профиля';
-			showErrorModal(message);
-		}
-	}, [profileError, showErrorModal]);
-
-	// Очистка preview URL при изменении профиля
-	useEffect(() => {
-		if (profileData?.avatar_url) {
-			setAvatarPreviewUrl(null);
-		}
-	}, [profileData?.avatar_url]);
+		reset({
+			nickname: profile.nickname || '',
+			first_name: profile.first_name || '',
+			last_name: profile.last_name || '',
+			additional_information: profile.additional_information || '',
+			day: { label: String(enteredDay), value: String(enteredDay) },
+			month: { label: String(enteredMonth), value: String(enteredMonth) },
+			year: { label: String(enteredYear), value: String(enteredYear) }
+		});
+	}, [profile, reset]);
 
 	// ==================== ОТПРАВКА ФОРМЫ ====================
 	const onSubmit: SubmitHandler<EditProfileForm> = useCallback(
@@ -230,37 +185,39 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 				};
 
 				const result = await editProfile(newData).unwrap();
-
+				console.log(result, 'result');
 				if (result) {
 					setIsSuccess(true);
-					await refetchProfile();
 				}
+				// else if (error && typeof error === 'object' && 'data' in error) {
+				// 	const serverErrors = error.data as Record<string, string[]>;
+
+				// 	Object.entries(serverErrors).forEach(([field, messages]) => {
+				// 		setFormError(field as keyof EditProfileForm, {
+				// 			type: 'server',
+				// 			message: messages.join(' ')
+				// 		});
+				// 	});
+				// }
 			} catch (error) {
-				console.error('❌ Ошибка сохранения профиля:', error);
-
-				if (error && typeof error === 'object' && 'data' in error) {
-					const serverErrors = error.data as Record<string, string[]>;
-
-					Object.entries(serverErrors).forEach(([field, messages]) => {
-						setFormError(field as keyof EditProfileForm, {
-							type: 'server',
-							message: messages.join(' ')
-						});
-					});
-				} else {
-					showErrorModal('Произошла непредвиденная ошибка при сохранении');
-				}
+				setServerError('Произошла непредвиденная ошибка');
+				// if (error && typeof error === 'object' && 'data' in error) {
+				// 	const serverErrors = error.data as Record<string, string[]>;
+				// 	Object.entries(serverErrors).forEach(([field, messages]) => {
+				// 		setFormError(field as keyof EditProfileForm, {
+				// 			type: 'server',
+				// 			message: messages.join(' ')
+				// 		});
+				// 	});
+				// }
 			}
+
+			// } catch (_) {
+			// 	setServerErrorMessage('Произошла непредвиденная ошибка');
+			// }
 		},
-		[
-			day,
-			month,
-			year,
-			editProfile,
-			refetchProfile,
-			setFormError,
-			showErrorModal
-		]
+
+		[day, month, year, editProfile, setFormError]
 	);
 
 	// ==================== РЕНДЕРИНГ ====================
@@ -270,80 +227,12 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 		);
 	}
 
-	if (serverError && !isErrorModalOpen) {
+	if (serverError) {
 		return <ErrorComponent>{serverError}</ErrorComponent>;
 	}
 
-	if (isProfileLoading && !profileData) {
-		return (
-			<div className={cls.loading}>
-				<Loader width='40px' height='40px' />
-				<Text
-					tag={TextTag.SPAN}
-					fontSize={TextSize.M}
-					className={cls.loadingText}
-				>
-					Загрузка профиля...
-				</Text>
-			</div>
-		);
-	}
-
-	if (profileError) {
-		return (
-			<ErrorComponent>
-				Не удалось загрузить данные профиля. Попробуйте обновить страницу.
-			</ErrorComponent>
-		);
-	}
-
-	const isUploading = isAvatarUploading || isSaving;
-
 	return (
 		<>
-			{/* Аватар */}
-			<div className={cls.avatarContainer}>
-				<div className={cls.avatarWrapper}>
-					{isUploading ? (
-						<div className={cls.loading}>
-							<Loader width='40px' height='40px' />
-							<Text className={cls.loadingText}>
-								{isAvatarUploading ? 'Загрузка аватара...' : 'Сохранение...'}
-							</Text>
-						</div>
-					) : (
-						<Avatar
-							size={avatarSize}
-							src={currentAvatar || undefined}
-							variant={avatarVariant}
-							alt='Аватар пользователя'
-						/>
-					)}
-				</div>
-				{/* Загрузчик аватара */}
-				<div className={cls.btnWrapper}>
-					<AvatarUploader
-						ref={avatarUploaderRef}
-						onAvatarChange={handleAvatarChange}
-					/>
-					{!isUploading && (
-						<Button
-							theme={ButtonTheme.CLEAR}
-							color={ButtonColor.PRIMARY}
-							btnType={ButtonType.BUTTON}
-							onClick={() => avatarUploaderRef.current?.openFilePicker()}
-							disabled={isUploading}
-							className={classNames(cls.uploadButton, {
-								[cls.mobileUploadButton]: isMobile
-							})}
-						>
-							{isMobile ? 'Изменить фото' : 'Выбрать фотографию'}
-						</Button>
-					)}
-				</div>
-			</div>
-
-			{/* Форма */}
 			<Form<EditProfileForm>
 				methods={methods}
 				onSubmit={onSubmit}
@@ -424,46 +313,19 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 				{/* Кнопка сохранения */}
 				<Button
 					btnType={ButtonType.SUBMIT}
-					disabled={isUploading}
+					disabled={false}
+					// disabled={isUploading}
 					className={cls.submitButton}
 				>
-					{isSaving ? (
+					{isLoading ? (
 						<>
 							<Loader width='22px' height='22px' />
-							<span>Сохранение...</span>
 						</>
 					) : (
 						'Сохранить'
 					)}
 				</Button>
 			</Form>
-
-			{/* Модальное окно ошибки */}
-			{isErrorModalOpen && (
-				<Modal
-					isOpen={isErrorModalOpen}
-					onClose={handleCloseErrorModal}
-					closeButton
-					size='wide'
-					borderRadius='8px'
-				>
-					<div className={cls.errorModalContent}>
-						<Text type={TextType.TITLE} tag={TitleTag.H3} fontSize={TextSize.L}>
-							Ошибка
-						</Text>
-						<Text type={TextType.TEXT} tag={TextTag.P} fontSize={TextSize.M}>
-							{serverError || avatarError}
-						</Text>
-						<Button
-							onClick={handleCloseErrorModal}
-							color={ButtonColor.GREEN}
-							className={cls.errorCloseBtn}
-						>
-							Закрыть
-						</Button>
-					</div>
-				</Modal>
-			)}
 		</>
 	);
 }

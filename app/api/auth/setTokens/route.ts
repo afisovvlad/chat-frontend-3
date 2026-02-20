@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
 	const { phone_number, code } = await request.json();
+
 	const res = await fetch(
 		`${process.env.NEXT_PUBLIC_BASE_API}/${process.env.NEXT_PUBLIC_TOKEN}`,
 		{
@@ -13,13 +14,13 @@ export async function POST(request: NextRequest) {
 
 	if (!res.ok) {
 		const err = await res.json();
+
 		return NextResponse.json(
-			{ errors: err.errors || ['Ошибка входа'] },
+			{ errors: err || ['Ошибка входа'] },
 			{ status: 400 }
 		);
 	}
 	const data = await res.json();
-	// console.log('data in setTokens', data);
 
 	// Создаём ответ
 	const response = NextResponse.json(

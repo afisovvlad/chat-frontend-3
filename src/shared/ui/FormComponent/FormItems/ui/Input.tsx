@@ -2,12 +2,14 @@ import { classNames } from '@/shared/lib/classNames/classNames';
 import {
 	FieldValues,
 	Path,
+	PathValue,
 	RegisterOptions,
 	useController,
 	useFormContext
 } from 'react-hook-form';
 import { FormItemAutocomplete, FormItemType } from '../model/types';
 import styles from './styles.module.scss';
+import { forbiddenChars } from '../const/forbiddenChars';
 
 interface InputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
@@ -30,17 +32,23 @@ export function Input<TFormValues extends FieldValues>({
 	autoComplete,
 	parentInputClass
 }: InputProps<TFormValues>) {
-	const {
-		register
-		// formState: { errors }
-	} = useFormContext<TFormValues>();
-	// const isError = Boolean(errors?.[name]?.message as string | undefined);
-	const { fieldState } = useController({ name });
+	const { register, setValue } = useFormContext<TFormValues>();
+	const { fieldState, field } = useController({ name });
 	const isError = !!fieldState.error;
 
-	// console.log('isError in Input', isError);
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		let value = e.target.value;
 
-	// console.log('Я - Input');
+		// если это поле nickname, удаляем запрещённые символы
+		if (name === 'nickname') {
+			value = value.replace(forbiddenChars, '');
+		}
+
+		setValue(name, value as PathValue<TFormValues, Path<TFormValues>>, {
+			shouldValidate: true
+		});
+	};
+
 	return (
 		<input
 			{...register(name, rules)}
@@ -58,6 +66,8 @@ export function Input<TFormValues extends FieldValues>({
 				},
 				[parentInputClass]
 			)}
+			onChange={handleChange} // <-- фильтрация символов
+			value={field.value || ''} // <-- управляемое значение
 		/>
 	);
 }

@@ -1,5 +1,8 @@
+import { formatTime } from '@/shared/lib/formatTime/formatTime';
 import { useEffect, useState } from 'react';
 import styles from './TimeLeft.module.scss';
+import { authActions } from '@/features/auth';
+import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 
 interface TimeLeftProps {
 	initialTime: number;
@@ -8,6 +11,11 @@ interface TimeLeftProps {
 
 export function TimeLeft({ initialTime, setFinishedTime }: TimeLeftProps) {
 	const [timeLeft, setTimeLeft] = useState(initialTime);
+	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		setTimeLeft(initialTime);
+	}, [initialTime]);
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -20,12 +28,9 @@ export function TimeLeft({ initialTime, setFinishedTime }: TimeLeftProps) {
 	useEffect(() => {
 		if (timeLeft === 0) {
 			setFinishedTime(true);
+			dispatch(authActions.setBlockingTime(0));
 		}
-	}, [timeLeft, setFinishedTime]);
+	}, [timeLeft, setFinishedTime, dispatch]);
 
-	return (
-		<span className={styles.timeLeft}>
-			{timeLeft < 10 ? `0${timeLeft}` : timeLeft}
-		</span>
-	);
+	return <span className={styles.timeLeft}>{formatTime(timeLeft)}</span>;
 }

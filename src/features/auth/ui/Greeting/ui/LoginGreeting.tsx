@@ -14,16 +14,14 @@ import {
 import { Logo } from '@icons/index';
 import styles from './LoginGreeting.module.scss';
 import { useSetAuthStep } from '@/features/auth';
-import { useRef, useCallback, useEffect } from 'react';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
+import { useRef, useEffect } from 'react';
 
 export const LoginGreeting = () => {
 	const setStep = useSetAuthStep();
+	const { isDisabledCodeAttempts } = useAppSelector(state => state.auth);
 
 	const buttonRef = useRef<HTMLButtonElement>(null);
-
-	const handleStart = useCallback(() => {
-		setStep('phone');
-	}, [setStep]);
 
 	useEffect(() => {
 		buttonRef.current?.focus();
@@ -64,10 +62,10 @@ export const LoginGreeting = () => {
 				Давай знакомиться
 			</Text>
 			<Button
-				onClick={handleStart}
-				btnRef={buttonRef}
+				onClick={() => setStep('phone')}
+				disabled={isDisabledCodeAttempts}
+        btnRef={buttonRef}
 				className={styles.btn}
-				ariaLabel='Начать регистрацию'
 			>
 				Начать
 			</Button>
