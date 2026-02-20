@@ -5,9 +5,12 @@ import { ChatListItem } from '../ChatListItem/ChatListItem';
 import { Search } from '@/shared/ui/Search';
 import { useGetChatsQuery } from '../../api/chatApi';
 import { useChatSearch } from '../../model/lib/hooks/useChatSearch';
-import { ChatListSkeleton } from '../ChatListSkeleton/ChatListSkeleton';
+
 import { mockChats } from '../../mock/mockData';
 import EmptyChats from '@/shared/ui/EmptyChats/EmptyChats';
+import { UserCardSkeleton } from '@/shared/ui/Skeleton';
+import { UserCardType } from '@/shared/ui/UserCard';
+
 import cls from './ChatList.module.scss';
 
 export interface ChatListProps {
@@ -79,7 +82,7 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 					/>
 				</div>
 				<div className={cls.list} role='listbox'>
-					<ChatListSkeleton count={8} />
+					<UserCardSkeleton type={UserCardType.CHAT} count={9} />
 				</div>
 			</div>
 		);

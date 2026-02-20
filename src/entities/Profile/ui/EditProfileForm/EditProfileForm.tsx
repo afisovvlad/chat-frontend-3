@@ -54,44 +54,21 @@ interface EditProfileFormProps {
 export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverError, setServerError] = useState<string | null>(null);
-	const [editProfile, { isLoading, data }] = useEditProfileMutation();
-	const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-	const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
 
-	const avatarUploaderRef = useRef<AvatarUploaderRef>(null);
+	// const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+	// const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
+
+	// const avatarUploaderRef = useRef<AvatarUploaderRef>(null);
 
 	// ==================== RTK QUERY ====================
 	const [editProfile, { isLoading: isSaving }] = useEditProfileMutation();
-	const {
-		data: profileData,
-		isLoading: isProfileLoading,
-		error: profileError,
-		refetch: refetchProfile
-	} = useGetProfileQuery();
-	console.log(profileData, 'data');
-
-	const isMobile = useMediaQuery();
-	const avatarSize = isMobile ? 200 : 180; // Размер аватара для мобильной версии
-	const avatarVariant = isMobile ? 'full' : 'card';
-	// ==================== ХУК ЗАГРУЗКИ АВАТАРА ====================
-	// Используем хук для загрузки аватара
-	// После успешной загрузки обновляем профиль
-	const {
-		upload: uploadAvatarFile, // Функция загрузки
-		isUploading: isAvatarUploading, // Статус загрузки
-		error: avatarError, // Ошибка
-		clearError: clearAvatarError, // Очистка ошибки
-		avatarUrl // URL загруженного аватара
-	} = useAvatarUpload(() => {
-		// Callback после успешной загрузки
-		refetchProfile();
-	});
-
-	// ==================== ПРОИЗВОДНОЕ СОСТОЯНИЕ ====================
-	const currentAvatar = useMemo(() => {
-		// Приоритет: 1. preview (после загрузки), 2. из профиля
-		return avatarPreviewUrl || profileData?.avatar_url || null;
-	}, [avatarPreviewUrl, profileData?.avatar_url]);
+	// const {
+	// 	data: profileData,
+	// 	isLoading: isProfileLoading,
+	// 	error: profileError,
+	// 	refetch: refetchProfile
+	// } = useGetProfileQuery();
+	// console.log(profileData, 'data');
 
 	// ==================== FORM ====================
 
@@ -189,32 +166,9 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 				if (result) {
 					setIsSuccess(true);
 				}
-				// else if (error && typeof error === 'object' && 'data' in error) {
-				// 	const serverErrors = error.data as Record<string, string[]>;
-
-				// 	Object.entries(serverErrors).forEach(([field, messages]) => {
-				// 		setFormError(field as keyof EditProfileForm, {
-				// 			type: 'server',
-				// 			message: messages.join(' ')
-				// 		});
-				// 	});
-				// }
 			} catch (error) {
 				setServerError('Произошла непредвиденная ошибка');
-				// if (error && typeof error === 'object' && 'data' in error) {
-				// 	const serverErrors = error.data as Record<string, string[]>;
-				// 	Object.entries(serverErrors).forEach(([field, messages]) => {
-				// 		setFormError(field as keyof EditProfileForm, {
-				// 			type: 'server',
-				// 			message: messages.join(' ')
-				// 		});
-				// 	});
-				// }
 			}
-
-			// } catch (_) {
-			// 	setServerErrorMessage('Произошла непредвиденная ошибка');
-			// }
 		},
 
 		[day, month, year, editProfile, setFormError]
@@ -317,7 +271,7 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 					// disabled={isUploading}
 					className={cls.submitButton}
 				>
-					{isLoading ? (
+					{isSaving ? (
 						<>
 							<Loader width='22px' height='22px' />
 						</>
