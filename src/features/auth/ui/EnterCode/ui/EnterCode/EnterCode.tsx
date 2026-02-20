@@ -97,7 +97,6 @@ export const EnterCode = () => {
 			<EnterCodeForm
 				setTime={setTime}
 				phone_number={phone_number}
-				// code_len={code_len}
 				is_filled={is_filled}
 				disabled={isDisabledCodeAttempts}
 				finishedTime={finishedTime}
