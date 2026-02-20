@@ -119,7 +119,6 @@ export const EnterCodeForm = ({
 					type={item.type}
 					name={item.name}
 					label={item.label}
-					length={code_len}
 					disabled={disabled}
 					classNameParentInput={styles.codeInput}
 					parentLabelClass={styles.formLabel}
