@@ -1,3 +1,10 @@
+export interface BlackListResponse {
+	count: number;
+	next: string;
+	previous: string;
+	results: BlackListSchema[];
+}
+
 export interface BlackListSchema {
 	uid: string;
 	username: string;

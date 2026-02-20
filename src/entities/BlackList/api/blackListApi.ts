@@ -1,11 +1,15 @@
 import { rtkApi } from '@/shared/api/rtkApi';
+import { BlackListResponse } from '../model/types/BlackListSchema';
 
 const blackListApi = rtkApi.injectEndpoints({
 	endpoints: build => ({
 		getBlackList: build.query({
 			query: () => ({
 				url: '/contact/blacklist/'
-			})
+			}),
+			transformResponse: (response: BlackListResponse) => {
+				return response.results;
+			}
 		}),
 		addBlackList: build.mutation({
 			query: uid => ({
