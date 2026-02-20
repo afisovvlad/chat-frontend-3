@@ -1,9 +1,9 @@
 'use client';
 
 import { memo } from 'react';
-
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { UserCardType } from '@/shared/ui/UserCard';
+
 import cls from './Skeleton.module.scss';
 
 interface UserCardSkeletonProps {
