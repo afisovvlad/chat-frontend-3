@@ -30,7 +30,6 @@ export const EnterCode = () => {
 	const [finishedTime, setFinishedTime] = useState(false);
 	const {
 		phone_number,
-		code_len,
 		is_filled,
 		isDisabledCodeAttempts: disabled
 	} = useAppSelector(state => state.auth);
@@ -64,8 +63,8 @@ export const EnterCode = () => {
 			<TooltipWrapper />
 			<EnterCodeForm
 				setTime={setTime}
+				finishedTime
 				phone_number={phone_number}
-				code_len={code_len}
 				is_filled={is_filled}
 				disabled={disabled}
 			/>
