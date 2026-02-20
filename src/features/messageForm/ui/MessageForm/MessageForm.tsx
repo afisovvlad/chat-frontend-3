@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { MessageFormType } from '../../model/types/types';
 import { EmojiPicker } from '../EmojiPicker/EmojiPicker';
 import { Form, Textarea } from '@/shared/ui/FormComponent';
+import { AttachmentButton } from '../AttachmentButton/AttachmentButton';
 
 export function MessageForm() {
 	const methods = useForm<MessageFormType>({
@@ -19,6 +20,7 @@ export function MessageForm() {
 			onSubmit={onSubmit}
 			className={styles.messageForm}
 		>
+			<AttachmentButton />
 			<Textarea name={'message'} classNameTextarea={styles.textarea} />
 			<EmojiPicker />
 		</Form>
