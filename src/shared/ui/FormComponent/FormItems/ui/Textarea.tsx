@@ -10,6 +10,7 @@ import {
 } from 'react-hook-form';
 import { FormItemAutocomplete } from '../model/types';
 import styles from './styles.module.scss';
+import { useEffect, useRef } from 'react';
 
 interface TextareaProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
@@ -39,14 +40,37 @@ export function Textarea<TFormValues extends FieldValues>({
 	// const isError = Boolean(errors?.[name]?.message as string | undefined);
 	const { fieldState } = useController({ name });
 	const isError = !!fieldState.error;
+	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+	const { ref: registerRef, ...registerRest } = register(name, rules);
+
+	const setRefs = (element: HTMLTextAreaElement | null) => {
+		textareaRef.current = element;
+		registerRef(element);
+	};
 
 	// console.log('isError in Textarea', isError);
 
 	// console.log('Я - Textarea');
+	useEffect(() => {
+		const textarea = textareaRef.current;
+		if (textarea) {
+			const autoResize = () => {
+				textarea.style.height = 'auto';
+				textarea.style.height = textarea.scrollHeight + 'px';
+			};
+
+			autoResize(); // Устанавливаем высоту при загрузке
+			textarea.addEventListener('input', autoResize);
+
+			return () => textarea.removeEventListener('input', autoResize);
+		}
+	}, []);
 
 	return (
 		<textarea
-			{...register(name, rules)}
+			ref={setRefs}
+			{...registerRest}
+			// {...register(name, rules)}
 			id={name}
 			placeholder={placeholder}
 			autoComplete={FormItemAutocomplete.OFF}
