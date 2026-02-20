@@ -40,9 +40,9 @@ export function Textarea<TFormValues extends FieldValues>({
 	const { fieldState } = useController({ name });
 	const isError = !!fieldState.error;
 
-	console.log('isError in Textarea', isError);
+	// console.log('isError in Textarea', isError);
 
-	console.log('Я - Textarea');
+	// console.log('Я - Textarea');
 
 	return (
 		<textarea
@@ -59,7 +59,14 @@ export function Textarea<TFormValues extends FieldValues>({
 				},
 				[classNameTextarea]
 			)}
-			style={height ? { minHeight: height, maxHeight: height } : {}}
+			style={
+				height
+					? {
+							minHeight: height
+							// maxHeight: height
+						}
+					: {}
+			}
 		/>
 	);
 }

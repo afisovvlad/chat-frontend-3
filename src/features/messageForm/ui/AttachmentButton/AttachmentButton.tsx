@@ -4,7 +4,11 @@ import styles from './AttachmentButton.module.scss';
 
 export function AttachmentButton() {
 	return (
-		<Button color={ButtonColor.TRANSPARENT} className={styles.button}>
+		<Button
+			color={ButtonColor.TRANSPARENT}
+			className={styles.button}
+			aria-label='Прикрепить файл'
+		>
 			<Paperclip className={styles.icon} />
 		</Button>
 	);

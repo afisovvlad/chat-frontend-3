@@ -1,6 +1,7 @@
 @use '@/app/styles/mixins/mixin.scss' as *;
 
 .form {
+	flex-direction: column;
 	margin: 0 auto;
 }
 
