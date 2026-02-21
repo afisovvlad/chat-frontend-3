@@ -1,0 +1,95 @@
+.userCard {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px;
+	border-radius: 8px;
+	background: var(--color-gray-100);
+	animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.avatar {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: var(--color-violet-100);
+}
+
+.info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.leftHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.nameSkeleton {
+	width: 120px;
+	height: 16px;
+	border-radius: 4px;
+	background: var(--color-gray-500);
+}
+
+.rightHeader {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.statusSkeleton {
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: var(--color-gray-500);
+}
+
+.timeSkeleton {
+	width: 40px;
+	height: 12px;
+	border-radius: 4px;
+	background: var(--color-gray-500);
+}
+
+.phoneSkeleton,
+.nicknameSkeleton {
+	width: 100px;
+	height: 14px;
+	border-radius: 4px;
+	background: var(--color-gray-500);
+}
+
+.messageSkeleton {
+	width: 80%;
+	height: 14px;
+	border-radius: 4px;
+	background: var(--color-gray-500);
+}
+
+.onlineSkeleton {
+	width: 60px;
+	height: 12px;
+	border-radius: 4px;
+	background: var(--color-gray-500);
+}
+
+.trashBtnSkeleton {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: var(--color-gray-500);
+}
+
+@keyframes skeleton-loading {
+	0% {
+		background-position: -200px 0;
+	}
+
+	100% {
+		background-position: calc(200px + 100%) 0;
+	}
+}
