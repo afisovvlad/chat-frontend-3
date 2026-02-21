@@ -9,7 +9,7 @@ export function filterByName<T extends { name: string }>(
 ): T[] {
 	const term = searchTerm.toLowerCase().trim();
 	if (!term) {
-		return [];
+		return items;
 	}
 
 	return items.filter(item => {
@@ -36,7 +36,7 @@ export function filterByNameExtended<
 >(items: T[], searchTerm: string): T[] {
 	const term = searchTerm.toLowerCase().trim();
 	if (!term) {
-		return [];
+		return items;
 	}
 
 	return items.filter(item => {
