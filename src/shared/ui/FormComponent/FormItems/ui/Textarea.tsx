@@ -1,6 +1,7 @@
 'use client';
 
 import { classNames } from '@/shared/lib/classNames/classNames';
+import { useEffect, useRef } from 'react';
 import {
 	FieldValues,
 	Path,
@@ -10,7 +11,6 @@ import {
 } from 'react-hook-form';
 import { FormItemAutocomplete } from '../model/types';
 import styles from './styles.module.scss';
-import { useEffect, useRef } from 'react';
 
 interface TextareaProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
@@ -55,7 +55,7 @@ export function Textarea<TFormValues extends FieldValues>({
 		const textarea = textareaRef.current;
 		if (textarea) {
 			const autoResize = () => {
-				textarea.style.height = 'auto';
+				textarea.style.height = height || '21px';
 				textarea.style.height = textarea.scrollHeight + 'px';
 			};
 

@@ -1,12 +1,17 @@
 import { Smile } from '@icons/index';
 import styles from './EmojiPicker.module.scss';
 import { Button, ButtonColor } from '@/shared/ui/Button';
+import { classNames } from '@/shared/lib/classNames/classNames';
 
-export function EmojiPicker() {
+interface EmojiPickerProps {
+	parentClass?: string;
+}
+
+export function EmojiPicker({ parentClass }: EmojiPickerProps) {
 	return (
 		<Button
 			color={ButtonColor.TRANSPARENT}
-			className={styles.button}
+			className={classNames(styles.button, {}, [parentClass])}
 			aria-label='Прикрепить файл'
 		>
 			<Smile />

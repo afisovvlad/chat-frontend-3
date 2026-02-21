@@ -21,8 +21,14 @@ export function MessageForm() {
 			className={styles.messageForm}
 		>
 			<AttachmentButton />
-			<Textarea name={'message'} classNameTextarea={styles.textarea} />
-			<EmojiPicker />
+			<div className={styles.textareaWrapper}>
+				<Textarea
+					name={'message'}
+					classNameTextarea={styles.textarea}
+					height={'21px'}
+				/>
+				<EmojiPicker />
+			</div>
 		</Form>
 	);
 }
