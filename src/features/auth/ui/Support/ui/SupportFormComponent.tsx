@@ -2,9 +2,10 @@ import { classNames } from '@/shared/lib/classNames/classNames';
 import { Button, ButtonTheme } from '@/shared/ui/Button';
 import { Text, TextAlign, TextType, TitleTag } from '@/shared/ui/Text';
 import { Back, Logo } from '@icons/index';
-import styles from './SupportFormComponent.module.scss';
 import { SupportForm } from '@/features/support';
 import { useAuthGoBack } from '@/features/auth';
+
+import styles from './SupportFormComponent.module.scss';
 
 export function SupportFormComponent() {
 	const goBack = useAuthGoBack();
