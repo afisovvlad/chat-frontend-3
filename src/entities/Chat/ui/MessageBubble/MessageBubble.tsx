@@ -1,9 +1,10 @@
+import { formatUnixToLocal } from './lib/formatUnixToLocal';
 import { Text, TextColor, TextSize } from '@/shared/ui/Text';
 import { MessageStatusNode } from './MessageStatusNode';
 import './MessageBubble.scss';
 
 interface MessageBubbleProps {
-	time: string;
+	time: number;
 	isSent: boolean;
 	text: string;
 	status: 'sent' | 'sending' | 'unread' | 'read';
@@ -30,7 +31,7 @@ export const MessageBubble = ({
 					color={TextColor.GRAY}
 					className='message__time'
 				>
-					{time}
+					{formatUnixToLocal(time)}
 				</Text>
 
 				{!isSent && <MessageStatusNode status={status} />}
