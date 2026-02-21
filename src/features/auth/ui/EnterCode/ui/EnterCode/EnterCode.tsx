@@ -27,8 +27,13 @@ import TooltipWrapper from '../TooltipWrapper/TooltipWrapper';
 import styles from './EnterCode.module.scss';
 
 export const EnterCode = () => {
-	const { phone_number, is_filled, isDisabledCodeAttempts, blockingTime } =
-		useAppSelector(state => state.auth);
+	const {
+		phone_number,
+		// code_len,
+		is_filled,
+		isDisabledCodeAttempts,
+		blockingTime
+	} = useAppSelector(state => state.auth);
 	const [time, setTime] = useState<number>(60);
 	const [finishedTime, setFinishedTime] = useState(false);
 	const dispatch = useAppDispatch();
@@ -97,6 +102,7 @@ export const EnterCode = () => {
 			<EnterCodeForm
 				setTime={setTime}
 				phone_number={phone_number}
+				// code_len={code_len}
 				is_filled={is_filled}
 				disabled={isDisabledCodeAttempts}
 				finishedTime={finishedTime}

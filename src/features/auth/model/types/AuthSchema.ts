@@ -5,6 +5,7 @@ export interface AuthSchema {
 	stepHistory: AuthStep[];
 	isRefreshing: boolean;
 	phone_number?: string;
+	// code_len?: number;
 	// code: string;
 	status: 'idle' | 'loading' | 'succeeded' | 'failed';
 	error: string | null;
