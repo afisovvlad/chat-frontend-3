@@ -64,7 +64,7 @@ export const LoginGreeting = () => {
 			<Button
 				onClick={() => setStep('phone')}
 				disabled={isDisabledCodeAttempts}
-        btnRef={buttonRef}
+				btnRef={buttonRef}
 				className={styles.btn}
 			>
 				Начать

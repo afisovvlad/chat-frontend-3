@@ -1,0 +1,51 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
+.message {
+	max-width: 60%;
+	display: flex;
+	gap: 8px;
+	padding: 10px 12px;
+	border-radius: 16px;
+
+	&--sent {
+		background: #d8f5f0;
+		border-bottom-right-radius: 4px;
+	}
+
+	&--received {
+		background: #eee;
+		border-bottom-left-radius: 4px;
+	}
+
+	&__text {
+		text-wrap: balance;
+		overflow-wrap: anywhere;
+	}
+
+	&__meta {
+		flex-shrink: 0;
+		display: flex;
+		gap: 2px;
+		align-self: flex-end;
+	}
+}
+
+.sentTimeIcon,
+.sentUnreadIcon,
+.sentReadIcon {
+	width: 18px;
+	height: 18px;
+
+	&.sentTimeIcon,
+	&.sentUnreadIcon {
+		path {
+			fill: #747474;
+		}
+	}
+
+	&.sentReadIcon {
+		path {
+			fill: #7769e1;
+		}
+	}
+}
