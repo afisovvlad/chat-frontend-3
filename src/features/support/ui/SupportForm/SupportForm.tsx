@@ -24,7 +24,7 @@ import styles from './SupportForm.module.scss';
 
 interface SupportFormProps {
 	parentClass?: string;
-	marginTop: string;
+	marginTop?: string;
 }
 
 export function SupportForm({ parentClass, marginTop }: SupportFormProps) {
