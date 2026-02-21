@@ -1,11 +1,11 @@
 import { SentRead, SentTime, SentUnread } from '@icons/index';
 
 interface MessageStatusNodeProps {
-	status: 'sent' | 'sending' | 'unread' | 'read';
+	status: 'recieved' | 'sending' | 'unread' | 'read';
 }
 
 export const MessageStatusNode = ({ status }: MessageStatusNodeProps) => {
-	if (status === 'sent') {
+	if (status === 'recieved') {
 		return;
 	}
 
