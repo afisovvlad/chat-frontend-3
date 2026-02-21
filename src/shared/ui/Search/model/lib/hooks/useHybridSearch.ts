@@ -43,7 +43,7 @@ export function useHybridSearch<T>(
 	// Дебаунсированный локальный поиск
 	const debouncedLocalSearch = useDebounce((term: string) => {
 		if (term.length === 0) {
-			setResults([]);
+			setResults(localData);
 			return;
 		}
 		const filtered = localFilterFn(localData, term);
