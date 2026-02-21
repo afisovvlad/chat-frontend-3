@@ -2,12 +2,14 @@
 
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { filterContacts, Search, useLocalSearch } from '@/shared/ui/Search';
+import { UserCardSkeleton } from '@/shared/ui/Skeleton';
 import { Text } from '@/shared/ui/Text';
 import {
 	mapBlackListToUserCard,
 	UserCard,
 	UserCardType
 } from '@/shared/ui/UserCard';
+import Image from 'next/image';
 import {
 	useDeleteBlackListMutation,
 	useGetBlackListQuery
@@ -105,8 +107,16 @@ export const BlackList = ({ className }: BlackListProps) => {
 	// 2. Загрузка
 	if (isLoading) {
 		return (
-			<div className={classNames(cls.blackList, {}, [className])}>
-				<Text>Загрузка...</Text>
+			<div
+				className={classNames(cls.blackListContainer, {}, [
+					className,
+					cls.blackListSkeleton
+				])}
+			>
+				<UserCardSkeleton
+					type={UserCardType.BLACK_LIST}
+					count={10}
+				></UserCardSkeleton>
 			</div>
 		);
 	}
@@ -114,8 +124,15 @@ export const BlackList = ({ className }: BlackListProps) => {
 	// 3. Пустой список
 	if (!data?.length) {
 		return (
-			<div className={classNames(cls.blackList, {}, [className])}>
-				<Text>Список пуст</Text>
+			<div className={classNames(cls.blackListEmpty, {}, [className])}>
+				<Image
+					src='/images/png/emptyBlackList.png'
+					alt='Список пуст'
+					className={cls.emptyImage}
+					width={200}
+					height={200}
+				/>
+				<Text>Список пока пуст</Text>
 			</div>
 		);
 	}
