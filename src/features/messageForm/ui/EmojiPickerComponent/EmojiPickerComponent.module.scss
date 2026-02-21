@@ -1,4 +1,5 @@
 .button {
+	position: relative;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -9,4 +10,12 @@
 	border: none;
 	outline: inherit;
 	color: var(--color-primary);
+}
+
+.picker {
+	position: absolute !important;
+	bottom: 20px;
+	right: 10%;
+
+	// transform: translateX(-50%);
 }

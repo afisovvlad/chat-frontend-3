@@ -7,7 +7,7 @@ export function VoiceButton() {
 		<Button
 			color={ButtonColor.TRANSPARENT}
 			className={styles.button}
-			aria-label='Прикрепить файл'
+			aria-label='Начать запись голосового сообщения'
 		>
 			<Microphone className={styles.icon} />
 		</Button>
