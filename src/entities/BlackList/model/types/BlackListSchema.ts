@@ -21,4 +21,5 @@ export interface BlackListSchema {
 	chat_id: number;
 	is_online: boolean;
 	was_online_at: number;
+	name?: string;
 }

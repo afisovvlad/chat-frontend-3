@@ -1,13 +1,17 @@
 'use client';
 
 import { classNames } from '@/shared/lib/classNames/classNames';
+import { filterContacts, Search, useLocalSearch } from '@/shared/ui/Search';
 import { Text } from '@/shared/ui/Text';
 import {
 	mapBlackListToUserCard,
 	UserCard,
 	UserCardType
 } from '@/shared/ui/UserCard';
-import { useGetBlackListQuery } from '../api/blackListApi';
+import {
+	useDeleteBlackListMutation,
+	useGetBlackListQuery
+} from '../api/blackListApi';
 import cls from './BlackList.module.scss';
 
 interface BlackListProps {
@@ -15,16 +19,18 @@ interface BlackListProps {
 }
 
 export const BlackList = ({ className }: BlackListProps) => {
-	let { isLoading, data, error } = useGetBlackListQuery('');
+	let { isLoading, data, error, refetch } = useGetBlackListQuery('');
+	const [deleteBlackList] = useDeleteBlackListMutation();
 
 	// мок для теста - т.к. список на бэке пустой
 	data = [
 		{
 			uid: 'qwerqwerqwer',
+			name: 'айрат',
 			username: 'string',
 			nickname: 'string',
 			phone: 'string',
-			first_name: 'string',
+			first_name: 'айрат',
 			last_name: 'string',
 			avatar: 'string',
 			avatar_url:
@@ -39,10 +45,11 @@ export const BlackList = ({ className }: BlackListProps) => {
 		},
 		{
 			uid: 'qwerqwerqwe123r',
+			name: 'владислав',
 			username: 'string',
 			nickname: 'string',
 			phone: 'string',
-			first_name: 'string',
+			first_name: 'владислав',
 			last_name: 'string',
 			avatar: 'string',
 			avatar_url:
@@ -56,6 +63,35 @@ export const BlackList = ({ className }: BlackListProps) => {
 			was_online_at: 12312312
 		}
 	];
+
+	// ========================================================
+	// КОГДА ПЕРЕЙДЕМ НА БЭК, РАССКОМЕНТИТЬ
+	// подключение поиска
+	// let { searchTerm, handleSearchChange, filteredData } = useLocalSearch(
+	// 	data,
+	// 	filterContacts
+	// );
+
+	// const onDeleteHandler = async (uid: string) => {
+	// 	try {
+	// 		// КОГДА ПЕРЕЙДЕМ НА БЭК, РАССКОМЕНТИТЬ
+	// 		await deleteBlackList(uid);
+	// 		refetch();
+	// 	} catch (_) {}
+	// };
+	// ========================================================
+
+	// ========================================================
+	// КОГДА ПЕРЕЙДЕМ НА БЭК, УДАЛИТЬ !!!!!!
+	const { searchTerm, handleSearchChange, filteredData } = useLocalSearch(
+		data,
+		filterContacts
+	);
+
+	const onDeleteHandler = (uid: string) => {
+		console.log('delete');
+	};
+	// ===============================================================
 
 	// 1. Ошибка
 	if (error) {
@@ -87,13 +123,18 @@ export const BlackList = ({ className }: BlackListProps) => {
 	// 4. Данные
 	return (
 		<div className={classNames(cls.blackList, {}, [className])}>
-			{data.map(item => (
-				<UserCard
-					key={item.uid}
-					type={UserCardType.BLACK_LIST}
-					userData={mapBlackListToUserCard(item)}
-				/>
-			))}
+			<Search value={searchTerm} onChange={handleSearchChange}></Search>
+
+			<div className={cls.blackListContainer}>
+				{filteredData.map(item => (
+					<UserCard
+						key={item.uid}
+						type={UserCardType.BLACK_LIST}
+						userData={mapBlackListToUserCard(item)}
+						onDelete={() => onDeleteHandler(item.uid)}
+					/>
+				))}
+			</div>
 		</div>
 	);
 };
