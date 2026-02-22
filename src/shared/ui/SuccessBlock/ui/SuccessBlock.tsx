@@ -1,3 +1,7 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
 	FontWeight,
 	Text,
@@ -9,10 +13,44 @@ import {
 	TitleTag
 } from '@/shared/ui/Text';
 import { Success } from '@icons/index';
-import { SuccessBlockProps } from '..';
 import styles from './SuccessBlock.module.scss';
 
-export function SuccessBlock({ marginTop, title, text }: SuccessBlockProps) {
+export interface SuccessBlockProps {
+	marginTop?: string;
+	title: string;
+	text?: string;
+	redirectUrl?: string;
+	redirectDelay?: number;
+}
+
+export function SuccessBlock({
+	marginTop,
+	title,
+	text,
+	redirectUrl,
+	redirectDelay = 3000
+}: SuccessBlockProps) {
+	const [countdown, setCountdown] = useState(Math.ceil(redirectDelay / 1000));
+	const router = useRouter();
+
+	useEffect(() => {
+		if (!redirectUrl || countdown <= 0) {
+			return;
+		}
+
+		const timer = setInterval(() => {
+			setCountdown(prev => prev - 1);
+		}, 1000);
+
+		return () => clearInterval(timer);
+	}, [redirectUrl, countdown]);
+
+	useEffect(() => {
+		if (redirectUrl && countdown <= 0) {
+			router.push(redirectUrl);
+		}
+	}, [redirectUrl, countdown, router]);
+
 	return (
 		<div className={styles.successBlock} style={{ marginTop: marginTop }}>
 			<Success width={66.7} height={66.7} className={styles.successIcon} />
@@ -38,7 +76,7 @@ export function SuccessBlock({ marginTop, title, text }: SuccessBlockProps) {
 					color={TextColor.BLACK}
 					className={styles.successText}
 				>
-					{text}
+					{text} {countdown > 0 && `(${countdown}с)`}
 				</Text>
 			)}
 		</div>
