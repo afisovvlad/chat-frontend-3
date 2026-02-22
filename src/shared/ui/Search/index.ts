@@ -1,11 +1,11 @@
 export { Search } from './ui/Search/Search';
 
 // Фильтры
-export { filterByName } from './model/lib/filter/filterByName';
+export { filterByName } from './model/lib/filter/filterByNames/filterByName';
 export { filterContacts } from './model/lib/filter/filterContacts';
-export { filterByField } from './model/lib/filter/filterByField';
+export { filterByField } from './model/lib/filter/filterByFields/filterByField';
 
 // Хуки
-export { useLocalSearch } from './model/lib/hooks/useLocalSearch';
-export { useGlobalSearch } from './model/lib/hooks/useGlobalSearch';
-export { useHybridSearch } from './model/lib/hooks/useHybridSearch';
+export { useLocalSearch } from './model/lib/hooks/UseLocalSearch/useLocalSearch';
+export { useGlobalSearch } from './model/lib/hooks/useGlobalSearch/useGlobalSearch';
+export { useHybridSearch } from './model/lib/hooks/useHybrydSearch/useHybridSearch';

@@ -99,7 +99,7 @@ export const Search = memo(
 						placeholder={placeholder}
 						className={inputClass}
 						aria-label={placeholder}
-						autoComplete='off'
+						autoComplete='search'
 						spellCheck={false}
 						{...inputProps}
 					/>
