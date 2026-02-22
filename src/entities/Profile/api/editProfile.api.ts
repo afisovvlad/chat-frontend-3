@@ -30,10 +30,16 @@ export const profileApi = rtkApi.injectEndpoints({
 					dispatch(profileActions.setProfile(data));
 				} catch (_) {}
 			}
+		}),
+		deleteProfile: build.mutation({
+			query: () => ({
+				url: '/auth/messenger/profile/',
+				method: 'DELETE'
+			})
 		})
 	}),
 	// Отправка запроса за свежими данными
 	overrideExisting: true
 });
 
-export const { useEditProfileMutation } = profileApi;
+export const { useEditProfileMutation, useDeleteProfileMutation } = profileApi;
