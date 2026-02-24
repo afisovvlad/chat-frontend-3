@@ -1,4 +1,4 @@
-import { formatUnixToLocalTime } from './lib/formatUnixToLocal';
+import { formatUnixToLocalTime } from '@/shared/lib/formatUnixToLocalTime/formatUnixToLocalTime';
 import { Text, TextColor, TextSize } from '@/shared/ui/Text';
 import { MessageStatusNode } from './MessageStatusNode';
 import './MessageBubble.scss';
