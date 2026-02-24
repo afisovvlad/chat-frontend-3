@@ -6,13 +6,13 @@ import './MessageBubble.scss';
 interface MessageBubbleProps {
 	time: number;
 	text: string;
-	status: 'recieved' | 'sending' | 'unread' | 'read';
+	status: 'received' | 'sending' | 'unread' | 'read';
 }
 
 export const MessageBubble = ({ time, text, status }: MessageBubbleProps) => {
 	return (
 		<div
-			className={`message ${status !== 'recieved' ? 'message--sent' : 'message--received'}`}
+			className={`message ${status !== 'received' ? 'message--sent' : 'message--received'}`}
 		>
 			<Text lineHeight={1.3} color={TextColor.BLACK} className='message__text'>
 				{text}
@@ -28,7 +28,7 @@ export const MessageBubble = ({ time, text, status }: MessageBubbleProps) => {
 					{formatUnixToLocalTime(time)}
 				</Text>
 
-				{status !== 'recieved' && <MessageStatusNode status={status} />}
+				{status !== 'received' && <MessageStatusNode status={status} />}
 			</div>
 		</div>
 	);
