@@ -1,3 +1,7 @@
+import { Chat } from '@/entities/Chat';
+
+// УНИВЕРСАЛЬНЫЕ ФИЛЬТРЫ (для любых объектов)
+
 export function filterByName<T extends Record<string, unknown>>(
 	items: T[],
 	searchTerm: string,
@@ -10,7 +14,6 @@ export function filterByName<T extends Record<string, unknown>>(
 
 	return items.filter(item => {
 		const value = item[fieldName];
-
 		if (typeof value !== 'string') {
 			return false;
 		}
@@ -38,6 +41,8 @@ export function filterByNameExtended<T extends Record<string, unknown>>(
 	);
 }
 
+// СПЕЦИАЛИЗИРОВАННЫЙ ФИЛЬТР ДЛЯ ЧАТОВ (оптимизированный + дженерик)
+
 export function filterChatsLocal<
 	T extends {
 		name: string;
@@ -52,24 +57,29 @@ export function filterChatsLocal<
 	}
 >(items: T[], searchTerm: string): T[] {
 	const term = searchTerm.toLowerCase().trim();
-
 	if (!term) {
 		return items;
 	}
-
 	return items.filter(item => {
-		const fields = [
-			item.name,
-			item.chat.username,
-			item.chat.nickname,
-			item.chat.first_name,
-			item.chat.last_name,
-			item.chat.patronymic,
-			item.last_message?.content
-		];
+		//  1. Быстрые и вероятные проверки (короткое замыкание)
+		if (item.name.toLowerCase().includes(term)) {
+			return true;
+		}
 
-		return fields.some(
-			field => typeof field === 'string' && field.toLowerCase().includes(term)
+		//  2. Поиск по последнему сообщению (частый кейс)
+		if (item.last_message?.content?.toLowerCase().includes(term)) {
+			return true;
+		}
+		//  3. Поля пользователя — только если предыдущие не сработали
+		const { chat } = item;
+
+		// Без создания массива: нативное короткое замыкание через ||
+		return (
+			chat.username?.toLowerCase().includes(term) ||
+			chat.nickname?.toLowerCase().includes(term) ||
+			chat.first_name?.toLowerCase().includes(term) ||
+			chat.last_name?.toLowerCase().includes(term) ||
+			chat.patronymic?.toLowerCase().includes(term)
 		);
 	});
 }

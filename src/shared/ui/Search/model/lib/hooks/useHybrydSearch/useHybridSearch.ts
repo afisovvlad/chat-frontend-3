@@ -6,13 +6,12 @@ export function useHybridSearch<T>(
 	localFilterFn: (items: T[], searchTerm: string) => T[],
 	globalSearchFn: (searchTerm: string, signal?: AbortSignal) => Promise<T[]>,
 	debounceDelay: number = 300,
-	globalPrefix: string = '@'
+	globalPrefix: string = '@',
+	globalMinLength: number = 3
 ) {
 	const [searchTerm, setSearchTerm] = useState('');
-
 	const [globalResults, setGlobalResults] = useState<T[]>([]);
 	const [localResults, setLocalResults] = useState<T[]>([]);
-
 	const [isGlobal, setIsGlobal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
@@ -27,6 +26,14 @@ export function useHybridSearch<T>(
 		};
 	}, []);
 
+	//  Инициализация: при пустом поиске показываем все локальные данные
+	useEffect(() => {
+		if (!searchTerm.trim()) {
+			setLocalResults(localData);
+		}
+	}, [localData, searchTerm]);
+
+	//  Дебаунсированный локальный поиск
 	const debouncedLocalSearch = useDebounce((term: string) => {
 		if (term.length === 0) {
 			setLocalResults(localData);
@@ -36,7 +43,9 @@ export function useHybridSearch<T>(
 		setLocalResults(filtered);
 	}, debounceDelay);
 
+	//  Дебаунсированный глобальный поиск
 	const debouncedGlobalSearch = useDebounce(async (term: string) => {
+		// Отменяем предыдущий запрос
 		if (abortControllerRef.current) {
 			abortControllerRef.current.abort();
 		}
@@ -44,7 +53,8 @@ export function useHybridSearch<T>(
 		const controller = new AbortController();
 		abortControllerRef.current = controller;
 
-		if (term.length === 0) {
+		//  Проверка минимальной длины запроса
+		if (term.length === 0 || term.length < globalMinLength) {
 			setGlobalResults([]);
 			setIsLoading(false);
 			return;
@@ -57,6 +67,7 @@ export function useHybridSearch<T>(
 			const data = await globalSearchFn(term, controller.signal);
 			setGlobalResults(data);
 		} catch (err) {
+			// Игнорируем ошибку отмены запроса
 			if (err instanceof DOMException && err.name === 'AbortError') {
 				return;
 			}
@@ -68,13 +79,13 @@ export function useHybridSearch<T>(
 		}
 	}, debounceDelay);
 
+	//  Определяем, является ли поиск глобальным
 	const isGlobalSearch = useCallback(
-		(term: string): boolean => {
-			return term.trim().startsWith(globalPrefix);
-		},
+		(term: string): boolean => term.trim().startsWith(globalPrefix),
 		[globalPrefix]
 	);
 
+	//  Обработчик изменения поискового запроса
 	const handleSearchChange = useCallback(
 		(value: string) => {
 			setSearchTerm(value);
@@ -82,7 +93,6 @@ export function useHybridSearch<T>(
 
 			if (trimmed.length === 0) {
 				setGlobalResults([]);
-				setLocalResults([]);
 				setIsGlobal(false);
 				setError(null);
 				return;
@@ -94,7 +104,8 @@ export function useHybridSearch<T>(
 			if (global) {
 				const searchQuery = trimmed.slice(globalPrefix.length).trim();
 
-				if (!searchQuery) {
+				//  Ранняя проверка: не запускаем запрос, если длина меньше минимума
+				if (!searchQuery || searchQuery.length < globalMinLength) {
 					setGlobalResults([]);
 					setIsLoading(false);
 					return;
@@ -105,13 +116,19 @@ export function useHybridSearch<T>(
 				debouncedLocalSearch(trimmed);
 			}
 		},
-		[isGlobalSearch, globalPrefix, debouncedLocalSearch, debouncedGlobalSearch]
+		[
+			isGlobalSearch,
+			globalPrefix,
+			globalMinLength,
+			debouncedLocalSearch,
+			debouncedGlobalSearch
+		]
 	);
 
+	//  Обработчик очистки
 	const handleClear = useCallback(() => {
 		setSearchTerm('');
 		setGlobalResults([]);
-		setLocalResults([]);
 		setIsGlobal(false);
 		setError(null);
 
@@ -120,17 +137,7 @@ export function useHybridSearch<T>(
 		}
 	}, []);
 
-	const handleClearLocal = useCallback(() => {
-		setLocalResults([]);
-	}, []);
-
-	const handleClearGlobal = useCallback(() => {
-		setGlobalResults([]);
-		if (abortControllerRef.current) {
-			abortControllerRef.current.abort();
-		}
-	}, []);
-
+	//  Объединённые результаты
 	const combinedResults = useMemo(() => {
 		if (isGlobal) {
 			return globalResults;
@@ -138,6 +145,7 @@ export function useHybridSearch<T>(
 		return localResults;
 	}, [isGlobal, globalResults, localResults]);
 
+	//  Возвращаемый объект
 	return useMemo(
 		() => ({
 			searchTerm,
@@ -149,8 +157,6 @@ export function useHybridSearch<T>(
 			error,
 			handleSearchChange,
 			handleClear,
-			handleClearLocal,
-			handleClearGlobal,
 			setGlobalResults,
 			setLocalResults
 		}),
@@ -163,9 +169,15 @@ export function useHybridSearch<T>(
 			isLoading,
 			error,
 			handleSearchChange,
-			handleClear,
-			handleClearLocal,
-			handleClearGlobal
+			handleClear
 		]
 	);
 }
+
+/**
+ * Тип возвращаемого значения хука useHybridSearch
+ * @example
+ * const search = useHybridSearch<Chat>(...);
+ * type SearchState = UseHybridSearchReturn<Chat>;
+ */
+export type UseHybridSearchReturn<T> = ReturnType<typeof useHybridSearch<T>>;

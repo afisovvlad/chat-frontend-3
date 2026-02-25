@@ -1,8 +1,12 @@
 export { Search } from './ui/Search/Search';
 
 // Фильтры
-export { filterByName } from './model/lib/filter/filterByNames/filterByName';
-export { filterContacts } from './model/lib/filter/filterContacts';
+export {
+	filterByName,
+	filterByNameExtended,
+	filterChatsLocal
+} from './model/lib/filter/filterByNames/filterByName';
+export { filterContacts } from './model/lib/filter/FilterByContacts/filterContacts';
 export { filterByField } from './model/lib/filter/filterByFields/filterByField';
 
 // Хуки
