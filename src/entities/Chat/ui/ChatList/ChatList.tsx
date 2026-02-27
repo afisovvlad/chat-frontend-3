@@ -10,10 +10,10 @@ import { UserCardType } from '@/shared/ui/UserCard';
 import { Chat, GetChatsRequest } from '../../model/types/chat.types';
 import { mockChats } from '../../mock/mockData';
 import cls from './ChatList.module.scss';
+import { appConfig } from '@/shared/config/app.config';
 
 // 🎛 Переключатель режима: true = моки, false = реальные данные из API
-const USE_MOCKS = true;
-const LOCAL_CACHE_SIZE = 100;
+const LOCAL_CACHE_SIZE = 30;
 const GLOBAL_SEARCH_MIN_LENGTH = 3;
 
 export interface ChatListProps {
@@ -31,7 +31,9 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 	//  Mock data (только для разработки/тестов)
 	//  Переключай USE_MOCKS выше, чтобы менять режим без правки кода
 	const localChats = useMemo(() => {
-		if (USE_MOCKS) {
+		// ✅ Используем конфиг из env
+		if (appConfig.USE_MOCKS) {
+			console.log('🧪 Using mock data (USE_MOCKS=true)');
 			return mockChats;
 		}
 		return cacheResponse?.results ?? [];
@@ -142,7 +144,7 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 					placeholder={
 						isGlobal
 							? 'Глобальный поиск (@username)...'
-							: USE_MOCKS
+							: appConfig.USE_MOCKS
 								? 'Поиск по мокам...'
 								: 'Поиск чатов...'
 					}

@@ -1,4 +1,4 @@
-import { MessagesPage } from '@/pages/Chats/ui/MessagesPage/MessagesPage';
+import { MessagesPage } from '@/pages/Chats';
 
 export default function page() {
 	return <MessagesPage />;
