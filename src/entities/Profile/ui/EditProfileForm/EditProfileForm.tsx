@@ -75,8 +75,6 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 	const hasError = formState.isSubmitted && (!day || !month || !year);
 	const profile = useAppSelector(state => state.profile);
 
-	console.log('profile', profile);
-
 	// ==================== ЭФФЕКТЫ ====================
 	// Загрузка данных профиля в форму
 	useEffect(() => {
@@ -170,8 +168,8 @@ export function EditProfileForm({ parentClass }: EditProfileFormProps) {
 				marginTop='100px'
 				title='Ваш профиль успешно изменен'
 				text='Перенаправление в настройки...'
-				redirectUrl='/settings' // ← путь к странице настроек
-				redirectDelay={3000} // ← 3 секунды
+				redirectUrl='/settings'
+				redirectDelay={3000}
 			/>
 		);
 	}

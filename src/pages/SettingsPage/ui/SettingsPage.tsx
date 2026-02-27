@@ -8,8 +8,8 @@ import {
 	UserCardType
 } from '@/shared/ui/UserCard';
 import { Trash } from '@icons/index';
-import cls from './SettingsPage.module.scss';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
+import cls from './SettingsPage.module.scss';
 
 export const SettingsPage = () => {
 	const profile = useAppSelector(state => state.profile);
