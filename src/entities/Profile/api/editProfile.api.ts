@@ -35,7 +35,8 @@ export const profileApi = rtkApi.injectEndpoints({
 			query: () => ({
 				url: '/auth/messenger/profile/',
 				method: 'DELETE'
-			})
+			}),
+			invalidatesTags: ['Profile', 'EditProfile']
 		})
 	}),
 	// Отправка запроса за свежими данными
