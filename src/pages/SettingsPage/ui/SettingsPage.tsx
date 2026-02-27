@@ -19,7 +19,7 @@ import {
 	UserCardType
 } from '@/shared/ui/UserCard';
 import { Trash } from '@icons/index';
-import { useRef, useState } from 'react';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import cls from './SettingsPage.module.scss';
 
 export const SettingsPage = () => {
