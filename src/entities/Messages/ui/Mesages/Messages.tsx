@@ -1,3 +1,5 @@
+'use client';
+
 import { MessageBubble } from '@/entities/Chat/ui/MessageBubble/MessageBubble';
 import styles from './Messages.module.scss';
 

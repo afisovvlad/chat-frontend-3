@@ -1,5 +1,3 @@
-'use client';
-
 import { formatUnixToLocalTime } from '@/shared/lib/formatUnixToLocalTime/formatUnixToLocalTime';
 import { FontWeight, Text, TextColor, TextSize } from '@/shared/ui/Text';
 import { MessageStatusNode } from './MessageStatusNode';
