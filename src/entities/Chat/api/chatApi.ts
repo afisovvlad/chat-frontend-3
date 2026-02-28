@@ -1,4 +1,6 @@
 import { rtkApi } from '@/shared/api/rtkApi';
+import { createSelector } from '@reduxjs/toolkit';
+import { RootState } from '@/app/providers/StoreProvider';
 import type {
 	Chat,
 	ChatListResponse,
@@ -54,8 +56,23 @@ export const chatApi = rtkApi.injectEndpoints({
 	})
 });
 
+export const selectChatByUid = createSelector(
+	[(state: RootState) => state, (_: RootState, chatUid: string) => chatUid],
+	(state, chatUid) => {
+		const chatsData = chatApi.endpoints.getChats.select({
+			pageSize: 100,
+			ordering: '-last_activity_at'
+		})(state);
+
+		return chatsData.data?.results?.find(
+			(chat: Chat) => chat.chat.uid === chatUid
+		);
+	}
+);
+
 export const {
 	useGetChatsQuery,
 	useGetChatByIdQuery,
+	useLazyGetChatsQuery,
 	endpoints: { getChats }
 } = chatApi;

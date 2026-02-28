@@ -18,7 +18,7 @@ export function useLocalSearch<T>(
 	// Дебаунсированный колбэк для фильтрации
 	const debouncedFilter = useDebounce((term: string) => {
 		if (term.length === 0) {
-			setFilteredData([]);
+			setFilteredData(data);
 			return;
 		}
 		const results = filterFn(data, term);

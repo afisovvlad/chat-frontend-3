@@ -24,7 +24,9 @@ export interface SearchProps extends Omit<
 	inputClassName?: string;
 	disableClear?: boolean;
 	showIcon?: boolean;
-	onClear?: () => void;
+	alwaysShowClear?: boolean;
+	// 🔥 Меняем сигнатуру: onClear теперь получает текущее значение
+	onClear?: (currentValue: string) => void;
 }
 
 export const Search = memo(
@@ -39,31 +41,48 @@ export const Search = memo(
 				inputRef,
 				disableClear = false,
 				showIcon = true,
+				alwaysShowClear = false,
 				onClear,
 				onKeyDown,
 				...inputProps
 			},
 			ref
 		) => {
-			const showClearButton = useMemo(
-				() => !disableClear && value.trim().length > 0,
-				[disableClear, value]
-			);
+			// 🔥 Логика отображения кнопки
+			const showClearButton = useMemo(() => {
+				if (disableClear) {
+					return false;
+				}
+				if (alwaysShowClear) {
+					return true;
+				}
+				return value.trim().length > 0;
+			}, [disableClear, alwaysShowClear, value]);
 
+			const hasValue = useMemo(() => value.trim().length > 0, [value]);
+
+			// 🔥 handleClear: всегда вызываем onClear с текущим value
 			const handleClear = useCallback(() => {
-				onChange('');
-				onClear?.();
-			}, [onChange, onClear]);
+				if (hasValue) {
+					onChange(''); // Очищаем, если есть текст
+				}
+				// 🔥 Передаём value родителю для принятия решения
+				onClear?.(value);
+			}, [hasValue, onChange, onClear, value]);
 
 			const handleKeyDown = useCallback(
 				(e: React.KeyboardEvent<HTMLInputElement>) => {
 					if (e.key === 'Escape') {
-						handleClear();
+						if (value.trim().length > 0) {
+							onChange('');
+						} else {
+							onClear?.(value);
+						}
 						e.currentTarget.blur();
 					}
 					onKeyDown?.(e);
 				},
-				[handleClear, onKeyDown]
+				[onChange, onClear, onKeyDown, value]
 			);
 
 			const handleChange = useCallback(
@@ -74,8 +93,15 @@ export const Search = memo(
 			);
 
 			const containerClass = useMemo(
-				() => classNames(cls.container, {}, [className]),
-				[className]
+				() =>
+					classNames(
+						cls.container,
+						{
+							[cls.alwaysShowClear]: alwaysShowClear
+						},
+						[className]
+					),
+				[className, alwaysShowClear]
 			);
 
 			const inputClass = useMemo(
@@ -99,7 +125,7 @@ export const Search = memo(
 						placeholder={placeholder}
 						className={inputClass}
 						aria-label={placeholder}
-						autoComplete='off'
+						autoComplete='search'
 						spellCheck={false}
 						{...inputProps}
 					/>
@@ -111,7 +137,7 @@ export const Search = memo(
 							theme={ButtonTheme.CLEAR}
 							onClick={handleClear}
 							className={cls.clearButton}
-							aria-label='Очистить поиск'
+							aria-label={hasValue ? 'Очистить поиск' : 'Закрыть поиск'}
 						>
 							<Close className={cls.closeIcon} aria-hidden='true' />
 						</Button>

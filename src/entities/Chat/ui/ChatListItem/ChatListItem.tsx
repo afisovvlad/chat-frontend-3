@@ -13,11 +13,23 @@ export interface ChatListItemProps {
 	isActive: boolean;
 }
 
-export const ChatListItem = memo(({ chat, isActive }: ChatListItemProps) => {
-	const uid = useMemo(() => chat.chat.uid, [chat.chat.uid]);
-	const userCardData = useMemo(() => mapChatToUserCard(chat), [chat]);
+const propsAreEqual = (
+	prev: ChatListItemProps,
+	next: ChatListItemProps
+): boolean => {
+	return (
+		prev.chat.id === next.chat.id &&
+		prev.isActive === next.isActive &&
+		prev.chat.last_activity_at === next.chat.last_activity_at &&
+		prev.chat.new_message_count === next.chat.new_message_count &&
+		prev.chat.last_message?.updated_at === next.chat.last_message?.updated_at
+	);
+};
 
-	const href = useMemo(() => `/chats/${uid}`, [uid]);
+export const ChatListItem = memo(({ chat, isActive }: ChatListItemProps) => {
+	const uid = chat.chat.uid;
+	const userCardData = useMemo(() => mapChatToUserCard(chat), [chat]);
+	const href = `/chats/${uid}`;
 
 	const itemClass = useMemo(
 		() => `${cls.chatItem} ${isActive ? cls.chatItemActive : ''}`,
@@ -42,6 +54,6 @@ export const ChatListItem = memo(({ chat, isActive }: ChatListItemProps) => {
 			</div>
 		</Link>
 	);
-});
+}, propsAreEqual);
 
 ChatListItem.displayName = 'ChatListItem';
