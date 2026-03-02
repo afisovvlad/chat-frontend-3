@@ -1,6 +1,5 @@
 export { Search } from './ui/Search/Search';
 
-// Фильтры
 export {
 	filterByName,
 	filterByNameExtended,
@@ -9,7 +8,6 @@ export {
 export { filterContacts } from './model/lib/filter/FilterByContacts/filterContacts';
 export { filterByField } from './model/lib/filter/filterByFields/filterByField';
 
-// Хуки
 export { useLocalSearch } from './model/lib/hooks/UseLocalSearch/useLocalSearch';
 export { useGlobalSearch } from './model/lib/hooks/useGlobalSearch/useGlobalSearch';
 export { useHybridSearch } from './model/lib/hooks/useHybrydSearch/useHybridSearch';
