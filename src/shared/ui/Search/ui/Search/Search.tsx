@@ -25,7 +25,6 @@ export interface SearchProps extends Omit<
 	disableClear?: boolean;
 	showIcon?: boolean;
 	alwaysShowClear?: boolean;
-	// 🔥 Меняем сигнатуру: onClear теперь получает текущее значение
 	onClear?: (currentValue: string) => void;
 }
 
@@ -48,7 +47,8 @@ export const Search = memo(
 			},
 			ref
 		) => {
-			// 🔥 Логика отображения кнопки
+			const hasValue = useMemo(() => value.trim().length > 0, [value]);
+
 			const showClearButton = useMemo(() => {
 				if (disableClear) {
 					return false;
@@ -56,18 +56,14 @@ export const Search = memo(
 				if (alwaysShowClear) {
 					return true;
 				}
-				return value.trim().length > 0;
-			}, [disableClear, alwaysShowClear, value]);
+				return hasValue;
+			}, [disableClear, alwaysShowClear, hasValue]);
 
-			const hasValue = useMemo(() => value.trim().length > 0, [value]);
-
-			// 🔥 handleClear: всегда вызываем onClear с текущим value
 			const handleClear = useCallback(() => {
-				if (hasValue) {
-					onChange(''); // Очищаем, если есть текст
-				}
-				// 🔥 Передаём value родителю для принятия решения
 				onClear?.(value);
+				if (hasValue) {
+					onChange('');
+				}
 			}, [hasValue, onChange, onClear, value]);
 
 			const handleKeyDown = useCallback(
@@ -92,25 +88,18 @@ export const Search = memo(
 				[onChange]
 			);
 
-			const containerClass = useMemo(
-				() =>
-					classNames(
-						cls.container,
-						{
-							[cls.alwaysShowClear]: alwaysShowClear
-						},
-						[className]
-					),
-				[className, alwaysShowClear]
-			);
-
-			const inputClass = useMemo(
-				() => classNames(cls.input, {}, [inputClassName]),
-				[inputClassName]
-			);
+			const inputClass = classNames(cls.input, {}, [inputClassName]);
 
 			return (
-				<div className={containerClass} role='search' aria-label='Поле поиска'>
+				<div
+					className={classNames(
+						cls.container,
+						{ [cls.alwaysShowClear]: alwaysShowClear },
+						[className]
+					)}
+					role='search'
+					aria-label='Поле поиска'
+				>
 					{showIcon && (
 						<SearchIcon className={cls.searchIcon} aria-hidden='true' />
 					)}

@@ -9,8 +9,8 @@ import EmptyChats from '@/shared/ui/EmptyChats/EmptyChats';
 import { UserCardType } from '@/shared/ui/UserCard';
 import { Chat, GetChatsRequest } from '../../model/types/chat.types';
 import { mockChats } from '../../mock/mockData';
-import cls from './ChatList.module.scss';
 import { appConfig } from '@/shared/config/app.config';
+import cls from './ChatList.module.scss';
 
 // 🎛 Переключатель режима: true = моки, false = реальные данные из API
 const LOCAL_CACHE_SIZE = 30;
