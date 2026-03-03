@@ -3,7 +3,7 @@
 import { MessageFormComponent } from '@/features/messageForm';
 import { Messages } from '@/entities/Messages';
 import { MessageHeader } from '../MessageHeader/MessageHeader';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectChatByUid } from '@/entities/Chat/api/chatApi';
 import { UserCardSkeleton } from '@/shared/ui/Skeleton';
@@ -11,67 +11,73 @@ import { Chat } from '@/entities/Chat/model/types/chat.types';
 import { RootState } from '@/app/providers/StoreProvider';
 import { UserCardType } from '@/shared/ui/UserCard';
 import { appConfig } from '@/shared/config/app.config';
-// ! моковые данные, удалить после подключения бэка
-import { mockChats } from '@/entities/Chat/mock/mockData';
+import NotMessage from '@/shared/ui/NotMessage/NotMessage';
+import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
+import { classNames } from '@/shared/lib/classNames/classNames';
 import cls from './MessagesPage.module.scss';
 
+import { mockChats } from '@/entities/Chat/mock/mockData';
 interface MessagesPageProps {
 	chatUid: string;
+	onBack?: () => void;
 }
 
-const MessagesPage = ({ chatUid }: MessagesPageProps) => {
+const MessagesPage = ({ chatUid, onBack }: MessagesPageProps) => {
 	const [, setIsCallActive] = useState(false);
+	const [isActionBarVisible, setIsActionBarVisible] = useState(true);
 
-	// 1. Данные из кэста RTK Query (только если USE_MOCKS = false)
+	const isMobile = useMediaQuery();
+
 	const chatDataFromCache = useSelector((state: RootState) =>
 		selectChatByUid(state, chatUid)
 	);
 
-	// ✅ Единый источник данных: моки или API через конфиг
 	const chatData = useMemo(() => {
 		if (appConfig.USE_MOCKS) {
-			return mockChats.find((chat: Chat) => chat.chat.uid === chatUid);
+			const found = mockChats.find((chat: Chat) => chat.chat.uid === chatUid);
+			return found;
 		}
 		return chatDataFromCache;
 	}, [chatDataFromCache, chatUid]);
 
-	//! Отладка (удалишь после настройки)
-	useEffect(() => {
-		if (process.env.NODE_ENV === 'development') {
-			console.log('📦 MessagesPage - Data source:', {
-				mode: appConfig.USE_MOCKS ? 'MOCKS' : 'API', // ✅ Используем конфиг
-				chatUid,
-				hasData: !!chatData,
-				fromCache: !!chatDataFromCache,
-				fromMocks: appConfig.USE_MOCKS
-					? !!mockChats.find((c: Chat) => c.chat.uid === chatUid)
-					: false
-			});
-		}
-	}, [chatUid, chatData, chatDataFromCache]);
+	const handleCall = () => setIsCallActive(true);
 
-	const handleCall = () => {
-		setIsCallActive(true);
-		// Логика звонка
+	const handleBack = () => {
+		if (onBack) {
+			onBack();
+		} else {
+			// Fallback для десктопа (если вдруг вызовут)
+			window.history.back();
+		}
 	};
 
-	// 3. Вычисляем данные для шапки
-	const headerData = useMemo(() => {
-		if (!chatData?.chat) {
-			return null;
+	const messagesClass = useMemo(
+		() =>
+			classNames(cls.messagesContent, {}, [
+				isMobile && isActionBarVisible
+					? cls.messagesContent_noRadius
+					: undefined
+			]),
+		[isMobile, isActionBarVisible]
+	);
+
+	const { headerData, hasMessages } = useMemo(() => {
+		if (!chatData) {
+			return { headerData: null, hasMessages: false };
 		}
 
+		const { last_message, new_message_count, chat: userInfo } = chatData;
 		const {
 			first_name,
 			last_name,
 			avatar_webp_url,
 			avatar_url,
 			is_online,
-			was_online_at
-		} = chatData.chat;
+			was_online_at,
+			is_in_contacts
+		} = userInfo;
 
 		const userName = `${first_name} ${last_name}`.trim();
-
 		const userStatus = is_online
 			? 'В сети'
 			: was_online_at
@@ -80,13 +86,42 @@ const MessagesPage = ({ chatUid }: MessagesPageProps) => {
 						minute: '2-digit'
 					})}`
 				: 'Не в сети';
-
 		const userAvatar = avatar_webp_url || avatar_url || undefined;
 
-		return { userName, userStatus, userAvatar, isOnline: is_online };
+		const hasMsg = (() => {
+			if ((new_message_count ?? 0) > 0) {
+				return true;
+			}
+			if (!last_message) {
+				return false;
+			}
+			if (last_message.id && last_message.id > 0) {
+				return true;
+			}
+			if (last_message.uid?.trim()) {
+				return true;
+			}
+			if (last_message.content?.trim()) {
+				return true;
+			}
+			if (last_message.files_summary?.count > 0) {
+				return true;
+			}
+			return false;
+		})();
+
+		return {
+			headerData: {
+				userName,
+				userStatus,
+				userAvatar,
+				isOnline: is_online,
+				isInContacts: is_in_contacts
+			},
+			hasMessages: hasMsg
+		};
 	}, [chatData]);
 
-	// 4. Показываем скелетон только если данных действительно нет
 	if (!headerData) {
 		return (
 			<section className={cls.messagesPage}>
@@ -102,10 +137,27 @@ const MessagesPage = ({ chatUid }: MessagesPageProps) => {
 				userStatus={headerData.userStatus}
 				userAvatar={headerData.userAvatar}
 				isOnline={headerData.isOnline}
+				isInContacts={headerData.isInContacts}
 				onCall={handleCall}
+				onAddToContacts={() => console.log('Добавить в контакты:', chatUid)}
+				onBlock={() => console.log('Заблокировать:', chatUid)}
+				onBack={isMobile ? handleBack : undefined} //  Передаём onBack только для мобильных
+				onActionBarVisibilityChange={setIsActionBarVisible}
 			/>
-			<Messages />
-			<MessageFormComponent />
+
+			{hasMessages ? (
+				<>
+					<Messages className={messagesClass} />
+					<MessageFormComponent />
+				</>
+			) : (
+				<>
+					<div className={cls.notMessageWrapper}>
+						<NotMessage />
+					</div>
+					<MessageFormComponent />
+				</>
+			)}
 		</section>
 	);
 };

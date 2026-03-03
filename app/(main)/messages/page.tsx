@@ -1,4 +1,4 @@
-import { MessagesPage } from '@/pages/MessagesPage/MessagePage/MessagesPage';
+import { MessagesPage } from '@/pages/MessagesPage/MessagesPage';
 
 export default function page() {
 	return <MessagesPage />;

@@ -1,5 +1,12 @@
-import styles from './Messages.module.scss';
+import { classNames } from '@/shared/lib/classNames/classNames';
+import cls from './Messages.module.scss';
 
-export function Messages() {
-	return <div className={styles.messages}>Messages</div>;
+export interface MessagesProps {
+	className?: string;
+}
+
+export function Messages({ className }: MessagesProps) {
+	return (
+		<div className={classNames(cls.messages, {}, [className])}>Сообщения</div>
+	);
 }

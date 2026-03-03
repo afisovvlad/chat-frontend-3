@@ -10,6 +10,18 @@ import cls from './Navbar.module.scss';
 export const Navbar = () => {
 	const pathname = usePathname();
 
+	// Скрываем Navbar на страницах чатов
+	const hiddenPaths = ['/chats/']; // Можно добавить '/messages/', '/call/'
+
+	// Проверяем: если путь начинается с /chats/ и содержит uid (длина > 7)
+	const shouldHideNavbar = hiddenPaths.some(
+		path => pathname?.startsWith(path) && pathname.split('/').length > 2
+	);
+
+	if (shouldHideNavbar) {
+		return null;
+	}
+
 	return (
 		<div className={classNames(cls.navbar)}>
 			{menuItems.map(item => {
