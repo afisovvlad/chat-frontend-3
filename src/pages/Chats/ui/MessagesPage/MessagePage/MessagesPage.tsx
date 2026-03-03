@@ -2,7 +2,7 @@
 
 import { MessageFormComponent } from '@/features/messageForm';
 import { Messages } from '@/entities/Messages';
-import { MessageHeader } from '../MessageHeader/MessageHeader';
+
 import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectChatByUid } from '@/entities/Chat/api/chatApi';
@@ -14,9 +14,10 @@ import { appConfig } from '@/shared/config/app.config';
 import NotMessage from '@/shared/ui/NotMessage/NotMessage';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { classNames } from '@/shared/lib/classNames/classNames';
+import { MessageHeader } from '../MessageHeader/MessageHeader';
+import { mockChats } from '@/entities/Chat/mock/mockData';
 import cls from './MessagesPage.module.scss';
 
-import { mockChats } from '@/entities/Chat/mock/mockData';
 interface MessagesPageProps {
 	chatUid: string;
 	onBack?: () => void;

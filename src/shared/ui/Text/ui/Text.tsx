@@ -1,8 +1,9 @@
+'use client';
 import { JSX } from 'react';
+import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { TextTag, TextType, TitleTag } from '../model/types/enums';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { TextProps, AllowedTag } from '../model/types/types';
-import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import cls from './Text.module.scss';
 
 export const Text = (props: TextProps) => {

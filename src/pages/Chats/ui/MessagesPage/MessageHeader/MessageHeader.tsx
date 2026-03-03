@@ -22,6 +22,7 @@ import {
 import { ChatActionBar } from '../ChatActionBar/ChatActionBar';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { Modal } from '@/shared/ui/Modal';
+import cls from './MessaHeader.module.scss';
 
 // Импортируем хук мутации (раскомментируй, когда API будет готов)
 
@@ -29,8 +30,6 @@ import { Modal } from '@/shared/ui/Modal';
 // 	useAddContactByPhoneMutation,
 // 	AddContactByPhoneRequest
 // } from '@/entities/Contacts/model';
-
-import cls from './MessaHeader.module.scss';
 
 interface MessageHeaderProps {
 	userName: string;
