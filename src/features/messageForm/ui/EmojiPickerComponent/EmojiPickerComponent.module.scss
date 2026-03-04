@@ -1,3 +1,7 @@
+.emojiContainer {
+	position: relative;
+}
+
 .button {
 	position: relative;
 	display: flex;
@@ -10,12 +14,35 @@
 	border: none;
 	outline: inherit;
 	color: var(--color-primary);
+
+	&:hover {
+		background: rgba(0, 0, 0, 6%);
+	}
+
+	&:active {
+		transform: scale(0.95);
+	}
 }
 
 .picker {
-	position: absolute !important;
-	bottom: 20px;
-	right: 10%;
+	position: absolute;
+	bottom: 50px;
+	right: 0;
+	border-radius: 16px !important;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 15%) !important;
+	border: none !important;
+	overflow: hidden;
+	animation: fade-in 0.15s ease-out;
+}
 
-	// transform: translateX(-50%);
+@keyframes fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(10px) scale(0.98);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
 }

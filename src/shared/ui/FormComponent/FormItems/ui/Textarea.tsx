@@ -64,7 +64,7 @@ export function Textarea<TFormValues extends FieldValues>({
 
 			return () => textarea.removeEventListener('input', autoResize);
 		}
-	}, []);
+	}, [height]);
 
 	return (
 		<textarea

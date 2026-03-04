@@ -3,14 +3,13 @@
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Smile } from '@icons/index';
-import dynamic from 'next/dynamic';
-import { useState } from 'react';
+import Picker, { EmojiStyle, Theme } from 'emoji-picker-react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './EmojiPickerComponent.module.scss';
 
-const Picker = dynamic(() => import('emoji-picker-react'), {
-	ssr: false // критически важно для Next.js!
-	// loading: () => <div>Загрузка эмодзи...</div>
-});
+// const Picker = dynamic(() => import('emoji-picker-react'), {
+// 	ssr: false
+// });
 
 interface EmojiPickerComponent {
 	parentClass?: string;
@@ -22,8 +21,29 @@ export function EmojiPickerComponent({
 	onEmojiSelect
 }: EmojiPickerComponent) {
 	const [showPicker, setShowPicker] = useState(false);
+	const pickerRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		function handleClickOutside(event: MouseEvent) {
+			if (
+				pickerRef.current &&
+				!pickerRef.current.contains(event.target as Node)
+			) {
+				setShowPicker(false);
+			}
+		}
+
+		if (showPicker) {
+			document.addEventListener('mousedown', handleClickOutside);
+		}
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [showPicker]);
+
 	return (
-		<div style={{ position: 'relative' }}>
+		<div className={styles.emojiContainer} ref={pickerRef}>
 			<Button
 				color={ButtonColor.TRANSPARENT}
 				className={classNames(styles.button, {}, [parentClass])}
@@ -35,10 +55,14 @@ export function EmojiPickerComponent({
 
 			{showPicker && (
 				<Picker
+					emojiStyle={EmojiStyle.APPLE}
+					theme={Theme.LIGHT}
+					lazyLoadEmojis
+					skinTonesDisabled
+					previewConfig={{ showPreview: false }}
 					width={350}
-					height={450}
+					height={420}
 					onEmojiClick={emojiData => {
-						console.log(emojiData);
 						onEmojiSelect(emojiData.emoji);
 						setShowPicker(false);
 					}}
