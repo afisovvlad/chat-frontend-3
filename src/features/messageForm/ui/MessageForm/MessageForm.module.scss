@@ -1,3 +1,5 @@
+@import 'https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap';
+
 .messageForm {
 	display: flex;
 	flex-direction: row;
@@ -28,16 +30,13 @@
 .textarea {
 	width: 100%;
 	min-height: 21px;
-
-	// max-height: 150px;
+	font-family:
+		'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif !important;
 	color: var(--color-gray-500);
-	font-family: inherit;
 	font-weight: 400;
 	font-size: 16px;
 	line-height: 130%;
 	letter-spacing: 0.4px;
-
-	// resize: 'none';
 	overflow: auto;
 }
 
