@@ -218,11 +218,20 @@ export const connectChat = () =>
 		action: '_connect'
 	});
 
-export const createTextMessage = (chatKey: string, text: string) =>
+export const createTextMessage = (
+	// chatKey: string,
+	userUid: string,
+	content: string
+) =>
 	sendWS({
 		action: 'create_text_message',
-		object: { chat_key: chatKey, text }
+		object: { to_user_uid: userUid, content }
 	});
+// export const createTextMessage = (chatKey: string, text: string) =>
+// 	sendWS({
+// 		action: 'create_text_message',
+// 		object: { chat_key: chatKey, text }
+// 	});
 
 export const addMembersToChat = (chatKey: string, uids: string[]) =>
 	sendWS({
