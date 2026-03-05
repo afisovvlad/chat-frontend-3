@@ -12,13 +12,16 @@ import { MessageFormType } from '../../model/types/types';
 import { AttachmentButton } from '../AttachmentButton/AttachmentButton';
 import { EmojiPickerComponent } from '../EmojiPickerComponent/EmojiPickerComponent';
 import styles from './MessageForm.module.scss';
+import { VoiceRecorder } from '../VoiceRecorder/VoiceRecorder';
 
 export function MessageForm() {
 	const [messages, setMessages] = useState([]);
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 	const methods = useForm<MessageFormType>({
 		defaultValues: {
-			message: ''
+			message: '',
+			voice: null,
+			file: null
 		}
 	});
 	const { setValue, getValues, handleSubmit, reset } = methods;
@@ -79,6 +82,7 @@ export function MessageForm() {
 	// }, []);
 
 	const onSubmit = async (data: MessageFormType) => {
+		console.log('data', data);
 		if (!data.message.trim()) {
 			return;
 		}
@@ -114,6 +118,11 @@ export function MessageForm() {
 				/>
 				<EmojiPickerComponent onEmojiSelect={onEmojiSelect} />
 			</div>
+			<VoiceRecorder
+				onRecorded={blob => {
+					setValue('voice', blob);
+				}}
+			/>
 		</Form>
 	);
 }
