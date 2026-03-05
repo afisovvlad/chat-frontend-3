@@ -21,6 +21,7 @@ interface TextareaProps<TFormValues extends FieldValues> {
 	classNameTextarea?: string;
 	height?: string | undefined;
 	onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+	textareaRef?: React.Ref<HTMLTextAreaElement>;
 }
 
 export function Textarea<TFormValues extends FieldValues>({
@@ -32,29 +33,33 @@ export function Textarea<TFormValues extends FieldValues>({
 	disabled,
 	classNameTextarea,
 	height,
-	onKeyDown
+	onKeyDown,
+	textareaRef
 }: TextareaProps<TFormValues>) {
-	const { register, control } = useFormContext<TFormValues>();
-	// const { errors } = useFormState({
-	// 	control,
-	// 	name
-	// });
-	// const isError = Boolean(errors?.[name]?.message as string | undefined);
+	const { register } = useFormContext<TFormValues>();
 	const { fieldState } = useController({ name });
 	const isError = !!fieldState.error;
-	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+	const internalRef = useRef<HTMLTextAreaElement | null>(null);
 	const { ref: registerRef, ...registerRest } = register(name, rules);
 
 	const setRefs = (element: HTMLTextAreaElement | null) => {
-		textareaRef.current = element;
+		internalRef.current = element;
 		registerRef(element);
+
+		if (!textareaRef) {
+			return;
+		}
+
+		if (typeof textareaRef === 'function') {
+			textareaRef(element);
+		} else if (textareaRef && 'current' in textareaRef) {
+			// eslint-disable-next-line react-hooks/immutability
+			textareaRef.current = element;
+		}
 	};
 
-	// console.log('isError in Textarea', isError);
-
-	// console.log('Я - Textarea');
 	useEffect(() => {
-		const textarea = textareaRef.current;
+		const textarea = internalRef.current;
 		if (textarea) {
 			const autoResize = () => {
 				textarea.style.height = height || '21px';
@@ -73,7 +78,6 @@ export function Textarea<TFormValues extends FieldValues>({
 			onKeyDown={onKeyDown}
 			ref={setRefs}
 			{...registerRest}
-			// {...register(name, rules)}
 			id={name}
 			placeholder={placeholder}
 			autoComplete={FormItemAutocomplete.OFF}
@@ -90,7 +94,6 @@ export function Textarea<TFormValues extends FieldValues>({
 				height
 					? {
 							minHeight: height
-							// maxHeight: height
 						}
 					: {}
 			}
