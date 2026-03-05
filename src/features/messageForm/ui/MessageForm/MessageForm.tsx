@@ -70,13 +70,13 @@ export function MessageForm() {
 	}, []);
 
 	// Проверка получения сообщения в чате (убрать отсюда, перенести в сообщения)
-	useEffect(() => {
-		const unsubscribe = subscribeWS('create_text_message', data => {
-			setMessages(prev => [...prev, data.object]);
-		});
+	// useEffect(() => {
+	// 	const unsubscribe = subscribeWS('create_text_message', data => {
+	// 		setMessages(prev => [...prev, data.object]);
+	// 	});
 
-		return unsubscribe;
-	}, []);
+	// 	return unsubscribe;
+	// }, []);
 
 	const onSubmit = async (data: MessageFormType) => {
 		if (!data.message.trim()) {
@@ -84,12 +84,17 @@ export function MessageForm() {
 		}
 
 		try {
-			const response = await createTextMessageForUser(userUid, data.message);
+			await createTextMessageForUser(userUid, data.message);
+			// const response = await createTextMessageForUser(userUid, data.message);
 			// console.log('response WS', response);
 		} catch (err) {
 			console.log('Ошибка отправки сообщения', err);
 		}
 		reset();
+		// сбрасываем высоту Textarea до дефолтной
+		if (textareaRef.current) {
+			textareaRef.current.style.height = '21px';
+		}
 	};
 
 	return (
