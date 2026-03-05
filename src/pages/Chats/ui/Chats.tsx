@@ -4,32 +4,87 @@ import { ChatList } from '@/entities/Chat';
 import { Container, ContainerType } from '@/shared/ui/Container';
 import { ChatWidget } from '@/widgets/Chat';
 import { useParams } from 'next/navigation';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 
-import cls from './Chats.module.scss';
+import { ContextMenu, useContextMenu } from '@/features/contextMenu';
 import { MessagesPage } from '@/pages/MessagesPage/MessagesPage';
+import { KebabMenu } from '@/shared/ui/KebabMenu';
+import { KebabMenuItem } from '@/shared/ui/KebabMenu/model/types/type';
+import { Clear, LogoutIcon, Trash } from '@icons/index';
+import cls from './Chats.module.scss';
+
+const kebabItems: KebabMenuItem[] = [
+	{
+		text: 'Очистить чат',
+		icon: <Clear />,
+		onClick: () => {
+			console.log('1');
+		},
+		danger: false
+	},
+	{
+		text: 'Покинуть группу',
+		icon: <LogoutIcon />,
+		onClick: () => {
+			console.log('2');
+		},
+		danger: false
+	},
+	{
+		text: 'Удалить группу',
+		icon: <Trash />,
+		onClick: () => {
+			console.log('3');
+		},
+		danger: true
+	}
+];
 
 const ChatsPageComponent = () => {
 	const params = useParams();
 	const chatUid = params?.uid as string | undefined;
 
-	return (
-		<Container type={ContainerType.WRAPPER}>
-			<Container type={ContainerType.SIDEBAR}>
-				<ChatList selectedChatUid={chatUid ?? null} />
-			</Container>
+	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
-			<Container type={ContainerType.CONTENT}>
-				{chatUid ? (
-					<ChatWidget chatUid={chatUid} />
-				) : (
-					<div className={cls.emptyState}>
-						<MessagesPage />
-						{/* <NotMessage /> */}
-					</div>
-				)}
+	const { handleContextMenu, isVisible, position, items } = useContextMenu();
+
+	return (
+		<>
+			<Container type={ContainerType.WRAPPER}>
+				<Container type={ContainerType.SIDEBAR}>
+					<ChatList selectedChatUid={chatUid ?? null} />
+				</Container>
+
+				<Container type={ContainerType.CONTENT}>
+					{chatUid ? (
+						<ChatWidget chatUid={chatUid} />
+					) : (
+						<div className={cls.emptyState}>
+							<MessagesPage />
+							{/* <NotMessage /> */}
+						</div>
+					)}
+					<button onContextMenu={e => handleContextMenu(e, kebabItems)}>
+						ОТКРЫТЬ КОНТЕКСТНОЕ МЕНЮ
+					</button>
+
+					<button
+						onClick={() => {
+							setIsMenuOpen(prev => !prev);
+						}}
+					>
+						ОТКРЫТЬ КЕБАБ МЕНЮ
+					</button>
+
+					<KebabMenu
+						visible={isMenuOpen}
+						items={kebabItems}
+						onClose={() => setIsMenuOpen(false)}
+					/>
+				</Container>
 			</Container>
-		</Container>
+			<ContextMenu visible={isVisible} position={position} items={items} />
+		</>
 	);
 };
 
