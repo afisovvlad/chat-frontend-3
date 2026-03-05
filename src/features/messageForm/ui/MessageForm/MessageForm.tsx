@@ -1,22 +1,36 @@
 'use client';
 
-import styles from './MessageForm.module.scss';
+import { Form, Textarea } from '@/shared/ui/FormComponent';
+import { KeyboardEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { MessageFormType } from '../../model/types/types';
-import { EmojiPickerComponent } from '../EmojiPickerComponent/EmojiPickerComponent';
-import { Form, Textarea } from '@/shared/ui/FormComponent';
 import { AttachmentButton } from '../AttachmentButton/AttachmentButton';
-import { useState } from 'react';
+import { EmojiPickerComponent } from '../EmojiPickerComponent/EmojiPickerComponent';
+import styles from './MessageForm.module.scss';
 
 export function MessageForm() {
-	const [emoji, setEmoji] = useState('');
 	const methods = useForm<MessageFormType>({
 		defaultValues: {
 			message: ''
 		}
 	});
+	const { setValue, getValues, handleSubmit } = methods;
 
-	const onEmojiSelect = (emoji: string) => setEmoji(emoji);
+	const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault();
+			handleSubmit(onSubmit)();
+		}
+		// При Shift+Enter оставляем стандартное поведение (перевод строки)
+	};
+
+	const onEmojiSelect = (emoji: string) => {
+		const currentMessage = getValues('message');
+		setValue('message', currentMessage + emoji, {
+			shouldDirty: true,
+			shouldTouch: true
+		});
+	};
 
 	const onSubmit = (data: MessageFormType) => console.log(data);
 
@@ -32,6 +46,7 @@ export function MessageForm() {
 					name={'message'}
 					classNameTextarea={styles.textarea}
 					height={'21px'}
+					onKeyDown={handleKeyDown}
 				/>
 				<EmojiPickerComponent onEmojiSelect={onEmojiSelect} />
 			</div>

@@ -20,6 +20,7 @@ interface TextareaProps<TFormValues extends FieldValues> {
 	disabled?: boolean;
 	classNameTextarea?: string;
 	height?: string | undefined;
+	onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 }
 
 export function Textarea<TFormValues extends FieldValues>({
@@ -30,7 +31,8 @@ export function Textarea<TFormValues extends FieldValues>({
 	placeholder = '',
 	disabled,
 	classNameTextarea,
-	height
+	height,
+	onKeyDown
 }: TextareaProps<TFormValues>) {
 	const { register, control } = useFormContext<TFormValues>();
 	// const { errors } = useFormState({
@@ -64,10 +66,11 @@ export function Textarea<TFormValues extends FieldValues>({
 
 			return () => textarea.removeEventListener('input', autoResize);
 		}
-	}, []);
+	}, [height]);
 
 	return (
 		<textarea
+			onKeyDown={onKeyDown}
 			ref={setRefs}
 			{...registerRest}
 			// {...register(name, rules)}
