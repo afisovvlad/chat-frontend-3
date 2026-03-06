@@ -6,8 +6,8 @@ import { ChatWidget } from '@/widgets/Chat';
 import { useParams } from 'next/navigation';
 import { memo } from 'react';
 
-import cls from './Chats.module.scss';
 import { MessagesPage } from '@/pages/Chats/ui/MessagesPage/MessagesPage';
+import cls from './Chats.module.scss';
 
 const ChatsPageComponent = () => {
 	const params = useParams();
@@ -21,14 +21,23 @@ const ChatsPageComponent = () => {
 
 			<Container type={ContainerType.CONTENT}>
 				{chatUid ? (
+					<div className={cls.emptyState}>
+						<MessagesPage chatUid={chatUid} />
+						{/* <NotMessage /> */}
+					</div>
+				) : (
+					<ChatWidget chatUid={chatUid} />
+				)}
+			</Container>
+			{/* <Container type={ContainerType.CONTENT}>
+				{chatUid ? (
 					<ChatWidget chatUid={chatUid} />
 				) : (
 					<div className={cls.emptyState}>
-						<MessagesPage />
-						{/* <NotMessage /> */}
+						<MessagesPage />					
 					</div>
 				)}
-			</Container>
+			</Container> */}
 		</Container>
 	);
 };

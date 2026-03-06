@@ -7,10 +7,10 @@ import styles from './AttachmentButton.module.scss';
 import { FilePayload } from '../../model/types/types';
 
 interface AttachmentButtonProps {
-	setFile: (file: FilePayload[]) => void;
+	setFiles: (file: FilePayload[]) => void;
 }
 
-export function AttachmentButton({ setFile }: AttachmentButtonProps) {
+export function AttachmentButton({ setFiles }: AttachmentButtonProps) {
 	const [showPopup, setShowPopup] = useState(false);
 
 	return (

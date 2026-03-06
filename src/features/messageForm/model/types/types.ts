@@ -1,5 +1,5 @@
 export type MessageFormTypes = {
-	content: string;
+	message: string;
 	file: FilePayload;
 };
 

@@ -15,7 +15,9 @@ export const useVoiceRecorder = () => {
 			audio: true
 		});
 
-		const mediaRecorder = new MediaRecorder(stream);
+		const mediaRecorder = new MediaRecorder(stream, {
+			mimeType: 'audio/webm'
+		});
 		mediaRecorderRef.current = mediaRecorder;
 
 		chunks.current = [];
@@ -27,7 +29,7 @@ export const useVoiceRecorder = () => {
 		mediaRecorder.onstop = async () => {
 			const blob = new Blob(chunks.current, { type: 'audio/webm' });
 			const base64 = await blobToBase64(blob);
-			const filename = `${crypto.randomUUID()}.webm`;
+			const filename = `voice_${crypto.randomUUID()}.webm`;
 			setAudioName(filename);
 			setAudioFile(base64);
 		};

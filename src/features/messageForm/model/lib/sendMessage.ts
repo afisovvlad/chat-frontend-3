@@ -7,7 +7,6 @@ export async function sendMessage(userUid: string, params: SendMessageParams) {
 		request_uid: crypto.randomUUID(),
 		object: {
 			to_user_uid: userUid,
-			chat_key: '',
 			content: params.content ?? '',
 			status: 'publish',
 			files: params.files ?? [],
