@@ -1,7 +1,3 @@
-import { Chat } from '@/entities/Chat';
-
-// УНИВЕРСАЛЬНЫЕ ФИЛЬТРЫ (для любых объектов)
-
 export function filterByName<T extends Record<string, unknown>>(
 	items: T[],
 	searchTerm: string,

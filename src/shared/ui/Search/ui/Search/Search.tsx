@@ -25,7 +25,6 @@ export interface SearchProps extends Omit<
 	disableClear?: boolean;
 	showIcon?: boolean;
 	alwaysShowClear?: boolean;
-	// 🔥 Меняем сигнатуру: onClear теперь получает текущее значение
 	onClear?: (currentValue: string) => void;
 }
 
@@ -48,7 +47,6 @@ export const Search = memo(
 			},
 			ref
 		) => {
-			// 🔥 Логика отображения кнопки
 			const showClearButton = useMemo(() => {
 				if (disableClear) {
 					return false;
@@ -61,12 +59,11 @@ export const Search = memo(
 
 			const hasValue = useMemo(() => value.trim().length > 0, [value]);
 
-			// 🔥 handleClear: всегда вызываем onClear с текущим value
 			const handleClear = useCallback(() => {
 				if (hasValue) {
-					onChange(''); // Очищаем, если есть текст
+					onChange('');
 				}
-				// 🔥 Передаём value родителю для принятия решения
+
 				onClear?.(value);
 			}, [hasValue, onChange, onClear, value]);
 

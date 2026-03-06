@@ -13,7 +13,7 @@ export function useGlobalSearch<T>(
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
 
-	// ✅ Мемоизируем результаты для предотвращения лишних ререндеров
+	// Мемоизируем результаты для предотвращения лишних ререндеров
 	const memoizedResults = useMemo(() => results, [results]);
 
 	// Дебаунсированный поиск
@@ -52,7 +52,7 @@ export function useGlobalSearch<T>(
 		setError(null);
 	}, []);
 
-	// ✅ Мемоизируем возвращаемый объект для предотвращения лишних ререндеров
+	// Мемоизируем возвращаемый объект для предотвращения лишних ререндеров
 	return useMemo(
 		() => ({
 			searchTerm,
