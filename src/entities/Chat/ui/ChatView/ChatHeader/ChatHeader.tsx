@@ -22,7 +22,7 @@ import {
 import { ChatActionBar } from '../ChatActionBar/ChatActionBar';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { Modal } from '@/shared/ui/Modal';
-import cls from './MessaHeader.module.scss';
+import cls from './ChatHeader.module.scss';
 
 // Импортируем хук мутации (раскомментируй, когда API будет готов)
 
@@ -31,9 +31,9 @@ import cls from './MessaHeader.module.scss';
 // 	AddContactByPhoneRequest
 // } from '@/entities/Contacts/model';
 
-interface MessageHeaderProps {
-	userName: string;
-	userStatus: string;
+interface ChatHeaderProps {
+	userName?: string;
+	userStatus?: string;
 	userAvatar?: string;
 	isOnline?: boolean;
 	isInContacts?: boolean;
@@ -42,15 +42,15 @@ interface MessageHeaderProps {
 	onBlock?: () => void;
 	onBack?: () => void;
 	onActionBarVisibilityChange?: (isVisible: boolean) => void;
-	// Данные для API-запроса (передаём из MessagesPage)
+	// Данные для API-запроса (передаём из ChatPage)
 	contactPhone?: string;
 	contactFirstName?: string;
 	contactLastName?: string;
 }
 
-export const MessageHeader = ({
-	userName,
-	userStatus,
+export const ChatHeader = ({
+	userName = 'Неизвестный пользователь',
+	userStatus = 'Статус неизвестен',
 	userAvatar,
 	isInContacts = false,
 	// isOnline,
@@ -63,7 +63,7 @@ export const MessageHeader = ({
 	contactPhone,
 	contactFirstName,
 	contactLastName
-}: MessageHeaderProps) => {
+}: ChatHeaderProps) => {
 	const [isSearchVisible, setIsSearchVisible] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
 
@@ -211,7 +211,7 @@ export const MessageHeader = ({
 
 	return (
 		<>
-			<header className={cls.messageHeader}>
+			<header className={cls.chatHeader}>
 				<div className={cls.leftSection}>
 					{isMobile && onBack && (
 						<Button

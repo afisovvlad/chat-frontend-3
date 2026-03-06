@@ -1,8 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import MessagesPage from '../MessagesPage/MessagePage/MessagesPage';
-import { ChatList } from '@/entities/Chat';
+import { ChatList, ChatView } from '@/entities/Chat';
 import { Container, ContainerType } from '@/shared/ui/Container';
 import { useParams, useRouter } from 'next/navigation';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
@@ -22,10 +21,7 @@ const ChatsPageComponent = () => {
 				{chatUid ? (
 					// Если чат выбран → показываем сообщения (CONTENT)
 					<Container type={ContainerType.CONTENT}>
-						<MessagesPage
-							chatUid={chatUid}
-							onBack={() => router.push('/chats')}
-						/>
+						<ChatView chatUid={chatUid} onBack={() => router.push('/chats')} />
 					</Container>
 				) : (
 					// Если чат не выбран → показываем список чатов (SIDEBAR)
@@ -37,7 +33,7 @@ const ChatsPageComponent = () => {
 		);
 	}
 
-	// 🔥 ДЕСКТОПНАЯ ЛОГИКА: показываем оба контейнера
+	//  ДЕСКТОПНАЯ ЛОГИКА: показываем оба контейнера
 	return (
 		<Container type={ContainerType.WRAPPER}>
 			<Container type={ContainerType.SIDEBAR}>
@@ -46,7 +42,7 @@ const ChatsPageComponent = () => {
 
 			<Container type={ContainerType.CONTENT}>
 				{chatUid ? (
-					<MessagesPage chatUid={chatUid} />
+					<ChatView chatUid={chatUid} />
 				) : (
 					<div className={cls.emptyState}>
 						<p>Выберите чат для начала общения</p>

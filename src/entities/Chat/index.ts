@@ -1,5 +1,6 @@
 export { ChatListItem } from './ui/ChatListItem/ChatListItem';
 export { ChatList } from './ui/ChatList/ChatList';
+export { ChatView } from './ui/ChatView/ChatView/ChatView';
 export type { ChatListProps } from './ui/ChatList/ChatList';
 
 export type {

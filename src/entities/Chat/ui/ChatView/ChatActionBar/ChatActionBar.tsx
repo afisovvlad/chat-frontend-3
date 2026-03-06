@@ -101,7 +101,7 @@ export const ChatActionBar = memo(
 							tag={TextTag.SPAN}
 							color={TextColor.GRAY}
 						>
-							закрыть уведомление
+							Закрыть уведомление
 						</Text>
 					</Button>
 				) : (

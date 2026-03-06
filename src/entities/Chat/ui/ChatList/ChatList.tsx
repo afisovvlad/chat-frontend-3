@@ -4,13 +4,14 @@ import { memo, useMemo, useCallback } from 'react';
 import { filterChatsLocal, Search, useHybridSearch } from '@/shared/ui/Search';
 import { useGetChatsQuery, useLazyGetChatsQuery } from '../../api/chatApi';
 import { UserCardSkeleton } from '@/shared/ui/Skeleton';
-import EmptyChats from '@/shared/ui/EmptyChats/EmptyChats';
+import { EmptyChats } from '@/shared/ui/EmptyChats/EmptyChats';
 import { UserCardType } from '@/shared/ui/UserCard';
 import { Chat, GetChatsRequest } from '../../model/types/chat.types';
 import { sortChatsByLastMessage } from '../../model/lib/utils/sortChatsByLastMessage';
 import { mockChats } from '../../mock/mockData';
 import { appConfig } from '@/shared/config/app.config';
 import { ChatListContent } from '../ChatListContent/ChatListContent';
+
 import cls from './ChatList.module.scss';
 
 const LOCAL_CACHE_SIZE = 30;

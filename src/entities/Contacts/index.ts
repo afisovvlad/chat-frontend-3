@@ -5,6 +5,6 @@ export type {
 	ContactValidationError,
 	ContactAuthError,
 	AddContactApiResponse
-} from './types/ContactsSchema';
+} from './model/types/ContactsSchema';
 
-export { useAddContactByPhoneMutation } from '../api/contactApi';
+export { useAddContactByPhoneMutation } from './api/contactApi';

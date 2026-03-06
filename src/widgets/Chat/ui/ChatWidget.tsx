@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useMemo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { Text, TextSize } from '@/shared/ui/Text';
 import { Button, ButtonColor, ButtonType } from '@/shared/ui/Button';
 import cls from './ChatWidget.module.scss';
