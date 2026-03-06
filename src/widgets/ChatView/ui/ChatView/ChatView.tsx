@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChatHeader, MessagesList } from '@/entities/Chat';
 import { MessageFormComponent } from '@/features/messageForm';
-import { useChatHeaderData } from '@/entities/Chat/model/lib/hooks/useChatHeaderData/useChatHeaderData';
+import { useChatHeaderData } from '../../model/hooks/useChatHeaderData/useChatHeaderData';
 import { selectChatByUid } from '@/entities/Chat/api/chatApi';
 import { UserCardSkeleton } from '@/shared/ui/Skeleton';
 import { UserCardType } from '@/shared/ui/UserCard';
