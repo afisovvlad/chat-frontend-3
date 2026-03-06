@@ -1,10 +1,12 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { blobToBase64 } from '../lib/blobToBase64';
 
 export const useVoiceRecorder = () => {
 	const [isRecording, setIsRecording] = useState(false);
-	const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+	const [audioFile, setAudioFile] = useState('');
+	const [audioName, setAudioName] = useState('');
 	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 	const chunks = useRef<Blob[]>([]);
 
@@ -22,9 +24,12 @@ export const useVoiceRecorder = () => {
 			chunks.current.push(event.data);
 		};
 
-		mediaRecorder.onstop = () => {
+		mediaRecorder.onstop = async () => {
 			const blob = new Blob(chunks.current, { type: 'audio/webm' });
-			setAudioBlob(blob);
+			const base64 = await blobToBase64(blob);
+			const filename = `${crypto.randomUUID()}.webm`;
+			setAudioName(filename);
+			setAudioFile(base64);
 		};
 
 		mediaRecorder.start();
@@ -39,14 +44,16 @@ export const useVoiceRecorder = () => {
 	};
 
 	const reset = () => {
-		setAudioBlob(null);
+		setAudioFile('');
+		setAudioName('');
 	};
 
 	return {
 		isRecording,
-		audioBlob,
+		audioFile,
 		startRecording,
 		stopRecording,
+		audioName,
 		reset
 	};
 };

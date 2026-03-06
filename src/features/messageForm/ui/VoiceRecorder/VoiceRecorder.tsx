@@ -1,27 +1,35 @@
 'use client';
 
 import { Microphone, MicrophoneFilled } from '@icons/index';
+import { useEffect } from 'react';
 import { useVoiceRecorder } from '../../model/hooks/useVoiceRecorder';
 import styles from './VoiceRecorder.module.scss';
+import { FilePayload } from '../../model/types/types';
 
 interface VoiceRecorderProps {
-	onRecorded: (blob: Blob) => void;
+	onSendVoice: (file: FilePayload) => void;
 }
 
-export function VoiceRecorder({ onRecorded }: VoiceRecorderProps) {
-	const { startRecording, stopRecording, isRecording, audioBlob } =
+export function VoiceRecorder({ onSendVoice }: VoiceRecorderProps) {
+	const { startRecording, stopRecording, isRecording, audioFile, audioName } =
 		useVoiceRecorder();
 
 	const handleStop = () => {
 		stopRecording();
 	};
 
-	if (audioBlob) {
-		onRecorded(audioBlob);
-	}
+	useEffect(() => {
+		if (audioFile && audioName) {
+			onSendVoice({
+				data: audioFile,
+				filename: audioName
+			});
+		}
+	}, [audioFile, audioName, onSendVoice]);
 
 	return (
 		<button
+			type='button'
 			onMouseDown={startRecording}
 			onMouseUp={handleStop}
 			onTouchStart={startRecording}

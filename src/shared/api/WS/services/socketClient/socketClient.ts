@@ -218,10 +218,17 @@ export const connectChat = () =>
 		action: '_connect'
 	});
 
-export const createTextMessageForUser = (userUid: string, content: string) =>
+export const createTextMessageForUser = (
+	userUid: string,
+	content: string,
+	files: {
+		filename: string;
+		data: string;
+	}[] = []
+) =>
 	sendWS({
 		action: 'create_text_message',
-		object: { to_user_uid: userUid, content }
+		object: { to_user_uid: userUid, content, files }
 	});
 
 export const createTextMessageForChat = (chatKey: string, content: string) =>

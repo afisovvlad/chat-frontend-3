@@ -4,8 +4,13 @@ import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Paperclip } from '@icons/index';
 import { useState } from 'react';
 import styles from './AttachmentButton.module.scss';
+import { FilePayload } from '../../model/types/types';
 
-export function AttachmentButton() {
+interface AttachmentButtonProps {
+	setFile: (file: FilePayload[]) => void;
+}
+
+export function AttachmentButton({ setFile }: AttachmentButtonProps) {
 	const [showPopup, setShowPopup] = useState(false);
 
 	return (
