@@ -7,6 +7,7 @@ import { AttachmentButton } from '../AttachmentButton/AttachmentButton';
 import { MessageForm } from '../MessageForm/MessageForm';
 import { VoiceRecorder } from '../VoiceRecorder/VoiceRecorder';
 import styles from './MessageFormComponent.module.scss';
+import { SendButton } from '../SendButton/SendButton';
 
 export function MessageFormComponent() {
 	// { userUid }: { userUid: string }
@@ -14,6 +15,7 @@ export function MessageFormComponent() {
 	const userUid = '2089f9d3-ea44-4d30-876a-ddf177fa352a'; //5555555555
 	// const userUid = '54cdbe82-28aa-4abf-a69d-525d0ab4da93';  // 7777777777
 	const [files, setFiles] = useState<FilePayload[]>([]);
+	const [filledField, setFilledField] = useState(false);
 
 	const handleSend = async (message: string) => {
 		const textResponse = await sendMessage(userUid, {
@@ -32,8 +34,12 @@ export function MessageFormComponent() {
 	return (
 		<section className={styles.messageFormComponent}>
 			<AttachmentButton setFiles={setFiles} />
-			<MessageForm onSendContent={handleSend} />
-			<VoiceRecorder onSendVoice={handleSendVoice} />
+			<MessageForm
+				onSendContent={handleSend}
+				filledField={filledField}
+				setFilledField={setFilledField}
+			/>
+			{!filledField && <VoiceRecorder onSendVoice={handleSendVoice} />}
 		</section>
 	);
 }

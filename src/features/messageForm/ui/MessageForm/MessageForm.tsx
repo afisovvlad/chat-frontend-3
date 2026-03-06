@@ -4,7 +4,9 @@ import {
 	connectChat,
 	subscribeWS
 } from '@/shared/api/WS/services/socketClient/socketClient';
+import { Button, ButtonColor, ButtonType } from '@/shared/ui/Button';
 import { Form, Textarea } from '@/shared/ui/FormComponent';
+import { SendIcon } from '@icons/index';
 import { KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { MessageFormTypes } from '../../model/types/types';
@@ -13,12 +15,14 @@ import styles from './MessageForm.module.scss';
 
 interface MessageFormProps {
 	onSendContent: (message: string) => void;
-	// onSendFile: (file: FilePayload, caption?: string) => void;
-	// files: FilePayload[];
+	filledField: boolean;
+	setFilledField: (filledField: boolean) => void;
 }
 
 export function MessageForm({
-	onSendContent
+	onSendContent,
+	filledField,
+	setFilledField
 	// onSendFile,
 	// files
 }: MessageFormProps) {
@@ -33,7 +37,12 @@ export function MessageForm({
 			// }
 		}
 	});
-	const { setValue, getValues, handleSubmit, reset } = methods;
+	const { setValue, getValues, handleSubmit, reset, watch } = methods;
+	const message = watch('message');
+
+	useEffect(() => {
+		setFilledField(message !== '');
+	}, [message, setFilledField]);
 
 	console.log('messages', messages);
 
@@ -51,13 +60,15 @@ export function MessageForm({
 			return;
 		}
 
-		const start = textarea.selectionStart;
-		const end = textarea.selectionEnd;
+		const startTextSelection = textarea.selectionStart;
+		const endTextSelection = textarea.selectionEnd;
 
 		const currentMessage = getValues('message');
 
 		const newMessage =
-			currentMessage.slice(0, start) + emoji + currentMessage.slice(end);
+			currentMessage.slice(0, startTextSelection) +
+			emoji +
+			currentMessage.slice(endTextSelection);
 
 		setValue('message', newMessage, {
 			shouldDirty: true,
@@ -66,7 +77,7 @@ export function MessageForm({
 
 		// Ставим курсор после emoji
 		requestAnimationFrame(() => {
-			const cursor = start + emoji.length;
+			const cursor = startTextSelection + emoji.length;
 
 			textarea.selectionStart = cursor;
 			textarea.selectionEnd = cursor;
@@ -90,11 +101,17 @@ export function MessageForm({
 
 	const onSubmit = async (data: MessageFormTypes) => {
 		console.log('data', data);
-		if (!data.message.trim()) {
+		const trimedMessage = data.message.trim();
+		if (!trimedMessage) {
 			return;
 		}
-		await onSendContent(data.message);
+		setFilledField(true);
+		await onSendContent(trimedMessage);
 		reset();
+		// сбрасываем высоту Textarea до дефолтной
+		if (textareaRef.current) {
+			textareaRef.current.style.height = '21px';
+		}
 	};
 	// const onSubmit = async (data: MessageFormTypes) => {
 	// 	console.log('data', data);
@@ -137,14 +154,16 @@ export function MessageForm({
 				/>
 				<EmojiPickerComponent onEmojiSelect={onEmojiSelect} />
 			</div>
-			{/* <VoiceRecorder
-				onRecorded={(audioFile, audioName) => {
-					setValue('file', {
-						filename: audioName,
-						data: audioFile
-					});
-				}}
-			/> */}
+			{filledField && (
+				<Button
+					btnType={ButtonType.SUBMIT}
+					color={ButtonColor.TRANSPARENT}
+					className={styles.button}
+					aria-label='Отправить сообщение'
+				>
+					<SendIcon width={36} height={36} />
+				</Button>
+			)}
 		</Form>
 	);
 }

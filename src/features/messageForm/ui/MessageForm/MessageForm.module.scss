@@ -7,10 +7,6 @@
 	flex-grow: 1;
 	width: 100%;
 	max-width: 100%;
-
-	// padding: 7.5px 12px;
-	// background-color: var(--color-white);
-	// border-radius: 20px;
 }
 
 .textareaWrapper {
@@ -28,16 +24,14 @@
 .textarea {
 	width: 100%;
 	min-height: 21px;
-
-	// max-height: 150px;
-	color: var(--color-gray-500);
+	max-height: 150px;
 	font-family: inherit;
 	font-weight: 400;
 	font-size: 16px;
 	line-height: 130%;
 	letter-spacing: 0.4px;
-
-	// resize: 'none';
+	outline: none;
+	resize: none;
 	overflow: auto;
 }
 
@@ -47,4 +41,12 @@
 
 .textarea::-webkit-scrollbar-thumb {
 	background-color: transparent;
+}
+
+.button {
+	width: 36px;
+	min-width: 36px;
+	height: 36px;
+	padding: 0;
+	color: var(--color-primary);
 }

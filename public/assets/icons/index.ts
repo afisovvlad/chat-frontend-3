@@ -51,6 +51,7 @@ export { default as SearchContacts } from './SearchContacts.svg';
 export { default as SelectFile } from './SelectFile.svg';
 export { default as SelectImg } from './SelectImg.svg';
 export { default as Send } from './Send.svg';
+export { default as SendIcon } from './SendIcon.svg';
 export { default as SentRead } from './SentRead.svg';
 export { default as SentTime } from './SentTime.svg';
 export { default as SentUnread } from './SentUnread.svg';

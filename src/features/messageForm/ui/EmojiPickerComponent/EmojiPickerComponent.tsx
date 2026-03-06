@@ -30,7 +30,7 @@ export function EmojiPickerComponent({
 				aria-label='Прикрепить файл'
 				onClick={() => setShowPicker(!showPicker)}
 			>
-				<Smile />
+				<Smile width={20} height={20} />
 			</Button>
 
 			{showPicker && (
