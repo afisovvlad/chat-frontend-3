@@ -12,7 +12,7 @@ export const chatApi = rtkApi.injectEndpoints({
 		getChats: build.query<ChatListResponse, GetChatsRequest | void>({
 			query: query => {
 				const params: Record<string, string | number | boolean | undefined> = {
-					page_size: query?.pageSize ?? 100,
+					page_size: query?.pageSize ?? 30,
 					ordering: query?.ordering ?? '-last_activity_at',
 					page: query?.page,
 					search: query?.search?.trim() || undefined,

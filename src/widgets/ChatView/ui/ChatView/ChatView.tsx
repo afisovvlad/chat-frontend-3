@@ -2,9 +2,8 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Messages } from '@/entities/Messages';
+import { ChatHeader, MessagesList } from '@/entities/Chat';
 import { MessageFormComponent } from '@/features/messageForm';
-import { ChatHeader } from '../ChatHeader/ChatHeader';
 import { useChatHeaderData } from '@/entities/Chat/model/lib/hooks/useChatHeaderData/useChatHeaderData';
 import { selectChatByUid } from '@/entities/Chat/api/chatApi';
 import { UserCardSkeleton } from '@/shared/ui/Skeleton';
@@ -93,7 +92,7 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 
 			{hasMessages ? (
 				<>
-					<Messages className={messagesClass} />
+					<MessagesList className={messagesClass} />
 					<MessageFormComponent />
 				</>
 			) : (

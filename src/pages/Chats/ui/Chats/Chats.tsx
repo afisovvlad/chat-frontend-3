@@ -1,12 +1,13 @@
 'use client';
 
 import { memo } from 'react';
-import { ChatList, ChatView } from '@/entities/Chat';
+import { ChatList } from '@/entities/Chat';
 import { Container, ContainerType } from '@/shared/ui/Container';
 import { useParams, useRouter } from 'next/navigation';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 
 import cls from './Chats.module.scss';
+import { ChatView } from '@/widgets/ChatView';
 
 const ChatsPageComponent = () => {
 	const params = useParams();
