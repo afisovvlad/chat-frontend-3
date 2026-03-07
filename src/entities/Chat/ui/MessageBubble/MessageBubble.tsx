@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { formatUnixToLocalTime } from '@/shared/lib/formatUnixToLocalTime/formatUnixToLocalTime';
 import { FontWeight, Text, TextColor, TextSize } from '@/shared/ui/Text';
 import { MessageStatusNode } from './MessageStatusNode';
-import './MessageBubble.scss';
+import styles from './MessageBubble.scss';
 
 interface MessageBubbleProps {
 	id: string;
@@ -33,7 +33,7 @@ export const MessageBubble = ({
 	isLastInGroup = false
 }: MessageBubbleProps) => {
 	const messageClass = `message ${
-		status !== 'received' ? 'message--sent' : 'message--received'
+		status !== 'received' ? 'message_sent' : 'message_received'
 	}`;
 
 	const isGroupReceived = isGroupChat && status === 'received';
@@ -45,12 +45,12 @@ export const MessageBubble = ({
 	};
 
 	return (
-		<div className='message-wrapper'>
-			<div className='message-row'>
+		<div className={styles.messageWrapper}>
+			<div className={styles.messageRow}>
 				{isGroupReceived && (
 					<div
-						className={`message-avatar-slot ${
-							showAvatar ? '' : 'message-avatar-slot--hidden'
+						className={`${styles.messageAvatarSlot} ${
+							showAvatar ? '' : styles.messageAvatarSlot_hidden
 						}`}
 					>
 						{showAvatar && (
@@ -59,7 +59,7 @@ export const MessageBubble = ({
 								alt={senderName ?? 'Пользователь'}
 								width={32}
 								height={32}
-								className='message__avatar'
+								className={styles.message__avatar}
 							/>
 						)}
 					</div>
@@ -82,27 +82,27 @@ export const MessageBubble = ({
 							fontWeight={FontWeight.BOLD}
 							fontSize={TextSize.S}
 							color={TextColor.ACCENT}
-							className='message__sender'
+							className={styles.message__sender}
 						>
 							{senderName}
 						</Text>
 					)}
 
-					<div className='message__content'>
+					<div className={styles.message__content}>
 						<Text
 							lineHeight={1.3}
 							color={TextColor.BLACK}
-							className='message__text'
+							className={styles.message__text}
 						>
 							{text}
 						</Text>
 
-						<div className='message__meta'>
+						<div className={styles.message__meta}>
 							<Text
 								lineHeight={1.2}
 								fontSize={TextSize.S}
 								color={TextColor.GRAY}
-								className='message__time'
+								className={styles.message__time}
 							>
 								{formatUnixToLocalTime(time)}
 							</Text>

@@ -1,23 +1,23 @@
 @use '@/app/styles/mixins/mixin.scss' as *;
 
-.message-wrapper {
+.messageWrapper {
 	display: flex;
 	flex-direction: column;
 }
 
-.message-row {
+.messageRow {
 	display: flex;
 	align-items: flex-end;
 	gap: 4px;
 }
 
-.message-avatar-slot {
+.messageAvatarSlot {
 	width: 32px;
 	height: 32px;
 	flex-shrink: 0;
 }
 
-.message-avatar-slot--hidden {
+.messageAvatarSlot_hidden {
 	visibility: hidden;
 }
 
@@ -37,13 +37,13 @@
 	border-radius: 16px;
 	gap: 4px;
 
-	&--sent {
+	&_sent {
 		align-self: flex-end;
 		background: #d8f5f0;
 		border-bottom-right-radius: 4px;
 	}
 
-	&--received {
+	&_received {
 		background: #eee;
 		border-bottom-left-radius: 4px;
 	}
