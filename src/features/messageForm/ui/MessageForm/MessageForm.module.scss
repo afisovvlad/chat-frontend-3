@@ -1,3 +1,49 @@
+@import 'https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap';
+
 .messageForm {
 	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: flex-end;
+	gap: 10px;
+	flex-grow: 1;
+	width: 100%;
+	max-width: 100%;
+
+	// padding: 7.5px 12px;
+	// background-color: var(--color-white);
+	// border-radius: 20px;
+}
+
+.textareaWrapper {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: flex-end;
+	gap: 10px;
+	width: 100%;
+	padding: 7.5px 12px;
+	background-color: var(--color-white);
+	border-radius: 20px;
+}
+
+.textarea {
+	width: 100%;
+	min-height: 21px;
+	font-family:
+		'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif !important;
+	color: var(--color-gray-500);
+	font-weight: 400;
+	font-size: 16px;
+	line-height: 130%;
+	letter-spacing: 0.4px;
+	overflow: auto;
+}
+
+.textarea::-webkit-scrollbar {
+	width: 0;
+}
+
+.textarea::-webkit-scrollbar-thumb {
+	background-color: transparent;
 }
