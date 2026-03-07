@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { formatUnixToLocalTime } from '@/shared/lib/formatUnixToLocalTime/formatUnixToLocalTime';
 import { FontWeight, Text, TextColor, TextSize } from '@/shared/ui/Text';
 import { MessageStatusNode } from './MessageStatusNode';
@@ -36,13 +37,8 @@ export const MessageBubble = ({
 	}`;
 
 	const isGroupReceived = isGroupChat && status === 'received';
-	const isSingle = isGroupReceived && isFirstInGroup && isLastInGroup;
-
-	const showName =
-		isGroupReceived && senderName && (isFirstInGroup || isSingle);
-
-	const showAvatar =
-		isGroupReceived && senderAvatar && (isLastInGroup || isSingle);
+	const showName = isGroupReceived && senderName && isFirstInGroup;
+	const showAvatar = isGroupReceived && senderAvatar && isLastInGroup;
 
 	const handleActivate = () => {
 		onClick(id);
@@ -58,9 +54,11 @@ export const MessageBubble = ({
 						}`}
 					>
 						{showAvatar && (
-							<img
+							<Image
 								src={senderAvatar}
-								alt={senderName}
+								alt={senderName ?? 'Пользователь'}
+								width={32}
+								height={32}
 								className='message__avatar'
 							/>
 						)}
