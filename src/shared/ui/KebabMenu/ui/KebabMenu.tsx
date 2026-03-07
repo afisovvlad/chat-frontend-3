@@ -16,14 +16,14 @@ export const KebabMenu = ({
 	items,
 	onClose
 }: KebabMenuProps) => {
-	const menuRef = useRef<HTMLDivElement>(null);
+	const menuRef = useRef<HTMLUListElement>(null);
 
 	useEffect(() => {
-		if (!visible) {
-			return;
-		}
+		const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+			if (!event.target) {
+				return;
+			}
 
-		const handleClickOutside = (event: MouseEvent) => {
 			if (
 				menuRef.current &&
 				!menuRef.current.contains(event.target as Node) &&
@@ -33,33 +33,45 @@ export const KebabMenu = ({
 			}
 		};
 
-		document.addEventListener('mousedown', handleClickOutside);
+		document.addEventListener('click', handleClickOutside);
+		document.addEventListener('touchstart', handleClickOutside, {
+			passive: true
+		});
+
 		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
+			document.removeEventListener('click', handleClickOutside);
+			document.removeEventListener('touchstart', handleClickOutside);
 		};
 	}, [visible, onClose]);
 
 	if (!visible) {
-		return null;
+		return;
 	}
 
 	return (
-		<div
+		<ul
+			role='menu'
+			tabIndex={-1}
 			ref={menuRef}
 			className={classNames(cls.KebabMenuList, {}, [className])}
 		>
 			{items.map(item => (
-				<div
+				<li
+					role='menuitem'
+					tabIndex={0}
 					key={item.text}
 					className={classNames(cls.kebabMenuItem, {
 						[cls.danger]: item.danger
 					})}
-					onClick={item.onClick}
+					onClick={() => {
+						item.onClick();
+						onClose?.();
+					}}
 				>
 					<div className={cls.kebabMenuItemText}>{item.text}</div>
 					<div className={cls.kebabMenuItemIcon}>{item.icon}</div>
-				</div>
+				</li>
 			))}
-		</div>
+		</ul>
 	);
 };

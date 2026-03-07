@@ -4,7 +4,7 @@ import { ChatList } from '@/entities/Chat';
 import { Container, ContainerType } from '@/shared/ui/Container';
 import { ChatWidget } from '@/widgets/Chat';
 import { useParams } from 'next/navigation';
-import { memo, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 
 import { ContextMenu, useContextMenu } from '@/features/contextMenu';
 import { MessagesPage } from '@/pages/MessagesPage/MessagesPage';
@@ -45,8 +45,9 @@ const ChatsPageComponent = () => {
 	const chatUid = params?.uid as string | undefined;
 
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-
+	const menuRef = useRef<HTMLDivElement>(null);
 	const { handleContextMenu, isVisible, position, items } = useContextMenu();
+	// const { handleContextMenu, isVisible, position, items } = useContextMenu();
 
 	return (
 		<>
