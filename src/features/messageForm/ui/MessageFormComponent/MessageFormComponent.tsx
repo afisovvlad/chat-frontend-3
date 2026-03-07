@@ -7,7 +7,6 @@ import { AttachmentButton } from '../AttachmentButton/AttachmentButton';
 import { MessageForm } from '../MessageForm/MessageForm';
 import { VoiceRecorder } from '../VoiceRecorder/VoiceRecorder';
 import styles from './MessageFormComponent.module.scss';
-import { SendButton } from '../SendButton/SendButton';
 
 export function MessageFormComponent() {
 	// { userUid }: { userUid: string }
