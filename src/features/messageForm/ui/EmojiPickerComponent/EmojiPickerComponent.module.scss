@@ -3,7 +3,6 @@
 }
 
 .button {
-	position: relative;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -13,19 +12,19 @@
 	background: none;
 	border: none;
 	outline: inherit;
-	color: var(--color-primary);
+	color: var(--color-gray-500);
 
 	&:hover {
-		background: rgba(0, 0, 0, 6%);
-	}
-
-	&:active {
-		transform: scale(0.95);
+		color: var(--color-primary);
 	}
 }
 
+.iconActive {
+	color: var(--color-primary);
+}
+
 .picker {
-	position: absolute;
+	position: absolute !important;
 	bottom: 50px;
 	right: 0;
 	border-radius: 16px !important;
@@ -45,4 +44,15 @@
 		opacity: 1;
 		transform: translateY(0) scale(1);
 	}
+}
+
+// .smileIcon {
+// 	fill: var(--color-white);
+// 	stroke: var(--color-grey-500);
+// 	width: 20px;
+// 	height: 20px;
+// }
+
+button.iconActive .emoji-circle {
+	fill: var(--color-primary) !important;
 }
