@@ -55,7 +55,9 @@ export function EmojiPickerComponent({
 					{ [styles.iconActive]: showPicker },
 					[parentClass]
 				)}
-				aria-label='Открыть панель emoji'
+				aria-label={
+					showPicker ? 'Закрыть выбор эмодзи' : 'Открыть выбор эмодзи'
+				}
 				onClick={togglePicker}
 			>
 				<Smile className={styles.smileIcon} />
