@@ -4,9 +4,15 @@ import { classNames } from '@/shared/lib/classNames/classNames';
 import { useClickOutside } from '@/shared/lib/hooks/useClickOutside/useClickOutside';
 import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Smile } from '@icons/index';
-import Picker, { EmojiStyle, Theme } from 'emoji-picker-react';
+import { EmojiStyle, Theme } from 'emoji-picker-react';
+import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './EmojiPickerComponent.module.scss';
+
+const Picker = dynamic(
+	() => import('emoji-picker-react').then(mod => mod.default),
+	{ ssr: false }
+);
 
 interface EmojiPickerComponentProps {
 	parentClass?: string;
@@ -70,8 +76,6 @@ export function EmojiPickerComponent({
 					lazyLoadEmojis
 					skinTonesDisabled
 					previewConfig={{ showPreview: false }}
-					width={350}
-					height={420}
 					onEmojiClick={emojiData => {
 						onEmojiSelect(emojiData.emoji);
 					}}
