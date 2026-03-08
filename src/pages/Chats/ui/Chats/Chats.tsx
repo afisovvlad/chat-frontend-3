@@ -4,7 +4,7 @@ import { ChatList } from '@/entities/Chat';
 import { Container, ContainerType } from '@/shared/ui/Container';
 import { ChatWidget } from '@/widgets/Chat';
 import { useParams } from 'next/navigation';
-import { memo } from 'react';
+import { memo, useRef, useState } from 'react';
 
 import cls from './Chats.module.scss';
 import { MessagesPage } from '@/pages/Chats/ui/MessagesPage/MessagesPage';
@@ -14,22 +14,24 @@ const ChatsPageComponent = () => {
 	const chatUid = params?.uid as string | undefined;
 
 	return (
-		<Container type={ContainerType.WRAPPER}>
-			<Container type={ContainerType.SIDEBAR}>
-				<ChatList selectedChatUid={chatUid ?? null} />
-			</Container>
+		<>
+			<Container type={ContainerType.WRAPPER}>
+				<Container type={ContainerType.SIDEBAR}>
+					<ChatList selectedChatUid={chatUid ?? null} />
+				</Container>
 
-			<Container type={ContainerType.CONTENT}>
-				{chatUid ? (
-					<ChatWidget chatUid={chatUid} />
-				) : (
-					<div className={cls.emptyState}>
-						<MessagesPage />
-						{/* <NotMessage /> */}
-					</div>
-				)}
+				<Container type={ContainerType.CONTENT}>
+					{chatUid ? (
+						<ChatWidget chatUid={chatUid} />
+					) : (
+						<div className={cls.emptyState}>
+							<MessagesPage />
+							{/* <NotMessage /> */}
+						</div>
+					)}
+				</Container>
 			</Container>
-		</Container>
+		</>
 	);
 };
 
