@@ -6,48 +6,12 @@ import { ChatWidget } from '@/widgets/Chat';
 import { useParams } from 'next/navigation';
 import { memo, useRef, useState } from 'react';
 
-import { ContextMenu, useContextMenu } from '@/features/contextMenu';
-import { MessagesPage } from '@/pages/MessagesPage/MessagesPage';
-import { KebabMenu } from '@/shared/ui/KebabMenu';
-import { KebabMenuItem } from '@/shared/ui/KebabMenu/model/types/type';
-import { Clear, LogoutIcon, Trash } from '@icons/index';
 import cls from './Chats.module.scss';
-
-const kebabItems: KebabMenuItem[] = [
-	{
-		text: 'Очистить чат',
-		icon: <Clear />,
-		onClick: () => {
-			console.log('1');
-		},
-		danger: false
-	},
-	{
-		text: 'Покинуть группу',
-		icon: <LogoutIcon />,
-		onClick: () => {
-			console.log('2');
-		},
-		danger: false
-	},
-	{
-		text: 'Удалить группу',
-		icon: <Trash />,
-		onClick: () => {
-			console.log('3');
-		},
-		danger: true
-	}
-];
+import { MessagesPage } from '@/pages/Chats/ui/MessagesPage/MessagesPage';
 
 const ChatsPageComponent = () => {
 	const params = useParams();
 	const chatUid = params?.uid as string | undefined;
-
-	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-	const menuRef = useRef<HTMLDivElement>(null);
-	const { handleContextMenu, isVisible, position, items } = useContextMenu();
-	// const { handleContextMenu, isVisible, position, items } = useContextMenu();
 
 	return (
 		<>
@@ -65,26 +29,8 @@ const ChatsPageComponent = () => {
 							{/* <NotMessage /> */}
 						</div>
 					)}
-					<button onContextMenu={e => handleContextMenu(e, kebabItems)}>
-						ОТКРЫТЬ КОНТЕКСТНОЕ МЕНЮ
-					</button>
-
-					<button
-						onClick={() => {
-							setIsMenuOpen(prev => !prev);
-						}}
-					>
-						ОТКРЫТЬ КЕБАБ МЕНЮ
-					</button>
-
-					<KebabMenu
-						visible={isMenuOpen}
-						items={kebabItems}
-						onClose={() => setIsMenuOpen(false)}
-					/>
 				</Container>
 			</Container>
-			<ContextMenu visible={isVisible} position={position} items={items} />
 		</>
 	);
 };
