@@ -1,0 +1,60 @@
+.emojiContainer {
+	position: relative;
+}
+
+.button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	background: none;
+	border: none;
+	outline: inherit;
+	color: var(--color-gray-500);
+
+	&:hover {
+		color: var(--color-primary);
+	}
+}
+
+.iconActive {
+	color: var(--color-primary);
+}
+
+.picker {
+	position: absolute !important;
+	bottom: 50px;
+	right: 0;
+	width: 350px;
+	height: 420px;
+	border-radius: 16px !important;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 15%) !important;
+	border: none !important;
+	overflow: hidden;
+	animation: fade-in 0.15s ease-out;
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(10px) scale(0.98);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+// .smileIcon {
+// 	fill: var(--color-white);
+// 	stroke: var(--color-grey-500);
+// 	width: 20px;
+// 	height: 20px;
+// }
+
+button.iconActive .emoji-circle {
+	fill: var(--color-primary) !important;
+}
