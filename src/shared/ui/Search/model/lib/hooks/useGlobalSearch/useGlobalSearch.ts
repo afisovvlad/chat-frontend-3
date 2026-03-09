@@ -1,6 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useDebounce } from '@/shared/lib/hooks/useDebounce/useDebounce';
 
+/**
+ * Хук для глобального поиска (через бэкенд)
+ */
 export function useGlobalSearch<T>(
 	onSearch: (searchTerm: string) => Promise<T[]>,
 	debounceDelay: number = 500
@@ -10,8 +13,10 @@ export function useGlobalSearch<T>(
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
 
+	// Мемоизируем результаты для предотвращения лишних ререндеров
 	const memoizedResults = useMemo(() => results, [results]);
 
+	// Дебаунсированный поиск
 	const debouncedSearch = useDebounce(async (term: string) => {
 		if (term.length === 0) {
 			setResults([]);
@@ -31,6 +36,7 @@ export function useGlobalSearch<T>(
 		}
 	}, debounceDelay);
 
+	// Обработчик изменения поиска
 	const handleSearchChange = useCallback(
 		(value: string) => {
 			setSearchTerm(value);
@@ -39,12 +45,14 @@ export function useGlobalSearch<T>(
 		[debouncedSearch]
 	);
 
+	// Обработчик очистки
 	const handleClear = useCallback(() => {
 		setSearchTerm('');
 		setResults([]);
 		setError(null);
 	}, []);
 
+	// Мемоизируем возвращаемый объект для предотвращения лишних ререндеров
 	return useMemo(
 		() => ({
 			searchTerm,

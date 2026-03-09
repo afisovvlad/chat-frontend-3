@@ -37,6 +37,8 @@ export function filterByNameExtended<T extends Record<string, unknown>>(
 	);
 }
 
+// СПЕЦИАЛИЗИРОВАННЫЙ ФИЛЬТР ДЛЯ ЧАТОВ (оптимизированный + дженерик)
+
 export function filterChatsLocal<
 	T extends {
 		name: string;
@@ -55,16 +57,19 @@ export function filterChatsLocal<
 		return items;
 	}
 	return items.filter(item => {
+		//  1. Быстрые и вероятные проверки (короткое замыкание)
 		if (item.name.toLowerCase().includes(term)) {
 			return true;
 		}
 
+		//  2. Поиск по последнему сообщению (частый кейс)
 		if (item.last_message?.content?.toLowerCase().includes(term)) {
 			return true;
 		}
-
+		//  3. Поля пользователя — только если предыдущие не сработали
 		const { chat } = item;
 
+		// Без создания массива: нативное короткое замыкание через ||
 		return (
 			chat.username?.toLowerCase().includes(term) ||
 			chat.nickname?.toLowerCase().includes(term) ||

@@ -47,8 +47,6 @@ export const Search = memo(
 			},
 			ref
 		) => {
-			const hasValue = useMemo(() => value.trim().length > 0, [value]);
-
 			const showClearButton = useMemo(() => {
 				if (disableClear) {
 					return false;
@@ -56,14 +54,17 @@ export const Search = memo(
 				if (alwaysShowClear) {
 					return true;
 				}
-				return hasValue;
-			}, [disableClear, alwaysShowClear, hasValue]);
+				return value.trim().length > 0;
+			}, [disableClear, alwaysShowClear, value]);
+
+			const hasValue = useMemo(() => value.trim().length > 0, [value]);
 
 			const handleClear = useCallback(() => {
-				onClear?.(value);
 				if (hasValue) {
 					onChange('');
 				}
+
+				onClear?.(value);
 			}, [hasValue, onChange, onClear, value]);
 
 			const handleKeyDown = useCallback(
@@ -88,18 +89,25 @@ export const Search = memo(
 				[onChange]
 			);
 
-			const inputClass = classNames(cls.input, {}, [inputClassName]);
+			const containerClass = useMemo(
+				() =>
+					classNames(
+						cls.container,
+						{
+							[cls.alwaysShowClear]: alwaysShowClear
+						},
+						[className]
+					),
+				[className, alwaysShowClear]
+			);
+
+			const inputClass = useMemo(
+				() => classNames(cls.input, {}, [inputClassName]),
+				[inputClassName]
+			);
 
 			return (
-				<div
-					className={classNames(
-						cls.container,
-						{ [cls.alwaysShowClear]: alwaysShowClear },
-						[className]
-					)}
-					role='search'
-					aria-label='Поле поиска'
-				>
+				<div className={containerClass} role='search' aria-label='Поле поиска'>
 					{showIcon && (
 						<SearchIcon className={cls.searchIcon} aria-hidden='true' />
 					)}

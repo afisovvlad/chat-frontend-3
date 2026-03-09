@@ -1,5 +1,3 @@
-// src/features/contacts/index.ts
-
 // ─── Компоненты ────────────────────────────────────────────────
 
 export { ContactsList } from './ui/ContactsList/ContactsList';

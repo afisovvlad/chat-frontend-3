@@ -57,6 +57,7 @@ export { default as SentUnread } from './SentUnread.svg';
 export { default as Service } from './Service.svg';
 export { default as Settings } from './Settings.svg';
 export { default as SiteSettings } from './SiteSettings.svg';
+export { default as Smile } from './Smile.svg';
 export { default as Success } from './Success.svg';
 export { default as Support } from './Support.svg';
 export { default as Trash } from './Trash.svg';

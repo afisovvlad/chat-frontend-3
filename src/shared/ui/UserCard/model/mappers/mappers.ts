@@ -1,6 +1,5 @@
 import { BlackListSchema } from '@/entities/BlackList';
 import { ChatItemSchema } from '@/entities/Chat/model/types/chat.types';
-
 import { ProfileSchema } from '@/entities/Profile';
 import { IUserCard } from '../types/IUserCard';
 import { ContactsSchema } from '@/entities/Contacts';
