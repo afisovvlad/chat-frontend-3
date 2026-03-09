@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { formatUnixToLocalTime } from '@/shared/lib/formatUnixToLocalTime/formatUnixToLocalTime';
 import { FontWeight, Text, TextColor, TextSize } from '@/shared/ui/Text';
 import { MessageStatusNode } from './MessageStatusNode';
+import { classNames } from '@/shared/lib/classNames/classNames';
 import styles from './MessageBubble.scss';
 
 interface MessageBubbleProps {
@@ -32,10 +33,6 @@ export const MessageBubble = ({
 	isFirstInGroup = false,
 	isLastInGroup = false
 }: MessageBubbleProps) => {
-	const messageClass = `message ${
-		status !== 'received' ? 'message_sent' : 'message_received'
-	}`;
-
 	const isGroupReceived = isGroupChat && status === 'received';
 	const showName = isGroupReceived && senderName && isFirstInGroup;
 	const showAvatar = isGroupReceived && senderAvatar && isLastInGroup;
@@ -44,18 +41,23 @@ export const MessageBubble = ({
 		onClick(id);
 	};
 
+	const messageClass = classNames(styles.message, {
+		[styles.message_sent]: status !== 'received',
+		[styles.message_received]: status === 'received'
+	});
+
+	const avatarSlotClass = classNames(styles.messageAvatarSlot, {
+		[styles.messageAvatarSlot_hidden]: !showAvatar
+	});
+
 	return (
 		<div className={styles.messageWrapper}>
 			<div className={styles.messageRow}>
 				{isGroupReceived && (
-					<div
-						className={`${styles.messageAvatarSlot} ${
-							showAvatar ? '' : styles.messageAvatarSlot_hidden
-						}`}
-					>
+					<div className={avatarSlotClass}>
 						{showAvatar && (
 							<Image
-								src={senderAvatar}
+								src={senderAvatar!}
 								alt={senderName ?? 'Пользователь'}
 								width={32}
 								height={32}
