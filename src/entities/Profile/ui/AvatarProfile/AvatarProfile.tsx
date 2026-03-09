@@ -30,6 +30,8 @@ export function AvatarProfile() {
 	);
 	const isMobile = useMediaQuery();
 
+	console.log(profile, 'profile');
+
 	const [serverError, setServerError] = useState<string | null>(null);
 	const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 	const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);

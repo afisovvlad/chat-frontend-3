@@ -1,0 +1,114 @@
+.contactItem {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	cursor: pointer;
+	text-decoration: none;
+	color: inherit;
+	background: transparent;
+	border-radius: 6px;
+	border: none;
+	outline: none;
+	transition: all 0.2s ease;
+	touch-action: manipulation;
+	position: relative;
+
+	&:link,
+	&:visited {
+		text-decoration: none;
+		color: inherit;
+		background: transparent;
+		border: none;
+		outline: none;
+		box-shadow: none;
+	}
+
+	@media (hover: hover) {
+		&:hover {
+			background-color: var(--color-gray-100);
+		}
+	}
+
+	// Активный (выбран для чата)
+	&.contactItemActive {
+		background-color: var(--color-violet-100);
+
+		@media (hover: hover) {
+			&:hover {
+				background-color: var(--color-violet-100);
+			}
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--color-primary);
+			outline-offset: -2px;
+		}
+	}
+
+	// Выбранный для удаления (режим выбора)
+	&.contactItemSelected {
+		background-color: var(--color-violet-100) !important;
+
+		@media (hover: hover) {
+			&:hover {
+				background-color: var(--color-violet-100) !important;
+			}
+		}
+	}
+
+	&:active {
+		background-color: var(--color-violet-40);
+		transform: scale(0.98);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--color-primary);
+		outline-offset: -2px;
+		box-shadow: none;
+	}
+}
+
+.itemContent {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	height: 80px;
+	padding: 0 12px;
+	box-sizing: border-box;
+	position: relative;
+}
+
+.userCard {
+	flex: 1;
+	display: flex;
+	align-items: center;
+}
+
+// 🔹 ЧЕКБОКС справа
+.checkbox {
+	flex-shrink: 0;
+	margin-left: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.checkboxEmpty {
+	width: 24px;
+	height: 24px;
+	border: 2px solid var(--color-gray-300);
+	border-radius: 50%;
+	background: white;
+	transition: all 0.2s ease;
+}
+
+.checkboxChecked {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: var(--color-primary);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+}

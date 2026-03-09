@@ -1,8 +1,9 @@
 import { BlackListSchema } from '@/entities/BlackList';
 import { ChatItemSchema } from '@/entities/Chat/model/types/chat.types';
-import { ContactsSchema } from '@/entities/Contacts/model';
+
 import { ProfileSchema } from '@/entities/Profile';
 import { IUserCard } from '../types/IUserCard';
+import { ContactsSchema } from '@/entities/Contacts';
 
 export const mapChatToUserCard = (user: ChatItemSchema): IUserCard => ({
 	user: {

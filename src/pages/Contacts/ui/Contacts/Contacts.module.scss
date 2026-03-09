@@ -1,0 +1,46 @@
+// ─── Состояния пустого экрана ───────────────────────────────
+.emptyState,
+.detail,
+.mobileDetail {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 24px 16px;
+	text-align: center;
+	gap: 16px;
+}
+
+// ─── Мобильная версия ───────────────────────────────────────
+.mobileDetail {
+	height: 100dvh; // Dynamic viewport для мобильных браузеров
+
+	@media (min-width: 768px) {
+		height: 100%;
+	}
+}
+
+// ─── Пустой список контактов (в Sidebar) ─────────────────────
+.emptyList {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 32px 16px;
+	color: var(--color-text-secondary);
+	text-align: center;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+// ─── Анимации (опционально) ─────────────────────────────────
+.detail,
+.emptyState {
+	transition: opacity 0.2s ease;
+
+	&:empty {
+		opacity: 0.6;
+	}
+}

@@ -1,4 +1,6 @@
+'use client';
 import { JSX } from 'react';
+import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { TextTag, TextType, TitleTag } from '../model/types/enums';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { TextProps, AllowedTag } from '../model/types/types';
@@ -10,7 +12,9 @@ export const Text = (props: TextProps) => {
 		children,
 		color,
 		fontSize,
+		fontSizeMobile,
 		fontWeight,
+		fontWeightMobile,
 		lineHeight,
 		textAlign,
 		truncate = false,
@@ -20,6 +24,8 @@ export const Text = (props: TextProps) => {
 		tag
 	} = props;
 
+	const isMobile = useMediaQuery(768);
+
 	const isTitle = type === TextType.TITLE;
 	const defaultTag = isTitle ? TitleTag.H3 : TextTag.P;
 	const resolvedTag = (tag ?? defaultTag) as AllowedTag;
@@ -27,8 +33,12 @@ export const Text = (props: TextProps) => {
 
 	const dynamicStyles: React.CSSProperties = {
 		...(color !== undefined ? { color } : {}),
-		...(fontSize !== undefined ? { fontSize } : {}),
-		...(fontWeight !== undefined ? { fontWeight } : {}),
+		...(fontSize !== undefined && {
+			fontSize: isMobile && fontSizeMobile ? fontSizeMobile : fontSize
+		}),
+		...(fontWeight !== undefined && {
+			fontWeight: isMobile && fontWeightMobile ? fontWeightMobile : fontWeight
+		}),
 		...(lineHeight !== undefined ? { lineHeight } : {}),
 		...(textAlign !== undefined ? { textAlign } : {}),
 		...(uppercase ? { textTransform: 'uppercase' } : {})
