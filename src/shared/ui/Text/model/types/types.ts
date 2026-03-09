@@ -14,7 +14,9 @@ interface BaseTextProps {
 	children: ReactNode;
 	color?: TextColor;
 	fontSize?: TextSize;
+	fontSizeMobile?: TextSize;
 	fontWeight?: FontWeight;
+	fontWeightMobile?: FontWeight;
 	lineHeight?: string | number;
 	textAlign?: TextAlign;
 	margin?: string;

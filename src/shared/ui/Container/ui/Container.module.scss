@@ -4,15 +4,15 @@
 	display: flex;
 	flex-direction: column;
 
-	@media (max-width: 1200px) {
-		padding: 0 20px;
-	}
+	// @media (max-width: 1200px) {
+	// 	padding: 0 20px;
+	// }
 
-	@media (max-width: 768px) {
-		padding: 16px;
+	// @media (max-width: 768px) {
+	// 	padding: 16px;
 
-		// padding: 0 16px;
-	}
+	// 	// padding: 0 16px;
+	// }
 }
 
 .sidebar {
@@ -31,6 +31,7 @@
 		--app-header-offset: 0;
 
 		width: 100%;
+		height: 100dvh;
 		background-color: transparent;
 		border: 1px solid transparent;
 	}
@@ -56,7 +57,9 @@
 		--app-header-offset: 0;
 
 		width: 100%;
-		display: none; // при разработке логики это свойство убрать,, или изменить согласно логике показа сообщений!!!
+		height: 100dvh;
+
+		// display: none; // при разработке логики это свойство убрать,, или изменить согласно логике показа сообщений!!!
 		background-color: transparent;
 		border: 1px solid transparent;
 	}

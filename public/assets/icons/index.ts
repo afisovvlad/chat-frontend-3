@@ -40,6 +40,7 @@ export { default as NoInternet } from './NoInternet.svg';
 export { default as NotFound } from './NotFound.svg';
 export { default as Paperclip } from './Paperclip.svg';
 export { default as Phone } from './Phone.svg';
+export { default as MobilePhone } from './MobilePhone.svg';
 export { default as PhotoCamera } from './PhotoCamera.svg';
 export { default as Pin } from './Pin.svg';
 export { default as ProfileAvatar } from './ProfileAvatar.svg';
