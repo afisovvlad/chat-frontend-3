@@ -22,6 +22,7 @@ export function EmojiPickerComponent({
 	onEmojiSelect
 }: EmojiPickerComponent) {
 	const [showPicker, setShowPicker] = useState(false);
+
 	return (
 		<div style={{ position: 'relative' }}>
 			<Button
