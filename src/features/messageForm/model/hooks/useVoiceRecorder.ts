@@ -17,7 +17,10 @@ export const useVoiceRecorder = () => {
 			? 'audio/ogg;codecs=opus'
 			: 'audio/webm;codecs=opus';
 
-		const mediaRecorder = new MediaRecorder(stream, { mimeType });
+		const mediaRecorder = new MediaRecorder(stream, {
+			mimeType,
+			audioBitsPerSecond: 24000
+		});
 
 		mediaRecorderRef.current = mediaRecorder;
 		chunks.current = [];
@@ -65,6 +68,8 @@ export const useVoiceRecorder = () => {
 		reset
 	};
 };
+
+// ************
 // 'use client';
 
 // import { useRef, useState } from 'react';

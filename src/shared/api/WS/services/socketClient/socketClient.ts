@@ -169,7 +169,8 @@ export const sendWS = async <T = WSResponse>(
 		}
 
 		return new Promise((resolve, reject) => {
-			const requestUid = crypto.randomUUID();
+			const requestUid = request.request_uid ?? crypto.randomUUID();
+			// const requestUid = crypto.randomUUID();
 
 			// для иммутабельности
 			const requestWithUid = {
