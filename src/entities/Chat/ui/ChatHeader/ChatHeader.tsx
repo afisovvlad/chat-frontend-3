@@ -1,27 +1,27 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useClickOutside } from '@/shared/lib/hooks/useClickOutside/useClickOutside';
+import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
+import { Avatar } from '@/shared/ui/Avatar';
 import {
 	Button,
 	ButtonColor,
 	ButtonTheme,
 	ButtonType
 } from '@/shared/ui/Button';
-import { SearchIcon, Phone, Back, Success, MobilePhone } from '@icons/index';
+import { Modal } from '@/shared/ui/Modal';
 import { Search } from '@/shared/ui/Search';
-import { useClickOutside } from '@/shared/lib/hooks/useClickOutSide/useClickOutside';
-import { Avatar } from '@/shared/ui/Avatar';
 import {
 	Text,
+	TextColor,
 	TextSize,
 	TextTag,
 	TextType,
-	TitleTag,
-	TextColor
+	TitleTag
 } from '@/shared/ui/Text';
+import { Back, MobilePhone, Phone, SearchIcon, Success } from '@icons/index';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChatActionBar } from '../ChatActionBar/ChatActionBar';
-import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
-import { Modal } from '@/shared/ui/Modal';
 import cls from './ChatHeader.module.scss';
 
 // Импортируем хук мутации (раскомментируй, когда API будет готов)

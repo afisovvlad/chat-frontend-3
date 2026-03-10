@@ -1,7 +1,7 @@
 'use client';
 
 import { classNames } from '@/shared/lib/classNames/classNames';
-import { useClickOutside } from '@/shared/lib/hooks/useClickOutSide/useClickOutside';
+import { useClickOutside } from '@/shared/lib/hooks/useClickOutside/useClickOutside';
 import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Smile } from '@icons/index';
 import { EmojiStyle, Theme } from 'emoji-picker-react';
