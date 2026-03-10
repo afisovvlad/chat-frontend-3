@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { Text, TextAlign, TextColor, TextSize } from '../Text';
 import cls from './NotMessage.module.scss';
 
-export const NotMessage = () => {
+const NotMessage = () => {
 	return (
 		<div className={cls.wrapper}>
 			<Image
@@ -30,3 +30,5 @@ export const NotMessage = () => {
 		</div>
 	);
 };
+
+export default NotMessage;

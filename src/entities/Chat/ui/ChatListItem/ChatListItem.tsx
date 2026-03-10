@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { UserCard, UserCardType } from '@/shared/ui/UserCard';
 import type { Chat } from '../../model/types/chat.types';
 import { mapChatToUserCard } from '../../model/mapper/chatMapper';
-import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 
 import cls from './ChatListItem.module.scss';
 
@@ -14,35 +13,23 @@ export interface ChatListItemProps {
 	isActive: boolean;
 }
 
-const propsAreEqual = (
-	prev: ChatListItemProps,
-	next: ChatListItemProps
-): boolean => {
-	return (
-		prev.chat.id === next.chat.id &&
-		prev.isActive === next.isActive &&
-		prev.chat.last_activity_at === next.chat.last_activity_at &&
-		prev.chat.new_message_count === next.chat.new_message_count &&
-		prev.chat.last_message?.updated_at === next.chat.last_message?.updated_at
-	);
-};
-
 export const ChatListItem = memo(({ chat, isActive }: ChatListItemProps) => {
-	const uid = chat.chat.uid;
-
+	const uid = useMemo(() => chat.chat.uid, [chat.chat.uid]);
 	const userCardData = useMemo(() => mapChatToUserCard(chat), [chat]);
 
-	const isMobile = useMediaQuery();
+	const href = useMemo(() => `/chats/${uid}`, [uid]);
+
+	const itemClass = useMemo(
+		() => `${cls.chatItem} ${isActive ? cls.chatItemActive : ''}`,
+		[isActive]
+	);
 
 	return (
 		<Link
-			href={`/chats/${uid}`}
-			className={`${cls.chatItem} ${isActive ? cls.chatItemActive : ''}`}
+			href={href}
+			className={itemClass}
 			aria-label={`Чат с ${chat.name}`}
-			scroll={false}
-			prefetch={!isMobile}
-			data-chat-uid={uid}
-			data-is-mobile={isMobile}
+			prefetch={false}
 		>
 			<div className={cls.itemContent}>
 				<div className={cls.userCard}>
@@ -55,6 +42,6 @@ export const ChatListItem = memo(({ chat, isActive }: ChatListItemProps) => {
 			</div>
 		</Link>
 	);
-}, propsAreEqual);
+});
 
 ChatListItem.displayName = 'ChatListItem';

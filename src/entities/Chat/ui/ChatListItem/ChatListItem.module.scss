@@ -1,3 +1,5 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
 .chatItem {
 	display: block;
 	width: 100%;
@@ -6,15 +8,15 @@
 	text-decoration: none;
 	color: inherit;
 	background: transparent;
-	border-radius: 6px;
 	border: none;
 	outline: none;
-	transition: background-color 0.2s ease;
-	touch-action: manipulation;
-	-webkit-tap-highlight-color: transparent;
+	transition: none;
 
 	&:link,
-	&:visited {
+	&:visited,
+	&:hover,
+	&:active,
+	&:focus {
 		text-decoration: none;
 		color: inherit;
 		background: transparent;
@@ -23,42 +25,37 @@
 		box-shadow: none;
 	}
 
-	@media (hover: hover) {
-		&:hover {
-			background-color: var(--color-gray-100);
-		}
-	}
-
-	&.chatItemActive {
-		background-color: var(--color-violet-100) !important; // ← приоритет
-		opacity: 1;
-
-		@media (hover: hover) {
-			&:hover {
-				background-color: var(--color-violet-100);
-			}
-		}
-
-		&:focus-visible {
-			outline: 2px solid var(--color-primary);
-			outline-offset: -2px;
-			background-color: var(--color-violet-100);
-		}
+	&:hover {
+		background: transparent;
 	}
 
 	&:active {
-		background-color: var(--color-violet-40);
-		transform: scale(0.98);
+		transform: none;
 	}
 
 	&:focus-visible {
-		outline: 2px solid var(--color-primary);
-		outline-offset: -2px;
+		outline: none;
 		box-shadow: none;
 	}
 }
 
 .chatItemActive {
-	background-color: var(--color-violet-100);
+	// при необходимости, если надо будет реализоввать поведение активного чата
 	opacity: 1;
+}
+
+.itemContent {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.userCard {
+	width: 100%;
+}
+
+.info {
+	flex: 1;
+	overflow: hidden;
 }

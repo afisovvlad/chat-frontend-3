@@ -5,7 +5,7 @@ import { Text, TextAlign, TextColor, TextSize } from '../Text';
 import { Button, ButtonColor, ButtonTheme, ButtonType } from '../Button';
 import cls from './EmptyChats.module.scss';
 
-export const EmptyChats = () => {
+const EmptyChats = () => {
 	const router = useRouter();
 
 	const handleStartChat = useCallback(() => {
@@ -51,3 +51,5 @@ export const EmptyChats = () => {
 		</div>
 	);
 };
+
+export default EmptyChats;

@@ -10,9 +10,7 @@ export const rtkApi = createApi({
 		'EditProfile',
 		'Profile',
 		'Chats',
-		'Messages',
-		'Contacts',
-		'ChatList'
+		'Messages'
 	],
 	endpoints: _ => ({})
 });
