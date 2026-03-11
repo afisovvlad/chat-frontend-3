@@ -1,0 +1,65 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
+.deleteModal {
+	padding: 24px;
+}
+
+.modalContent {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: start;
+	gap: 16px;
+	text-align: center;
+	width: 100%;
+}
+
+.modalInfo {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: start;
+	gap: 8px;
+	width: 100%;
+}
+
+.modalActions {
+	display: flex;
+	gap: 12px;
+	width: 100%;
+	margin-top: 8px;
+}
+
+.modalCancel {
+	padding: 10px 16px;
+	flex: 1;
+	transition:
+		outline,
+		0.1s ease;
+
+	&:hover {
+		outline: 2px solid var(--color-primary);
+	}
+
+	&:focus-visible {
+		@include focus-visible;
+	}
+}
+
+.modalDelete {
+	padding: 10px 16px;
+	flex: 1;
+	transition:
+		outline,
+		0.1s ease;
+
+	&:hover {
+		background-color: var(--color-white);
+		color: var(--color-primary);
+		outline: 2px solid var(--color-primary);
+	}
+
+	&:focus-visible {
+		@include focus-visible;
+	}
+}

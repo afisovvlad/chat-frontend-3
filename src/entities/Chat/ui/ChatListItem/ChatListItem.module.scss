@@ -25,7 +25,7 @@
 
 	@media (hover: hover) {
 		&:hover {
-			background-color: var(--color-gray-100);
+			background-color: var(--color-violet-100);
 		}
 	}
 
@@ -36,14 +36,14 @@
 
 		@media (hover: hover) {
 			&:hover {
-				background-color: var(--color-violet-100);
+				background-color: var(--color-violet-700);
 			}
 		}
 
 		&:focus-visible {
 			outline: 2px solid var(--color-primary);
 			outline-offset: -2px;
-			background-color: var(--color-violet-100);
+			background-color: var(--color-violet-700);
 		}
 	}
 

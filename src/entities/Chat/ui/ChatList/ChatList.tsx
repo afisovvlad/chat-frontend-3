@@ -10,9 +10,17 @@ import { Chat, GetChatsRequest } from '../../model/types/chat.types';
 import { sortChatsByLastMessage } from '../../model/lib/utils/sortChatsByLastMessage';
 import { mockChats } from '../../mock/mockData';
 import { appConfig } from '@/shared/config/app.config';
+import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { ChatListContent } from '../ChatListContent/ChatListContent';
 
 import cls from './ChatList.module.scss';
+import {
+	Button,
+	ButtonColor,
+	ButtonTheme,
+	ButtonType
+} from '@/shared/ui/Button';
+import { CreateNew } from '@icons/index';
 
 const LOCAL_CACHE_SIZE = 30;
 const GLOBAL_SEARCH_MIN_LENGTH = 3;
@@ -37,6 +45,8 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 		pageSize: LOCAL_CACHE_SIZE,
 		ordering: '-last_activity_at'
 	} as GetChatsRequest);
+
+	const mobile = useMediaQuery();
 
 	const [triggerGlobalSearch] = useLazyGetChatsQuery();
 
@@ -201,8 +211,20 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 					onChange={handleSearchChange}
 					onClear={handleClear}
 					placeholder={searchPlaceholder}
+					className={cls.searchInput}
 					showIcon
 				/>
+				{mobile && (
+					<Button
+						theme={ButtonTheme.BACKGROUND}
+						color={ButtonColor.TRANSPARENT}
+						btnType={ButtonType.BUTTON}
+						className={cls.addMenuBtn}
+						onClick={() => console.log('Добавить меню с нужными функциями')}
+					>
+						<CreateNew className={cls.addMenuBtnIcon} />
+					</Button>
+				)}
 			</div>
 
 			{statusFlags.isEmpty ? (

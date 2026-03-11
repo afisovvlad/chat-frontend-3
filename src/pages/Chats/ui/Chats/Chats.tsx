@@ -5,9 +5,9 @@ import { ChatList } from '@/entities/Chat';
 import { Container, ContainerType } from '@/shared/ui/Container';
 import { useParams, useRouter } from 'next/navigation';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
-
-import cls from './Chats.module.scss';
+import { Text } from '@/shared/ui/Text';
 import { ChatView } from '@/widgets/ChatView';
+import cls from './Chats.module.scss';
 
 const ChatsPageComponent = () => {
 	const params = useParams();
@@ -46,7 +46,7 @@ const ChatsPageComponent = () => {
 					<ChatView chatUid={chatUid} />
 				) : (
 					<div className={cls.emptyState}>
-						<p>Выберите чат для начала общения</p>
+						<Text>Выберите чат для начала общения</Text>
 					</div>
 				)}
 			</Container>

@@ -11,6 +11,7 @@ export const Text = (props: TextProps) => {
 		type = TextType.TEXT,
 		children,
 		color,
+		inheritColor = false,
 		fontSize,
 		fontSizeMobile,
 		fontWeight,
@@ -32,7 +33,7 @@ export const Text = (props: TextProps) => {
 	const typeClass = isTitle ? cls.text_title : cls.text_text;
 
 	const dynamicStyles: React.CSSProperties = {
-		...(color !== undefined ? { color } : {}),
+		...(!inheritColor && color !== undefined ? { color } : {}),
 		...(fontSize !== undefined && {
 			fontSize: isMobile && fontSizeMobile ? fontSizeMobile : fontSize
 		}),
@@ -49,6 +50,7 @@ export const Text = (props: TextProps) => {
 		typeClass,
 		...(truncate ? [cls.text_truncate] : []),
 		...(!truncate && maxLines ? [cls[`clamp-${maxLines}`]] : []),
+		...(inheritColor ? [cls.text_inherit] : []), //  Новый класс
 		...(className ? [className] : [])
 	];
 

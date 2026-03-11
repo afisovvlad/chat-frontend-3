@@ -13,6 +13,7 @@ import {
 interface BaseTextProps {
 	children: ReactNode;
 	color?: TextColor;
+	inheritColor?: boolean;
 	fontSize?: TextSize;
 	fontSizeMobile?: TextSize;
 	fontWeight?: FontWeight;

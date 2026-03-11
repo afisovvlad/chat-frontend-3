@@ -15,7 +15,7 @@
 
 // ─── Мобильная версия ───────────────────────────────────────
 .mobileDetail {
-	height: 100dvh; // Dynamic viewport для мобильных браузеров
+	height: 100dvh;
 
 	@media (min-width: 768px) {
 		height: 100%;
@@ -29,7 +29,7 @@
 	align-items: center;
 	justify-content: center;
 	padding: 32px 16px;
-	color: var(--color-text-secondary);
+	color: var(--color-gray-500);
 	text-align: center;
 	font-size: 14px;
 	line-height: 1.5;

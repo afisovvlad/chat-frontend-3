@@ -6,12 +6,14 @@ type LastSeenProps = {
 	wasOnlineAt: number | null; // UNIX (секунды)
 	isOnline: boolean | null;
 	hasConnection?: boolean;
+	invertColors?: boolean;
 };
 
 export function LastSeen({
 	wasOnlineAt,
 	isOnline,
-	hasConnection = true
+	hasConnection = true,
+	invertColors = false
 }: LastSeenProps) {
 	const [_, setTick] = useState(0);
 
@@ -31,11 +33,18 @@ export function LastSeen({
 		hasConnection
 	});
 
+	const statusColor = invertColors
+		? undefined
+		: isOnline
+			? TextColor.ACCENT
+			: TextColor.GRAY;
+
 	return (
 		<Text
 			fontSize={TextSize.S}
 			fontWeight={FontWeight.REGULAR}
-			color={isOnline ? TextColor.ACCENT : TextColor.GRAY}
+			color={statusColor}
+			inheritColor={invertColors}
 		>
 			{text}
 		</Text>

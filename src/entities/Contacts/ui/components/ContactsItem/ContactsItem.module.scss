@@ -1,3 +1,5 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
 .contactItem {
 	display: flex;
 	align-items: center;
@@ -25,19 +27,13 @@
 
 	@media (hover: hover) {
 		&:hover {
-			background-color: var(--color-gray-100);
+			background-color: var(--color-violet-100);
 		}
 	}
 
 	// Активный (выбран для чата)
 	&.contactItemActive {
-		background-color: var(--color-violet-100);
-
-		@media (hover: hover) {
-			&:hover {
-				background-color: var(--color-violet-100);
-			}
-		}
+		background-color: var(--color-gray-100);
 
 		&:focus-visible {
 			outline: 2px solid var(--color-primary);
@@ -47,17 +43,22 @@
 
 	// Выбранный для удаления (режим выбора)
 	&.contactItemSelected {
-		background-color: var(--color-violet-100) !important;
+		background-color: var(--color-violet-800);
+		color: var(--color-white);
 
 		@media (hover: hover) {
 			&:hover {
-				background-color: var(--color-violet-100) !important;
+				background-color: var(--color-violet-700);
 			}
+		}
+
+		@media (max-width: 768px) {
+			background-color: var(--color-violet-40);
+			color: var(--color-black);
 		}
 	}
 
 	&:active {
-		background-color: var(--color-violet-40);
 		transform: scale(0.98);
 	}
 
@@ -84,7 +85,7 @@
 	align-items: center;
 }
 
-// 🔹 ЧЕКБОКС справа
+//  ЧЕКБОКС справа
 .checkbox {
 	flex-shrink: 0;
 	margin-left: 12px;
@@ -93,22 +94,29 @@
 	justify-content: center;
 }
 
+// Пустой чекбокс
 .checkboxEmpty {
 	width: 24px;
 	height: 24px;
-	border: 2px solid var(--color-gray-300);
+	border: 2px solid var(--color-violet-500);
 	border-radius: 50%;
 	background: white;
 	transition: all 0.2s ease;
 }
 
+// Выбранный чекбокс — реверс цветов
 .checkboxChecked {
 	width: 24px;
 	height: 24px;
+	border: 1px solid var(--color-primary);
 	border-radius: 50%;
-	background: var(--color-primary);
+	background: white;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	transition: all 0.2s ease;
+}
+
+.checked {
+	color: var(--color-primary);
 }

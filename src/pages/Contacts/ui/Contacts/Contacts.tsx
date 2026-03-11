@@ -5,7 +5,7 @@ import { Container, ContainerType } from '@/shared/ui/Container';
 import { useParams, useRouter } from 'next/navigation';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { ContactsList } from '@/entities/Contacts';
-import EmptyContacts from '@/shared/ui/EmptyContacts/EmptyContacts';
+import { Text } from '@/shared/ui/Text';
 import { ChatView } from '@/widgets/ChatView';
 import cls from './Contacts.module.scss';
 
@@ -63,7 +63,7 @@ const ContactsPageComponent = () => {
 				) : (
 					//  Пустое состояние: предложим выбрать контакт
 					<div className={cls.emptyState}>
-						<EmptyContacts />
+						<Text>Выберите контакт для начала общения</Text>
 					</div>
 				)}
 			</Container>

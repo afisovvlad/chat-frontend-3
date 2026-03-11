@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useMemo, useCallback, useState } from 'react';
-import { Search, useHybridSearch } from '@/shared/ui/Search';
+import { useHybridSearch } from '@/shared/ui/Search';
 import {
 	useGetContactsQuery,
 	useLazySearchGlobalContactsQuery
@@ -14,31 +14,24 @@ import {
 	GetContactsRequest
 } from '../../model/types/contacts.types';
 import { appConfig } from '@/shared/config/app.config';
-import { ContactsListContent } from '../ContactsListContent/ContactsListContent';
+import { ContactsListContent } from '../components/ContactsListContent/ContactsListContent';
 import { filterContactsLocal } from '../../model/filters/filterContactsLocal';
 import { sortContactsByStatus } from '../../model/utils/sortContactsByStatus';
 import { mockContacts } from '../../mock/mockContacts';
+import { getContactWordForm } from '../../model/helper/getContactWordForm';
+import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
+import { ContactsSearch } from '../components/ContactsSearch/ContactsSearch';
+import { SelectionHeader } from '../components/SelectionHeader/SelectionHeader';
+import { SelectionFooter } from '../components/SelectionFooter/SelectionFooter';
+import { DeleteModal } from '../components/DeleteModal/DeleteModal';
 import EmptyContacts from '@/shared/ui/EmptyContacts/EmptyContacts';
-import {
-	Text,
-	TextSize,
-	TextTag,
-	TextType,
-	TextColor,
-	TitleTag
-} from '@/shared/ui/Text';
-import {
-	Button,
-	ButtonTheme,
-	ButtonColor,
-	ButtonSize
-} from '@/shared/ui/Button';
-import { Modal } from '@/shared/ui/Modal';
-import { Trash, Left, CancelSelection } from '@icons/index';
+import { NotSearch } from '@/shared/ui/NotSearch/NotSearch';
+import { ContactsHeader } from '../components/ContactsHeader/ContactsHeader';
+
 import cls from './ContactsList.module.scss';
 
 // ─────────────────────────────────────────────────────────────
-// 🔹 КОНСТАНТЫ
+//  КОНСТАНТЫ
 // ─────────────────────────────────────────────────────────────
 const CONFIG = {
 	LOCAL_CACHE_SIZE: 30,
@@ -54,17 +47,16 @@ export interface ContactsListProps {
 
 export const ContactsList = memo(
 	({ selectedContactUid, onSelectContact }: ContactsListProps) => {
-		// ─────────────────────────────────────────────────────────────
-		// 🔹 STATE
-		// ─────────────────────────────────────────────────────────────
 		const [isSelectionMode, setIsSelectionMode] = useState(false);
 		const [selectedContacts, setSelectedContacts] = useState<Set<string>>(
 			new Set()
 		);
 		const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+		const mobile = useMediaQuery();
+
 		// ─────────────────────────────────────────────────────────────
-		// 🔹 DATA FETCHING
+		//  DATA FETCHING
 		// ─────────────────────────────────────────────────────────────
 		const { data: contactsResponse, isLoading: isCacheLoading } =
 			useGetContactsQuery({
@@ -75,7 +67,7 @@ export const ContactsList = memo(
 		const [searchGlobal] = useLazySearchGlobalContactsQuery();
 
 		// ─────────────────────────────────────────────────────────────
-		// 🔹 DATA TRANSFORMATION
+		//  DATA TRANSFORMATION
 		// ─────────────────────────────────────────────────────────────
 		const localContacts = useMemo(() => {
 			const source = appConfig.USE_MOCKS
@@ -90,12 +82,11 @@ export const ContactsList = memo(
 		}, [contactsResponse]);
 
 		// ─────────────────────────────────────────────────────────────
-		// 🔹 HANDLERS: Selection
+		//  HANDLERS: Selection
 		// ─────────────────────────────────────────────────────────────
 		const handleToggleSelection = useCallback((contactUid: string) => {
 			setSelectedContacts(prev => {
 				const next = new Set(prev);
-				// 🔹 Исправлено: явный if/else вместо тернарного выражения
 				if (next.has(contactUid)) {
 					next.delete(contactUid);
 				} else {
@@ -105,22 +96,28 @@ export const ContactsList = memo(
 			});
 		}, []);
 
-		const handleClearSelection = useCallback(() => {
-			setSelectedContacts(new Set());
-			setIsSelectionMode(false);
-		}, []);
-
 		const handleEnterSelectionMode = useCallback(() => {
 			setIsSelectionMode(true);
 			setSelectedContacts(new Set());
 		}, []);
 
+		const handleResetSelection = useCallback(() => {
+			setSelectedContacts(new Set());
+		}, []);
+
+		const handleClearSelection = useCallback(() => {
+			handleResetSelection();
+			setIsSelectionMode(false);
+		}, [handleResetSelection]);
+
 		// ─────────────────────────────────────────────────────────────
-		// 🔹 HANDLERS: Delete Modal
+		//  HANDLERS: Delete Modal
 		// ─────────────────────────────────────────────────────────────
 		const handleOpenDeleteModal = useCallback(() => {
-			setIsDeleteModalOpen(true);
-		}, []);
+			if (selectedContacts.size > 0) {
+				setIsDeleteModalOpen(true);
+			}
+		}, [selectedContacts.size]);
 
 		const handleCloseDeleteModal = useCallback(() => {
 			setIsDeleteModalOpen(false);
@@ -128,7 +125,9 @@ export const ContactsList = memo(
 
 		const handleConfirmDelete = useCallback(async () => {
 			try {
-				console.log('🗑️ Deleting contacts:', Array.from(selectedContacts));
+				if (process.env.NODE_ENV === 'development') {
+					console.log('🗑️ Deleting contacts:', Array.from(selectedContacts));
+				}
 
 				// TODO: Интеграция с API
 				// await deleteContactsMutation.mutateAsync(Array.from(selectedContacts));
@@ -136,13 +135,23 @@ export const ContactsList = memo(
 				handleClearSelection();
 				setIsDeleteModalOpen(false);
 			} catch (error) {
-				console.error('Failed to delete contacts:', error);
-				// TODO: Показать ошибку пользователю
+				if (process.env.NODE_ENV === 'development') {
+					console.error('Failed to delete contacts:', error);
+				}
 			}
 		}, [selectedContacts, handleClearSelection]);
 
+		const handleShareContacts = useCallback(() => {
+			const selectedContactsData = localContacts.filter(contact =>
+				selectedContacts.has(contact.uid)
+			);
+			if (process.env.NODE_ENV === 'development') {
+				console.log('Sharing contacts:', selectedContactsData);
+			}
+		}, [selectedContacts, localContacts]);
+
 		// ─────────────────────────────────────────────────────────────
-		// 🔹 GLOBAL SEARCH
+		//  GLOBAL SEARCH
 		// ─────────────────────────────────────────────────────────────
 		const fetchGlobalContacts = useCallback(
 			async (searchTerm: string): Promise<ContactsSchema[]> => {
@@ -163,7 +172,9 @@ export const ContactsList = memo(
 					const result = await searchGlobal(payload).unwrap();
 					return sortContactsByStatus(result?.results ?? []);
 				} catch (error) {
-					console.error('Global search error:', error);
+					if (process.env.NODE_ENV === 'development') {
+						console.error('Global search error:', error);
+					}
 					return [];
 				}
 			},
@@ -171,7 +182,7 @@ export const ContactsList = memo(
 		);
 
 		// ─────────────────────────────────────────────────────────────
-		// 🔹 HYBRID SEARCH HOOK
+		// HYBRID SEARCH HOOK
 		// ─────────────────────────────────────────────────────────────
 		const {
 			searchTerm,
@@ -191,7 +202,7 @@ export const ContactsList = memo(
 		);
 
 		// ─────────────────────────────────────────────────────────────
-		// 🔹 DERIVED STATE
+		//  DERIVED STATE
 		// ─────────────────────────────────────────────────────────────
 		const searchLength = useMemo(
 			() => searchTerm.trim().replace(/^@/, '').length,
@@ -232,20 +243,26 @@ export const ContactsList = memo(
 			return 'Поиск контактов...';
 		}, [isGlobal]);
 
+		const isSearchNoResults = useMemo(() => {
+			return (
+				searchTerm.trim().length > 0 &&
+				!isSearching &&
+				displayContacts.length === 0
+			);
+		}, [searchTerm, isSearching, displayContacts.length]);
+
 		// ─────────────────────────────────────────────────────────────
-		// 🔹 RENDER: Loading / Error
+		//  RENDER: Loading / Error
 		// ─────────────────────────────────────────────────────────────
 		if (statusFlags.shouldShowSkeleton) {
 			return (
 				<div className={cls.contactsList}>
-					<div className={cls.search}>
-						<Search
-							value={searchTerm}
-							onChange={handleSearchChange}
-							placeholder='Поиск контактов...'
-							showIcon
-						/>
-					</div>
+					<ContactsSearch
+						value={searchTerm}
+						onChange={handleSearchChange}
+						onClear={handleClear}
+						placeholder='Поиск контактов...'
+					/>
 					<div className={cls.list} role='listbox' aria-busy='true'>
 						<UserCardSkeleton count={8} type={UserCardType.CONTACT} />
 					</div>
@@ -256,82 +273,55 @@ export const ContactsList = memo(
 		if (statusFlags.hasError) {
 			return (
 				<div className={cls.contactsList}>
-					<div className={cls.search}>
-						<Search
-							value={searchTerm}
-							onChange={handleSearchChange}
-							onClear={handleClear}
-							placeholder='Глобальный поиск (@username)...'
-							showIcon
-						/>
-					</div>
-					<div className={cls.empty} role='alert' aria-live='assertive'>
-						<EmptyContacts />
-					</div>
+					<ContactsSearch
+						value={searchTerm}
+						onChange={handleSearchChange}
+						onClear={handleClear}
+						placeholder='Глобальный поиск (@username)...'
+					/>
+					<EmptyContacts />
 				</div>
 			);
 		}
 
 		// ─────────────────────────────────────────────────────────────
-		// 🔹 RENDER: Main Content
+		//  RENDER: Main Content
 		// ─────────────────────────────────────────────────────────────
 		return (
 			<div className={cls.contactsList} aria-label='Список контактов'>
-				<Search
+				<ContactsSearch
 					value={searchTerm}
 					onChange={handleSearchChange}
 					onClear={handleClear}
 					placeholder={searchPlaceholder}
-					showIcon
 				/>
 
-				{isSelectionMode ? (
-					<div className={cls.selectionHeader}>
-						<div className={cls.btnWrapper}>
-							<Button
-								theme={ButtonTheme.CLEAR}
-								className={cls.backButton}
-								onClick={handleOpenDeleteModal}
-								aria-label='Подтвердить удаление'
-							>
-								<Left className={cls.backIcon} aria-hidden='true' />
-								<Text
-									type={TextType.TEXT}
-									tag={TextTag.SPAN}
-									fontSize={TextSize.S}
-								>
-									Удалить контакты
-								</Text>
-							</Button>
-
-							<Button
-								theme={ButtonTheme.CLEAR}
-								className={cls.cancelButton}
-								onClick={handleClearSelection}
-								aria-label='Отменить выбор'
-							>
-								<CancelSelection aria-hidden='true' />
-							</Button>
-						</div>
-					</div>
-				) : (
-					<Button
-						theme={ButtonTheme.CLEAR}
-						className={cls.contactsTrash}
-						onClick={handleEnterSelectionMode}
-						aria-label='Режим выбора контактов'
-					>
-						<Text type={TextType.TEXT} tag={TextTag.SPAN} fontSize={TextSize.S}>
-							Контакты пользователей А-чата
-						</Text>
-						<Trash className={cls.icon} aria-hidden='true' />
-					</Button>
+				{/*  Хедеры рендерятся ТОЛЬКО если поиск дал результаты или не выполнялся */}
+				{!isSearchNoResults && (
+					<>
+						{isSelectionMode && !mobile ? (
+							<SelectionHeader
+								selectedCount={selectedCount}
+								onBack={handleClearSelection}
+								onReset={handleResetSelection}
+								onDelete={handleOpenDeleteModal}
+							/>
+						) : (
+							<ContactsHeader
+								mobile={mobile}
+								isSelectionMode={isSelectionMode}
+								selectedCount={selectedCount}
+								onEnterSelectionMode={handleEnterSelectionMode}
+							/>
+						)}
+					</>
 				)}
 
-				{statusFlags.isEmpty ? (
-					<div className={cls.empty} role='status' aria-live='polite'>
-						<EmptyContacts />
-					</div>
+				{/*  Блок контента: приоритет — NotSearch при пустом поиске */}
+				{isSearchNoResults ? (
+					<NotSearch />
+				) : statusFlags.isEmpty ? (
+					<EmptyContacts />
 				) : (
 					<ContactsListContent
 						contacts={displayContacts}
@@ -343,84 +333,27 @@ export const ContactsList = memo(
 					/>
 				)}
 
-				{/* 🔹 MODAL: Подтверждение удаления */}
-				{isDeleteModalOpen && (
-					<Modal
-						isOpen={isDeleteModalOpen}
-						onClose={handleCloseDeleteModal}
-						closeButton={false}
-						size='wide'
-						className={cls.deleteModal}
-						aria-labelledby='delete-modal-title'
-					>
-						<div className={cls.modalContent}>
-							<div className={cls.modalInfo}>
-								<Text
-									type={TextType.TITLE}
-									tag={TitleTag.H3}
-									fontSize={TextSize.L}
-									className={cls.modalTitle}
-								>
-									Удалить контакты
-								</Text>
-								<Text
-									type={TextType.TEXT}
-									tag={TextTag.P}
-									fontSize={TextSize.S}
-									color={TextColor.BLACK}
-									className={cls.modalText}
-								>
-									Вы уверены, что хотите удалить {selectedCount}{' '}
-									{getContactWordForm(selectedCount)}?
-								</Text>
-							</div>
-
-							<div className={cls.modalActions}>
-								<Button
-									theme={ButtonTheme.BACKGROUND}
-									color={ButtonColor.TRANSPARENT}
-									size={ButtonSize.M}
-									className={cls.modalCancel}
-									onClick={handleCloseDeleteModal}
-								>
-									<Text
-										type={TextType.TEXT}
-										tag={TextTag.P}
-										fontSize={TextSize.S}
-										color={TextColor.BLACK}
-									>
-										Отмена
-									</Text>
-								</Button>
-								<Button
-									theme={ButtonTheme.BACKGROUND}
-									color={ButtonColor.PRIMARY}
-									size={ButtonSize.M}
-									className={cls.modalDelete}
-									onClick={handleConfirmDelete}
-								>
-									Удалить
-								</Button>
-							</div>
-						</div>
-					</Modal>
+				{/*  Footer тоже скрываем при пустом поиске */}
+				{!isSearchNoResults && isSelectionMode && selectedCount > 0 && (
+					<SelectionFooter
+						mobile={mobile}
+						selectedCount={selectedCount}
+						onClose={handleClearSelection}
+						onShare={handleShareContacts}
+						onDelete={handleOpenDeleteModal}
+					/>
 				)}
+
+				<DeleteModal
+					isOpen={isDeleteModalOpen}
+					selectedCount={selectedCount}
+					onClose={handleCloseDeleteModal}
+					onConfirm={handleConfirmDelete}
+					getContactWordForm={getContactWordForm}
+				/>
 			</div>
 		);
 	}
 );
-
-// ─────────────────────────────────────────────────────────────
-// 🔹 HELPER: Склонение слова "контакт"
-// ─────────────────────────────────────────────────────────────
-const getContactWordForm = (count: number): string => {
-	if (count % 10 === 1 && count % 100 !== 11) {
-		return 'контакт';
-	}
-	if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) {
-		return 'контакта';
-	}
-	return 'контактов';
-};
 
 ContactsList.displayName = 'ContactsList';

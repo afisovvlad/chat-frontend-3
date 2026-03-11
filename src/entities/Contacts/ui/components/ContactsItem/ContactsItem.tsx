@@ -3,11 +3,12 @@
 import { memo, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { UserCard, UserCardType } from '@/shared/ui/UserCard';
-
-import { ContactsSchema } from '../../model/types/contacts.types';
+import { ContactsSchema } from '../../../model/types/contacts.types';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
+import { mapContactToUserCard } from '../../../model/mapper/contactsMapper';
+import { Check } from '@icons/index';
+
 import cls from './ContactsItem.module.scss';
-import { mapContactToUserCard } from '../../model/mapper/contactsMapper';
 
 export interface ContactsListItemProps {
 	contact: ContactsSchema;
@@ -51,7 +52,7 @@ export const ContactsListItem = memo(
 		const isMobile = useMediaQuery();
 		const href = `/chats/${chatUid}`;
 
-		// 🔹 Динамические классы
+		//  Динамические классы
 		const itemClass = useMemo(() => {
 			const classes = [cls.contactItem];
 			if (isActive) {
@@ -65,11 +66,10 @@ export const ContactsListItem = memo(
 
 		const handleClick = useCallback(
 			(e: React.MouseEvent<HTMLAnchorElement>) => {
-				e.preventDefault(); // 🔹 Блокируем переход — управляем через onClick
+				e.preventDefault(); // Блокируем переход — управляем через onClick
 				onClick?.();
 
 				if (isMobile) {
-					// 🔹 Исправленный console.log без синтаксических ошибок
 					if (isSelectionMode) {
 						console.log('Mobile selection toggle:', chatUid);
 					} else {
@@ -99,30 +99,19 @@ export const ContactsListItem = memo(
 			>
 				<div className={cls.itemContent}>
 					<div className={cls.userCard}>
-						<UserCard userData={userCardData} type={UserCardType.CONTACT} />
+						<UserCard
+							userData={userCardData}
+							type={UserCardType.CONTACT}
+							invertColors={isSelectionMode && isSelected} //  Инвертируем при выделении
+						/>
 					</div>
 
-					{/* 🔹 ЧЕКБОКС: только в режиме выбора */}
+					{/*  ЧЕКБОКС: только в режиме выбора */}
 					{isSelectionMode && (
 						<div className={cls.checkbox}>
 							{isSelected ? (
 								<div className={cls.checkboxChecked}>
-									<svg
-										width='12'
-										height='10'
-										viewBox='0 0 12 10'
-										fill='none'
-										xmlns='http://www.w3.org/2000/svg'
-										aria-hidden='true'
-									>
-										<path
-											d='M1 5L4.5 8.5L11 1'
-											stroke='white'
-											strokeWidth='2'
-											strokeLinecap='round'
-											strokeLinejoin='round'
-										/>
-									</svg>
+									<Check className={cls.checked} />
 								</div>
 							) : (
 								<div className={cls.checkboxEmpty} />

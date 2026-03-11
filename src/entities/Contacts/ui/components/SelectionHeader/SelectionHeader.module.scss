@@ -1,0 +1,88 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
+.selectionHeader {
+	padding: 10px 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background-color: var(--color-violet-20);
+}
+
+.btnWrapper {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.btnContainer {
+	display: flex;
+	align-items: center;
+	gap: 24px;
+}
+
+.rightButtons {
+	display: flex;
+	align-items: center;
+	gap: 24px;
+}
+
+.backButton {
+	display: flex;
+	align-items: center;
+	padding: 0;
+	gap: 8px;
+
+	:focus-visible {
+		@include focus-visible;
+	}
+}
+
+.backIcon {
+	width: 16px;
+	height: 16px;
+	color: var(--color-black);
+}
+
+.delBtn {
+	width: 100%;
+	padding: 0;
+
+	:focus-visible {
+		@include focus-visible;
+	}
+}
+
+.cancelButton {
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	:focus-visible {
+		@include focus-visible;
+	}
+}
+
+.cancelIcon {
+	width: 24px;
+	height: 24px;
+	color: var(--color-violet-500);
+}
+
+.trashDisabledBtn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	cursor: not-allowed;
+}
+
+.trashIcon {
+	width: 20px;
+	height: 20px;
+	color: var(--color-violet-500);
+}

@@ -12,7 +12,7 @@ export const Navbar = () => {
 	const pathname = usePathname();
 	const isMobile = useMediaQuery();
 
-	const hiddenPaths = ['/chats/'];
+	const hiddenPaths = ['/chats/', '/contacts/'];
 
 	const isChatPage = hiddenPaths.some(
 		path => pathname?.startsWith(path) && pathname.split('/').length > 2

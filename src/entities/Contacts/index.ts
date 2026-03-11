@@ -1,8 +1,8 @@
 // ─── Компоненты ────────────────────────────────────────────────
 
 export { ContactsList } from './ui/ContactsList/ContactsList';
-export { ContactsListContent } from './ui/ContactsListContent/ContactsListContent';
-export { ContactsListItem } from './ui/ContactsItem/ContactsItem';
+export { ContactsListContent } from './ui/components/ContactsListContent/ContactsListContent';
+export { ContactsListItem } from './ui/components/ContactsItem/ContactsItem';
 
 // ─── Типы ──────────────────────────────────────────────────────
 export type {
