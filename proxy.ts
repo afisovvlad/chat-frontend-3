@@ -4,7 +4,7 @@ const SKIP_AUTH_PATHS = ['/api/auth/setTokens', '/api/auth/refresh'];
 
 export function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
-	const hasAccessToken = request.cookies.has('accessToken');
+	const hasRefreshToken = request.cookies.has('refreshToken');
 
 	if (SKIP_AUTH_PATHS.some(path => pathname.startsWith(path))) {
 		return NextResponse.next();
@@ -17,7 +17,7 @@ export function proxy(request: NextRequest) {
 		pathname.includes('/test');
 
 	// Авторизованный не пускаем на /login
-	if (hasAccessToken && isLoginPage) {
+	if (hasRefreshToken && isLoginPage) {
 		return NextResponse.redirect(new URL('/', request.url), 307);
 	}
 
@@ -25,7 +25,7 @@ export function proxy(request: NextRequest) {
 	const isProxyApi = pathname.startsWith('/api/proxy');
 
 	// Неавторизованного пускаем только на /login
-	if (!hasAccessToken && !isLoginPage && !isProxyApi) {
+	if (!hasRefreshToken && !isLoginPage && !isProxyApi) {
 		return NextResponse.redirect(new URL('/login', request.url), 307);
 	}
 
