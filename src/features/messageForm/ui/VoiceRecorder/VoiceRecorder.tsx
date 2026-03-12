@@ -3,20 +3,38 @@
 import { Microphone, MicrophoneFilled } from '@icons/index';
 import { useEffect } from 'react';
 import { useVoiceRecorder } from '../../model/hooks/useVoiceRecorder';
+import { VoiceFile } from '../../model/types/types';
 import styles from './VoiceRecorder.module.scss';
-import { FilePayload } from '../../model/types/types';
 
-interface VoiceRecorderProps {
-	onSendVoice: (file: FilePayload) => void;
-}
+type Props = {
+	onSendVoice: (file: VoiceFile) => void;
+};
 
-export function VoiceRecorder({ onSendVoice }: VoiceRecorderProps) {
+export function VoiceRecorder({ onSendVoice }: Props) {
 	const { startRecording, stopRecording, isRecording, audioFile, audioName } =
 		useVoiceRecorder();
 
-	const handleStop = () => {
-		stopRecording();
+	const handlePointerDown = () => {
+		startRecording();
 	};
+
+	useEffect(() => {
+		if (!isRecording) {
+			return;
+		}
+
+		const handlePointerUp = () => {
+			stopRecording();
+		};
+
+		window.addEventListener('pointerup', handlePointerUp);
+		window.addEventListener('pointercancel', handlePointerUp);
+
+		return () => {
+			window.removeEventListener('pointerup', handlePointerUp);
+			window.removeEventListener('pointercancel', handlePointerUp);
+		};
+	}, [isRecording, stopRecording]);
 
 	useEffect(() => {
 		if (!audioFile || !audioName) {
@@ -32,10 +50,7 @@ export function VoiceRecorder({ onSendVoice }: VoiceRecorderProps) {
 	return (
 		<button
 			type='button'
-			onMouseDown={startRecording}
-			onMouseUp={handleStop}
-			onTouchStart={startRecording}
-			onTouchEnd={handleStop}
+			onPointerDown={handlePointerDown}
 			className={styles.button}
 			aria-label='Начать запись голосового сообщения'
 		>
@@ -47,50 +62,3 @@ export function VoiceRecorder({ onSendVoice }: VoiceRecorderProps) {
 		</button>
 	);
 }
-// 'use client';
-
-// import { Microphone, MicrophoneFilled } from '@icons/index';
-// import { useEffect } from 'react';
-// import { useVoiceRecorder } from '../../model/hooks/useVoiceRecorder';
-// import styles from './VoiceRecorder.module.scss';
-// import { FilePayload } from '../../model/types/types';
-
-// interface VoiceRecorderProps {
-// 	onSendVoice: (file: FilePayload) => void;
-// }
-
-// export function VoiceRecorder({ onSendVoice }: VoiceRecorderProps) {
-// 	const { startRecording, stopRecording, isRecording, audioFile, audioName } =
-// 		useVoiceRecorder();
-
-// 	const handleStop = () => {
-// 		stopRecording();
-// 	};
-
-// 	useEffect(() => {
-// 		if (audioFile && audioName) {
-// 			onSendVoice({
-// 				data: audioFile,
-// 				filename: audioName
-// 			});
-// 		}
-// 	}, [audioFile, audioName, onSendVoice]);
-
-// 	return (
-// 		<button
-// 			type='button'
-// 			onMouseDown={startRecording}
-// 			onMouseUp={handleStop}
-// 			onTouchStart={startRecording}
-// 			onTouchEnd={handleStop}
-// 			className={styles.button}
-// 			aria-label='Начать запись голосового сообщения'
-// 		>
-// 			{isRecording ? (
-// 				<MicrophoneFilled className={styles.icon} />
-// 			) : (
-// 				<Microphone className={styles.icon} />
-// 			)}
-// 		</button>
-// 	);
-// }

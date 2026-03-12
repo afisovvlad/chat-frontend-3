@@ -3,9 +3,11 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+// !!! Нужно установить  ffmpeg !!!
+
 function convertToOgg(input: string, output: string) {
 	return new Promise((resolve, reject) => {
-		exec(`ffmpeg -i "${input}" -c:a libopus "${output}"`, error =>
+		exec(`ffmpeg -i "${input}" -c:a libopus -b:a 24k "${output}"`, error =>
 			error ? reject(error) : resolve(true)
 		);
 	});
@@ -26,27 +28,25 @@ export async function POST(req: Request) {
 		const webmPath = path.join(tmpDir, `${id}.webm`);
 		const oggPath = path.join(tmpDir, `${id}.ogg`);
 
-		// сохраняем webm
 		const buffer = Buffer.from(await file.arrayBuffer());
+
 		fs.writeFileSync(webmPath, buffer);
 
-		// конвертация
 		await convertToOgg(webmPath, oggPath);
 
-		// читаем ogg
 		const oggBuffer = fs.readFileSync(oggPath);
 
-		// удаляем временный webm и ogg
 		fs.unlinkSync(webmPath);
 		fs.unlinkSync(oggPath);
 
-		// base64
-		const base64 = oggBuffer.toString('base64');
-		const filename = `${id}.ogg`;
-
-		return Response.json({ base64, filename });
+		return Response.json({
+			filename: `${id}.ogg`,
+			base64: oggBuffer.toString('base64'),
+			type: 'audio/ogg'
+		});
 	} catch (error) {
 		console.error(error);
+
 		return Response.json({ error: 'Voice conversion failed' }, { status: 500 });
 	}
 }

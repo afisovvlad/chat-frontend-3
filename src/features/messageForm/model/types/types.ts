@@ -1,9 +1,9 @@
 export type MessageFormTypes = {
 	message: string;
-	file: FilePayload;
+	file: VoiceFile;
 };
 
-export type FilePayload = {
+export type VoiceFile = {
 	filename: string;
 	data: string;
 	type?: string;
@@ -11,7 +11,7 @@ export type FilePayload = {
 
 export type SendMessageParams = {
 	content?: string;
-	files?: FilePayload[];
+	files?: VoiceFile[];
 	replyIds?: string[];
 	forwardIds?: string[];
 };

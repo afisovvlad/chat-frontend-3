@@ -3,25 +3,17 @@
 import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Paperclip } from '@icons/index';
 import { useState } from 'react';
+import { VoiceFile } from '../../model/types/types';
 import styles from './AttachmentButton.module.scss';
-import { FilePayload } from '../../model/types/types';
 
 interface AttachmentButtonProps {
-	setFiles: (file: FilePayload[]) => void;
+	setFiles: (file: VoiceFile[]) => void;
 }
 
 export function AttachmentButton({ setFiles }: AttachmentButtonProps) {
 	const [showPopup, setShowPopup] = useState(false);
 
 	return (
-		// <FileInput
-		// 	parentClass={styles.button}
-		// 	isHidden={true}
-		// 	aria-label='Прикрепить файл'
-		// >
-		// 	<Paperclip className={styles.icon} />
-		// </FileInput>
-
 		<Button
 			color={ButtonColor.TRANSPARENT}
 			className={styles.button}
