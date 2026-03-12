@@ -49,7 +49,7 @@ export async function POST() {
 			path: '/'
 		});
 
-		response.cookies.set('refreshToken', data.refresh || refreshToken, {
+		response.cookies.set('refreshToken', data.refresh, {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
 			maxAge: 30 * 24 * 60 * 60,
