@@ -7,13 +7,6 @@ body {
 	gap: 20px;
 	flex: 1;
 	min-height: 0;
-	padding: 0 16px;
-}
-
-@media (max-width: 768px) {
-	.mainLayout {
-		padding: 0;
-	}
 }
 
 .content {

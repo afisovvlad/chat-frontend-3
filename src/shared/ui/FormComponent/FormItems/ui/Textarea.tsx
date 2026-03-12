@@ -1,7 +1,6 @@
 'use client';
 
 import { classNames } from '@/shared/lib/classNames/classNames';
-import { useEffect, useRef } from 'react';
 import {
 	FieldValues,
 	Path,
@@ -20,7 +19,6 @@ interface TextareaProps<TFormValues extends FieldValues> {
 	disabled?: boolean;
 	classNameTextarea?: string;
 	height?: string | undefined;
-	onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 }
 
 export function Textarea<TFormValues extends FieldValues>({
@@ -31,8 +29,7 @@ export function Textarea<TFormValues extends FieldValues>({
 	placeholder = '',
 	disabled,
 	classNameTextarea,
-	height,
-	onKeyDown
+	height
 }: TextareaProps<TFormValues>) {
 	const { register, control } = useFormContext<TFormValues>();
 	// const { errors } = useFormState({
@@ -42,38 +39,14 @@ export function Textarea<TFormValues extends FieldValues>({
 	// const isError = Boolean(errors?.[name]?.message as string | undefined);
 	const { fieldState } = useController({ name });
 	const isError = !!fieldState.error;
-	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-	const { ref: registerRef, ...registerRest } = register(name, rules);
 
-	const setRefs = (element: HTMLTextAreaElement | null) => {
-		textareaRef.current = element;
-		registerRef(element);
-	};
+	console.log('isError in Textarea', isError);
 
-	// console.log('isError in Textarea', isError);
-
-	// console.log('Я - Textarea');
-	useEffect(() => {
-		const textarea = textareaRef.current;
-		if (textarea) {
-			const autoResize = () => {
-				textarea.style.height = height || '21px';
-				textarea.style.height = textarea.scrollHeight + 'px';
-			};
-
-			autoResize(); // Устанавливаем высоту при загрузке
-			textarea.addEventListener('input', autoResize);
-
-			return () => textarea.removeEventListener('input', autoResize);
-		}
-	}, [height]);
+	console.log('Я - Textarea');
 
 	return (
 		<textarea
-			onKeyDown={onKeyDown}
-			ref={setRefs}
-			{...registerRest}
-			// {...register(name, rules)}
+			{...register(name, rules)}
 			id={name}
 			placeholder={placeholder}
 			autoComplete={FormItemAutocomplete.OFF}
@@ -86,14 +59,7 @@ export function Textarea<TFormValues extends FieldValues>({
 				},
 				[classNameTextarea]
 			)}
-			style={
-				height
-					? {
-							minHeight: height
-							// maxHeight: height
-						}
-					: {}
-			}
+			style={height ? { minHeight: height, maxHeight: height } : {}}
 		/>
 	);
 }
