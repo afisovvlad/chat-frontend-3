@@ -11,7 +11,9 @@ export interface SearchSectionData<T> {
 	showHeader?: boolean; //  Флаг: показывать ли заголовок секции
 }
 
-export function useHybridSearch<T extends { uid?: string; id?: string }>(
+export function useHybridSearch<
+	T extends { uid?: string | number; id?: string | number }
+>(
 	localData: T[],
 	localFilterFn: (items: T[], searchTerm: string) => T[],
 	globalSearchFn?: (searchTerm: string, signal?: AbortSignal) => Promise<T[]>,
@@ -209,8 +211,9 @@ export function useHybridSearch<T extends { uid?: string; id?: string }>(
 	);
 }
 
-export type UseHybridSearchReturn<T extends { uid?: string; id?: string }> =
-	ReturnType<typeof useHybridSearch<T>>;
+export type UseHybridSearchReturn<
+	T extends { uid?: string | number; id?: string | number }
+> = ReturnType<typeof useHybridSearch<T>>;
 
 export function filterContacts<
 	T extends {
