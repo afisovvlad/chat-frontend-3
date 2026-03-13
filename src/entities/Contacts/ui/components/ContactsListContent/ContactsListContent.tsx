@@ -12,7 +12,8 @@ export const ContactsListContent = memo(
 		onSelectContact,
 		isSelectionMode = false,
 		selectedContacts = new Set<string>(),
-		onToggleSelection
+		onToggleSelection,
+		onDeleteContact
 	}: {
 		contacts: ContactsSchema[];
 		selectedContactUid?: string | null;
@@ -20,6 +21,7 @@ export const ContactsListContent = memo(
 		isSelectionMode?: boolean;
 		selectedContacts?: Set<string>;
 		onToggleSelection?: (uid: string) => void;
+		onDeleteContact?: (uid: string) => void;
 	}) => {
 		const renderedItems = useMemo(
 			() =>
@@ -41,6 +43,7 @@ export const ContactsListContent = memo(
 							}}
 							isSelectionMode={isSelectionMode}
 							isSelected={isSelected}
+							onDeleteContact={() => onDeleteContact?.(contactUid)}
 						/>
 					);
 				}),

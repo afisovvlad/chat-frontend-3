@@ -12,7 +12,7 @@ export interface SelectionHeaderProps {
 }
 
 export const SelectionHeader = memo(
-	({ selectedCount, onBack, onReset, onDelete }: SelectionHeaderProps) => {
+	({ selectedCount, onBack, onReset }: SelectionHeaderProps) => {
 		return (
 			<div className={cls.selectionHeader}>
 				<div className={cls.btnWrapper}>
@@ -26,21 +26,16 @@ export const SelectionHeader = memo(
 							<Left className={cls.backIcon} aria-hidden='true' />
 						</Button>
 
-						<Button
-							onClick={onDelete}
-							theme={ButtonTheme.CLEAR}
-							className={cls.delBtn}
+						<Text
+							type={TextType.TEXT}
+							tag={TextTag.P}
+							fontSize={TextSize.M}
+							color={TextColor.BLACK}
+							truncate
+							className={cls.textDel}
 						>
-							<Text
-								type={TextType.TEXT}
-								tag={TextTag.P}
-								fontSize={TextSize.M}
-								color={TextColor.BLACK}
-								truncate
-							>
-								Удалить контакты
-							</Text>
-						</Button>
+							Удалить контакты
+						</Text>
 					</div>
 
 					<div className={cls.rightButtons}>

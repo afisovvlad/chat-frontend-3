@@ -21,6 +21,10 @@
 	justify-content: start;
 	gap: 8px;
 	width: 100%;
+
+	@media (max-width: 768px) {
+		align-items: center;
+	}
 }
 
 .modalActions {
@@ -37,6 +41,11 @@
 		outline,
 		0.1s ease;
 
+	@media (max-width: 768px) {
+		border: 2px solid var(--color-primary);
+		border-radius: 4px;
+	}
+
 	&:hover {
 		outline: 2px solid var(--color-primary);
 	}
@@ -52,6 +61,10 @@
 	transition:
 		outline,
 		0.1s ease;
+
+	@media (max-width: 768px) {
+		border-radius: 4px;
+	}
 
 	&:hover {
 		background-color: var(--color-white);

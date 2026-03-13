@@ -37,7 +37,6 @@ export interface AddContactResponse {
 export interface ContactValidationError {
 	[field: string]: string[];
 }
-
 export interface ContactAuthError {
 	detail: string;
 }
@@ -62,4 +61,50 @@ export interface PaginatedResponse<T> {
 
 export interface CheckContactRequest {
 	phone_or_nickname: string;
+}
+
+export interface ContactReadByUid {
+	uid: string; // UUID
+	first_name: string;
+	last_name: string;
+}
+
+export interface PaginatedContactReadByUidList {
+	count: number;
+	next: string | null;
+	previous: string | null;
+	results: ContactReadByUid[];
+}
+
+export interface DeleteContactResponse {
+	message: string;
+	deleted_uid: string;
+}
+
+export interface BulkDeleteRequest {
+	contact_uids: string[];
+}
+
+export interface BulkDeleteResponse {
+	message: string;
+	deleted_count: number;
+	deleted_uids: string[];
+}
+//  Запрос массового удаления
+export interface BulkDeleteRequest {
+	contact_uids: string[];
+}
+
+// Ответ массового удаления
+export interface PaginatedContactReadByUidList {
+	count: number;
+	next: string | null;
+	previous: string | null;
+	results: ContactReadByUid[];
+}
+
+export interface ContactReadByUid {
+	uid: string;
+	first_name: string;
+	last_name: string;
 }

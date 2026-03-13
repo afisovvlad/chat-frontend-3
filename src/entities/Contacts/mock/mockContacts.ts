@@ -2,7 +2,6 @@ import { ContactsSchema } from '../model/types/contacts.types';
 
 // Фиксированная временная метка: 01.01.2024 00:00:00 UTC (как в mockChats)
 const FIXED_TIMESTAMP = 1704067200000;
-//  (мс) = 01.01.2024 00:00:00 UTC
 
 //  Константы времени
 const SEC = 1000;
@@ -10,18 +9,45 @@ const MIN = 60 * SEC;
 const HOUR = 60 * MIN;
 const DAY = 24 * HOUR;
 
+// 🔹 Валидные UUID для всех контактов (формат: 8-4-4-4-12)
+const UUIDS = {
+	user1: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+	user2: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
+	user3: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+	user4: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e',
+	user5: 'c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f',
+	user6: 'd4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a',
+	user7: 'e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b',
+	user8: 'f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c',
+	user9: 'a7b8c9d0-e1f2-4a3b-4c5d-6e7f8a9b0c1d',
+	user10: 'b8c9d0e1-f2a3-4b4c-5d6e-7f8a9b0c1d2e',
+	user11: 'c9d0e1f2-a3b4-4c5d-6e7f-8a9b0c1d2e3f',
+	user12: 'd0e1f2a3-b4c5-4d6e-7f8a-9b0c1d2e3f4a',
+	user13: 'e1f2a3b4-c5d6-4e7f-8a9b-0c1d2e3f4a5b',
+	user14: 'f2a3b4c5-d6e7-4f8a-9b0c-1d2e3f4a5b6c',
+	user15: 'a3b4c5d6-e7f8-4a9b-0c1d-2e3f4a5b6c7d',
+	user16: 'b4c5d6e7-f8a9-4b0c-1d2e-3f4a5b6c7d8e',
+	user17: 'c5d6e7f8-a9b0-4c1d-2e3f-4a5b6c7d8e9f',
+	user18: 'd6e7f8a9-b0c1-4d2e-3f4a-5b6c7d8e9f0a',
+	user19: 'e7f8a9b0-c1d2-4e3f-4a5b-6c7d8e9f0a1b',
+	user20: 'f8a9b0c1-d2e3-4f4a-5b6c-7d8e9f0a1b2c',
+	user21: 'a9b0c1d2-e3f4-4a5b-6c7d-8e9f0a1b2c3d',
+	user22: 'b0c1d2e3-f4a5-4b6c-7d8e-9f0a1b2c3d4e',
+	user23: 'c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f',
+	user24: 'd2e3f4a5-b6c7-4d8e-9f0a-1b2c3d4e5f6a'
+} as const;
+
 export const mockContacts: ContactsSchema[] = [
 	// ─────────────────────────────────────────────────────────────
 	//  ГРУППА 1: Контакты, синхронизированные с mockChats (12 шт)
-	//  system_contact.uid === chat.uid из ChatList — для тестов перехода
 	// ─────────────────────────────────────────────────────────────
 
 	// 1. Влад Ляшев (user1) — онлайн, чат есть
 	{
-		uid: 'contact-user1',
+		uid: UUIDS.user1,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user1', // 🔹 Совпадает с chat.uid в mockChats
+			uid: UUIDS.user1,
 			avatar: '/images/mockUserPhoto/user_1.jpg',
 			avatar_url: '/images/mockUserPhoto/user_1.jpg',
 			avatar_webp: '',
@@ -38,16 +64,16 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 2. Сергей Евтушенко (user2) — офлайн, чат есть
 	{
-		uid: 'contact-user2',
+		uid: UUIDS.user2,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user2',
+			uid: UUIDS.user2,
 			avatar: '/images/mockUserPhoto/user_3.jpg',
 			avatar_url: '/images/mockUserPhoto/user_3.jpg',
 			avatar_webp: '',
 			avatar_webp_url: '/images/mockUserPhoto/user_3.webp',
 			is_online: false,
-			was_online_at: FIXED_TIMESTAMP - 3600000 // 1 час назад
+			was_online_at: FIXED_TIMESTAMP - 3600000
 		},
 		first_name: 'Сергей',
 		last_name: 'Евтушенко',
@@ -58,10 +84,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 3. Инна Георгиевна (user3) — онлайн
 	{
-		uid: 'contact-user3',
+		uid: UUIDS.user3,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user3',
+			uid: UUIDS.user3,
 			avatar: '/images/mockUserPhoto/user_w_4.jpg',
 			avatar_url: '/images/mockUserPhoto/user_w_4.jpg',
 			avatar_webp: '',
@@ -78,16 +104,16 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 4. Константин Передвиженский (user4) — офлайн
 	{
-		uid: 'contact-user4',
+		uid: UUIDS.user4,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user4',
+			uid: UUIDS.user4,
 			avatar: '/images/mockUserPhoto/user_2.jpg',
 			avatar_url: '/images/mockUserPhoto/user_2.jpg',
 			avatar_webp: '',
 			avatar_webp_url: '/images/mockUserPhoto/user_2.webp',
 			is_online: false,
-			was_online_at: FIXED_TIMESTAMP - 7200000 // 2 часа назад
+			was_online_at: FIXED_TIMESTAMP - 7200000
 		},
 		first_name: 'Константин',
 		last_name: 'Передвиженский',
@@ -98,10 +124,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 5. Анастасия Бортиковая (user5) — онлайн
 	{
-		uid: 'contact-user5',
+		uid: UUIDS.user5,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user5',
+			uid: UUIDS.user5,
 			avatar: '/images/mockUserPhoto/user_w_5.jpg',
 			avatar_url: '/images/mockUserPhoto/user_w_5.jpg',
 			avatar_webp: '',
@@ -118,10 +144,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 6. Ванесса Рейхарт (user6) — онлайн
 	{
-		uid: 'contact-user6',
+		uid: UUIDS.user6,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user6',
+			uid: UUIDS.user6,
 			avatar: '/images/mockUserPhoto/user_w_6.jpg',
 			avatar_url: '/images/mockUserPhoto/user_w_6.jpg',
 			avatar_webp: '',
@@ -138,10 +164,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 7. Илья Макаров (user7) — онлайн
 	{
-		uid: 'contact-user7',
+		uid: UUIDS.user7,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user7',
+			uid: UUIDS.user7,
 			avatar: '/images/mockUserPhoto/user_3.jpg',
 			avatar_url: '/images/mockUserPhoto/user_3.jpg',
 			avatar_webp: '',
@@ -158,16 +184,16 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 8. Алексей Митрофанов (user8) — офлайн, давно
 	{
-		uid: 'contact-user8',
+		uid: UUIDS.user8,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user8',
+			uid: UUIDS.user8,
 			avatar: '/images/mockUserPhoto/user_1.jpg',
 			avatar_url: '/images/mockUserPhoto/user_1.jpg',
 			avatar_webp: '',
 			avatar_webp_url: '/images/mockUserPhoto/user_1.webp',
 			is_online: false,
-			was_online_at: FIXED_TIMESTAMP - 24 * HOUR // 1 день назад
+			was_online_at: FIXED_TIMESTAMP - 24 * HOUR
 		},
 		first_name: 'Алексей',
 		last_name: 'Митрофанов',
@@ -178,10 +204,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 9. Александра Петрова (user9) — онлайн
 	{
-		uid: 'contact-user9',
+		uid: UUIDS.user9,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user9',
+			uid: UUIDS.user9,
 			avatar: '/images/mockUserPhoto/user_w_5.jpg',
 			avatar_url: '/images/mockUserPhoto/user_w_5.jpg',
 			avatar_webp: '',
@@ -198,16 +224,16 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 10. Дмитрий Иванов (user10) — офлайн
 	{
-		uid: 'contact-user10',
+		uid: UUIDS.user10,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user10',
+			uid: UUIDS.user10,
 			avatar: '/images/mockUserPhoto/user_2.jpg',
 			avatar_url: '/images/mockUserPhoto/user_2.jpg',
 			avatar_webp: '',
 			avatar_webp_url: '/images/mockUserPhoto/user_2.webp',
 			is_online: false,
-			was_online_at: FIXED_TIMESTAMP - 1200000 // 20 минут назад
+			was_online_at: FIXED_TIMESTAMP - 1200000
 		},
 		first_name: 'Дмитрий',
 		last_name: 'Иванов',
@@ -218,10 +244,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 11. Елена Смирнова (user11) — онлайн
 	{
-		uid: 'contact-user11',
+		uid: UUIDS.user11,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user11',
+			uid: UUIDS.user11,
 			avatar: '/images/mockUserPhoto/user_w_4.jpg',
 			avatar_url: '/images/mockUserPhoto/user_w_4.jpg',
 			avatar_webp: '',
@@ -238,16 +264,16 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 12. Михаил Кузнецов (user12) — офлайн
 	{
-		uid: 'contact-user12',
+		uid: UUIDS.user12,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user12',
+			uid: UUIDS.user12,
 			avatar: '/images/mockUserPhoto/user_3.jpg',
 			avatar_url: '/images/mockUserPhoto/user_3.jpg',
 			avatar_webp: '',
 			avatar_webp_url: '/images/mockUserPhoto/user_3.webp',
 			is_online: false,
-			was_online_at: FIXED_TIMESTAMP - 5000000 // ~1.4 часа назад
+			was_online_at: FIXED_TIMESTAMP - 5000000
 		},
 		first_name: 'Михаил',
 		last_name: 'Кузнецов',
@@ -258,15 +284,14 @@ export const mockContacts: ContactsSchema[] = [
 
 	// ─────────────────────────────────────────────────────────────
 	// 🔹 ГРУППА 2: Дополнительные контакты для тестов сортировки (12 шт)
-	// 🔹 Разные was_online_at для проверки: только что / минуты / часы / вчера / дата
 	// ─────────────────────────────────────────────────────────────
 
 	// 🟡 "был(а) только что" (~30 сек назад)
 	{
-		uid: 'contact-user13',
+		uid: UUIDS.user13,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user13',
+			uid: UUIDS.user13,
 			avatar: '/images/mockUserPhoto/user_w_4.jpg',
 			avatar_url: '/images/mockUserPhoto/user_w_4.jpg',
 			avatar_webp: '',
@@ -283,10 +308,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 🟡 "был(а) 5 минут назад"
 	{
-		uid: 'contact-user14',
+		uid: UUIDS.user14,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user14',
+			uid: UUIDS.user14,
 			avatar: '/images/mockUserPhoto/user_2.jpg',
 			avatar_url: '/images/mockUserPhoto/user_2.jpg',
 			avatar_webp: '',
@@ -303,10 +328,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 🟡 "был(а) 15 минут назад"
 	{
-		uid: 'contact-user15',
+		uid: UUIDS.user15,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user15',
+			uid: UUIDS.user15,
 			avatar: '/images/mockUserPhoto/user_w_6.jpg',
 			avatar_url: '/images/mockUserPhoto/user_w_6.jpg',
 			avatar_webp: '',
@@ -323,10 +348,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 🟡 "был(а) 22 минуты назад" (по ТЗ)
 	{
-		uid: 'contact-user16',
+		uid: UUIDS.user16,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user16',
+			uid: UUIDS.user16,
 			avatar: '/images/mockUserPhoto/user_3.jpg',
 			avatar_url: '/images/mockUserPhoto/user_3.jpg',
 			avatar_webp: '',
@@ -343,10 +368,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 🟡 "был(а) 30 минут назад"
 	{
-		uid: 'contact-user17',
+		uid: UUIDS.user17,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user17',
+			uid: UUIDS.user17,
 			avatar: '/images/mockUserPhoto/user_w_4.jpg',
 			avatar_url: '/images/mockUserPhoto/user_w_4.jpg',
 			avatar_webp: '',
@@ -363,10 +388,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 🟡 "был(а) 3 часа назад"
 	{
-		uid: 'contact-user18',
+		uid: UUIDS.user18,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user18',
+			uid: UUIDS.user18,
 			avatar: '/images/mockUserPhoto/user_1.jpg',
 			avatar_url: '/images/mockUserPhoto/user_1.jpg',
 			avatar_webp: '',
@@ -383,10 +408,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 🟡 "был(а) 12 часов назад"
 	{
-		uid: 'contact-user19',
+		uid: UUIDS.user19,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user19',
+			uid: UUIDS.user19,
 			avatar: '/images/mockUserPhoto/user_w_5.jpg',
 			avatar_url: '/images/mockUserPhoto/user_w_5.jpg',
 			avatar_webp: '',
@@ -403,10 +428,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 🟡 "был(а) 22 часа назад" (по ТЗ)
 	{
-		uid: 'contact-user20',
+		uid: UUIDS.user20,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user20',
+			uid: UUIDS.user20,
 			avatar: '/images/mockUserPhoto/user_2.jpg',
 			avatar_url: '/images/mockUserPhoto/user_2.jpg',
 			avatar_webp: '',
@@ -423,10 +448,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 🟡 "был(а) вчера в 21:15" (по ТЗ) — 2ч 45м до полуночи 01.01
 	{
-		uid: 'contact-user21',
+		uid: UUIDS.user21,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user21',
+			uid: UUIDS.user21,
 			avatar: '/images/mockUserPhoto/user_w_6.jpg',
 			avatar_url: '/images/mockUserPhoto/user_w_6.jpg',
 			avatar_webp: '',
@@ -443,10 +468,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 🟡 "был(а) 2 дня назад"
 	{
-		uid: 'contact-user22',
+		uid: UUIDS.user22,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user22',
+			uid: UUIDS.user22,
 			avatar: '/images/mockUserPhoto/user_3.jpg',
 			avatar_url: '/images/mockUserPhoto/user_3.jpg',
 			avatar_webp: '',
@@ -463,10 +488,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 🟡 "был(а) 02.04.23" (по ТЗ) — ~9 месяцев назад
 	{
-		uid: 'contact-user23',
+		uid: UUIDS.user23,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user23',
+			uid: UUIDS.user23,
 			avatar: '/images/mockUserPhoto/user_w_4.jpg',
 			avatar_url: '/images/mockUserPhoto/user_w_4.jpg',
 			avatar_webp: '',
@@ -483,10 +508,10 @@ export const mockContacts: ContactsSchema[] = [
 
 	// 🟡 Контакт без аватара (проверка fallback)
 	{
-		uid: 'contact-user24',
+		uid: UUIDS.user24,
 		owner_user: 'current-user-uid',
 		system_contact: {
-			uid: 'user24',
+			uid: UUIDS.user24,
 			avatar: '',
 			avatar_url: '',
 			avatar_webp: '',

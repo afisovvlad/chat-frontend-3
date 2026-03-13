@@ -1,16 +1,18 @@
 @use '@/app/styles/mixins/mixin.scss' as *;
 
 .contactsTrash {
-	padding: 10px 16px;
+	width: 100%;
+	height: 36px;
+	padding: 6px 16px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	background-color: var(--color-violet-20);
-	width: 100%;
 
 	@media (max-width: 768px) {
 		border-radius: 8px;
 		width: 100%;
+		height: 44px;
 		max-width: calc(100vw - 32px);
 		margin: 0 auto;
 	}

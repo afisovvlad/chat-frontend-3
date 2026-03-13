@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { Text, TextSize, TextTag, TextType, TextColor } from '@/shared/ui/Text';
 import { Button, ButtonTheme, ButtonColor } from '@/shared/ui/Button';
 import { Trash, Send, Close } from '@icons/index';
-import { getContactWordForm } from '@/entities/Contacts/model/helper/getContactWordForm';
+import { getContactWordForm } from '@/entities/Contacts/model/lib/services/getContactWordForm/getContactWordForm';
 import cls from './SelectionFooter.module.scss';
 
 export interface SelectionFooterProps {
@@ -24,15 +24,21 @@ export const SelectionFooter = memo(
 		return (
 			<footer className={cls.selectionFooter}>
 				{!mobile && (
-					<Text
-						type={TextType.TEXT}
-						tag={TextTag.SPAN}
-						fontSize={TextSize.M}
-						color={TextColor.ERROR}
-						className={cls.footerText}
+					<Button
+						onClick={onDelete}
+						theme={ButtonTheme.CLEAR}
+						className={cls.delBtn}
 					>
-						Удалить {selectedCount} {getContactWordForm(selectedCount)}
-					</Text>
+						<Text
+							type={TextType.TEXT}
+							tag={TextTag.SPAN}
+							fontSize={TextSize.M}
+							color={TextColor.ERROR}
+							className={cls.footerText}
+						>
+							Удалить {selectedCount} {getContactWordForm(selectedCount)}
+						</Text>
+					</Button>
 				)}
 
 				{mobile && (

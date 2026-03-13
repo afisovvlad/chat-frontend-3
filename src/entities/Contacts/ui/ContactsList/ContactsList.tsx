@@ -1,8 +1,10 @@
 'use client';
 
 import { memo, useMemo, useCallback, useState } from 'react';
-import { useHybridSearch } from '@/shared/ui/Search';
+import { filterContacts, useHybridSearch } from '@/shared/ui/Search';
 import {
+	useBulkDeleteContactsMutation,
+	useDeleteContactMutation,
 	useGetContactsQuery,
 	useLazySearchGlobalContactsQuery
 } from '../../api/contactsApi';
@@ -15,10 +17,9 @@ import {
 } from '../../model/types/contacts.types';
 import { appConfig } from '@/shared/config/app.config';
 import { ContactsListContent } from '../components/ContactsListContent/ContactsListContent';
-import { filterContactsLocal } from '../../model/filters/filterContactsLocal';
 import { sortContactsByStatus } from '../../model/utils/sortContactsByStatus';
 import { mockContacts } from '../../mock/mockContacts';
-import { getContactWordForm } from '../../model/helper/getContactWordForm';
+import { getContactWordForm } from '../../model/lib/services/getContactWordForm/getContactWordForm';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { ContactsSearch } from '../components/ContactsSearch/ContactsSearch';
 import { SelectionHeader } from '../components/SelectionHeader/SelectionHeader';
@@ -27,7 +28,8 @@ import { DeleteModal } from '../components/DeleteModal/DeleteModal';
 import EmptyContacts from '@/shared/ui/EmptyContacts/EmptyContacts';
 import { NotSearch } from '@/shared/ui/NotSearch/NotSearch';
 import { ContactsHeader } from '../components/ContactsHeader/ContactsHeader';
-
+import { deleteWithMocks } from '../../mock/deleteWithMoks';
+import { SearchSection } from '@/shared/ui/SearchSection';
 import cls from './ContactsList.module.scss';
 
 // ─────────────────────────────────────────────────────────────
@@ -43,6 +45,7 @@ const CONFIG = {
 export interface ContactsListProps {
 	selectedContactUid?: string | null;
 	onSelectContact?: (uid: string) => void;
+	onContactDeleted?: (uid: string) => void;
 }
 
 export const ContactsList = memo(
@@ -66,6 +69,10 @@ export const ContactsList = memo(
 
 		const [searchGlobal] = useLazySearchGlobalContactsQuery();
 
+		// Мутации для удаления
+		const [deleteContact] = useDeleteContactMutation();
+		const [bulkDeleteContacts] = useBulkDeleteContactsMutation();
+
 		// ─────────────────────────────────────────────────────────────
 		//  DATA TRANSFORMATION
 		// ─────────────────────────────────────────────────────────────
@@ -84,6 +91,7 @@ export const ContactsList = memo(
 		// ─────────────────────────────────────────────────────────────
 		//  HANDLERS: Selection
 		// ─────────────────────────────────────────────────────────────
+
 		const handleToggleSelection = useCallback((contactUid: string) => {
 			setSelectedContacts(prev => {
 				const next = new Set(prev);
@@ -95,6 +103,26 @@ export const ContactsList = memo(
 				return next;
 			});
 		}, []);
+
+		const handleDeleteSingleContact = useCallback(
+			async (contactUid: string) => {
+				try {
+					// раскоментировать при подключении к API
+					// await deleteContact(contactUid).unwrap();
+
+					// Удалить после подключения к API
+					await deleteWithMocks(
+						() => deleteContact(contactUid).unwrap(),
+						appConfig.USE_MOCKS
+					);
+				} catch (error: unknown) {
+					if (process.env.NODE_ENV === 'development') {
+						console.error('Failed to delete contact:', error);
+					}
+				}
+			},
+			[deleteContact]
+		);
 
 		const handleEnterSelectionMode = useCallback(() => {
 			setIsSelectionMode(true);
@@ -125,22 +153,48 @@ export const ContactsList = memo(
 
 		const handleConfirmDelete = useCallback(async () => {
 			try {
-				if (process.env.NODE_ENV === 'development') {
-					console.log('🗑️ Deleting contacts:', Array.from(selectedContacts));
+				const uids = Array.from(selectedContacts);
+
+				// раскоментировать при подключении к API
+				// if (uids.length === 1) {
+				// 	// Удаление одного контакта
+				// 	await deleteContact(uids[0]).unwrap();
+				// } else {
+				// 	// Массовое удаление
+				// 	await bulkDeleteContacts({ contact_uids: uids }).unwrap();
+				// }
+
+				// Удалить после подключения к API
+				if (uids.length === 1) {
+					await deleteWithMocks(
+						() => deleteContact(uids[0]).unwrap(),
+						appConfig.USE_MOCKS
+					);
+				} else {
+					await deleteWithMocks(
+						() => bulkDeleteContacts({ contact_uids: uids }).unwrap(),
+						appConfig.USE_MOCKS
+					);
 				}
 
-				// TODO: Интеграция с API
-				// await deleteContactsMutation.mutateAsync(Array.from(selectedContacts));
-
+				// Очищаем выбор и закрываем модалку после успеха
 				handleClearSelection();
 				setIsDeleteModalOpen(false);
-			} catch (error) {
+			} catch (error: unknown) {
 				if (process.env.NODE_ENV === 'development') {
 					console.error('Failed to delete contacts:', error);
 				}
 			}
-		}, [selectedContacts, handleClearSelection]);
+		}, [
+			selectedContacts,
+			deleteContact,
+			bulkDeleteContacts,
+			handleClearSelection
+		]);
 
+		// ─────────────────────────────────────────────────────────────
+		//  HANDLERS: Single Contact Delete
+		// ─────────────────────────────────────────────────────────────
 		const handleShareContacts = useCallback(() => {
 			const selectedContactsData = localContacts.filter(contact =>
 				selectedContacts.has(contact.uid)
@@ -184,9 +238,11 @@ export const ContactsList = memo(
 		// ─────────────────────────────────────────────────────────────
 		// HYBRID SEARCH HOOK
 		// ─────────────────────────────────────────────────────────────
+
 		const {
 			searchTerm,
-			results: displayContacts,
+			sections, //  используем секции
+			totalResults, //  общее количество результатов
 			isGlobal,
 			isLoading: isSearching,
 			error: searchError,
@@ -194,8 +250,8 @@ export const ContactsList = memo(
 			handleClear
 		} = useHybridSearch<ContactsSchema>(
 			localContacts,
-			filterContactsLocal,
-			fetchGlobalContacts,
+			filterContacts,
+			fetchGlobalContacts, // одна функция вместо объекта
 			CONFIG.SEARCH_DEBOUNCE_MS,
 			CONFIG.GLOBAL_SEARCH_PREFIX,
 			CONFIG.GLOBAL_SEARCH_MIN_LENGTH
@@ -208,19 +264,23 @@ export const ContactsList = memo(
 			() => searchTerm.trim().replace(/^@/, '').length,
 			[searchTerm]
 		);
+
 		const hasMinLength = searchLength >= CONFIG.GLOBAL_SEARCH_MIN_LENGTH;
 		const selectedCount = selectedContacts.size;
 
 		const statusFlags = useMemo(() => {
 			const isInitialLoading = isCacheLoading && !contactsResponse;
 			const isGlobalSearching = isSearching && isGlobal && hasMinLength;
+			const hasSearchTerm = searchTerm.trim().length > 0;
 
 			return {
 				shouldShowSkeleton:
-					isInitialLoading ||
-					(isGlobalSearching && displayContacts.length === 0),
+					isInitialLoading || (isGlobalSearching && totalResults === 0),
 				isEmpty:
-					!isCacheLoading && !isSearching && displayContacts.length === 0,
+					!isCacheLoading &&
+					!isSearching &&
+					!hasSearchTerm &&
+					localContacts.length === 0,
 				hasError: !!searchError && isGlobal && hasMinLength
 			};
 		}, [
@@ -229,7 +289,9 @@ export const ContactsList = memo(
 			isSearching,
 			isGlobal,
 			hasMinLength,
-			displayContacts.length,
+			searchTerm,
+			totalResults,
+			localContacts.length,
 			searchError
 		]);
 
@@ -244,12 +306,8 @@ export const ContactsList = memo(
 		}, [isGlobal]);
 
 		const isSearchNoResults = useMemo(() => {
-			return (
-				searchTerm.trim().length > 0 &&
-				!isSearching &&
-				displayContacts.length === 0
-			);
-		}, [searchTerm, isSearching, displayContacts.length]);
+			return searchTerm.trim().length > 0 && !isSearching && totalResults === 0;
+		}, [searchTerm, isSearching, totalResults]);
 
 		// ─────────────────────────────────────────────────────────────
 		//  RENDER: Loading / Error
@@ -287,6 +345,7 @@ export const ContactsList = memo(
 		// ─────────────────────────────────────────────────────────────
 		//  RENDER: Main Content
 		// ─────────────────────────────────────────────────────────────
+
 		return (
 			<div className={cls.contactsList} aria-label='Список контактов'>
 				<ContactsSearch
@@ -317,20 +376,44 @@ export const ContactsList = memo(
 					</>
 				)}
 
-				{/*  Блок контента: приоритет — NotSearch при пустом поиске */}
+				{/*   Блок контента: */}
 				{isSearchNoResults ? (
 					<NotSearch />
 				) : statusFlags.isEmpty ? (
 					<EmptyContacts />
-				) : (
+				) : searchTerm.trim().length === 0 ? (
+					// По умолчанию — показываем контакты БЕЗ SearchSection и заголовков
 					<ContactsListContent
-						contacts={displayContacts}
+						contacts={localContacts}
 						selectedContactUid={selectedContactUid}
 						onSelectContact={onSelectContact}
 						isSelectionMode={isSelectionMode}
 						selectedContacts={selectedContacts}
 						onToggleSelection={handleToggleSelection}
+						onDeleteContact={handleDeleteSingleContact}
 					/>
+				) : (
+					//  При поиске — показываем через SearchSection с заголовками секций
+					<div className={cls.sectionsContainer}>
+						{sections.map((section, index) => (
+							<SearchSection
+								key={`${section.type}-${index}`}
+								title={section.title}
+								isLoading={section.isLoading}
+								showHeader={section.showHeader ?? true}
+							>
+								<ContactsListContent
+									contacts={section.items}
+									selectedContactUid={selectedContactUid}
+									onSelectContact={onSelectContact}
+									isSelectionMode={isSelectionMode}
+									selectedContacts={selectedContacts}
+									onToggleSelection={handleToggleSelection}
+									onDeleteContact={handleDeleteSingleContact}
+								/>
+							</SearchSection>
+						))}
+					</div>
 				)}
 
 				{/*  Footer тоже скрываем при пустом поиске */}

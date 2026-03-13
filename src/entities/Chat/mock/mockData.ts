@@ -1,4 +1,3 @@
-import { FALSE } from 'sass';
 import { Chat, ChatType } from '../model/types/chat.types';
 
 // ✅ Фиксированная временная метка для избежания ошибок гидратации
@@ -8,7 +7,7 @@ export const mockChats: Chat[] = [
 	{
 		id: 1,
 		chat: {
-			uid: 'user1',
+			uid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
 			username: 'vlad_123',
 			first_name: 'Влад',
 			last_name: 'Ляшев',

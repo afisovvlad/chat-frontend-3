@@ -16,6 +16,7 @@ export interface ContactsListItemProps {
 	onClick?: () => void;
 	isSelectionMode?: boolean;
 	isSelected?: boolean;
+	onDeleteContact?: (uid: string) => void;
 }
 
 const propsAreEqual = (
@@ -30,7 +31,8 @@ const propsAreEqual = (
 		prev.contact.system_contact.is_online ===
 			next.contact.system_contact.is_online &&
 		prev.contact.system_contact.was_online_at ===
-			next.contact.system_contact.was_online_at
+			next.contact.system_contact.was_online_at &&
+		prev.onDeleteContact === next.onDeleteContact
 	);
 };
 
