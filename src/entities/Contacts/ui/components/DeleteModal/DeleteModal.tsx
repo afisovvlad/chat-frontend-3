@@ -56,7 +56,7 @@ export const DeleteModal = memo(
 							type={TextType.TEXT}
 							tag={TextTag.P}
 							fontSize={TextSize.S}
-							color={TextColor.BLACK}
+							color={TextColor.GRAY}
 							className={cls.modalText}
 						>
 							Вы уверены, что хотите удалить {selectedCount}{' '}
@@ -69,7 +69,6 @@ export const DeleteModal = memo(
 						<Button
 							theme={ButtonTheme.BACKGROUND}
 							color={ButtonColor.TRANSPARENT}
-							size={ButtonSize.M}
 							className={cls.modalCancel}
 							onClick={onClose}
 						>
@@ -82,10 +81,10 @@ export const DeleteModal = memo(
 								Отмена
 							</Text>
 						</Button>
+
 						<Button
 							theme={ButtonTheme.BACKGROUND}
 							color={ButtonColor.PRIMARY}
-							size={ButtonSize.M}
 							className={cls.modalDelete}
 							onClick={onConfirm}
 						>
