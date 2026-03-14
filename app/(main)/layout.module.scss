@@ -7,6 +7,14 @@ body {
 	gap: 20px;
 	flex: 1;
 	min-height: 0;
+
+	@media (max-width: 1200px) {
+		padding: 0 16px;
+	}
+
+	@media (max-width: 768px) {
+		padding: 0;
+	}
 }
 
 .content {

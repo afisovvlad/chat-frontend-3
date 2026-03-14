@@ -48,6 +48,17 @@ const nextConfig: NextConfig = {
 			}
 			// ← можно добавить другие хосты при необходимости
 		]
+	},
+	async headers() {
+		return [
+			{
+				source: '/api/proxy/:path*',
+				headers: [
+					{ key: 'Access-Control-Allow-Credentials', value: 'true' },
+					{ key: 'Access-Control-Allow-Origin', value: '*' } // В продакшене укажи конкретный домен
+				]
+			}
+		];
 	}
 };
 

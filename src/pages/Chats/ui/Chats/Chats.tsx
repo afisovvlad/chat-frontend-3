@@ -1,18 +1,40 @@
 'use client';
 
+import { memo } from 'react';
 import { ChatList } from '@/entities/Chat';
 import { Container, ContainerType } from '@/shared/ui/Container';
-import { ChatWidget } from '@/widgets/Chat';
-import { useParams } from 'next/navigation';
-import { memo } from 'react';
-
+import { useParams, useRouter } from 'next/navigation';
+import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
+import { Text } from '@/shared/ui/Text';
+import { ChatView } from '@/widgets/ChatView';
 import cls from './Chats.module.scss';
-import { MessagesPage } from '@/pages/Chats/ui/MessagesPage/MessagesPage';
 
 const ChatsPageComponent = () => {
 	const params = useParams();
+	const router = useRouter();
 	const chatUid = params?.uid as string | undefined;
+	const isMobile = useMediaQuery();
 
+	// МОБИЛЬНАЯ ЛОГИКА: показываем только один экран
+	if (isMobile) {
+		return (
+			<Container type={ContainerType.WRAPPER}>
+				{chatUid ? (
+					// Если чат выбран → показываем сообщения (CONTENT)
+					<Container type={ContainerType.CONTENT}>
+						<ChatView chatUid={chatUid} onBack={() => router.push('/chats')} />
+					</Container>
+				) : (
+					// Если чат не выбран → показываем список чатов (SIDEBAR)
+					<Container type={ContainerType.SIDEBAR}>
+						<ChatList selectedChatUid={null} />
+					</Container>
+				)}
+			</Container>
+		);
+	}
+
+	//  ДЕСКТОПНАЯ ЛОГИКА: показываем оба контейнера
 	return (
 		<Container type={ContainerType.WRAPPER}>
 			<Container type={ContainerType.SIDEBAR}>
@@ -21,11 +43,10 @@ const ChatsPageComponent = () => {
 
 			<Container type={ContainerType.CONTENT}>
 				{chatUid ? (
-					<ChatWidget chatUid={chatUid} />
+					<ChatView chatUid={chatUid} />
 				) : (
 					<div className={cls.emptyState}>
-						<MessagesPage />
-						{/* <NotMessage /> */}
+						<Text>Выберите чат для начала общения</Text>
 					</div>
 				)}
 			</Container>
@@ -34,146 +55,4 @@ const ChatsPageComponent = () => {
 };
 
 export const ChatsPage = memo(ChatsPageComponent);
-
 ChatsPage.displayName = 'ChatsPage';
-
-// 'use client';
-
-// import { ChatList } from '@/entities/Chat';
-// import { Container, ContainerType } from '@/shared/ui/Container';
-// import NotMessage from '@/shared/ui/NotMessage/NotMessage';
-// import { ChatWidget } from '@/widgets/Chat';
-// import { memo } from 'react';
-
-// import { useParams } from 'next/navigation';
-// import cls from './Chats.module.scss';
-
-// const ChatsPageComponent = () => {
-// 	const params = useParams();
-// 	const chatUid = params?.uid as string | undefined;
-
-// 	const chats: ChatItemSchema[] = [
-// 		{
-// 			id: 1,
-// 			chat: {
-// 				uid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-// 				username: 'Владлен',
-// 				nickname: 'afisovvlad',
-// 				first_name: 'Владислав1212312312312312312',
-// 				last_name: 'Афисов',
-// 				avatar: 'string',
-// 				avatar_url:
-// 					'https://interesnyefakty.org/wp-content/uploads/chto-takoe-avatar.jpg',
-// 				avatar_webp: 'string',
-// 				avatar_webp_url: 'string',
-// 				is_blocked: false,
-// 				is_online: true,
-// 				was_online_at: 0,
-// 				is_in_contacts: true
-// 			},
-// 			is_favorite: true,
-// 			notifications: true,
-// 			new_message_count: 2,
-// 			new_file_count: 0,
-// 			name: 'asdf',
-// 			chat_type: ChatType.CHAT,
-// 			chat_key: 'string',
-// 			last_activity_at: 0,
-// 			last_seen_message: {
-// 				id: 1,
-// 				uid: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-// 			},
-// 			first_new_message: {
-// 				id: 1,
-// 				uid: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-// 			},
-// 			last_message: {
-// 				id: 1,
-// 				uid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-// 				from_user: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-// 				content: 'string',
-// 				files_summary: {
-// 					types: ['string', 'asdf'],
-// 					count: 0
-// 				},
-// 				has_replied_message: false,
-// 				has_forwarded_message: false,
-// 				new: true,
-// 				created_at: 0,
-// 				updated_at: 0
-// 			}
-// 		},
-// 		{
-// 			id: 2,
-// 			chat: {
-// 				uid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-// 				username: 'Айрат123',
-// 				nickname: 'Airat',
-// 				first_name: 'Айрат',
-// 				last_name: 'Хабибулаев',
-// 				avatar: 'string',
-// 				avatar_url:
-// 					'https://interesnyefakty.org/wp-content/uploads/chto-takoe-avatar.jpg',
-// 				avatar_webp: 'string',
-// 				avatar_webp_url: 'string',
-// 				is_blocked: false,
-// 				is_online: true,
-// 				was_online_at: 0,
-// 				is_in_contacts: true
-// 			},
-// 			is_favorite: true,
-// 			notifications: false,
-// 			new_message_count: 2,
-// 			new_file_count: 0,
-// 			name: 'asdf',
-// 			chat_type: ChatType.CHAT,
-// 			chat_key: 'string',
-// 			last_activity_at: 0,
-// 			last_seen_message: {
-// 				id: 0,
-// 				uid: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-// 			},
-// 			first_new_message: {
-// 				id: 0,
-// 				uid: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-// 			},
-// 			last_message: {
-// 				id: 0,
-// 				uid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-// 				from_user: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-// 				content:
-// 					'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Asperiores mollitia voluptate sed vitae nobis, hic, officiis repellat voluptatem unde praesentium animi. Id omnis, est beatae totam vel ducimus laborum distinctio?',
-// 				files_summary: {
-// 					types: ['string'],
-// 					count: 0
-// 				},
-// 				has_replied_message: true,
-// 				has_forwarded_message: true,
-// 				new: false,
-// 				created_at: 0,
-// 				updated_at: 0
-// 			}
-// 		}, [chatUid]);
-
-// 	return (
-// 		<Container type={ContainerType.WRAPPER}>
-// 			<Container type={ContainerType.SIDEBAR}>
-// 				<ChatList selectedChatUid={chatUid ?? null} />
-// 			</Container>
-
-// 			<Container type={ContainerType.CONTENT}>
-// 				{chatUid ? (
-// 					<ChatWidget chatUid={chatUid} />
-// 				) : (
-// 					<div className={cls.emptyState}>
-// 						<NotMessage />
-// 					</div>
-// 				)}
-// 			</Container>
-// 		</Container>
-// 	);
-// };
-
-// export const ChatsPage = memo(ChatsPageComponent);
-
-// ChatsPage.displayName = 'ChatsPage';

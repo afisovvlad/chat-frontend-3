@@ -13,8 +13,11 @@ import {
 interface BaseTextProps {
 	children: ReactNode;
 	color?: TextColor;
+	inheritColor?: boolean;
 	fontSize?: TextSize;
+	fontSizeMobile?: TextSize;
 	fontWeight?: FontWeight;
+	fontWeightMobile?: FontWeight;
 	lineHeight?: string | number;
 	textAlign?: TextAlign;
 	margin?: string;

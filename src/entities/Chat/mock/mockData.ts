@@ -7,7 +7,7 @@ export const mockChats: Chat[] = [
 	{
 		id: 1,
 		chat: {
-			uid: 'user1',
+			uid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
 			username: 'vlad_123',
 			first_name: 'Влад',
 			last_name: 'Ляшев',
@@ -15,7 +15,7 @@ export const mockChats: Chat[] = [
 			avatar_webp_url: null,
 			is_online: true,
 			was_online_at: FIXED_TIMESTAMP,
-			is_in_contacts: true,
+			is_in_contacts: false,
 			is_blocked: false
 		},
 		is_group: false,
@@ -52,7 +52,7 @@ export const mockChats: Chat[] = [
 			avatar_webp_url: null,
 			is_online: false,
 			was_online_at: FIXED_TIMESTAMP - 3600000,
-			is_in_contacts: true,
+			is_in_contacts: false,
 			is_blocked: false
 		},
 		is_group: false,
@@ -90,7 +90,7 @@ export const mockChats: Chat[] = [
 			avatar_webp_url: null,
 			is_online: true,
 			was_online_at: FIXED_TIMESTAMP,
-			is_in_contacts: true,
+			is_in_contacts: false,
 			is_blocked: false
 		},
 		is_group: false,
@@ -128,7 +128,7 @@ export const mockChats: Chat[] = [
 			avatar_webp_url: null,
 			is_online: false,
 			was_online_at: FIXED_TIMESTAMP - 7200000,
-			is_in_contacts: true,
+			is_in_contacts: false,
 			is_blocked: false
 		},
 		is_group: false,
@@ -682,6 +682,114 @@ export const mockChats: Chat[] = [
 			created_at: FIXED_TIMESTAMP - 10000000,
 			updated_at: FIXED_TIMESTAMP - 10000000
 		},
+		first_new_message: null
+	},
+	{
+		id: 20,
+		chat: {
+			uid: 'user20',
+			username: 'anna_smile',
+			first_name: 'Анна',
+			last_name: 'Смирнова',
+			avatar_url: '/images/mockUserPhoto/user_w_4.jpg',
+			avatar_webp_url: null,
+			is_online: false,
+			was_online_at: FIXED_TIMESTAMP - 86400000,
+			is_in_contacts: false,
+			is_blocked: false
+		},
+		is_group: false,
+		is_favorite: false,
+		notifications: false,
+		new_message_count: 0,
+		name: 'Анна Смирнова',
+		chat_type: ChatType.CHAT,
+		chat_key: 'chat_user2',
+		last_activity_at: FIXED_TIMESTAMP - 86400000,
+		last_seen_message: null,
+		last_message: null,
+		first_new_message: null
+	},
+
+	{
+		id: 30,
+		chat: {
+			uid: 'user30',
+			username: 'max_dev',
+			first_name: 'Максим',
+			last_name: 'Разработчик',
+			avatar_url: '/images/mockUserPhoto/user_3.jpg',
+			avatar_webp_url: null,
+			is_online: true,
+			was_online_at: FIXED_TIMESTAMP,
+			is_in_contacts: false,
+			is_blocked: false
+		},
+		is_group: false,
+		is_favorite: false,
+		notifications: false,
+		new_message_count: 0,
+		name: 'Максим Разработчик',
+		chat_type: ChatType.CHAT,
+		chat_key: 'chat_user3',
+		last_activity_at: FIXED_TIMESTAMP,
+		last_seen_message: null,
+		last_message: null,
+		first_new_message: null
+	},
+
+	{
+		id: 40,
+		chat: {
+			uid: 'user40',
+			username: 'olga_design',
+			first_name: 'Ольга',
+			last_name: 'Дизайнер',
+			avatar_url: '/images/mockUserPhoto/user_w_4.jpg',
+			avatar_webp_url: null,
+			is_online: false,
+			was_online_at: FIXED_TIMESTAMP - 3600000,
+			is_in_contacts: true,
+			is_blocked: false
+		},
+		is_group: false,
+		is_favorite: false,
+		notifications: false,
+		new_message_count: 0,
+		name: 'Ольга Дизайнер',
+		chat_type: ChatType.CHAT,
+		chat_key: 'chat_user4',
+		last_activity_at: FIXED_TIMESTAMP - 3600000,
+		last_seen_message: null,
+		last_message: null,
+		first_new_message: null
+	},
+
+	// 🔹 Юзер 5: НЕТ сообщений (для проверки NotMessage) ✅
+	{
+		id: 50,
+		chat: {
+			uid: 'user50',
+			username: 'test_user',
+			first_name: 'Тест',
+			last_name: 'Пользователь',
+			avatar_url: '/images/mockUserPhoto/user_3.jpg',
+			avatar_webp_url: null,
+			is_online: false,
+			was_online_at: FIXED_TIMESTAMP - 172800000,
+			is_in_contacts: false,
+			is_blocked: false
+		},
+		is_group: false,
+		is_favorite: false,
+		notifications: false,
+		new_message_count: 0,
+		name: 'Тест Пользователь',
+		chat_type: ChatType.CHAT,
+		chat_key: 'chat_user5',
+		last_activity_at: FIXED_TIMESTAMP - 172800000,
+		last_seen_message: null,
+		last_message: null,
 		first_new_message: null
 	}
 ];

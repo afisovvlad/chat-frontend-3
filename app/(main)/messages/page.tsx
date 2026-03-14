@@ -1,5 +1,5 @@
-import { MessagesPage } from '@/pages/Chats';
+import { MessagesList } from '@/entities/Chat';
 
 export default function page() {
-	return <MessagesPage />;
+	return <MessagesList />;
 }

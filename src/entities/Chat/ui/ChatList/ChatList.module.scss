@@ -1,5 +1,3 @@
-@use '@/app/styles/mixins/mixin.scss' as *;
-
 .chatList {
 	display: flex;
 	flex-direction: column;
@@ -10,50 +8,30 @@
 
 .search {
 	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 16px;
 	padding: 16px;
 }
 
-.list {
-	flex: 1;
+.searchInput {
+	@media (max-width: 768px) {
+		border-radius: 16px;
+	}
+}
+
+.addMenuBtn {
+	width: 44px;
+	height: 44px;
 	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	min-height: 0;
-	padding: 0 16px;
-	overflow-x: hidden;
-	overflow-y: auto;
+	align-items: center;
+	justify-content: center;
+	color: var(--color-primary);
+}
 
-	&::-webkit-scrollbar {
-		width: 8px;
-	}
-
-	&::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
-	&::-webkit-scrollbar-thumb {
-		background: #d1d5db;
-		border-radius: 4px;
-	}
-
-	&::-webkit-scrollbar-thumb:hover {
-		background: #9ca3af;
-	}
-
-	&::-webkit-scrollbar-button {
-		display: none;
-	}
-
-	// Для Firefox
-	scrollbar-width: thin;
-	scrollbar-color: #d1d5db transparent;
-	scroll-behavior: smooth;
-	transition: opacity 0.2s;
-	-webkit-overflow-scrolling: touch;
-
-	&:hover {
-		opacity: 1;
-	}
+.addMenuBtnIcon {
+	width: 32px;
+	height: 32px;
 }
 
 .empty {

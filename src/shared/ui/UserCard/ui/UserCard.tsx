@@ -24,6 +24,7 @@ interface UserCardProps {
 	className?: string;
 	userData?: IUserCard;
 	type: UserCardType;
+	invertColors?: boolean; // Новый проп для инверсии цветов
 	sendingMessage?: boolean;
 	onDelete?: () => void;
 }
@@ -72,12 +73,20 @@ export const UserCard = ({
 	className,
 	userData,
 	type,
+	invertColors = false,
 	sendingMessage,
 	onDelete
 }: UserCardProps) => {
 	if (!userData) {
 		return null;
 	}
+
+	//  Определяем цвета в зависимости от режима
+	const nameColor = invertColors ? undefined : TextColor.BLACK;
+	const statusColor = invertColors ? undefined : TextColor.GRAY;
+	const phoneColor = invertColors ? undefined : TextColor.BLACK;
+	const lastMsgColor = invertColors ? undefined : TextColor.GRAY;
+	const nicknameColor = invertColors ? undefined : TextColor.BLACK;
 
 	return (
 		<div className={classNames(cls.userCard, {}, [className, cls[type]])}>
@@ -93,7 +102,8 @@ export const UserCard = ({
 				<div className={cls.header}>
 					<div className={cls.leftHeader}>
 						<Text
-							color={TextColor.BLACK}
+							color={nameColor}
+							inheritColor={invertColors} //  Наследуем цвет при инверсии
 							fontSize={TextSize.L}
 							fontWeight={FontWeight.MEDIUM}
 							tag={TitleTag.H3}
@@ -118,7 +128,8 @@ export const UserCard = ({
 							</div>
 
 							<Text
-								color={TextColor.GRAY}
+								color={statusColor}
+								inheritColor={invertColors}
 								fontSize={TextSize.S}
 								fontWeight={FontWeight.REGULAR}
 								tag={TextTag.SPAN}
@@ -136,7 +147,8 @@ export const UserCard = ({
 						className={cls.phone}
 						fontSize={TextSize.M}
 						fontWeight={FontWeight.REGULAR}
-						color={TextColor.BLACK}
+						color={phoneColor}
+						inheritColor={invertColors}
 					>
 						{userData.user?.phone}
 					</Text>
@@ -148,7 +160,8 @@ export const UserCard = ({
 						<>
 							<Text
 								className={cls.lastMes}
-								color={TextColor.GRAY}
+								color={lastMsgColor}
+								inheritColor={invertColors}
 								fontSize={TextSize.S}
 								fontWeight={FontWeight.REGULAR}
 								textAlign={TextAlign.LEFT}
@@ -162,6 +175,7 @@ export const UserCard = ({
 									className={cls.newMesCount}
 									fontSize={TextSize.M}
 									color={TextColor.WHITE}
+									inheritColor={false}
 									fontWeight={FontWeight.REGULAR}
 									tag={TextTag.SPAN}
 								>
@@ -175,6 +189,7 @@ export const UserCard = ({
 						<LastSeen
 							wasOnlineAt={userData.user?.was_online_at || null}
 							isOnline={userData.user?.is_online || null}
+							invertColors={invertColors}
 						></LastSeen>
 					)}
 
@@ -184,7 +199,8 @@ export const UserCard = ({
 							className={cls.nickname}
 							fontSize={TextSize.M}
 							fontWeight={FontWeight.REGULAR}
-							color={TextColor.BLACK}
+							color={nicknameColor}
+							inheritColor={invertColors}
 						>
 							{userData.user?.nickname}
 						</Text>
