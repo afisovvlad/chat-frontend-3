@@ -44,15 +44,9 @@
 }
 
 .modalCancel {
-	width: 95px;
-	height: 35px;
-	padding: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition:
-		outline,
-		0.1s ease;
 
 	@media (max-width: 768px) {
 		width: 140px;
@@ -60,40 +54,15 @@
 		border: 2px solid var(--color-primary);
 		border-radius: 4px;
 	}
-
-	&:hover {
-		outline: 2px solid var(--color-primary);
-	}
-
-	&:focus-visible {
-		@include focus-visible;
-	}
 }
 
 .modalDelete {
-	width: 95px;
-	height: 35px;
-	padding: 0;
-	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition:
-		outline,
-		0.1s ease;
 
 	@media (max-width: 768px) {
 		width: 140px;
 		height: 45px;
 		border-radius: 4px;
-	}
-
-	&:hover {
-		background-color: var(--color-white);
-		color: var(--color-primary);
-		outline: 2px solid var(--color-primary);
-	}
-
-	&:focus-visible {
-		@include focus-visible;
 	}
 }

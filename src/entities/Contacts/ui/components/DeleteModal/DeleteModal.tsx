@@ -67,8 +67,9 @@ export const DeleteModal = memo(
 
 					<div className={cls.modalActions}>
 						<Button
-							theme={ButtonTheme.BACKGROUND}
+							theme={ButtonTheme.CLEAR}
 							color={ButtonColor.TRANSPARENT}
+							size={ButtonSize.S}
 							className={cls.modalCancel}
 							onClick={onClose}
 						>
@@ -83,9 +84,9 @@ export const DeleteModal = memo(
 						</Button>
 
 						<Button
-							theme={ButtonTheme.BACKGROUND}
 							color={ButtonColor.PRIMARY}
 							className={cls.modalDelete}
+							size={ButtonSize.S}
 							onClick={onConfirm}
 						>
 							Удалить
