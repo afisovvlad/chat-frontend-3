@@ -1,9 +1,11 @@
+'use client';
 import { ChatType } from '@/entities/Chat';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Avatar } from '@/shared/ui/Avatar/';
 import {
 	FontWeight,
 	Text,
+	TextAlign,
 	TextClamp,
 	TextColor,
 	TextSize,
@@ -14,6 +16,7 @@ import {
 import { SentRead, SentTime, Trash, VolumeOff, VolumeOn } from '@icons/index';
 import { ReactNode } from 'react';
 import { Button, ButtonColor, ButtonSize, ButtonTheme } from '../../Button';
+import { LastSeen } from '../../LastSeen';
 import { AVATAR_SIZE, IUserCard, UserCardType } from '../model/types/IUserCard';
 import cls from './UserCard.module.scss';
 
@@ -21,7 +24,9 @@ interface UserCardProps {
 	className?: string;
 	userData?: IUserCard;
 	type: UserCardType;
+	invertColors?: boolean; // Новый проп для инверсии цветов
 	sendingMessage?: boolean;
+	onDelete?: () => void;
 }
 
 const formatUnreadCount = (count: number | undefined): string => {
@@ -68,11 +73,20 @@ export const UserCard = ({
 	className,
 	userData,
 	type,
-	sendingMessage
+	invertColors = false,
+	sendingMessage,
+	onDelete
 }: UserCardProps) => {
 	if (!userData) {
 		return null;
 	}
+
+	//  Определяем цвета в зависимости от режима
+	const nameColor = invertColors ? undefined : TextColor.BLACK;
+	const statusColor = invertColors ? undefined : TextColor.GRAY;
+	const phoneColor = invertColors ? undefined : TextColor.BLACK;
+	const lastMsgColor = invertColors ? undefined : TextColor.GRAY;
+	const nicknameColor = invertColors ? undefined : TextColor.BLACK;
 
 	return (
 		<div className={classNames(cls.userCard, {}, [className, cls[type]])}>
@@ -81,17 +95,20 @@ export const UserCard = ({
 				alt={userData.user?.username}
 				src={userData.user?.avatar_url}
 				size={AVATAR_SIZE[type]}
+				variant='card'
 			/>
 
 			<div className={cls.info}>
 				<div className={cls.header}>
 					<div className={cls.leftHeader}>
 						<Text
-							color={TextColor.BLACK}
+							color={nameColor}
+							inheritColor={invertColors} //  Наследуем цвет при инверсии
 							fontSize={TextSize.L}
 							fontWeight={FontWeight.MEDIUM}
 							tag={TitleTag.H3}
 							type={TextType.TITLE}
+							truncate
 							className={cls.name}
 						>
 							{userData.user?.first_name} {userData.user?.last_name}
@@ -111,7 +128,8 @@ export const UserCard = ({
 							</div>
 
 							<Text
-								color={TextColor.GRAY}
+								color={statusColor}
+								inheritColor={invertColors}
 								fontSize={TextSize.S}
 								fontWeight={FontWeight.REGULAR}
 								tag={TextTag.SPAN}
@@ -129,7 +147,8 @@ export const UserCard = ({
 						className={cls.phone}
 						fontSize={TextSize.M}
 						fontWeight={FontWeight.REGULAR}
-						color={TextColor.BLACK}
+						color={phoneColor}
+						inheritColor={invertColors}
 					>
 						{userData.user?.phone}
 					</Text>
@@ -141,9 +160,11 @@ export const UserCard = ({
 						<>
 							<Text
 								className={cls.lastMes}
-								color={TextColor.GRAY}
+								color={lastMsgColor}
+								inheritColor={invertColors}
 								fontSize={TextSize.S}
 								fontWeight={FontWeight.REGULAR}
+								textAlign={TextAlign.LEFT}
 								maxLines={TextClamp.LINES_2}
 							>
 								{userData.last_message?.content}
@@ -154,6 +175,7 @@ export const UserCard = ({
 									className={cls.newMesCount}
 									fontSize={TextSize.M}
 									color={TextColor.WHITE}
+									inheritColor={false}
 									fontWeight={FontWeight.REGULAR}
 									tag={TextTag.SPAN}
 								>
@@ -164,14 +186,11 @@ export const UserCard = ({
 					)}
 					{/* для контактов и черного списка */}
 					{[UserCardType.CONTACT, UserCardType.BLACK_LIST].includes(type) && (
-						<Text
-							className={cls.isOnline}
-							color={TextColor.ACCENT}
-							fontSize={TextSize.S}
-							fontWeight={FontWeight.REGULAR}
-						>
-							{userData.user?.is_online ? 'в сети' : 'не в сети'}
-						</Text>
+						<LastSeen
+							wasOnlineAt={userData.user?.was_online_at || null}
+							isOnline={userData.user?.is_online || null}
+							invertColors={invertColors}
+						></LastSeen>
 					)}
 
 					{/* для профиля */}
@@ -180,7 +199,8 @@ export const UserCard = ({
 							className={cls.nickname}
 							fontSize={TextSize.M}
 							fontWeight={FontWeight.REGULAR}
-							color={TextColor.BLACK}
+							color={nicknameColor}
+							inheritColor={invertColors}
 						>
 							{userData.user?.nickname}
 						</Text>
@@ -195,6 +215,7 @@ export const UserCard = ({
 					color={ButtonColor.TRANSPARENT}
 					size={ButtonSize.S}
 					className={cls.trashBtn}
+					onClick={onDelete}
 				>
 					<Trash className={cls.trashIcon} />
 				</Button>

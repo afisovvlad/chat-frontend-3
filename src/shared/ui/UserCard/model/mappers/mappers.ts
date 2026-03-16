@@ -1,8 +1,8 @@
 import { BlackListSchema } from '@/entities/BlackList';
 import { ChatItemSchema } from '@/entities/Chat';
-import { ContactsSchema } from '@/entities/Contacts/model';
 import { ProfileSchema } from '@/entities/Profile';
 import { IUserCard } from '../types/IUserCard';
+import { ContactsSchema } from '@/entities/Contacts';
 
 export const mapChatToUserCard = (user: ChatItemSchema): IUserCard => ({
 	user: {
@@ -59,6 +59,11 @@ export const mapBlackListToUserCard = (user: BlackListSchema): IUserCard => ({
 
 export const mapProfileToUserCard = (user: ProfileSchema): IUserCard => ({
 	user: {
+		username: user.username,
+		avatar: user.avatar ?? undefined,
+		avatar_url: user.avatar_url ?? undefined,
+		avatar_webp: user.avatar_webp ?? undefined,
+		avatar_webp_url: user.avatar_webp_url ?? undefined,
 		nickname: user.nickname,
 		first_name: user.first_name,
 		last_name: user.last_name,
@@ -66,9 +71,9 @@ export const mapProfileToUserCard = (user: ProfileSchema): IUserCard => ({
 		additional_information: user.additional_information,
 		birthday: user.birthday,
 		email: user.email,
-		gender: user.gender,
+		gender: user.gender === '' ? undefined : user.gender,
 		country: user.country,
-		city_id: user.city_id,
+		city_id: user.city_id === null ? undefined : user.city_id,
 		phone: user.phone
 	}
 });

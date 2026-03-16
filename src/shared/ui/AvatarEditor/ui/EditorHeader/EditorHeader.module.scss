@@ -1,0 +1,39 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	height: 22px;
+
+	.closeIcon {
+		width: 14px;
+		height: 14px;
+	}
+
+	@media (max-width: 768px) {
+		justify-content: space-between;
+		padding: 12px 16px 0;
+	}
+}
+
+.headerTitle {
+	font-size: 18px;
+	font-weight: 500;
+
+	@media (max-width: 768px) {
+		font-size: 16px;
+		font-weight: 400;
+	}
+}
+
+.closeButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 22px;
+
+	&:focus-visible {
+		@include focus-visible;
+	}
+}

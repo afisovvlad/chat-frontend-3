@@ -1,41 +1,64 @@
-'use client';
-
 import {
 	EnterCode,
 	EnterPhoneForm,
+	FinishRegister,
 	LoginGreeting,
-	RegisterForm,
-	SupportFormComponent,
+	Register,
+	SupportSuccess,
 	useAuthStep
 } from '@/features/auth';
+import { SupportForm } from '@/features/support';
 import { LoginWrapper } from '@/shared/ui/LoginWrapper';
 
-export const AuthFlow = () => {
+interface AuthFlowProps {
+	containerRef?: React.RefObject<HTMLDivElement | null>;
+}
+
+export const AuthFlow = ({ containerRef }: AuthFlowProps) => {
 	const step = useAuthStep();
 
 	switch (step) {
 		case 'greeting':
 			return <LoginGreeting />;
+
 		case 'phone':
 			return (
 				<LoginWrapper>
-					<EnterPhoneForm />
+					<EnterPhoneForm containerRef={containerRef} />
 				</LoginWrapper>
 			);
+
 		case 'code':
 			return (
 				<LoginWrapper>
 					<EnterCode />
 				</LoginWrapper>
 			);
+
 		case 'register':
 			return (
 				<LoginWrapper>
-					<RegisterForm />
+					<Register />
 				</LoginWrapper>
 			);
+
+		case 'finish-register':
+			return <FinishRegister />;
+
 		case 'support':
-			return <SupportFormComponent />;
+			return (
+				<LoginWrapper>
+					<SupportForm marginTop='0' />
+				</LoginWrapper>
+			);
+
+		case 'success-support':
+			return (
+				<LoginWrapper>
+					<SupportSuccess />
+				</LoginWrapper>
+			);
+
 		default:
 			return null;
 	}

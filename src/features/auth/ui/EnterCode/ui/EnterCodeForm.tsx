@@ -51,6 +51,7 @@ export const EnterCodeForm = ({
 			console.log('res in LoginCode', res);
 			if (res.success) {
 				if (res.is_filled) {
+					setStep('greeting');
 					router.push('/');
 				} else {
 					router.push('/'); // поменять на setStep('register'), когда сделаю регистрацию
@@ -118,9 +119,9 @@ export const EnterCodeForm = ({
 					type={item.type}
 					name={item.name}
 					label={item.label}
-					length={code_len}
 					disabled={disabled}
 					classNameParentInput={styles.codeInput}
+					parentLabelClass={styles.formLabel}
 				/>
 			))}
 		</Form>

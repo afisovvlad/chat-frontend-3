@@ -1,5 +1,6 @@
 import { RootState } from '@/app/providers/StoreProvider';
 
+import { authActions } from '@/features/auth/model/slices/authSlice';
 import {
 	BaseQueryFn,
 	FetchArgs,
@@ -7,15 +8,13 @@ import {
 	FetchBaseQueryError
 } from '@reduxjs/toolkit/query/react';
 import { logoutFromInterceptor } from './services/logoutForInterceptor/logoutForInterceptor';
-import { authActions } from '@/features/auth/model/slices/authSlice';
 
-// Интерсептор 1: добавление accessToken в заголовок
+// Интерцептор 1: добавление accessToken в заголовок
 const baseQuery = fetchBaseQuery({
-	baseUrl: process.env.NEXT_PUBLIC_BASE_API as string,
-	credentials: 'include'
+	baseUrl: process.env.NEXT_PUBLIC_PROXY_PREFIX
 });
 
-// Интерсептор 2: refresh при 401
+// Интерцептор 2: refresh при 401
 const baseQueryWithReauth: BaseQueryFn<
 	string | FetchArgs,
 	unknown,
@@ -24,13 +23,11 @@ const baseQueryWithReauth: BaseQueryFn<
 	const result = await baseQuery(args, api, extraOptions);
 
 	if (result.error && result.error.status === 401) {
-		const state = api.getState() as RootState;
-
-		// Ждем завершения текущего refresh, чтобы избежать состояния гонки
-		if (state.auth?.isRefreshing) {
+		// 1. Ждем завершения текущего refresh, чтобы избежать состояния гонки
+		if ((api.getState() as RootState).auth?.isRefreshing) {
 			await new Promise(resolve => {
 				const check = () => {
-					if (!state.auth?.isRefreshing) {
+					if (!(api.getState() as RootState).auth?.isRefreshing) {
 						resolve(true);
 					} else {
 						setTimeout(check, 50);
@@ -43,23 +40,19 @@ const baseQueryWithReauth: BaseQueryFn<
 
 		api.dispatch(authActions.setRefreshing(true));
 
+		// 2. делаем запрос на refresh
 		try {
-			const refreshResult = await baseQuery(
-				{
-					url: '/api/auth/refresh',
-					method: 'POST'
-				},
-				api,
-				extraOptions
-			);
+			const refreshResult = await fetch('/api/auth/refresh', {
+				method: 'POST'
+			});
 
-			if (refreshResult.error) {
+			if (refreshResult.hasOwnProperty('error')) {
 				api.dispatch(authActions.logout());
 				await logoutFromInterceptor();
 				return result;
 			}
 
-			// Повторяем с новым токеном (prepareHeaders подхватит автоматически)
+			// 3. Повторяем исходный запрос с новым токеном
 			return baseQuery(args, api, extraOptions);
 		} catch (_) {
 			api.dispatch(authActions.logout());

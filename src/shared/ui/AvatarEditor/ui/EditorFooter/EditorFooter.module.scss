@@ -1,0 +1,24 @@
+.mobileFooter {
+	position: fixed;
+	bottom: var(--mobile-nav-height);
+	left: 0;
+	right: 0;
+	padding: 16px;
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+	z-index: 1001;
+}
+
+.cancelBtn {
+	background-color: var(--color-white);
+}
+
+.cancelBtn,
+.changeBtn {
+	width: 159px;
+	height: 44px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

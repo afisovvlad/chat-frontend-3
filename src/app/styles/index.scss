@@ -1,6 +1,10 @@
 @use './reset';
 @use './variables/variables';
 
+*:focus-visible {
+	outline: 2px solid var(--color-orange);
+}
+
 body {
 	font-family:
 		var(--primary-text-font),

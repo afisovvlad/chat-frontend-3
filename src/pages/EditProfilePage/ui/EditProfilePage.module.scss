@@ -1,6 +1,9 @@
 .editProfile {
 	display: block; // удалит потом
 	background-color: var(--color-violet-40);
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding-bottom: var(--mobile-nav-height);
 
 	@media screen and (max-width: 768px) {
 		background-color: var(--color-white);

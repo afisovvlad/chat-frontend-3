@@ -7,15 +7,13 @@ import {
 	Controller,
 	FieldValues,
 	Path,
-	useController,
-	useFormContext
+	useController
 } from 'react-hook-form';
 import { FormItemAutocomplete, FormItemType } from '../model/types';
 import styles from './styles.module.scss';
 
 interface OTPInputProps<TFormValues extends FieldValues> {
 	name: Path<TFormValues>;
-	length: number;
 	disabled?: boolean;
 	placeholder?: string;
 	parentInputClass?: string;
@@ -24,7 +22,6 @@ interface OTPInputProps<TFormValues extends FieldValues> {
 
 export function OTPInput<TFormValues extends FieldValues>({
 	name,
-	length = 5,
 	placeholder = '',
 	parentInputClass,
 	disabled,
@@ -32,14 +29,8 @@ export function OTPInput<TFormValues extends FieldValues>({
 }: OTPInputProps<TFormValues>) {
 	const inputRef = useRef<(HTMLInputElement | null)[]>([]);
 	const [OTP, setOTP] = useState<string[]>(Array(length).fill(''));
-	// const {
-	// 	formState: { errors }
-	// } = useFormContext<TFormValues>();
-	// const isError = Boolean(errors?.[name]?.message as string | undefined);
 	const { fieldState } = useController({ name });
 	const isError = !!fieldState.error;
-
-	console.log('isError in OTP', isError);
 
 	// автофокус на первом input
 	useEffect(() => {
@@ -67,7 +58,7 @@ export function OTPInput<TFormValues extends FieldValues>({
 		onChange(combinedValue);
 
 		// Автоматический фокус
-		if (digit && index < length - 1) {
+		if (digit && index < 4) {
 			setTimeout(() => {
 				inputRef.current[index + 1]?.focus();
 			}, 0);
@@ -106,7 +97,7 @@ export function OTPInput<TFormValues extends FieldValues>({
 			rules={{
 				required: 'Заполните это поле',
 				minLength: {
-					value: length,
+					value: 5,
 					message: `Пожалуйста, введите все  цифры`
 				}
 			}}
@@ -122,7 +113,7 @@ export function OTPInput<TFormValues extends FieldValues>({
 							[]
 						)}
 					>
-						{Array.from({ length }).map((_, index) => (
+						{Array.from([1, 1, 1, 1, 1]).map((_, index) => (
 							<input
 								key={index}
 								type={FormItemType.TEXT}

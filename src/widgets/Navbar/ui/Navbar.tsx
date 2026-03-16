@@ -5,19 +5,32 @@ import { menuItems } from '../model/config/navigation';
 import Link from 'next/link';
 import { Text, TextSize, TextType } from '@/shared/ui/Text';
 import { classNames } from '@/shared/lib/classNames/classNames';
+import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import cls from './Navbar.module.scss';
 
 export const Navbar = () => {
 	const pathname = usePathname();
+	const isMobile = useMediaQuery();
+
+	const hiddenPaths = ['/chats/', '/contacts/'];
+
+	const isChatPage = hiddenPaths.some(
+		path => pathname?.startsWith(path) && pathname.split('/').length > 2
+	);
+
+	const shouldHideNavbar = isMobile && isChatPage;
+
+	if (shouldHideNavbar) {
+		return null;
+	}
 
 	return (
-		<nav className={classNames(cls.Navbar)}>
+		<div className={classNames(cls.navbar)}>
 			{menuItems.map(item => {
 				const Icon = item.Icon;
 				const IconMobile = item.IconMobile || item.Icon;
 				const href = `/${item.id}`;
 
-				// Проверяем, соответствует ли текущий путь этой странице
 				const isActive = pathname?.startsWith(href) || false;
 
 				return (
@@ -41,6 +54,6 @@ export const Navbar = () => {
 					</Link>
 				);
 			})}
-		</nav>
+		</div>
 	);
 };

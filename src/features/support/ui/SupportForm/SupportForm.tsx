@@ -1,7 +1,7 @@
 'use client';
 
 import { FormSettingsItem } from '@/entities/Settings';
-
+import { useSetAuthStep } from '@/features/auth';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import {
 	Button,
@@ -22,7 +22,12 @@ import { formItems } from '../../model/const/formItems';
 import { ISupportForm } from '../../model/types/types';
 import styles from './SupportForm.module.scss';
 
-export function SupportForm({ parentClass }: { parentClass?: string }) {
+interface SupportFormProps {
+	parentClass?: string;
+	marginTop?: string;
+}
+
+export function SupportForm({ parentClass, marginTop }: SupportFormProps) {
 	const [responseError, setResponseError] = useState('');
 	const [sendSupportMessage, { isLoading, isError, isSuccess }] =
 		useSendSupportMessageMutation();
@@ -30,7 +35,7 @@ export function SupportForm({ parentClass }: { parentClass?: string }) {
 		mode: 'onChange'
 	});
 	const { setFocus } = methods;
-
+	const setStep = useSetAuthStep();
 	const email = useWatch({
 		control: methods.control,
 		name: 'email'
@@ -40,8 +45,6 @@ export function SupportForm({ parentClass }: { parentClass?: string }) {
 		name: 'message'
 	});
 	const disabled = !(email?.length > 4 && message?.length > 10);
-
-	// console.log('Support Form');
 
 	useEffect(() => {
 		setFocus('email');
@@ -66,15 +69,22 @@ export function SupportForm({ parentClass }: { parentClass?: string }) {
 			) : isSuccess ? (
 				<>
 					<SuccessBlock
-						marginTop='341px'
+						marginTop={marginTop}
 						title={' Обращение отправлено!'}
 						text={
 							'В ближайшее время Вы получите ответ на электронную почту, указанную в обращении'
 						}
 					/>
-					<Link href='/' className={styles.homeLink}>
+					<Button
+						btnType={ButtonType.BUTTON}
+						disabled={disabled}
+						theme={ButtonTheme.BACKGROUND}
+						color={ButtonColor.PRIMARY}
+						className={styles.btnHome}
+						onClick={() => setStep('greeting')}
+					>
 						На главную
-					</Link>
+					</Button>
 				</>
 			) : (
 				<Form<ISupportForm>

@@ -14,9 +14,18 @@ import {
 import { Logo } from '@icons/index';
 import styles from './LoginGreeting.module.scss';
 import { useSetAuthStep } from '@/features/auth';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
+import { useRef, useEffect } from 'react';
 
 export const LoginGreeting = () => {
 	const setStep = useSetAuthStep();
+	const { isDisabledCodeAttempts } = useAppSelector(state => state.auth);
+
+	const buttonRef = useRef<HTMLButtonElement>(null);
+
+	useEffect(() => {
+		buttonRef.current?.focus();
+	}, []);
 
 	return (
 		<>
@@ -52,7 +61,14 @@ export const LoginGreeting = () => {
 			>
 				Давай знакомиться
 			</Text>
-			<Button onClick={() => setStep('phone')}>Начать</Button>
+			<Button
+				onClick={() => setStep('phone')}
+				disabled={isDisabledCodeAttempts}
+				btnRef={buttonRef}
+				className={styles.btn}
+			>
+				Начать
+			</Button>
 		</>
 	);
 };

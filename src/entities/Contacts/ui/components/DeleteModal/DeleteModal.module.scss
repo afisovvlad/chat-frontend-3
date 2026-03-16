@@ -1,0 +1,68 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
+.deleteModal {
+	padding: 24px;
+}
+
+.modalContent {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: start;
+	gap: 16px;
+	width: 100%;
+
+	@media (max-width: 768px) {
+		text-align: center;
+	}
+}
+
+.modalInfo {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: start;
+	gap: 8px;
+	width: 100%;
+
+	@media (max-width: 768px) {
+		align-items: center;
+	}
+}
+
+.modalActions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 8px;
+	width: 100%;
+	margin-top: 8px;
+
+	@media (max-width: 768px) {
+		justify-content: center;
+	}
+}
+
+.modalCancel {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	@media (max-width: 768px) {
+		width: 140px;
+		height: 45px;
+		border: 2px solid var(--color-primary);
+		border-radius: 4px;
+	}
+}
+
+.modalDelete {
+	align-items: center;
+	justify-content: center;
+
+	@media (max-width: 768px) {
+		width: 140px;
+		height: 45px;
+		border-radius: 4px;
+	}
+}

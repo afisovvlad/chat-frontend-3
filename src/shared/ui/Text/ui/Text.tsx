@@ -1,4 +1,6 @@
+'use client';
 import { JSX } from 'react';
+import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { TextTag, TextType, TitleTag } from '../model/types/enums';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { TextProps, AllowedTag } from '../model/types/types';
@@ -9,8 +11,11 @@ export const Text = (props: TextProps) => {
 		type = TextType.TEXT,
 		children,
 		color,
+		inheritColor = false,
 		fontSize,
+		fontSizeMobile,
 		fontWeight,
+		fontWeightMobile,
 		lineHeight,
 		textAlign,
 		truncate = false,
@@ -20,15 +25,21 @@ export const Text = (props: TextProps) => {
 		tag
 	} = props;
 
+	const isMobile = useMediaQuery(768);
+
 	const isTitle = type === TextType.TITLE;
 	const defaultTag = isTitle ? TitleTag.H3 : TextTag.P;
 	const resolvedTag = (tag ?? defaultTag) as AllowedTag;
 	const typeClass = isTitle ? cls.text_title : cls.text_text;
 
 	const dynamicStyles: React.CSSProperties = {
-		...(color !== undefined ? { color } : {}),
-		...(fontSize !== undefined ? { fontSize } : {}),
-		...(fontWeight !== undefined ? { fontWeight } : {}),
+		...(!inheritColor && color !== undefined ? { color } : {}),
+		...(fontSize !== undefined && {
+			fontSize: isMobile && fontSizeMobile ? fontSizeMobile : fontSize
+		}),
+		...(fontWeight !== undefined && {
+			fontWeight: isMobile && fontWeightMobile ? fontWeightMobile : fontWeight
+		}),
 		...(lineHeight !== undefined ? { lineHeight } : {}),
 		...(textAlign !== undefined ? { textAlign } : {}),
 		...(uppercase ? { textTransform: 'uppercase' } : {})
@@ -39,6 +50,7 @@ export const Text = (props: TextProps) => {
 		typeClass,
 		...(truncate ? [cls.text_truncate] : []),
 		...(!truncate && maxLines ? [cls[`clamp-${maxLines}`]] : []),
+		...(inheritColor ? [cls.text_inherit] : []), //  Новый класс
 		...(className ? [className] : [])
 	];
 

@@ -9,6 +9,7 @@
 	--color-white: #fff;
 	--color-white-50: #fafafc;
 	--color-red: #f00;
+	--color-orange: rgb(237, 113, 5);
 	--color-violet-20: #edebfe;
 	--color-violet-40: #f5f6f8;
 	--color-violet-50: #f5f6f880;
@@ -70,10 +71,10 @@
 	--font-size-34: 34px;
 
 	--sidebar-width: 48px;
-	--mobile-nav-height: 63px;
 	--header-height: 60px;
 	--header-margin: 24px;
 	--app-header-offset: calc(var(--header-height) + var(--header-margin) + 4px);
+	--mobile-nav-height: 0;
 
 	// font-weight
 	--font-weight-regular: 400;
@@ -86,5 +87,6 @@
 		--settings-border-color: var(--color-gray-500);
 		--header-height: 0;
 		--header-margin: 0;
+		--mobile-nav-height: 63px;
 	}
 }

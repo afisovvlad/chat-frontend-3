@@ -6,6 +6,10 @@
 	background-color: transparent;
 }
 
+.inputWrapper:not(:last-of-type) {
+	margin-bottom: 14px;
+}
+
 .textarea {
 	min-height: 219px;
 	max-height: 219px;

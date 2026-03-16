@@ -1,5 +1,5 @@
-import { rtkApi } from '@/shared/api/rtkApi';
 import { authActions } from '@/features/auth/model/slices/authSlice';
+import { rtkApi } from '@/shared/api/rtkApi';
 
 interface SendPhoneRequest {
 	phone_number: string;
@@ -7,7 +7,7 @@ interface SendPhoneRequest {
 
 interface SendPhoneResponse {
 	phone_number: string;
-	code_len: number;
+	// code_len: number;
 }
 
 export const sendPhoneApi = rtkApi.injectEndpoints({
@@ -23,8 +23,8 @@ export const sendPhoneApi = rtkApi.injectEndpoints({
 				//  optimistic update — СРАЗУ кладём в store
 				dispatch(
 					authActions.setPhoneData({
-						phone_number: arg.phone_number,
-						code_len: 5
+						phone_number: arg.phone_number
+						// code_len: 5
 					})
 				);
 				dispatch(authActions.setStep('code'));
@@ -34,8 +34,8 @@ export const sendPhoneApi = rtkApi.injectEndpoints({
 					// обновляем данными сервера
 					dispatch(
 						authActions.setPhoneData({
-							phone_number: data.phone_number,
-							code_len: data.code_len
+							phone_number: data.phone_number
+							// code_len: data.code_len
 						})
 					);
 				} catch (err) {

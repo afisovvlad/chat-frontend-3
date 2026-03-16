@@ -1,29 +1,35 @@
-.text_title {
-	font-size: var(--font-size-24);
-	font-weight: 600;
-	color: var(--foreground-primary);
-}
-
-.text_text {
-	font-size: var(--font-size-16);
-	font-weight: 400;
-	color: var(--foreground-secondary);
-}
-
-// Обрезка: однострочная
-.text_truncate {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
 .text {
+	word-break: break-word;
+	transition: color 0.2s ease;
+
+	&.text_title {
+		font-size: var(--font-size-24);
+		font-weight: 600;
+		color: var(--foreground-primary);
+	}
+
+	&.text_text {
+		font-size: var(--font-size-16);
+		font-weight: 400;
+		color: var(--foreground-secondary);
+	}
+
+	&.text_inherit {
+		color: inherit;
+	}
+
+	// Обрезка: однострочная
+	&.text_truncate {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
 	&.clamp-2,
 	&.clamp-3 {
 		display: -webkit-box;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
-		word-break: break-word;
 	}
 
 	&.clamp-2 {
@@ -32,5 +38,22 @@
 
 	&.clamp-3 {
 		-webkit-line-clamp: 3;
+	}
+}
+
+//  Глобальные переопределения для активных состояний
+// (работают, когда у родителя есть класс и у Text нет инлайн-цвета)
+:global(.contactItemSelected) .text,
+:global(.chatItemActive) .text {
+	color: var(--color-white);
+
+	// Для заголовков
+	&.text_title {
+		color: var(--color-white);
+	}
+
+	// Для обычного текста
+	&.text_text {
+		color: var(--color-white);
 	}
 }
