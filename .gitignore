@@ -3,6 +3,8 @@
 # dependencies
 /node_modules
 /.pnp
+/.vscode/
+package-lock.json
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -32,6 +34,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.production
+!.env.development
 
 # vercel
 .vercel

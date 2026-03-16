@@ -1,0 +1,92 @@
+:root {
+	// width
+	--width-md: 768px;
+	--width-lg: 1200px;
+	--width-xl: 1440px;
+
+	// colors
+
+	--color-white: #fff;
+	--color-white-50: #fafafc;
+	--color-red: #f00;
+	--color-orange: rgb(237, 113, 5);
+	--color-violet-20: #edebfe;
+	--color-violet-40: #f5f6f8;
+	--color-violet-50: #f5f6f880;
+	--color-violet-500: #7769e1;
+	--color-violet-100: #cec8ff;
+
+	// используется в выбранном чате
+	--color-violet-800: #615aa399;
+	--color-violet-700: #615aa3;
+
+	// используется в сообщении от себя
+	--color-green-100: #d8f5f0;
+
+	// используется для кнопки при поступающем звонке
+	--color-green-300: #34c759;
+
+	// используется при текущем звонке в шапке
+	--color-green-500: #27c840;
+
+	// используется в основном для границ
+	// используется в основном для границ
+	--color-gray-50: #eee;
+	--border-black: #0000004d;
+
+	// используется в основном для кнопок
+
+	--color-gray-200: #c5c5c5;
+	--color-gray-100: #e4e4e4;
+
+	// используется в основном для шрифта
+	--color-gray-500: #747474;
+
+	// background Sidebar
+	--color-bg-sidebar: #f5f6f8;
+
+	// hover ссылок и кнопок в настройках
+	--hover-settings-links: #f5f4ff;
+
+	// используется в основном для заголовков
+	--color-black: #1c1c1e;
+	--color-primary: var(--color-violet-500);
+	--header-background: var(--color-violet-50);
+	--header-mobile-background: var(--color-white);
+	--background-primary: var(--color-violet-50);
+	--foreground-primary: var(--color-black); // цвет заголовков
+	--foreground-secondary: var(--color-gray-500); // цвет текста
+	--settings-border-color: transparent; // цвет border в формах settings
+
+	// fonts-family
+	--primary-text-font: roboto;
+	--secondary-text-font: sfprodisplay;
+
+	// font-sizes
+	--font-size-14: 14px;
+	--font-size-18: 18px;
+	--font-size-16: 16px;
+	--font-size-24: 24px;
+	--font-size-32: 32px;
+	--font-size-34: 34px;
+
+	--sidebar-width: 48px;
+	--header-height: 60px;
+	--header-margin: 24px;
+	--app-header-offset: calc(var(--header-height) + var(--header-margin) + 4px);
+	--mobile-nav-height: 0;
+
+	// font-weight
+	--font-weight-regular: 400;
+	--font-weight-medium: 500;
+	--font-weight-semi-bold: 600;
+	--font-weight-bold: 700;
+	--font-weight-extra-bold: 800;
+
+	@media screen and (max-width: 768px) {
+		--settings-border-color: var(--color-gray-500);
+		--header-height: 0;
+		--header-margin: 0;
+		--mobile-nav-height: 63px;
+	}
+}

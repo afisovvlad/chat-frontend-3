@@ -1,0 +1,17 @@
+.section {
+	margin-bottom: 24px;
+}
+
+.header {
+	width: 100%;
+	height: 36px;
+	padding: 6px 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background-color: var(--color-violet-20);
+
+	@media (max-width: 768px) {
+		height: 44px;
+	}
+}

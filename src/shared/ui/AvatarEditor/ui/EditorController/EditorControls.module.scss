@@ -1,0 +1,164 @@
+@use '@/app/styles/mixins/mixin.scss' as *;
+
+// Базовые стили компонентов
+.controlRow {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+
+	@media (max-width: 768px) {
+		padding: 0 68px 24px;
+	}
+}
+
+.zoomControl {
+	flex: 1;
+	text-align: center;
+}
+
+.zoomSlider {
+	width: 100%;
+	appearance: none;
+	height: 6px;
+	background: #ddd;
+	border-radius: 3px;
+	outline: none;
+	transition: background 2s;
+
+	&::-webkit-slider-thumb {
+		appearance: none;
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: var(--color-primary);
+		cursor: pointer;
+		box-shadow: 0 0 4px rgba(0, 0, 0, 20%);
+	}
+
+	&::-moz-range-thumb {
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: var(--color-primary);
+		cursor: pointer;
+		box-shadow: 0 0 4px rgba(0, 0, 0, 20%);
+		border: none;
+	}
+
+	&:focus-visible {
+		@include focus-visible;
+	}
+}
+
+.checkmark {
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	background: transparent !important;
+	border: none;
+	padding: 0;
+	position: relative;
+	touch-action: manipulation;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	transition: transform 0.15s ease;
+
+	// Эффект нажатия для всех устройств
+	&:active {
+		transform: scale(0.95);
+	}
+
+	// Фокус для клавиатуры
+	&:focus-visible {
+		@include focus-visible;
+	}
+
+	// Ховер для десктопа
+	@media (hover: hover) and (pointer: fine) {
+		&:hover {
+			.checkboxEmpty {
+				background: var(--color-violet-100);
+			}
+		}
+	}
+}
+
+.checkboxEmpty {
+	width: 36px;
+	height: 36px;
+	border: 2px solid var(--color-primary);
+	border-radius: 50%;
+	background: transparent;
+	transition: all 0.2s ease;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	// Анимация при клике
+	.checkmarkActive & {
+		opacity: 0;
+		transform: scale(0.7);
+	}
+
+	// Эффект при нажатии (для всех устройств)
+	.checkmark:active & {
+		transform: scale(0.92);
+		border-color: var(--color-primary);
+	}
+
+	// Эффект ховера для десктопа
+	@media (hover: hover) and (pointer: fine) {
+		.checkmark:hover & {
+			background: var(--color-violet-100);
+			border-color: var(--color-primary);
+		}
+	}
+}
+
+.checkIcon {
+	width: 36px;
+	height: 36px;
+	color: var(--color-primary);
+	transition:
+		transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+		opacity 0.3s ease;
+	transform: scale(0.8);
+	opacity: 0;
+	pointer-events: none;
+}
+
+.checkmarkActive .checkIcon {
+	opacity: 1;
+	transform: scale(1);
+}
+
+@media (max-width: 768px) {
+	.checkmark {
+		width: 40px;
+		height: 40px;
+
+		&:active {
+			transform: scale(0.92);
+			background: var(--color-violet-100);
+		}
+	}
+
+	.checkboxEmpty {
+		width: 32px;
+		height: 32px;
+		border-width: 2px;
+
+		.checkmark:active & {
+			background: var(--color-violet-100);
+		}
+	}
+
+	.checkIcon {
+		width: 32px;
+		height: 32px;
+	}
+}

@@ -1,0 +1,46 @@
+.inputWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	width: 100%;
+	background-color: transparent;
+}
+
+.inputWrapper:not(:last-of-type) {
+	margin-bottom: 14px;
+}
+
+.textarea {
+	min-height: 219px;
+	max-height: 219px;
+	resize: none;
+}
+
+.input,
+.textarea {
+	padding: 16.5px 20px;
+	font-size: 16px;
+	color: var(--foreground-primary);
+	background-color: var(--color-white);
+	border: 1px solid var(--foreground-secondary);
+	border-radius: 8px;
+
+	&::placeholder {
+		color: var(--foreground-secondary);
+	}
+
+	&:focus {
+		border-color: transparent;
+		outline: 2px solid var(--color-primary);
+	}
+}
+
+.error {
+	border-color: transparent;
+	outline: 2px solid var(--color-red);
+
+	&:focus {
+		border-color: transparent;
+		outline: 2px solid var(--color-red);
+	}
+}

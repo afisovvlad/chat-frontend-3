@@ -1,25 +1,64 @@
 {
-  "name": "akatosphere",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "next": "16.0.5",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "sass": "^1.94.2"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.0.5",
-    "typescript": "^5"
-  }
+	"name": "akatosphere",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"format": "prettier . --write",
+		"lint:ts": "eslint \"**/*.{ts,tsx}\"",
+		"lint:ts:fix": "eslint \"**/*.{ts,tsx}\" --fix",
+		"lint:scss": "npx stylelint \"**/*.scss\"",
+		"lint:scss:fix": "npx stylelint \"**/*.scss\" --fix",
+		"lint": "npm run lint:ts && npm run lint:scss",
+		"lint:fix": "npm run format && npm run lint:ts:fix && npm run lint:scss:fix",
+		"prepare": "husky"
+	},
+	"lint-staged": {
+		"*.{ts,tsx}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{js,jsx}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{scss,css}": [
+			"stylelint --fix",
+			"prettier --write"
+		]
+	},
+	"dependencies": {
+		"@reduxjs/toolkit": "^2.11.0",
+		"focus-trap-react": "^11.0.4",
+		"next": "16.0.5",
+		"next-plugin-svgr": "^1.1.12",
+		"react": "19.2.0",
+		"react-dom": "19.2.0",
+		"react-hook-form": "^7.68.0",
+		"react-redux": "^9.2.0",
+		"react-select": "^5.10.2",
+		"redux-persist": "^6.0.0",
+		"sass": "^1.94.2",
+		"styled-components": "^6.1.19"
+	},
+	"devDependencies": {
+		"@types/node": "^20",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"baseline-browser-mapping": "^2.9.11",
+		"eslint": "^9",
+		"eslint-config-next": "16.0.5",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-prettier": "^5.5.4",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"prettier": "^3.7.1",
+		"stylelint": "^14.16.1",
+		"stylelint-config-prettier": "^9.0.5",
+		"stylelint-config-standard-scss": "^6.0.0",
+		"typescript": "^5",
+		"typescript-eslint": "^8.48.0"
+	}
 }

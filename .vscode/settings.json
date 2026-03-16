@@ -1,3 +1,28 @@
 {
-  "typescript.tsdk": "node_modules\\typescript\\lib"
+	"typescript.tsdk": "node_modules\\typescript\\lib",
+	"cSpell.words": [
+		"akatosphere",
+		"attempts",
+		"birthday",
+		"blocking",
+		"filled",
+		"formatted",
+		"greeting",
+		"Loader",
+		"Logo",
+		"messenger",
+		"nickname",
+		"Props",
+		"Reducer",
+		"Reducers",
+		"Refreshing",
+		"registered",
+		"slices",
+		"solid",
+		"staged",
+		"submitted",
+		"Theme",
+		"Wrapper",
+		"токеном"
+	]
 }

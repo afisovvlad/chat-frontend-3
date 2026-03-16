@@ -1,0 +1,43 @@
+.avatarModalOverlay {
+	bottom: var(--mobile-nav-height);
+	touch-action: none;
+
+	@media (min-width: 768px) {
+		bottom: 0;
+	}
+}
+
+.previewContainer {
+	text-align: center;
+}
+
+.previewImg {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	object-fit: cover;
+	box-shadow: 0 0 8px rgba(0, 0, 0, 10%);
+	margin: 0 auto;
+}
+
+.visuallyHidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	border: 0;
+	padding: 0;
+	white-space: nowrap;
+	clip-path: inset(100%);
+	clip: rect(0 0 0 0);
+	overflow: hidden;
+}
+
+.errorModalContent {
+	padding: 24px;
+	text-align: center;
+}
+
+.errorCloseBtn {
+	width: 100%;
+}

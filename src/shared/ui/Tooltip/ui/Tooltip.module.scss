@@ -1,0 +1,44 @@
+.tooltip {
+	position: absolute;
+	width: 100%;
+	min-width: 300px;
+	max-width: 329px;
+	height: auto;
+	padding: 20px;
+	color: var(--color-white);
+	border-radius: 16px;
+	background-color: var(--color-violet-700);
+	margin-bottom: 24px;
+
+	&::after {
+		content: '';
+		position: absolute;
+		top: 100%;
+		right: 106px;
+		background-image: url('/images/tooltip-arrow.svg');
+		background-size: contain;
+		background-repeat: no-repeat;
+		width: 24px;
+		height: 18px;
+
+		@media screen and (max-width: 768px) {
+			right: 64px;
+		}
+	}
+
+	@media screen and (max-width: 768px) {
+		min-width: 250px;
+		max-width: 280px;
+		top: -145px;
+		right: 0;
+	}
+}
+
+.text {
+	line-height: 120%;
+	letter-spacing: 0.4px;
+}
+
+.text:not(:last-child) {
+	margin-bottom: 12px;
+}

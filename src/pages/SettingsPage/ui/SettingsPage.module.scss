@@ -1,0 +1,86 @@
+.settings {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+
+	@media (max-width: 768px) {
+		width: 100%;
+		height: calc(100dvh - var(--mobile-nav-height));
+		padding: 0;
+		background-color: var(--color-white);
+	}
+}
+
+.content {
+	padding: 0 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+
+	@media (max-width: 768px) {
+		gap: 12px;
+	}
+}
+
+.profileSection {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	border-radius: 8px;
+	margin-bottom: 45px;
+}
+
+.avatarWrapper {
+	width: 64px;
+	height: 64px;
+}
+
+.avatar {
+	width: 100%;
+	height: 100%;
+	background: var(--color-gray-200);
+	border-radius: 50%;
+}
+
+.profileInfo {
+	flex: 1;
+	gap: 8px;
+}
+
+.deleteProfile {
+	display: flex;
+	align-items: center;
+	justify-content: start;
+	gap: 16px;
+	padding: 16px;
+	margin-top: auto;
+	color: var(--color-red);
+	cursor: pointer;
+
+	&:hover {
+		text-decoration: underline;
+	}
+
+	@media (max-width: 768px) {
+		padding: 24px 0;
+		margin-bottom: 0;
+	}
+}
+
+.modal {
+	padding: 24px;
+}
+
+.modalTitle {
+	margin-bottom: 10px;
+}
+
+.modalText {
+	margin-bottom: 25px;
+}
+
+.modalError {
+	margin-bottom: 10px;
+}
