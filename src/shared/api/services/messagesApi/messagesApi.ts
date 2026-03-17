@@ -23,8 +23,7 @@ export const messagesApi = rtkApi.injectEndpoints({
 				url: `/chat/message/text/${userUid}/`,
 				method: 'GET',
 				params: {
-					ordering: 'created_at',
-					page_size: 100
+					page_size: 50
 				}
 			}),
 			providesTags: ['Messages']
