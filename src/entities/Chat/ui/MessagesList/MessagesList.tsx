@@ -25,7 +25,6 @@ interface MessagesProps {
 const MessagesListComponent = ({ userUid }: MessagesProps) => {
 	// хук для получения сообщений через api
 	const { data, error, isLoading, refetch } = useGetMessagesQuery(
-		// Cannot find name 'useGetMessagesQuery'.
 		{ userUid },
 		{
 			// обновление каждые 4 секунды, если есть userUid
