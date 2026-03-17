@@ -152,13 +152,6 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 		);
 	}
 
-	// ─────────────────────────────────────────────────────────────
-	//  RENDER: Main Content
-	// ─────────────────────────────────────────────────────────────
-	const messagesClass = classNames(cls.messagesContent, {
-		[cls.messagesContent_noRadius]: isMobile && isActionBarVisible
-	});
-
 	return (
 		<section className={cls.chatView}>
 			<ChatHeader
@@ -173,7 +166,7 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 			{/*  NotMessage или MessagesList */}
 			{hasMessages ? (
 				<>
-					<MessagesList className={messagesClass} />
+					<MessagesList />
 					<MessageFormComponent />
 				</>
 			) : (
