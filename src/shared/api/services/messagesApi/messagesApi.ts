@@ -20,7 +20,7 @@ export const messagesApi = rtkApi.injectEndpoints({
 	endpoints: builder => ({
 		getMessages: builder.query<GetMessagesResponse, { userUid: string }>({
 			query: ({ userUid }) => ({
-				url: `/api/v1/chat/message/text/${userUid}/`,
+				url: `/chat/message/text/${userUid}/`,
 				method: 'GET',
 				params: {
 					ordering: 'created_at',
