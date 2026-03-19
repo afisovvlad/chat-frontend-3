@@ -1,4 +1,4 @@
-import { ContactsSchema } from '../types/contacts.types';
+import { ContactsSchema } from '../../types/contacts.types/contacts.types';
 import type { IUserCard } from '@/shared/ui/UserCard';
 
 export const mapContactToUserCard = (contact: ContactsSchema): IUserCard => {
