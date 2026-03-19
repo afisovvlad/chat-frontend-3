@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Text, TextSize, TextTag, TextType, TextColor } from '@/shared/ui/Text';
 import { Button, ButtonTheme } from '@/shared/ui/Button';
 import { Trash } from '@icons/index';
+
 import cls from './ContactsHeader.module.scss';
 
 export interface ContactsHeaderProps {

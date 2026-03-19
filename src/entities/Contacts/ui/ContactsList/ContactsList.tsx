@@ -14,7 +14,7 @@ import {
 	CheckContactRequest,
 	ContactsSchema,
 	GetContactsRequest
-} from '../../model/types/contacts.types';
+} from '../../model/types/contacts.types/contacts.types';
 import { appConfig } from '@/shared/config/app.config';
 import { ContactsListContent } from '../ContactsListContent/ContactsListContent';
 import { sortContactsByStatus } from '../../model/utils/sortContactsByStatus';
@@ -30,6 +30,7 @@ import { NotSearch } from '@/shared/ui/NotSearch/NotSearch';
 import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
 import { deleteWithMocks } from '../../mock/deleteWithMoks';
 import { SearchSection } from '@/shared/ui/SearchSection';
+
 import cls from './ContactsList.module.scss';
 
 // ─────────────────────────────────────────────────────────────

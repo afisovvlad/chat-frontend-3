@@ -14,7 +14,7 @@ export type {
 	AddContactApiResponse,
 	GetContactsRequest,
 	PaginatedResponse
-} from './model/types/contacts.types';
+} from './model/types/contacts.types/contacts.types';
 
 // ─── API & Hooks ───────────────────────────────────────────────
 export {

@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChatHeader, MessagesList } from '@/entities/Chat';
 import { MessageFormComponent } from '@/features/messageForm';
-import { useChatHeaderData } from '../../model/hooks/useChatHeaderData/useChatHeaderData';
+import { useChatHeaderData } from '@/entities/Chat/model/lib/hooks/useChatHeaderData/useChatHeaderData';
 import { selectChatByUid } from '@/entities/Chat/api/chatApi';
 import { UserCardSkeleton } from '@/shared/ui/Skeleton';
 import { UserCardType } from '@/shared/ui/UserCard';
@@ -15,7 +15,7 @@ import { RootState } from '@/app/providers/StoreProvider';
 import { Chat } from '@/entities/Chat/model/types/chat.types/chat.types';
 import { appConfig } from '@/shared/config/app.config';
 import { mockChats } from '@/entities/Chat/mock/mockData';
-import { ContactsSchema } from '@/entities/Contacts/model/types/contacts.types';
+import { ContactsSchema } from '@/entities/Contacts/model/types/contacts.types/contacts.types';
 import { mockContacts } from '@/entities/Contacts/mock/mockContacts';
 import { mockMessages } from '@/entities/Chat/mock/mockMessages';
 

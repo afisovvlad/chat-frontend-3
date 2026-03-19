@@ -1,4 +1,4 @@
-import { ContactsSchema } from '../model/types/contacts.types';
+import { ContactsSchema } from '../model/types/contacts.types/contacts.types';
 
 // Фиксированная временная метка: 01.01.2024 00:00:00 UTC (как в mockChats)
 const FIXED_TIMESTAMP = 1704067200000;

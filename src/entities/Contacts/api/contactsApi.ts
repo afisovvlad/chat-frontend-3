@@ -8,7 +8,7 @@ import type {
 	CheckContactRequest,
 	PaginatedContactReadByUidList,
 	BulkDeleteRequest
-} from '../model/types/contacts.types';
+} from '../model/types/contacts.types/contacts.types';
 
 export const contactApi = rtkApi.injectEndpoints({
 	endpoints: build => ({

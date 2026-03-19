@@ -3,6 +3,7 @@
 import React from 'react';
 import { formatDateSeparator } from '@/entities/Chat/model/lib/service/dateFormating/dateFormater';
 import { Text, TextColor, TextSize, TextTag, TextType } from '@/shared/ui/Text';
+
 import cls from './StickyDateHeader.module.scss';
 
 interface StickyDateHeaderProps {

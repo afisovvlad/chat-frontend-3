@@ -14,7 +14,8 @@ import {
 	ButtonColor,
 	ButtonSize
 } from '@/shared/ui/Button';
-import { getSelectedAdjectiveForm } from '@/entities/Contacts/model/lib/services/getSelectedAdjectiveForm/getSelectedAdjectiveForm';
+import { getSelAdjForm } from '@/entities/Contacts/model/lib/services/getSelAdjForm/getSelAdjForm';
+
 import cls from './DeleteModal.module.scss';
 
 export interface DeleteModalProps {
@@ -60,8 +61,8 @@ export const DeleteModal = memo(
 							className={cls.modalText}
 						>
 							Вы уверены, что хотите удалить {selectedCount}{' '}
-							{getSelectedAdjectiveForm(selectedCount)}{' '}
-							{getContactWordForm(selectedCount)}?
+							{getSelAdjForm(selectedCount)} {getContactWordForm(selectedCount)}
+							?
 						</Text>
 					</div>
 

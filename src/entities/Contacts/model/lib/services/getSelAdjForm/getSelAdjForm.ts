@@ -3,7 +3,7 @@
  * для конструкции: "{count} {form} {noun}"
  * Пример: "2 выбранных контакта"
  */
-export const getSelectedAdjectiveForm = (count: number): string => {
+export const getSelAdjForm = (count: number): string => {
 	const n = Math.abs(count);
 
 	if (n % 10 === 1 && n % 100 !== 11) {

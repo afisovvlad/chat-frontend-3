@@ -3,6 +3,7 @@ import { Text, TextSize, TextTag, TextType, TextColor } from '@/shared/ui/Text';
 import { Button, ButtonTheme, ButtonColor } from '@/shared/ui/Button';
 import { Trash, Send, Close } from '@icons/index';
 import { getContactWordForm } from '@/entities/Contacts/model/lib/services/getContactWordForm/getContactWordForm';
+
 import cls from './SelectionFooter.module.scss';
 
 export interface SelectionFooterProps {

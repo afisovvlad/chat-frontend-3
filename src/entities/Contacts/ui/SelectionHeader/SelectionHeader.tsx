@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Text, TextSize, TextTag, TextType, TextColor } from '@/shared/ui/Text';
 import { Button, ButtonTheme } from '@/shared/ui/Button';
 import { Trash, CancelSelection, Left } from '@icons/index';
+
 import cls from './SelectionHeader.module.scss';
 
 export interface SelectionHeaderProps {

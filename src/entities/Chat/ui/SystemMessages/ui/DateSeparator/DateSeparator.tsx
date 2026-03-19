@@ -3,6 +3,7 @@
 import React, { forwardRef } from 'react';
 import { formatDateSeparator } from '@/entities/Chat/model/lib/service/dateFormating/dateFormater';
 import { Text, TextColor, TextSize, TextTag, TextType } from '@/shared/ui/Text';
+
 import cls from './DateSeparator.module.scss';
 
 interface DateSeparatorProps {

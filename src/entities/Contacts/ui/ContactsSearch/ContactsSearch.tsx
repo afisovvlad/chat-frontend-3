@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Search } from '@/shared/ui/Search';
+
 import cls from './ContactsSearch.module.scss';
 
 export interface ContactsSearchProps {

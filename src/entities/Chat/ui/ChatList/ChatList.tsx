@@ -12,8 +12,6 @@ import { mockChats } from '../../mock/mockData';
 import { appConfig } from '@/shared/config/app.config';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { ChatListContent } from '../ChatListContent/ChatListContent';
-
-import cls from './ChatList.module.scss';
 import {
 	Button,
 	ButtonColor,
@@ -21,6 +19,8 @@ import {
 	ButtonType
 } from '@/shared/ui/Button';
 import { CreateNew } from '@icons/index';
+
+import cls from './ChatList.module.scss';
 
 const LOCAL_CACHE_SIZE = 30;
 const GLOBAL_SEARCH_MIN_LENGTH = 3;

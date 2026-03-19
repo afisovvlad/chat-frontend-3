@@ -1,8 +1,9 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { ContactsSchema } from '../../../model/types/contacts.types';
+import { ContactsSchema } from '../../model/types/contacts.types/contacts.types';
 import { ContactsListItem } from '../ContactsItem/ContactsItem';
+
 import cls from './ContactsListContent.module.scss';
 
 export const ContactsListContent = memo(
