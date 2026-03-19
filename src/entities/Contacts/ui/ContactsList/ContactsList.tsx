@@ -16,18 +16,18 @@ import {
 	GetContactsRequest
 } from '../../model/types/contacts.types';
 import { appConfig } from '@/shared/config/app.config';
-import { ContactsListContent } from '../components/ContactsListContent/ContactsListContent';
+import { ContactsListContent } from '../ContactsListContent/ContactsListContent';
 import { sortContactsByStatus } from '../../model/utils/sortContactsByStatus';
 import { mockContacts } from '../../mock/mockContacts';
 import { getContactWordForm } from '../../model/lib/services/getContactWordForm/getContactWordForm';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
-import { ContactsSearch } from '../components/ContactsSearch/ContactsSearch';
-import { SelectionHeader } from '../components/SelectionHeader/SelectionHeader';
-import { SelectionFooter } from '../components/SelectionFooter/SelectionFooter';
-import { DeleteModal } from '../components/DeleteModal/DeleteModal';
+import { ContactsSearch } from '../ContactsSearch/ContactsSearch';
+import { SelectionHeader } from '../SelectionHeader/SelectionHeader';
+import { SelectionFooter } from '../SelectionFooter/SelectionFooter';
+import { DeleteModal } from '../DeleteModal/DeleteModal';
 import EmptyContacts from '@/shared/ui/EmptyContacts/EmptyContacts';
 import { NotSearch } from '@/shared/ui/NotSearch/NotSearch';
-import { ContactsHeader } from '../components/ContactsHeader/ContactsHeader';
+import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
 import { deleteWithMocks } from '../../mock/deleteWithMoks';
 import { SearchSection } from '@/shared/ui/SearchSection';
 import cls from './ContactsList.module.scss';

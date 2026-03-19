@@ -1,6 +1,9 @@
-import type { Chat, ChatMessage } from '../types/chat.types';
+import type { Chat, ChatMessage } from '../../types/chat.types/chat.types';
 import type { IUserCard } from '@/shared/ui/UserCard';
-import { ChatType, ChatType as UserCardChatType } from '../types/chat.types';
+import {
+	ChatType,
+	ChatType as UserCardChatType
+} from '../../types/chat.types/chat.types';
 
 const mapChatType = (type: string): UserCardChatType | undefined => {
 	// Опционально: логирование неизвестных типов

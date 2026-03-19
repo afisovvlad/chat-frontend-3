@@ -14,8 +14,8 @@ import {
 	ButtonColor,
 	ButtonSize
 } from '@/shared/ui/Button';
-import cls from './DeleteModal.module.scss';
 import { getSelectedAdjectiveForm } from '@/entities/Contacts/model/lib/services/getSelectedAdjectiveForm/getSelectedAdjectiveForm';
+import cls from './DeleteModal.module.scss';
 
 export interface DeleteModalProps {
 	isOpen: boolean;

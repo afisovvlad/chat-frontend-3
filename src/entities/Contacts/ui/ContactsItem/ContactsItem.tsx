@@ -3,9 +3,9 @@
 import { memo, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { UserCard, UserCardType } from '@/shared/ui/UserCard';
-import { ContactsSchema } from '../../../model/types/contacts.types';
+import { ContactsSchema } from '../../model/types/contacts.types';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
-import { mapContactToUserCard } from '../../../model/mapper/contactsMapper';
+import { mapContactToUserCard } from '../../model/mapper/contactsMapper';
 import { Check } from '@icons/index';
 
 import cls from './ContactsItem.module.scss';

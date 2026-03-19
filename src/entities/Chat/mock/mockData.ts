@@ -1,4 +1,4 @@
-import { Chat, ChatType } from '../model/types/chat.types';
+import { Chat, ChatType } from '../model/types/chat.types/chat.types';
 
 // ✅ Фиксированная временная метка для избежания ошибок гидратации
 const FIXED_TIMESTAMP = 1704067200000; // 01.01.2024 00:00:00 UTC

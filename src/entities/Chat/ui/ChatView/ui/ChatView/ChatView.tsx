@@ -12,11 +12,12 @@ import { NotMessage } from '@/shared/ui/NotMessage/NotMessage';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { RootState } from '@/app/providers/StoreProvider';
-import { Chat } from '@/entities/Chat/model/types/chat.types';
+import { Chat } from '@/entities/Chat/model/types/chat.types/chat.types';
 import { appConfig } from '@/shared/config/app.config';
 import { mockChats } from '@/entities/Chat/mock/mockData';
 import { ContactsSchema } from '@/entities/Contacts/model/types/contacts.types';
 import { mockContacts } from '@/entities/Contacts/mock/mockContacts';
+import { mockMessages } from '@/entities/Chat/mock/mockMessages';
 
 import cls from './ChatView.module.scss';
 
@@ -35,6 +36,17 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 	const chatDataFromCache = useSelector((state: RootState) =>
 		selectChatByUid(state, chatUid)
 	);
+
+	//рендер моковых сообшщений
+	const messages = useMemo(() => {
+		if (!appConfig.USE_MOCKS) {
+			return [];
+		}
+
+		// Для моков: возвращаем все сообщения или фильтруем по чату
+		// (в реальных моках у сообщений должен быть chatId)
+		return mockMessages;
+	}, []);
 
 	const chatData = useMemo(() => {
 		// 1. Если нашли в моках чатов — возвращаем как есть
@@ -173,7 +185,11 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 			{/*  NotMessage или MessagesList */}
 			{hasMessages ? (
 				<>
-					<MessagesList className={messagesClass} />
+					<MessagesList
+						className={messagesClass}
+						messages={messages}
+						currentUserId='user-me'
+					/>
 					<MessageFormComponent />
 				</>
 			) : (

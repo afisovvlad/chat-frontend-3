@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { Chat } from '@/entities/Chat/model/types/chat.types';
+import type { Chat } from '@/entities/Chat/model/types/chat.types/chat.types';
 
 export const useChatHeaderData = (chatData: Chat | null | undefined) => {
 	return useMemo(() => {

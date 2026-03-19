@@ -84,7 +84,7 @@ export const ChatHeader = ({
 
 	// MOCK: эмуляция загрузки для демонстрации
 	const isAddingContact = false;
-	const addContactError = null;
+	// const addContactError = null;
 	// =================================================================
 
 	useClickOutside(searchRef, () => {

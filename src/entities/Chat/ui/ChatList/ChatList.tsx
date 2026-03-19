@@ -6,8 +6,8 @@ import { useGetChatsQuery, useLazyGetChatsQuery } from '../../api/chatApi';
 import { UserCardSkeleton } from '@/shared/ui/Skeleton';
 import { EmptyChats } from '@/shared/ui/EmptyChats/EmptyChats';
 import { UserCardType } from '@/shared/ui/UserCard';
-import { Chat, GetChatsRequest } from '../../model/types/chat.types';
-import { sortChatsByLastMessage } from '../../model/lib/utils/sortChatsByLastMessage';
+import { Chat, GetChatsRequest } from '../../model/types/chat.types/chat.types';
+import { sortChatsByLastMessage } from '../../model/lib/utils/sortChatsByLastMessage/sortChatsByLastMessage';
 import { mockChats } from '../../mock/mockData';
 import { appConfig } from '@/shared/config/app.config';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
@@ -57,11 +57,6 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 		const source = appConfig.USE_MOCKS
 			? mockChats
 			: (cacheResponse?.results ?? []);
-
-		// Dev-only logging (не попадёт в продакшен-бандл при правильной настройке)
-		if (process.env.NODE_ENV === 'development' && appConfig.USE_MOCKS) {
-			console.log('🧪 Using mock data (USE_MOCKS=true)');
-		}
 
 		return sortChatsByLastMessage(source);
 	}, [cacheResponse]);

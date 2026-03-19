@@ -5,7 +5,7 @@ import type {
 	Chat,
 	ChatListResponse,
 	GetChatsRequest
-} from '../model/types/chat.types';
+} from '../model/types/chat.types/chat.types';
 
 export const chatApi = rtkApi.injectEndpoints({
 	endpoints: build => ({
