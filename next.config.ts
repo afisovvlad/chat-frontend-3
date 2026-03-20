@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+	experimental: {
+		optimizePackageImports: ['lucide-react', '@public/assets/icons']
+	},
 	images: {
 		domains: ['api.test.chat.ktsf.ru']
 	},
