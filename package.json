@@ -31,8 +31,9 @@
 	},
 	"dependencies": {
 		"@reduxjs/toolkit": "^2.11.0",
+		"@svgr/webpack": "^8.1.0",
 		"focus-trap-react": "^11.0.4",
-		"next": "16.0.5",
+		"next": "^16.2.0",
 		"next-plugin-svgr": "^1.1.12",
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
