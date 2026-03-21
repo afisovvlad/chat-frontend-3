@@ -166,7 +166,7 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 			{/*  NotMessage или MessagesList */}
 			{hasMessages ? (
 				<>
-					{/* <MessagesList /> */}
+					<MessagesList userUid={chatUid} />
 					<MessageFormComponent />
 				</>
 			) : (
