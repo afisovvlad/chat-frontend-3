@@ -9,7 +9,7 @@ import { Down } from '@icons/index';
 
 import styles from './MessagesList.module.scss';
 
-// тип сообщения
+// тип сообщения (локальный)
 interface Message {
 	id: string;
 	text: string;
@@ -17,12 +17,30 @@ interface Message {
 	status: 'received' | 'sending' | 'unread' | 'read';
 }
 
+// тип ответа с бэка (упрощенный)
+interface MessageApi {
+	uid: string;
+	content: string;
+	from_me: boolean;
+	created_at: string;
+}
+
 // пропсы компонента messages
 interface MessagesProps {
 	userUid: string;
 }
 
+// маппинг api → локальная модель
+const mapMessage = (m: MessageApi): Message => ({
+	id: m.uid,
+	text: m.content,
+	time: new Date(m.created_at).getTime(),
+	status: m.from_me ? 'read' : 'received'
+});
+
 const MessagesListComponent = ({ userUid }: MessagesProps) => {
+	// ===== ПОЛУЧЕНИЕ ДАННЫХ =====
+
 	// хук для получения сообщений через api
 	const { data, error, isLoading, refetch } = useGetMessagesQuery(
 		{ userUid },
@@ -34,52 +52,85 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 		}
 	);
 
+	// ===== REFS =====
+
 	// реф для контейнера с сообщениями
 	const containerRef = useRef<HTMLDivElement>(null);
+
 	// реф для "нижней точки" скролла
 	const bottomRef = useRef<HTMLDivElement>(null);
 
-	// реф для отслеживания позиции скролла
-	const [isAtBottom, setIsAtBottom] = useState(true);
+	// реф для отслеживания позиции скролла (без лишних ререндеров)
 	const isAtBottomRef = useRef(true);
+
+	// ===== STATE =====
 
 	// состояние сообщений
 	const [messages, setMessages] = useState<Message[]>([]);
+
+	// ссылка на следующую страницу (pagination с бэка)
+	const [nextUrl, setNextUrl] = useState<string | null>(null);
+
+	// флаг загрузки старых сообщений (защита от дублей запросов)
+	const [isFetchingMore, setIsFetchingMore] = useState(false);
+
+	// состояние "пользователь внизу"
+	const [isAtBottom, setIsAtBottom] = useState(true);
+
 	// количество новых сообщений, когда пользователь не внизу
 	const [newCount, setNewCount] = useState(0);
 
-	// обработка данных с backend и маппинг к локальному типу message
+	// ===== ОБРАБОТКА ДАННЫХ С БЭКА =====
+
 	useEffect(() => {
 		if (!data) {
 			return;
 		}
 
-		const mapped: Message[] = data.results.map(m => ({
-			id: m.uid,
-			text: m.content,
-			time: new Date(m.created_at).getTime(),
-			status: m.from_me ? 'read' : 'received'
-		}));
+		// маппим данные в локальный формат
+		const mapped = data.results.map(mapMessage);
+
+		// сохраняем ссылку на следующую страницу
+		setNextUrl(data.next);
 
 		setMessages(prev => {
-			// если пришли новые сообщения и пользователь не внизу, увеличиваем счетчик новых
-			if (mapped.length > prev.length && !isAtBottomRef.current) {
-				setNewCount(c => c + (mapped.length - prev.length));
+			// первый рендер просто кладем все сообщения
+			if (!prev.length) {
+				return mapped;
 			}
 
-			return mapped;
+			// для быстрого сравнения id
+			const prevIds = new Set(prev.map(p => p.id));
+
+			// находим реально новые сообщения
+			const incoming = mapped.filter(m => !prevIds.has(m.id));
+
+			// если есть новые сообщения
+			if (incoming.length) {
+				// если пользователь не внизу увеличиваем счетчик
+				if (!isAtBottomRef.current) {
+					setNewCount(c => c + incoming.length);
+				}
+
+				// добавляем новые сообщения в конец
+				return [...prev, ...incoming];
+			}
+
+			return prev;
 		});
 	}, [data]);
 
-	// обработчик скролла
+	// ===== СКРОЛЛ =====
+
 	const handleScroll = () => {
 		const el = containerRef.current;
 		if (!el) {
 			return;
 		}
 
-		const threshold = 50; // расстояние до низа, считаем что внизу если меньше
+		const threshold = 50; // расстояние до низа
 
+		// проверяем "находимся ли внизу"
 		const isBottom =
 			el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
 
@@ -90,10 +141,17 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 		if (isBottom) {
 			setNewCount(0);
 		}
+
+		// если пользователь долистал вверх подгружаем старые сообщения
+		if (el.scrollTop < 50) {
+			loadMore();
+		}
 	};
 
-	// скроллим вниз при обновлении сообщений если пользователь внизу
+	// ===== АВТОСКРОЛЛ ВНИЗ =====
+
 	useEffect(() => {
+		// скроллим вниз только если пользователь уже был внизу
 		if (isAtBottomRef.current) {
 			bottomRef.current?.scrollIntoView({
 				behavior: 'smooth'
@@ -101,13 +159,63 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 		}
 	}, [messages]);
 
-	// скролл вниз по кнопке
+	// ===== ПОДГРУЗКА СООБЩЕНИЙ (INFINITE SCROLL ВВЕРХ) =====
+
+	const loadMore = async () => {
+		// защита:
+		// - нет следующей страницы
+		// - уже идет загрузка
+		if (!nextUrl || isFetchingMore) {
+			return;
+		}
+
+		setIsFetchingMore(true);
+
+		const el = containerRef.current;
+
+		// сохраняем текущую высоту списка
+		const prevHeight = el?.scrollHeight;
+
+		try {
+			const res = await fetch(nextUrl);
+			const data = await res.json();
+
+			// маппим старые сообщения
+			const older: Message[] = data.results.map(mapMessage);
+
+			// обновляем ссылку на следующую страницу
+			setNextUrl(data.next);
+
+			// добавляем старые сообщения в начало
+			setMessages(prev => [...older, ...prev]);
+
+			// фиксируем позицию скролла
+			requestAnimationFrame(() => {
+				if (!el || !prevHeight) {
+					return;
+				}
+
+				const newHeight = el.scrollHeight;
+
+				// компенсируем разницу высоты
+				el.scrollTop = newHeight - prevHeight;
+			});
+		} finally {
+			setIsFetchingMore(false);
+		}
+	};
+
+	// ===== РУЧНОЙ СКРОЛЛ ВНИЗ =====
+
 	const scrollToBottom = () => {
 		bottomRef.current?.scrollIntoView({
 			behavior: 'smooth'
 		});
+
 		setNewCount(0);
 	};
+
+	// ===== UI СОСТОЯНИЯ =====
 
 	// состояние загрузки
 	if (isLoading) {
@@ -119,14 +227,13 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 		return (
 			<div className={styles.emptyState}>
 				<p>Ошибка загрузки сообщений</p>
-				<button style={{ textDecoration: 'underline' }} onClick={refetch}>
-					Попробовать снова
-				</button>
+				<button onClick={refetch}>Попробовать снова</button>
 			</div>
 		);
 	}
 
-	// основной рендер сообщений
+	// ===== ОСНОВНОЙ РЕНДЕР =====
+
 	return (
 		<div className={styles.wrapper}>
 			<div
@@ -145,14 +252,16 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 					/>
 				))}
 
+				{/* якорь для скролла вниз */}
 				<div ref={bottomRef} />
 			</div>
 
 			{/* кнопка для скролла вниз, если пользователь не внизу */}
 			{!isAtBottom && (
 				<button className={styles.scrollButton} onClick={scrollToBottom}>
-					{Down} {/* !! не отображается */}
-					{newCount > 0 && `(${newCount})`}
+					<Down />
+					{/* показываем количество новых сообщений */}
+					{newCount > 0 && <span>({newCount})</span>}
 				</button>
 			)}
 		</div>
