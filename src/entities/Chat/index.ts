@@ -81,6 +81,13 @@ export {
 	parseIsoDateToTimestamp
 } from './model/types/chat.types/chat.types';
 
+// ─── СООБЩЕНИЯ: ДЛЯ ПОИСКА (useMessageSearch) ─────────────────────────
+export type {
+	BaseSearchMessage,
+	TextMessage,
+	Message
+} from './model/types/chat.types/chat.types';
+
 export { mapChatToUserCard } from './model/mapper/mapChatType/chatMapper';
 
 export {

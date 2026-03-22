@@ -24,6 +24,54 @@ export interface ChatUser extends BaseUser {
 }
 
 // ============================================================================
+//  ТИПЫ ДЛЯ ПОИСКА ПО СООБЩЕНИЯМ (useMessageSearch)
+// ============================================================================
+
+/**
+ * Базовый интерфейс сообщения для поиска
+ * Используется внутри useMessageSearch хука
+ */
+export interface BaseSearchMessage {
+	id: string; // string для ключей React
+	type: MessageType;
+	createdAt: number; // timestamp
+	updatedAt?: number;
+}
+
+/**
+ * Текстовое сообщение для поиска
+ * Отличается от ChatMessage структурой полей (плоская, для удобства фильтрации)
+ */
+export interface TextMessage extends BaseSearchMessage {
+	type: MessageType.TEXT;
+	content: string;
+	senderId: string;
+	senderName: string;
+	status: MessageStatus;
+	isEdited?: boolean;
+	has_replied_message?: boolean;
+	has_forwarded_message?: boolean;
+	replyTo?: {
+		id: string;
+		text: string;
+		senderName?: string;
+	};
+	forwardedFrom?: {
+		chatName: string;
+		author: string;
+		messageText?: string;
+	};
+	files_summary?: FilesSummary;
+	new?: boolean;
+}
+
+/**
+ * Объединённый тип сообщения для поиска
+ * Discriminated union по полю `type`
+ */
+export type Message = TextMessage | SystemMessageData;
+
+// ============================================================================
 // ВЛОЖЕНИЯ (ФАЙЛЫ)
 // ============================================================================
 
