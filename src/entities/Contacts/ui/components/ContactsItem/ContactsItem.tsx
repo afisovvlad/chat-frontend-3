@@ -104,7 +104,7 @@ export const ContactsListItem = memo(
 						<UserCard
 							userData={userCardData}
 							type={UserCardType.CONTACT}
-							invertColors={isSelectionMode && isSelected} //  Инвертируем при выделении
+							isActive={isSelectionMode && isSelected} //  Инвертируем при выделении
 						/>
 					</div>
 
