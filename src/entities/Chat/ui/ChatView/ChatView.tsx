@@ -7,6 +7,7 @@ import { MessageFormComponent } from '@/features/messageForm';
 import { useChatHeaderData } from '@/entities/Chat/model/lib/hooks/useChatHeaderData/useChatHeaderData';
 import {
 	selectChatByUid,
+	useGetChatByIdQuery,
 	useGetMessagesQuery
 } from '@/entities/Chat/api/chatApi';
 import { UserCardSkeleton } from '@/shared/ui/Skeleton';
@@ -15,10 +16,7 @@ import { NotMessage } from '@/shared/ui/NotMessage/NotMessage';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { RootState } from '@/app/providers/StoreProvider';
-import {
-	Chat,
-	ChatMessage
-} from '@/entities/Chat/model/types/chat.types/chat.types';
+import { Chat, ChatMessage } from '../../model/types/chat.types/chat.types';
 
 import cls from './ChatView.module.scss';
 
@@ -27,7 +25,6 @@ interface ChatViewProps {
 	onBack?: () => void;
 }
 
-// Константы для пагинации сообщений (соответствуют настройкам бэка)
 const MESSAGES_PAGE_SIZE = 50;
 const MESSAGES_ORDERING = '-created_at';
 
@@ -35,16 +32,10 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 	const isMobile = useMediaQuery();
 	const [isActionBarVisible, setIsActionBarVisible] = useState(true);
 
-	// ─────────────────────────────────────────────────────────────
-	// DATA: Получаем чат из кеша RTK Query
-	// ─────────────────────────────────────────────────────────────
 	const chatDataFromCache = useSelector((state: RootState) =>
 		selectChatByUid(state, chatUid)
 	);
 
-	// ─────────────────────────────────────────────────────────────
-	// DATA: Запрашиваем сообщения через RTK Query
-	// ─────────────────────────────────────────────────────────────
 	const { data: messagesResponse, isLoading: isMessagesLoading } =
 		useGetMessagesQuery(
 			{
@@ -57,31 +48,27 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 			}
 		);
 
-	// Сообщения из ответа API (уже преобразованные через transformResponse)
+	const {
+		data: chatDataDirect,
+		isLoading: isChatLoading,
+		isError: isChatError,
+		refetch: refetchChat
+	} = useGetChatByIdQuery(chatUid, {
+		skip: !!chatDataFromCache,
+		refetchOnMountOrArgChange: true
+	});
+
 	const messages = useMemo<ChatMessage[]>(() => {
 		return messagesResponse?.results ?? [];
 	}, [messagesResponse]);
 
-	// ─────────────────────────────────────────────────────────────
-	// DATA: Чат данные (только из кеша RTK Query)
-	// ─────────────────────────────────────────────────────────────
 	const chatData = useMemo<Chat | null>(() => {
-		// Если есть в кеше RTK Query — возвращаем
-		if (chatDataFromCache) {
-			return chatDataFromCache;
-		}
-		// Если ничего не нашли — null (покажем скелетон)
-		return null;
-	}, [chatDataFromCache]);
+		return chatDataFromCache ?? chatDataDirect ?? null;
+	}, [chatDataFromCache, chatDataDirect]);
 
-	// ─────────────────────────────────────────────────────────────
-	// HEADER DATA: Используем хук или дефолтные значения
-	// ─────────────────────────────────────────────────────────────
 	const { headerData, hasMessages } = useChatHeaderData(chatData);
 
-	// Fallback данные: из headerData + дополнительные поля из chatData
 	const safeHeaderData = useMemo(() => {
-		// Базовые поля из хука (с защитой от null)
 		const baseData = {
 			userName: headerData?.userName ?? 'Неизвестный пользователь',
 			userStatus: headerData?.userStatus ?? 'был(а) давно',
@@ -90,7 +77,6 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 			isInContacts: headerData?.isInContacts ?? false
 		};
 
-		// Дополнительные поля для API добавления контакта — берём из chatData
 		const contactData = {
 			contactPhone: chatData?.chat?.username?.startsWith('+')
 				? chatData.chat.username
@@ -102,9 +88,6 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 		return { ...baseData, ...contactData };
 	}, [headerData, chatData]);
 
-	// ─────────────────────────────────────────────────────────────
-	// HANDLERS
-	// ─────────────────────────────────────────────────────────────
 	const handleBack = useCallback(() => {
 		if (onBack) {
 			onBack();
@@ -126,11 +109,7 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 		console.log('🚫 Block user:', chatUid);
 	}, [chatUid]);
 
-	// ─────────────────────────────────────────────────────────────
-	// RENDER: Loading state (только если данных вообще нет)
-	// ─────────────────────────────────────────────────────────────
-	// Показываем скелетон ТОЛЬКО если chatData === null
-	if (!chatData) {
+	if (isChatLoading && !chatData) {
 		return (
 			<section className={cls.chatView}>
 				<UserCardSkeleton count={1} type={UserCardType.CONTACT} />
@@ -138,9 +117,27 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 		);
 	}
 
-	// ─────────────────────────────────────────────────────────────
-	// RENDER: Main Content
-	// ─────────────────────────────────────────────────────────────
+	if (isChatError && !chatData) {
+		return (
+			<section className={cls.chatView}>
+				<div className={cls.errorState}>
+					<NotMessage />
+					<button onClick={refetchChat}>Повторить</button>
+				</div>
+			</section>
+		);
+	}
+
+	if (!chatData) {
+		return (
+			<section className={cls.chatView}>
+				<div className={cls.emptyState}>
+					<NotMessage />
+				</div>
+			</section>
+		);
+	}
+
 	const messagesClass = classNames(cls.messagesContent, {
 		[cls.messagesContent_noRadius]: isMobile && isActionBarVisible
 	});
