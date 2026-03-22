@@ -1,19 +1,15 @@
 'use client';
 
-import { memo, useMemo, useCallback } from 'react';
+import { memo, useMemo, useCallback, useEffect } from 'react';
 import { filterChatsLocal, Search, useHybridSearch } from '@/shared/ui/Search';
 import { useGetChatsQuery, useLazyGetChatsQuery } from '../../api/chatApi';
 import { UserCardSkeleton } from '@/shared/ui/Skeleton';
 import { EmptyChats } from '@/shared/ui/EmptyChats/EmptyChats';
 import { UserCardType } from '@/shared/ui/UserCard';
-import { Chat, GetChatsRequest } from '../../model/types/chat.types';
-import { sortChatsByLastMessage } from '../../model/lib/utils/sortChatsByLastMessage';
-import { mockChats } from '../../mock/mockData';
-import { appConfig } from '@/shared/config/app.config';
+import { Chat, GetChatsRequest } from '../../model/types/chat.types/chat.types';
+import { sortChatsByLastMessage } from '../../model/lib/utils/sortChatsByLastMessage/sortChatsByLastMessage';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { ChatListContent } from '../ChatListContent/ChatListContent';
-
-import cls from './ChatList.module.scss';
 import {
 	Button,
 	ButtonColor,
@@ -21,6 +17,8 @@ import {
 	ButtonType
 } from '@/shared/ui/Button';
 import { CreateNew } from '@icons/index';
+
+import cls from './ChatList.module.scss';
 
 const LOCAL_CACHE_SIZE = 30;
 const GLOBAL_SEARCH_MIN_LENGTH = 3;
@@ -35,16 +33,28 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 	// ─────────────────────────────────────────────────────────────
 	// 1. DATA FETCHING (RTK Query)
 	// ─────────────────────────────────────────────────────────────
+
 	const {
 		data: cacheResponse,
-		isLoading: isCacheLoading
-		// isError: isCacheError,
-		// error: cacheError,
-		// refetch
-	} = useGetChatsQuery({
-		pageSize: LOCAL_CACHE_SIZE,
-		ordering: '-last_activity_at'
-	} as GetChatsRequest);
+		isLoading: isCacheLoading,
+		isError: isCacheError,
+		refetch
+	} = useGetChatsQuery(
+		{
+			pageSize: LOCAL_CACHE_SIZE,
+			ordering: '-last_activity_at'
+		} as GetChatsRequest,
+		{
+			//  Авто-рефреш при возврате на вкладку
+			refetchOnFocus: true,
+			// Авто-рефреш при восстановлении сети
+			refetchOnReconnect: true,
+			// Опционально: фоновое обновление каждые 60 сек (если нет WebSocket)
+			// pollingInterval: 60_000,
+			// Не держать в кэше вечно: обновлять при повторном маунте, если данные старые
+			refetchOnMountOrArgChange: true
+		}
+	);
 
 	const mobile = useMediaQuery();
 
@@ -54,16 +64,7 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 	// 2. DATA SOURCES & TRANSFORMATIONS
 	// ─────────────────────────────────────────────────────────────
 	const localChats = useMemo(() => {
-		const source = appConfig.USE_MOCKS
-			? mockChats
-			: (cacheResponse?.results ?? []);
-
-		// Dev-only logging (не попадёт в продакшен-бандл при правильной настройке)
-		if (process.env.NODE_ENV === 'development' && appConfig.USE_MOCKS) {
-			console.log('🧪 Using mock data (USE_MOCKS=true)');
-		}
-
-		return sortChatsByLastMessage(source);
+		return sortChatsByLastMessage(cacheResponse?.results ?? []);
 	}, [cacheResponse]);
 
 	// ─────────────────────────────────────────────────────────────
@@ -107,6 +108,20 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 		GLOBAL_SEARCH_MIN_LENGTH
 	);
 
+	useEffect(() => {
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === 'visible' && isCacheError) {
+				// Если была ошибка и вкладка стала активной — пробуем ещё раз
+				refetch();
+			}
+		};
+
+		document.addEventListener('visibilitychange', handleVisibilityChange);
+		return () => {
+			document.removeEventListener('visibilitychange', handleVisibilityChange);
+		};
+	}, [isCacheError, refetch]);
+
 	// ─────────────────────────────────────────────────────────────
 	// 5. DERIVED STATE (мемоизированные флаги)
 	// ─────────────────────────────────────────────────────────────
@@ -119,16 +134,13 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 
 	const statusFlags = useMemo(() => {
 		const isInitialLoading = isCacheLoading && !cacheResponse;
-
 		const isGlobalSearching = isSearching && isGlobal && hasMinLength;
-
 		const shouldShowSkeleton =
 			isInitialLoading || (isGlobalSearching && displayChats.length === 0);
-
 		const isEmpty =
 			!isCacheLoading && displayChats.length === 0 && !isGlobalSearching;
 
-		const hasError = !!searchError && (isGlobal || !searchTerm);
+		const hasError = !!searchError || (isCacheError && !searchTerm);
 
 		return {
 			isLoading: isInitialLoading,
@@ -138,26 +150,21 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 		};
 	}, [
 		isCacheLoading,
-		cacheResponse, // 🔹 Добавили проверку на наличие ответа
+		cacheResponse,
 		searchTerm,
 		isSearching,
 		isGlobal,
 		hasMinLength,
 		displayChats.length,
-		searchError
+		searchError,
+		isCacheError
 	]);
 
 	// ─────────────────────────────────────────────────────────────
 	// 6. UI DERIVED VALUES
 	// ─────────────────────────────────────────────────────────────
 	const searchPlaceholder = useMemo(() => {
-		if (isGlobal) {
-			return 'Глобальный поиск (@username)...';
-		}
-		if (appConfig.USE_MOCKS) {
-			return 'Поиск по мокам...';
-		}
-		return 'Поиск чатов...';
+		return isGlobal ? 'Глобальный поиск (@username)...' : 'Поиск чатов...';
 	}, [isGlobal]);
 
 	// ─────────────────────────────────────────────────────────────

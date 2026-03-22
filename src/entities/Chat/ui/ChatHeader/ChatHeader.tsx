@@ -22,6 +22,7 @@ import {
 import { ChatActionBar } from '../ChatActionBar/ChatActionBar';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { Modal } from '@/shared/ui/Modal';
+
 import cls from './ChatHeader.module.scss';
 
 // Импортируем хук мутации (раскомментируй, когда API будет готов)
@@ -84,7 +85,7 @@ export const ChatHeader = ({
 
 	// MOCK: эмуляция загрузки для демонстрации
 	const isAddingContact = false;
-	const addContactError = null;
+	// const addContactError = null;
 	// =================================================================
 
 	useClickOutside(searchRef, () => {
