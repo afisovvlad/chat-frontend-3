@@ -7,7 +7,6 @@ import { MessageFormComponent } from '@/features/messageForm';
 import { useChatHeaderData } from '@/entities/Chat/model/lib/hooks/useChatHeaderData/useChatHeaderData';
 import {
 	selectChatByUid,
-	useGetChatByIdQuery,
 	useGetMessagesQuery
 } from '@/entities/Chat/api/chatApi';
 import { UserCardSkeleton } from '@/shared/ui/Skeleton';
@@ -17,63 +16,140 @@ import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { RootState } from '@/app/providers/StoreProvider';
 import { Chat, ChatMessage } from '../../model/types/chat.types/chat.types';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 import cls from './ChatView.module.scss';
 
 interface ChatViewProps {
 	chatUid: string;
 	onBack?: () => void;
+	userDataFromSearch?: {
+		userName: string;
+		avatar?: string;
+		isOnline?: boolean;
+	};
 }
 
 const MESSAGES_PAGE_SIZE = 50;
 const MESSAGES_ORDERING = '-created_at';
 
-export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
+export const ChatView = ({
+	chatUid,
+	userDataFromSearch,
+	onBack
+}: ChatViewProps) => {
 	const isMobile = useMediaQuery();
 	const [isActionBarVisible, setIsActionBarVisible] = useState(true);
 
+	// ─────────────────────────────────────────────────────────────
+	// DATA: Чат из кеша списка (основной источник)
+	// ─────────────────────────────────────────────────────────────
 	const chatDataFromCache = useSelector((state: RootState) =>
 		selectChatByUid(state, chatUid)
 	);
 
-	const { data: messagesResponse, isLoading: isMessagesLoading } =
-		useGetMessagesQuery(
-			{
-				user_uid: chatUid,
-				page_size: MESSAGES_PAGE_SIZE,
-				ordering: MESSAGES_ORDERING
-			},
-			{
-				skip: !chatUid
-			}
-		);
-
+	// ─────────────────────────────────────────────────────────────
+	// DATA: Сообщения (запрашиваем всегда, бэкенд сам обработает создание чата)
+	// ─────────────────────────────────────────────────────────────
 	const {
-		data: chatDataDirect,
-		isLoading: isChatLoading,
-		isError: isChatError,
-		refetch: refetchChat
-	} = useGetChatByIdQuery(chatUid, {
-		skip: !!chatDataFromCache,
-		refetchOnMountOrArgChange: true
-	});
+		data: messagesResponse,
+		isLoading: isMessagesLoading,
+		isError: isMessagesError,
+		error: messagesError
+	} = useGetMessagesQuery(
+		{
+			user_uid: chatUid,
+			page_size: MESSAGES_PAGE_SIZE,
+			ordering: MESSAGES_ORDERING
+		},
+		{
+			skip: !chatUid
+		}
+	);
+
+	const isForbidden = (messagesError as FetchBaseQueryError)?.status === 403;
+	const hasRealError = isMessagesError && !isForbidden;
 
 	const messages = useMemo<ChatMessage[]>(() => {
+		if (isForbidden) {
+			return [];
+		}
 		return messagesResponse?.results ?? [];
-	}, [messagesResponse]);
+	}, [messagesResponse, isForbidden]);
 
+	// ─────────────────────────────────────────────────────────────
+	// DATA: Объединяем источники (прямой запрос чата отключён)
+	// ─────────────────────────────────────────────────────────────
 	const chatData = useMemo<Chat | null>(() => {
-		return chatDataFromCache ?? chatDataDirect ?? null;
-	}, [chatDataFromCache, chatDataDirect]);
+		return chatDataFromCache ?? null;
+	}, [chatDataFromCache]);
 
+	// ─────────────────────────────────────────────────────────────
+	// HEADER DATA
+	// ─────────────────────────────────────────────────────────────
 	const { headerData, hasMessages } = useChatHeaderData(chatData);
 
+	const getPreviewData = (uid: string | undefined) => {
+		if (!uid) {
+			return {};
+		}
+
+		const localStorageKey = `chat_preview_${uid}`;
+		const sessionStorageKey = `chat_preview_data_${uid}`;
+
+		try {
+			const sessionRaw = sessionStorage.getItem(sessionStorageKey);
+			if (sessionRaw) {
+				return JSON.parse(sessionRaw) as {
+					userName?: string;
+					avatar?: string;
+					isOnline?: boolean;
+				};
+			}
+
+			const localRaw = localStorage.getItem(localStorageKey);
+			if (localRaw) {
+				const parsed = JSON.parse(localRaw) as {
+					userName?: string;
+					avatar?: string;
+					isOnline?: boolean;
+				};
+
+				try {
+					sessionStorage.setItem(sessionStorageKey, localRaw);
+					localStorage.removeItem(localStorageKey);
+				} catch (saveError) {
+					console.error('Preview save error:', saveError);
+				}
+				return parsed;
+			}
+		} catch (e) {
+			console.error('Preview parse error:', e);
+		}
+		return {};
+	};
+
 	const safeHeaderData = useMemo(() => {
+		const preview = chatUid ? getPreviewData(chatUid) : {};
+
 		const baseData = {
-			userName: headerData?.userName ?? 'Неизвестный пользователь',
+			userName:
+				userDataFromSearch?.userName ??
+				preview?.userName ??
+				headerData?.userName ??
+				'Неизвестный пользователь',
+
 			userStatus: headerData?.userStatus ?? 'был(а) давно',
-			userAvatar: headerData?.userAvatar,
-			isOnline: headerData?.isOnline ?? false,
+
+			userAvatar:
+				userDataFromSearch?.avatar ?? preview?.avatar ?? headerData?.userAvatar,
+
+			isOnline:
+				userDataFromSearch?.isOnline ??
+				preview?.isOnline ??
+				headerData?.isOnline ??
+				false,
+
 			isInContacts: headerData?.isInContacts ?? false
 		};
 
@@ -86,8 +162,11 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 		};
 
 		return { ...baseData, ...contactData };
-	}, [headerData, chatData]);
+	}, [headerData, chatData, userDataFromSearch, chatUid]);
 
+	// ─────────────────────────────────────────────────────────────
+	// HANDLERS
+	// ─────────────────────────────────────────────────────────────
 	const handleBack = useCallback(() => {
 		if (onBack) {
 			onBack();
@@ -102,14 +181,16 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 
 	const handleAddToContacts = useCallback(() => {
 		console.log('👤 Add to contacts:', chatUid);
-		// TODO: Вызвать мутацию добавления контакта
 	}, [chatUid]);
 
 	const handleBlock = useCallback(() => {
 		console.log('🚫 Block user:', chatUid);
 	}, [chatUid]);
 
-	if (isChatLoading && !chatData) {
+	// RENDER: Loading State (только для сообщений)
+	// ─────────────────────────────────────────────────────────────
+
+	if (isMessagesLoading && !chatData && messages.length === 0 && !isForbidden) {
 		return (
 			<section className={cls.chatView}>
 				<UserCardSkeleton count={1} type={UserCardType.CONTACT} />
@@ -117,27 +198,48 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 		);
 	}
 
-	if (isChatError && !chatData) {
-		return (
-			<section className={cls.chatView}>
-				<div className={cls.errorState}>
-					<NotMessage />
-					<button onClick={refetchChat}>Повторить</button>
-				</div>
-			</section>
-		);
-	}
+	// ─────────────────────────────────────────────────────────────
+	// RENDER: Error State (только реальные ошибки, не 403)
+	// ─────────────────────────────────────────────────────────────
 
-	if (!chatData) {
+	if (hasRealError && !chatData) {
 		return (
 			<section className={cls.chatView}>
-				<div className={cls.emptyState}>
+				<div className={cls.notMessageWrapper}>
 					<NotMessage />
 				</div>
 			</section>
 		);
 	}
 
+	// ─────────────────────────────────────────────────────────────
+	// RENDER: Empty State (чат не найден в кеше ИЛИ 403)
+	// ─────────────────────────────────────────────────────────────
+
+	if (!chatData || isForbidden) {
+		return (
+			<section className={cls.chatView}>
+				<ChatHeader
+					{...safeHeaderData}
+					onCall={handleCall}
+					onAddToContacts={handleAddToContacts}
+					onBlock={handleBlock}
+					onBack={isMobile ? handleBack : undefined}
+					onActionBarVisibilityChange={setIsActionBarVisible}
+				/>
+
+				<div className={cls.notMessageWrapper}>
+					<NotMessage />
+				</div>
+
+				<MessageFormComponent />
+			</section>
+		);
+	}
+
+	// ─────────────────────────────────────────────────────────────
+	// RENDER: Main Content (чат найден, всё работает)
+	// ─────────────────────────────────────────────────────────────
 	const messagesClass = classNames(cls.messagesContent, {
 		[cls.messagesContent_noRadius]: isMobile && isActionBarVisible
 	});
@@ -153,7 +255,6 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 				onActionBarVisibilityChange={setIsActionBarVisible}
 			/>
 
-			{/* NotMessage или MessagesList */}
 			{hasMessages ? (
 				<>
 					<MessagesList

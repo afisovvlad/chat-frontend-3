@@ -63,10 +63,8 @@ const filterContactsWrapper = (
 		username: undefined
 	}));
 
-	// Фильтруем плоские объекты
 	const filteredFlat = filterContacts(flatItems, searchTerm);
 
-	// Возвращаем оригинальные объекты по uid
 	const filteredUids = new Set(filteredFlat.map(i => i.uid));
 	return items.filter(item => filteredUids.has(item.uid));
 };
@@ -124,7 +122,6 @@ export const ContactsList = memo(
 		const handleDeleteSingleContact = useCallback(
 			async (contactUid: string) => {
 				try {
-					// Реальный вызов API (mock-обёртка удалена)
 					await deleteContact(contactUid).unwrap();
 				} catch (error: unknown) {
 					if (process.env.NODE_ENV === 'development') {
@@ -175,9 +172,7 @@ export const ContactsList = memo(
 				handleClearSelection();
 				setIsDeleteModalOpen(false);
 			} catch (error: unknown) {
-				if (process.env.NODE_ENV === 'development') {
-					console.error('Failed to delete contacts:', error);
-				}
+				console.error('Failed to delete contacts:', error);
 			}
 		}, [
 			selectedContacts,
@@ -213,8 +208,6 @@ export const ContactsList = memo(
 					const payload: CheckContactRequest[] = [{ phone_or_nickname: query }];
 					const result = await searchGlobal(payload).unwrap();
 
-					// Универсальное извлечение массива:
-					// Если результат — массив, берём его; если объект — берём result.results
 					const resultsArray = Array.isArray(result)
 						? result
 						: (result?.results ?? []);
@@ -301,14 +294,29 @@ export const ContactsList = memo(
 		//  DERIVED STATE: Флаг показа хедера
 		// ─────────────────────────────────────────────────────────────
 		const shouldShowContactsHeader = useMemo(() => {
-			//  Не показывать хедер при глобальном поиске с результатами
-			// (глобальные пользователи — не твои контакты, их нельзя удалить)
 			if (isGlobal && searchTerm.trim().length > 0 && totalResults > 0) {
 				return false;
 			}
-			// Показывать в остальных случаях
+
 			return true;
 		}, [isGlobal, searchTerm, totalResults]);
+
+		// ─────────────────────────────────────────────────────────────
+		//  HELPER: Сохранение превью контакта в localStorage
+		// ─────────────────────────────────────────────────────────────
+
+		const handleSelectContactWithPreview = (
+			uid: string,
+			contact: ContactsSchema | undefined,
+			onSelectContact?: (uid: string) => void
+		) => {
+			const userName =
+				contact?.first_name || contact?.last_name || 'Пользователь';
+
+			localStorage.setItem(`chat_preview_${uid}`, JSON.stringify({ userName }));
+
+			onSelectContact?.(uid);
+		};
 
 		// ─────────────────────────────────────────────────────────────
 		//  RENDER: Loading / Error
@@ -357,11 +365,9 @@ export const ContactsList = memo(
 				/>
 
 				{/*  Хедеры рендерятся ТОЛЬКО если поиск дал результаты или не выполнялся */}
-				{/*  Хедеры рендерятся ТОЛЬКО если поиск дал результаты или не выполнялся */}
 				{!isSearchNoResults && (
 					<>
 						{isSelectionMode && !mobile ? (
-							//  Режим выбора на десктопе: всегда показываем SelectionHeader
 							<SelectionHeader
 								selectedCount={selectedCount}
 								onBack={handleClearSelection}
@@ -387,18 +393,16 @@ export const ContactsList = memo(
 				) : statusFlags.isEmpty ? (
 					<EmptyContacts />
 				) : searchTerm.trim().length === 0 ? (
-					// По умолчанию — показываем контакты БЕЗ SearchSection и заголовков
 					<ContactsListContent
 						contacts={localContacts}
 						selectedContactUid={selectedContactUid}
-						onSelectContact={onSelectContact}
 						isSelectionMode={isSelectionMode}
 						selectedContacts={selectedContacts}
 						onToggleSelection={handleToggleSelection}
 						onDeleteContact={handleDeleteSingleContact}
+						onSelectContact={onSelectContact}
 					/>
 				) : (
-					//  При поиске — показываем через SearchSection с заголовками секций
 					<div className={cls.sectionsContainer}>
 						{sections.map((section, index) => (
 							<SearchSection
@@ -410,11 +414,18 @@ export const ContactsList = memo(
 								<ContactsListContent
 									contacts={section.items}
 									selectedContactUid={selectedContactUid}
-									onSelectContact={onSelectContact}
 									isSelectionMode={isSelectionMode}
 									selectedContacts={selectedContacts}
 									onToggleSelection={handleToggleSelection}
 									onDeleteContact={handleDeleteSingleContact}
+									onSelectContact={uid => {
+										const contact = section.items.find(c => c.uid === uid);
+										handleSelectContactWithPreview(
+											uid,
+											contact,
+											onSelectContact
+										);
+									}}
 								/>
 							</SearchSection>
 						))}

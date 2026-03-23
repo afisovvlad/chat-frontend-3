@@ -45,13 +45,10 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 			ordering: '-last_activity_at'
 		} as GetChatsRequest,
 		{
-			//  Авто-рефреш при возврате на вкладку
 			refetchOnFocus: true,
-			// Авто-рефреш при восстановлении сети
+
 			refetchOnReconnect: true,
-			// Опционально: фоновое обновление каждые 60 сек (если нет WebSocket)
-			// pollingInterval: 60_000,
-			// Не держать в кэше вечно: обновлять при повторном маунте, если данные старые
+
 			refetchOnMountOrArgChange: true
 		}
 	);
@@ -76,7 +73,7 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 			try {
 				const result = await triggerGlobalSearch({
 					search: searchTerm,
-					pageSize: 50,
+					pageSize: 30,
 					ordering: '-last_activity_at'
 				} as GetChatsRequest).unwrap();
 
@@ -111,7 +108,6 @@ export const ChatList = memo(({ selectedChatUid }: ChatListProps) => {
 	useEffect(() => {
 		const handleVisibilityChange = () => {
 			if (document.visibilityState === 'visible' && isCacheError) {
-				// Если была ошибка и вкладка стала активной — пробуем ещё раз
 				refetch();
 			}
 		};

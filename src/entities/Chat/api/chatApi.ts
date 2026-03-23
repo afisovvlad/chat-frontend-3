@@ -1,7 +1,7 @@
 import { rtkApi } from '@/shared/api/rtkApi';
 import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from '@/app/providers/StoreProvider';
-import { mapApiMessagesList } from '../model/mapper/mapChatType/chatMapper';
+import { mapApiMessageToFrontend } from '../model/mapper/mapChatType/chatMapper';
 import type {
 	Chat,
 	ChatListResponse,
@@ -83,14 +83,11 @@ export const chatApi = rtkApi.injectEndpoints({
 					: [{ type: 'Messages', id: 'LIST' }],
 			keepUnusedDataFor: 30,
 
-			// КЛЮЧЕВОЙ МОМЕНТ: входной тип ≠ выходной тип
-			// Вход: RawMessageListResponse (сырой ответ от бэка)
-			// Выход: MessageListResponse (преобразованный для фронтенда)
 			transformResponse: (
 				response: RawMessageListResponse
 			): MessageListResponse => ({
 				...response,
-				results: mapApiMessagesList(response.results)
+				results: response.results.map(mapApiMessageToFrontend)
 			})
 		})
 	}),
