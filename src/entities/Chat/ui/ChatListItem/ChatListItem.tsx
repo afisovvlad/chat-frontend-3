@@ -50,7 +50,6 @@ export const ChatListItem = memo(({ chat, isActive }: ChatListItemProps) => {
 						userData={userCardData}
 						type={UserCardType.CHAT}
 						sendingMessage={false}
-						invertColors={isActive}
 					/>
 				</div>
 			</div>
