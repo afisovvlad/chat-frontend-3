@@ -1,185 +1,340 @@
 'use client';
 
-import React, {
-	useMemo,
-	useRef,
-	useCallback,
-	useEffect,
-	useState
-} from 'react';
-import { ChatMessage } from '../../model/types/chat.types/chat.types';
-import { shouldShowDateSeparator } from '@/entities/Chat/model/lib/service/dateFormating/dateFormater';
-import { MessageBubble } from '../MessageBubble/MessageBubble';
-import DateSeparator from '../SystemMessages/ui/DateSeparator/DateSeparator';
-import { BubbleStatus } from '@/entities/Chat/model/lib/service/mapMessageStatus/mapMessageStatus';
-import StickyDateHeader from '../SystemMessages/ui/StickyDateHeader/StickyDateHeader';
+import { memo, useEffect, useRef, useState } from 'react';
 
-import cls from './MessagesList.module.scss';
+import { useGetMessagesQuery } from '@/shared/api/services/messagesApi/messagesApi';
 
-interface MessagesListProps {
-	messages?: ChatMessage[];
-	className?: string;
-	onMessageClick?: (id: string) => void;
-	currentUserId?: string;
+import { MessageBubble } from '@/entities/Chat/ui/MessageBubble/MessageBubble';
+import { Down } from '@icons/index';
+
+import styles from './MessagesList.module.scss';
+
+// ===== ТИПЫ =====
+
+// тип сообщения (локальный)
+interface Message {
+	id: string;
+	text: string;
+	time: number;
+	status: 'received' | 'sending' | 'unread' | 'read';
 }
 
-// Упрощённый тип элемента списка: только сообщения + сепараторы
-type MessageListItem =
-	| { type: 'message'; data: ChatMessage }
-	| { type: 'separator'; data: number; id: string };
+// тип сообщения с бэка
+interface MessageApi {
+	uid: string;
+	content: string;
+	from_me: boolean;
+	created_at: string;
+}
 
-export const MessagesList: React.FC<MessagesListProps> = ({
-	messages = [],
-	className = '',
-	onMessageClick,
-	currentUserId
-}) => {
+// тип ответа с пагинацией (добавлено по ревью)
+interface MessagesApiResponse {
+	results: MessageApi[];
+	next: string | null;
+	previous?: string | null;
+	count?: number;
+}
+
+// пропсы компонента messages
+interface MessagesProps {
+	userUid: string;
+	className: string;
+}
+
+// маппинг api -> локальная модель
+const mapMessage = (m: MessageApi): Message => ({
+	id: m.uid,
+	text: m.content,
+	time: new Date(m.created_at).getTime(),
+	status: m.from_me ? 'read' : 'received'
+});
+
+const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
+	// ===== ПОЛУЧЕНИЕ ДАННЫХ =====
+
+	// хук для получения сообщений через api
+	const { data, error, isLoading, refetch } = useGetMessagesQuery(
+		{ userUid },
+		{
+			// обновление каждые 4 секунды, если есть userUid
+			pollingInterval: userUid ? 4000 : 0,
+			// пропуск запроса если нет userUid
+			skip: !userUid
+		}
+	);
+
+	// ===== REFS =====
+
+	// реф для контейнера с сообщениями
 	const containerRef = useRef<HTMLDivElement>(null);
-	const messageRefs = useRef<Map<string, HTMLElement>>(new Map());
-	const separatorRefs = useRef<Map<string, HTMLElement>>(new Map());
 
-	const [activeDate, setActiveDate] = useState<Date | null>(null);
+	// реф для "нижней точки" скролла
+	const bottomRef = useRef<HTMLDivElement>(null);
 
-	const setMessageRef = useCallback((id: string, el: HTMLElement | null) => {
-		if (el) {
-			messageRefs.current.set(id, el);
-		} else {
-			messageRefs.current.delete(id);
-		}
-	}, []);
+	// реф для отслеживания позиции скролла (без лишних ререндеров)
+	const isAtBottomRef = useRef(true);
 
-	const setSeparatorRef = useCallback((id: string, el: HTMLElement | null) => {
-		if (el) {
-			separatorRefs.current.set(id, el);
-		} else {
-			separatorRefs.current.delete(id);
-		}
-	}, []);
+	// реф для AbortController (добавлено по ревью)
+	// нужен чтобы:
+	// 1. отменять предыдущие fetch-запросы
+	// 2. не обновлять state если компонент размонтирован
+	const abortControllerRef = useRef<AbortController | null>(null);
 
-	// Observer для sticky header (без изменений)
+	// ===== STATE =====
+
+	// состояние сообщений
+	const [messages, setMessages] = useState<Message[]>([]);
+
+	// ссылка на следующую страницу (pagination с бэка)
+	const [nextUrl, setNextUrl] = useState<string | null>(null);
+
+	// флаг загрузки старых сообщений (защита от дублей запросов)
+	const [isFetchingMore, setIsFetchingMore] = useState(false);
+
+	// состояние "пользователь внизу"
+	const [isAtBottom, setIsAtBottom] = useState(true);
+
+	// количество новых сообщений, когда пользователь не внизу
+	const [newCount, setNewCount] = useState(0);
+
+	// ===== ОБРАБОТКА ДАННЫХ С БЭКА =====
+
 	useEffect(() => {
-		const container = containerRef.current;
-		if (!container) {
+		if (!data) {
 			return;
 		}
 
-		const observer = new IntersectionObserver(
-			entries => {
-				const visible = entries
-					.filter(entry => entry.isIntersecting)
-					.sort((a, b) => {
-						const aTop =
-							a.boundingClientRect.top - container.getBoundingClientRect().top;
-						const bTop =
-							b.boundingClientRect.top - container.getBoundingClientRect().top;
-						return Math.abs(aTop - 20) - Math.abs(bTop - 20);
-					})[0];
+		// маппим данные в локальный формат
+		const mapped = data.results.map(mapMessage);
 
-				if (visible?.target) {
-					const dateStr = (visible.target as HTMLElement).dataset.date;
-					if (dateStr) {
-						setActiveDate(new Date(dateStr));
-					}
+		// сохраняем ссылку на следующую страницу
+		setNextUrl(data.next);
+
+		setMessages(prev => {
+			// первый рендер просто кладем все сообщения
+			if (!prev.length) {
+				return mapped;
+			}
+
+			// для быстрого сравнения id
+			const prevIds = new Set(prev.map(p => p.id));
+
+			// находим реально новые сообщения
+			const incoming = mapped.filter(m => !prevIds.has(m.id));
+
+			// если есть новые сообщения
+			if (incoming.length) {
+				// если пользователь не внизу увеличиваем счетчик
+				if (!isAtBottomRef.current) {
+					setNewCount(c => c + incoming.length);
 				}
-			},
-			{
-				root: container,
-				threshold: 0,
-				rootMargin: '-20px 0px -80% 0px'
-			}
-		);
 
-		separatorRefs.current.forEach(el => {
-			if (el) {
-				observer.observe(el);
+				// добавляем новые сообщения в конец
+				return [...prev, ...incoming];
 			}
+
+			return prev;
 		});
+	}, [data]);
 
-		return () => observer.disconnect();
-	}, [messages]);
+	// ===== СКРОЛЛ =====
 
-	//  Формируем список с сепараторами дат
-	const messagesWithSeparators = useMemo((): MessageListItem[] => {
-		if (!messages?.length) {
-			return [];
+	const handleScroll = () => {
+		const el = containerRef.current;
+		if (!el) {
+			return;
 		}
 
-		const result: MessageListItem[] = [];
+		const threshold = 50; // расстояние до низа
 
-		messages.forEach((message, index) => {
-			const prevMessage = index > 0 ? messages[index - 1] : undefined;
+		// проверяем "находимся ли внизу"
+		const isBottom =
+			el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
 
-			if (
-				shouldShowDateSeparator(message.created_at, prevMessage?.created_at)
-			) {
-				result.push({
-					type: 'separator',
-					data: message.created_at, // ✅ number
-					id: `separator-${message.created_at}`
-				});
-			}
+		isAtBottomRef.current = isBottom;
+		setIsAtBottom(isBottom);
 
-			result.push({ type: 'message', data: message });
-		});
+		// если внизу, сбрасываем счетчик новых сообщений
+		if (isBottom) {
+			setNewCount(0);
+		}
 
-		return result;
+		// если пользователь долистал вверх подгружаем старые сообщения
+		// добавлен guard чтобы не дергать loadMore слишком часто
+		if (el.scrollTop < 50 && !isFetchingMore) {
+			loadMore();
+		}
+	};
+
+	// ===== АВТОСКРОЛЛ ВНИЗ =====
+
+	useEffect(() => {
+		// скроллим вниз только если пользователь уже был внизу
+		if (isAtBottomRef.current) {
+			bottomRef.current?.scrollIntoView({
+				behavior: 'smooth'
+			});
+		}
 	}, [messages]);
 
-	// Определяем статус пузыря (received/sent/read)
-	const getBubbleStatus = useCallback(
-		(message: ChatMessage): BubbleStatus => {
-			if (!currentUserId) {
-				return 'received';
+	// ===== ПОДГРУЗКА СООБЩЕНИЙ (INFINITE SCROLL ВВЕРХ) =====
+
+	const loadMore = async () => {
+		// защита:
+		// - нет следующей страницы
+		// - уже идет загрузка
+		if (!nextUrl || isFetchingMore) {
+			return;
+		}
+
+		// отменяем предыдущий запрос (если пользователь быстро скроллит)
+		if (abortControllerRef.current) {
+			abortControllerRef.current.abort();
+		}
+
+		// создаем новый контроллер
+		abortControllerRef.current = new AbortController();
+
+		setIsFetchingMore(true);
+
+		const el = containerRef.current;
+
+		// сохраняем текущую высоту списка
+		const prevHeight = el?.scrollHeight;
+
+		try {
+			const res = await fetch(nextUrl, {
+				// передаем сигнал для возможности отмены
+				signal: abortControllerRef.current.signal
+			});
+
+			// обработка HTTP ошибок (добавлено по ревью)
+			if (!res.ok) {
+				throw new Error(`HTTP error! status: ${res.status}`);
 			}
 
-			const isOutgoing = message.from_user === currentUserId;
+			// типизируем ответ
+			const data: MessagesApiResponse = await res.json();
 
-			return isOutgoing ? 'sending' : 'received';
-		},
+			// маппим старые сообщения
+			const older: Message[] = data.results.map(mapMessage);
 
-		[currentUserId]
-	);
+			// обновляем ссылку на следующую страницу
+			setNextUrl(data.next);
 
-	return (
-		<div ref={containerRef} className={`${cls.messageList} ${className}`}>
-			<StickyDateHeader date={activeDate} />
+			// добавляем старые сообщения в начало
+			// защита от дублей (race-condition с polling)
+			setMessages(prev => {
+				const prevIds = new Set(prev.map(p => p.id));
+				const uniqueOlder = older.filter(m => !prevIds.has(m.id));
 
-			{messagesWithSeparators.map(item => {
-				if (item.type === 'separator') {
-					return (
-						<DateSeparator
-							key={item.id}
-							date={new Date(item.data)}
-							observerId={item.id}
-							ref={el => setSeparatorRef(item.id, el)}
-						/>
-					);
+				return [...uniqueOlder, ...prev];
+			});
+
+			// фиксируем позицию скролла
+			requestAnimationFrame(() => {
+				// prevHeight может быть 0 -> проверяем именно undefined
+				if (!el || prevHeight === undefined) {
+					return;
 				}
 
-				const message = item.data as ChatMessage;
-				const bubbleStatus = getBubbleStatus(message);
+				const newHeight = el.scrollHeight;
 
-				return (
-					<div
-						key={message.id}
-						ref={el => setMessageRef(message.id.toString(), el)}
-						data-date={new Date(message.created_at).toISOString()}
-					>
-						<MessageBubble
-							id={message.id.toString()}
-							time={message.created_at}
-							text={message.content}
-							status={bubbleStatus}
-							onClick={onMessageClick || (() => {})}
-							isGroupChat={false}
-							senderName=''
-							senderAvatar=''
-						/>
-					</div>
-				);
-			})}
+				// компенсируем разницу высоты
+				el.scrollTop = newHeight - prevHeight;
+			});
+		} catch (error) {
+			// игнорируем abort ошибки (это нормальное поведение)
+			if (error instanceof DOMException && error.name === 'AbortError') {
+				return;
+			}
+
+			// теперь ошибка не теряется
+			console.error('Failed to load older messages:', error);
+		} finally {
+			setIsFetchingMore(false);
+
+			// очищаем контроллер
+			abortControllerRef.current = null;
+		}
+	};
+
+	// очистка при размонтировании компонента
+	useEffect(() => {
+		return () => {
+			// отменяем незавершенный запрос
+			if (abortControllerRef.current) {
+				abortControllerRef.current.abort();
+			}
+		};
+	}, []);
+
+	// ===== РУЧНОЙ СКРОЛЛ ВНИЗ =====
+
+	const scrollToBottom = () => {
+		bottomRef.current?.scrollIntoView({
+			behavior: 'smooth'
+		});
+
+		setNewCount(0);
+	};
+
+	// ===== UI СОСТОЯНИЯ =====
+
+	// состояние загрузки
+	if (isLoading) {
+		return <div className={styles.emptyState}>Загрузка сообщений...</div>;
+	}
+
+	// состояние ошибки
+	if (error) {
+		return (
+			<div className={styles.emptyState}>
+				<p>Ошибка загрузки сообщений</p>
+				<button onClick={refetch}>Попробовать снова</button>
+			</div>
+		);
+	}
+
+	// ===== ОСНОВНОЙ РЕНДЕР =====
+
+	return (
+		<div className={`${styles.wrapper} ${className}`}>
+			<div
+				ref={containerRef}
+				onScroll={handleScroll}
+				className={styles.messages}
+			>
+				{messages.map(m => (
+					<MessageBubble
+						key={m.id}
+						id={m.id}
+						text={m.text}
+						time={m.time}
+						status={m.status}
+						onClick={() => {}}
+					/>
+				))}
+
+				{/* якорь для скролла вниз */}
+				<div ref={bottomRef} />
+			</div>
+
+			{/* кнопка для скролла вниз, если пользователь не внизу */}
+			{!isAtBottom && (
+				<button
+					className={styles.scrollButton}
+					onClick={scrollToBottom}
+					// accessibility улучшение (по ревью)
+					aria-label='Прокрутить к новым сообщениям'
+				>
+					<Down />
+					{/* показываем количество новых сообщений */}
+					{newCount > 0 && <span>({newCount})</span>}
+				</button>
+			)}
 		</div>
 	);
 };
 
-export default MessagesList;
+export const MessagesList = memo(MessagesListComponent);
