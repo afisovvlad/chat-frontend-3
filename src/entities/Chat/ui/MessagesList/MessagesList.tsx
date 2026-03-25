@@ -9,6 +9,8 @@ import { Down } from '@icons/index';
 
 import styles from './MessagesList.module.scss';
 
+// ===== ТИПЫ =====
+
 // тип сообщения (локальный)
 interface Message {
 	id: string;
@@ -17,12 +19,20 @@ interface Message {
 	status: 'received' | 'sending' | 'unread' | 'read';
 }
 
-// тип ответа с бэка (упрощенный)
+// тип сообщения с бэка
 interface MessageApi {
 	uid: string;
 	content: string;
 	from_me: boolean;
 	created_at: string;
+}
+
+// тип ответа с пагинацией (добавлено по ревью)
+interface MessagesApiResponse {
+	results: MessageApi[];
+	next: string | null;
+	previous?: string | null;
+	count?: number;
 }
 
 // пропсы компонента messages
@@ -62,6 +72,12 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 
 	// реф для отслеживания позиции скролла (без лишних ререндеров)
 	const isAtBottomRef = useRef(true);
+
+	// реф для AbortController (добавлено по ревью)
+	// нужен чтобы:
+	// 1. отменять предыдущие fetch-запросы
+	// 2. не обновлять state если компонент размонтирован
+	const abortControllerRef = useRef<AbortController | null>(null);
 
 	// ===== STATE =====
 
@@ -143,7 +159,8 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 		}
 
 		// если пользователь долистал вверх подгружаем старые сообщения
-		if (el.scrollTop < 50) {
+		// добавлен guard чтобы не дергать loadMore слишком часто
+		if (el.scrollTop < 50 && !isFetchingMore) {
 			loadMore();
 		}
 	};
@@ -169,6 +186,14 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 			return;
 		}
 
+		// отменяем предыдущий запрос если пользователь быстро скроллит
+		if (abortControllerRef.current) {
+			abortControllerRef.current.abort();
+		}
+
+		// создаем новый контроллер
+		abortControllerRef.current = new AbortController();
+
 		setIsFetchingMore(true);
 
 		const el = containerRef.current;
@@ -177,8 +202,18 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 		const prevHeight = el?.scrollHeight;
 
 		try {
-			const res = await fetch(nextUrl);
-			const data = await res.json();
+			const res = await fetch(nextUrl, {
+				// передаем сигнал для возможности отмены
+				signal: abortControllerRef.current.signal
+			});
+
+			// обработка HTTP ошибок
+			if (!res.ok) {
+				throw new Error(`HTTP error! status: ${res.status}`);
+			}
+
+			// типизируем ответ
+			const data: MessagesApiResponse = await res.json();
 
 			// маппим старые сообщения
 			const older: Message[] = data.results.map(mapMessage);
@@ -200,10 +235,28 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 				// компенсируем разницу высоты
 				el.scrollTop = newHeight - prevHeight;
 			});
+		} catch (error) {
+			// игнорируем abort ошибки тк это нормальное поведение
+			if (error instanceof DOMException && error.name === 'AbortError') {
+				return;
+			}
+
+			// ошибка не теряется
+			console.error('Failed to load older messages:', error);
 		} finally {
 			setIsFetchingMore(false);
 		}
 	};
+
+	// очистка при размонтировании компонента
+	useEffect(() => {
+		return () => {
+			// отменяем незавершенный запрос
+			if (abortControllerRef.current) {
+				abortControllerRef.current.abort();
+			}
+		};
+	}, []);
 
 	// ===== РУЧНОЙ СКРОЛЛ ВНИЗ =====
 
@@ -258,7 +311,11 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 
 			{/* кнопка для скролла вниз, если пользователь не внизу */}
 			{!isAtBottom && (
-				<button className={styles.scrollButton} onClick={scrollToBottom}>
+				<button
+					className={styles.scrollButton}
+					onClick={scrollToBottom}
+					aria-label='Прокрутить к новым сообщениям'
+				>
 					<Down />
 					{/* показываем количество новых сообщений */}
 					{newCount > 0 && <span>({newCount})</span>}
