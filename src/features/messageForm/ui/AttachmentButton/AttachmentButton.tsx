@@ -4,7 +4,7 @@ import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Paperclip } from '@icons/index';
 import { useState } from 'react';
 import { VoiceFile } from '../../model/types/types';
-import styles from './AttachmentButton.module.scss';
+import cls from './AttachmentButton.module.scss';
 
 interface AttachmentButtonProps {
 	setFiles: (file: VoiceFile[]) => void;
@@ -16,11 +16,11 @@ export function AttachmentButton({ setFiles }: AttachmentButtonProps) {
 	return (
 		<Button
 			color={ButtonColor.TRANSPARENT}
-			className={styles.button}
+			className={cls.button}
 			aria-label='Выбрать файл'
 			onClick={() => {}}
 		>
-			<Paperclip className={styles.icon} />
+			<Paperclip className={cls.icon} />
 		</Button>
 	);
 }

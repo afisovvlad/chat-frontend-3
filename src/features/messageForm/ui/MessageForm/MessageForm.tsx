@@ -11,7 +11,7 @@ import { KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { MessageFormTypes } from '../../model/types/types';
 import { EmojiPickerComponent } from '../EmojiPickerComponent/EmojiPickerComponent';
-import styles from './MessageForm.module.scss';
+import cls from './MessageForm.module.scss';
 
 interface MessageFormProps {
 	onSendContent: (message: string) => void;
@@ -100,12 +100,12 @@ export function MessageForm({
 		<Form<MessageFormTypes>
 			methods={methods}
 			onSubmit={onSubmit}
-			className={styles.messageForm}
+			className={cls.messageForm}
 		>
-			<div className={styles.textareaWrapper}>
+			<div className={cls.textareaWrapper}>
 				<Textarea
 					name={'message'}
-					classNameTextarea={styles.textarea}
+					classNameTextarea={cls.textarea}
 					height={'21px'}
 					onKeyDown={handleKeyDown}
 					textareaRef={textareaRef}
@@ -117,7 +117,7 @@ export function MessageForm({
 				<Button
 					btnType={ButtonType.SUBMIT}
 					color={ButtonColor.TRANSPARENT}
-					className={styles.button}
+					className={cls.button}
 					aria-label='Отправить сообщение'
 				>
 					<SendIcon width={36} height={36} />

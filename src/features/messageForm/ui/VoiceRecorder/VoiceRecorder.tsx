@@ -4,7 +4,7 @@ import { Microphone, MicrophoneFilled } from '@icons/index';
 import { useEffect } from 'react';
 import { useVoiceRecorder } from '../../model/hooks/useVoiceRecorder';
 import { VoiceFile } from '../../model/types/types';
-import styles from './VoiceRecorder.module.scss';
+import cls from './VoiceRecorder.module.scss';
 
 type Props = {
 	onSendVoice: (file: VoiceFile) => void;
@@ -51,13 +51,13 @@ export function VoiceRecorder({ onSendVoice }: Props) {
 		<button
 			type='button'
 			onPointerDown={handlePointerDown}
-			className={styles.button}
+			className={cls.button}
 			aria-label='Начать запись голосового сообщения'
 		>
 			{isRecording ? (
-				<MicrophoneFilled className={styles.icon} />
+				<MicrophoneFilled className={cls.icon} />
 			) : (
-				<Microphone className={styles.icon} />
+				<Microphone className={cls.icon} />
 			)}
 		</button>
 	);

@@ -5,7 +5,7 @@ import { sendMessage } from '../../model/lib/sendMessage';
 import { VoiceFile } from '../../model/types/types';
 import { AttachmentButton } from '../AttachmentButton/AttachmentButton';
 import { MessageForm } from '../MessageForm/MessageForm';
-import styles from './MessageFormComponent.module.scss';
+import cls from './MessageFormComponent.module.scss';
 
 export function MessageFormComponent({ userUid }: { userUid: string }) {
 	const [files, setFiles] = useState<VoiceFile[]>([]);
@@ -40,7 +40,7 @@ export function MessageFormComponent({ userUid }: { userUid: string }) {
 	// };
 
 	return (
-		<section className={styles.messageFormComponent}>
+		<section className={cls.messageFormComponent}>
 			<AttachmentButton setFiles={setFiles} />
 			<MessageForm
 				onSendContent={handleSend}

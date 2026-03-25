@@ -5,7 +5,7 @@ import { Button, ButtonColor } from '@/shared/ui/Button';
 import { Smile } from '@icons/index';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import styles from './EmojiPickerComponent.module.scss';
+import cls from './EmojiPickerComponent.module.scss';
 
 const Picker = dynamic(() => import('emoji-picker-react'), {
 	ssr: false // критически важно для Next.js!
@@ -27,7 +27,7 @@ export function EmojiPickerComponent({
 		<div style={{ position: 'relative' }}>
 			<Button
 				color={ButtonColor.TRANSPARENT}
-				className={classNames(styles.button, {}, [parentClass])}
+				className={classNames(cls.button, {}, [parentClass])}
 				aria-label='Прикрепить файл'
 				onClick={() => setShowPicker(!showPicker)}
 			>
@@ -43,7 +43,7 @@ export function EmojiPickerComponent({
 						onEmojiSelect(emojiData.emoji);
 						setShowPicker(false);
 					}}
-					className={styles.picker}
+					className={cls.picker}
 				/>
 			)}
 		</div>
