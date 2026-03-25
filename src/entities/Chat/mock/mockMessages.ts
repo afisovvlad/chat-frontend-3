@@ -15,17 +15,19 @@ import {
 const NOW = Date.now();
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
 
 // Пользователи
 export const USERS = {
 	ME: { id: 'user-me', name: 'Вы' },
 	ANNA: { id: 'user-anna', name: 'Анна Петрова' },
 	VLAD: { id: 'user-vlad', name: 'Влад Ляшев' },
-	SERGEY: { id: 'user-sergey', name: 'Сергей Евтушенко' }
+	SERGEY: { id: 'user-sergey', name: 'Сергей Евтушенко' },
+	OLEG: { id: 'user-oleg', name: 'Олег Смирнов' }
 } as const;
 
 // ============================================================================
-// ХЕЛПЕРЫ (минимум кода, максимум пользы)
+// ХЕЛПЕРЫ
 // ============================================================================
 
 const textMsg = (
@@ -63,451 +65,712 @@ const systemMsg = (
 });
 
 // ============================================================================
-// МОКОВЫЕ СООБЩЕНИЯ (~40 шт, все сценарии)
+// ГЕНЕРАТОР МОКОВЫЕ ДАННЫХ (~120 сообщений, 14 дней)
 // ============================================================================
 
 export const mockMessages: Message[] = [
-	// 📅 Разделитель: Сегодня
-	systemMsg('sys-today', -24 * HOUR, SystemEventType.DATE_SEPARATOR, {
-		date: new Date(NOW - 24 * HOUR),
-		label: 'Сегодня'
+	// ========================================================================
+	// 📅 ДЕНЬ 0: СЕГОДНЯ (0 дней назад)
+	// ========================================================================
+
+	// Разделитель "Сегодня"
+	...generateDayMessages({
+		dayOffset: 0,
+		label: 'Сегодня',
+		messages: [
+			{
+				offset: -15 * MINUTE,
+				from: USERS.ANNA,
+				text: 'Всем доброе утро! ☀️',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -12 * MINUTE,
+				from: USERS.ME,
+				text: 'Доброе! Кофе уже пью ☕',
+				status: MessageStatus.READ
+			},
+			{
+				offset: -10 * MINUTE,
+				from: USERS.VLAD,
+				text: 'Привет! Кто сегодня на стендапе?',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -8 * MINUTE,
+				from: USERS.ME,
+				text: 'Я буду, подключусь в 10:00',
+				status: MessageStatus.DELIVERED
+			},
+			{
+				offset: -5 * MINUTE,
+				from: USERS.SERGEY,
+				text: 'Я тоже, только доделываю задачу',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -2 * MINUTE,
+				from: USERS.ANNA,
+				text: 'Отлично, тогда созвон как обычно',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -1 * MINUTE,
+				from: USERS.ME,
+				text: '👍',
+				status: MessageStatus.READ
+			}
+		]
 	}),
 
-	// 🔹 Входящие сообщения (статус: RECEIVED)
-	textMsg(
-		'm1',
-		-23 * HOUR + 5 * MINUTE,
-		'Привет! Как дела?',
-		USERS.ANNA.id,
-		USERS.ANNA.name,
-		MessageStatus.RECEIVED
-	),
-	textMsg(
-		'm2',
-		-23 * HOUR + 7 * MINUTE,
-		'Работаешь сегодня?',
-		USERS.ANNA.id,
-		USERS.ANNA.name,
-		MessageStatus.RECEIVED
-	),
+	// ========================================================================
+	// 📅 ДЕНЬ 1: ВЧЕРА (-1 день)
+	// ========================================================================
 
-	// 🔹 Исходящие: разные статусы
-	textMsg(
-		'm3',
-		-23 * HOUR + 10 * MINUTE,
-		'Привет! Да, работаю 👋',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.READ
-	),
-	textMsg(
-		'm4',
-		-23 * HOUR + 12 * MINUTE,
-		'Заканчиваю отчёт, потом свободен',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.DELIVERED
-	),
-	textMsg(
-		'm5',
-		-23 * HOUR + 14 * MINUTE,
-		'Это сообщение ещё летит...',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.SENDING
-	),
+	...generateDayMessages({
+		dayOffset: -1,
+		label: 'Вчера',
+		messages: [
+			{
+				offset: -23 * HOUR + 30 * MINUTE,
+				from: USERS.VLAD,
+				text: 'Кто видел последний коммит?',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -22 * HOUR + 45 * MINUTE,
+				from: USERS.ME,
+				text: 'Я пушил фикс баги с авторизацией',
+				status: MessageStatus.READ
+			},
+			{
+				offset: -22 * HOUR + 30 * MINUTE,
+				from: USERS.ANNA,
+				text: 'Спасибо! Тестировала — всё ок ✅',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -21 * HOUR + 15 * MINUTE,
+				from: USERS.SERGEY,
+				text: 'Коллеги, не забудьте про деплой вечером',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -20 * HOUR + 50 * MINUTE,
+				from: USERS.ME,
+				text: 'Помню, подготовлю релиз-ноты',
+				status: MessageStatus.DELIVERED
+			},
+			{
+				offset: -19 * HOUR + 30 * MINUTE,
+				from: USERS.OLEG,
+				text: 'Я тоже помогу с тестами',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -18 * HOUR + 10 * MINUTE,
+				from: USERS.ANNA,
+				text: 'Супер, тогда все готовы 🚀',
+				status: MessageStatus.RECEIVED
+			}
+		]
+	}),
 
-	// 🔹 Входящий с ответом (реплаем)
-	textMsg(
-		'm6',
-		-23 * HOUR + 20 * MINUTE,
-		'Понял, жду тогда!',
-		USERS.ANNA.id,
-		USERS.ANNA.name,
-		MessageStatus.RECEIVED,
-		{
-			has_replied_message: true,
-			replyTo: { id: 'm4', text: 'Заканчиваю отчёт...' }
-		}
-	),
+	// ========================================================================
+	// 📅 ДЕНЬ 2: 2 дня назад
+	// ========================================================================
 
-	// 🔹 Исходящее с пересылкой
-	textMsg(
-		'm7',
-		-23 * HOUR + 25 * MINUTE,
-		'Смотри, что нашёл 👇',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.READ,
-		{
-			has_forwarded_message: true,
-			forwardedFrom: { chatName: 'Рабочий чат', author: 'Максим' }
-		}
-	),
+	...generateDayMessages({
+		dayOffset: -2,
+		label: '23 марта',
+		messages: [
+			{
+				offset: -2 * DAY + 20 * HOUR,
+				from: USERS.ME,
+				text: 'Начал работу над новым модулем',
+				status: MessageStatus.READ
+			},
+			{
+				offset: -2 * DAY + 19 * HOUR,
+				from: USERS.ANNA,
+				text: 'Какой именно?',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -2 * DAY + 18 * HOUR + 30 * MINUTE,
+				from: USERS.ME,
+				text: 'Система уведомлений — как раз то, что обсуждали',
+				status: MessageStatus.DELIVERED
+			},
+			{
+				offset: -2 * DAY + 17 * HOUR,
+				from: USERS.VLAD,
+				text: 'О, круто! Нужна помощь с бэкендом?',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -2 * DAY + 16 * HOUR + 15 * MINUTE,
+				from: USERS.ME,
+				text: 'Пока справляюсь, но если что — напишу',
+				status: MessageStatus.READ
+			},
+			{
+				offset: -2 * DAY + 14 * HOUR,
+				from: USERS.SERGEY,
+				text: 'Скинь ссылку на задачу в трекере',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -2 * DAY + 13 * HOUR + 45 * MINUTE,
+				from: USERS.ME,
+				text: 'https://tracker.local/task/12345',
+				status: MessageStatus.READ
+			}
+		]
+	}),
 
-	// 🔹 Сообщение с файлом
-	textMsg(
-		'm8',
-		-22 * HOUR + 30 * MINUTE,
-		'📎 Отчёт_январь_2024.pdf',
-		USERS.SERGEY.id,
-		USERS.SERGEY.name,
-		MessageStatus.RECEIVED,
-		{
-			files_summary: { types: ['pdf'], count: 1 }
-		}
-	),
+	// ========================================================================
+	// 📅 ДЕНЬ 3: 3 дня назад
+	// ========================================================================
 
-	// 🔹 Редактированное сообщение
-	textMsg(
-		'm9',
-		-22 * HOUR + 40 * MINUTE,
-		'Встреча перенесена на 16:00 ⏰',
-		USERS.ANNA.id,
-		USERS.ANNA.name,
-		MessageStatus.READ,
-		{
-			isEdited: true
-		}
-	),
+	...generateDayMessages({
+		dayOffset: -3,
+		label: '22 марта',
+		messages: [
+			{
+				offset: -3 * DAY + 22 * HOUR,
+				from: USERS.ANNA,
+				text: 'Ребята, у нас дедлайн по проекту Альфа',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -3 * DAY + 21 * HOUR + 30 * MINUTE,
+				from: USERS.ME,
+				text: 'Понял, сколько времени осталось?',
+				status: MessageStatus.DELIVERED
+			},
+			{
+				offset: -3 * DAY + 20 * HOUR,
+				from: USERS.ANNA,
+				text: 'До конца недели, так что есть время',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -3 * DAY + 19 * HOUR + 15 * MINUTE,
+				from: USERS.VLAD,
+				text: 'Я возьму на себя интеграцию с API',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -3 * DAY + 18 * HOUR,
+				from: USERS.SERGEY,
+				text: 'А я тесты напишу',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -3 * DAY + 17 * HOUR + 30 * MINUTE,
+				from: USERS.OLEG,
+				text: 'Мне можно верстку поручить',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -3 * DAY + 16 * HOUR,
+				from: USERS.ME,
+				text: 'Отлично, распределили задачи 👍',
+				status: MessageStatus.READ
+			}
+		]
+	}),
 
-	// 🔹 Ошибка отправки
-	textMsg(
-		'm10',
-		-22 * HOUR + 45 * MINUTE,
-		'Это не ушло из-за сети ⚠️',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.ERROR
-	),
+	// ========================================================================
+	// 📅 ДЕНЬ 4: 4 дня назад
+	// ========================================================================
 
-	// 👥 Системные события
+	...generateDayMessages({
+		dayOffset: -4,
+		label: '21 марта',
+		messages: [
+			{
+				offset: -4 * DAY + 23 * HOUR,
+				from: USERS.VLAD,
+				text: 'Кто-нибудь проверял новый дизайн?',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -4 * DAY + 22 * HOUR + 15 * MINUTE,
+				from: USERS.ANNA,
+				text: 'Да, выглядит отлично! Особенно тёмная тема',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -4 * DAY + 21 * HOUR,
+				from: USERS.ME,
+				text: 'Согласен, но есть пара мелких багов',
+				status: MessageStatus.DELIVERED
+			},
+			{
+				offset: -4 * DAY + 20 * HOUR + 30 * MINUTE,
+				from: USERS.SERGEY,
+				text: 'Какие именно?',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -4 * DAY + 19 * HOUR + 45 * MINUTE,
+				from: USERS.ME,
+				text: 'Кнопка не центрируется на мобильных',
+				status: MessageStatus.READ
+			},
+			{
+				offset: -4 * DAY + 18 * HOUR + 20 * MINUTE,
+				from: USERS.OLEG,
+				text: 'Поправлю в течение часа',
+				status: MessageStatus.RECEIVED
+			}
+		]
+	}),
+
+	// ========================================================================
+	// 📅 ДЕНЬ 5: 5 дней назад
+	// ========================================================================
+
+	...generateDayMessages({
+		dayOffset: -5,
+		label: '20 марта',
+		messages: [
+			{
+				offset: -5 * DAY + 20 * HOUR,
+				from: USERS.ANNA,
+				text: 'Провели ретроспективу спринта',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -5 * DAY + 19 * HOUR + 30 * MINUTE,
+				from: USERS.ME,
+				text: 'Что решили улучшить?',
+				status: MessageStatus.DELIVERED
+			},
+			{
+				offset: -5 * DAY + 18 * HOUR + 45 * MINUTE,
+				from: USERS.ANNA,
+				text: 'Больше код-ревью и меньше митингов 😄',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -5 * DAY + 17 * HOUR + 20 * MINUTE,
+				from: USERS.VLAD,
+				text: 'Поддерживаю! Митинги съедают время',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -5 * DAY + 16 * HOUR,
+				from: USERS.SERGEY,
+				text: 'А ещё автоматизировать деплой',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -5 * DAY + 15 * HOUR + 10 * MINUTE,
+				from: USERS.ME,
+				text: 'Запишу в бэклог',
+				status: MessageStatus.READ
+			}
+		]
+	}),
+
+	// ========================================================================
+	// 📅 ДЕНЬ 6: 6 дней назад
+	// ========================================================================
+
+	...generateDayMessages({
+		dayOffset: -6,
+		label: '19 марта',
+		messages: [
+			{
+				offset: -6 * DAY + 22 * HOUR + 30 * MINUTE,
+				from: USERS.OLEG,
+				text: 'Задеплоили новую версию на стейдж',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -6 * DAY + 21 * HOUR + 45 * MINUTE,
+				from: USERS.ME,
+				text: 'Проверяю, пока всё стабильно',
+				status: MessageStatus.DELIVERED
+			},
+			{
+				offset: -6 * DAY + 20 * HOUR + 20 * MINUTE,
+				from: USERS.ANNA,
+				text: 'Отлично, тогда завтра на прод',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -6 * DAY + 19 * HOUR,
+				from: USERS.VLAD,
+				text: 'Нужно ещё обновить документацию',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -6 * DAY + 18 * HOUR + 15 * MINUTE,
+				from: USERS.SERGEY,
+				text: 'Я займусь этим после обеда',
+				status: MessageStatus.RECEIVED
+			}
+		]
+	}),
+
+	// ========================================================================
+	// 📅 ДЕНЬ 7: Неделя назад
+	// ========================================================================
+
+	...generateDayMessages({
+		dayOffset: -7,
+		label: '18 марта',
+		messages: [
+			{
+				offset: -7 * DAY + 23 * HOUR,
+				from: USERS.ME,
+				text: 'Неделя пролетела быстро! 🚀',
+				status: MessageStatus.READ
+			},
+			{
+				offset: -7 * DAY + 22 * HOUR + 15 * MINUTE,
+				from: USERS.ANNA,
+				text: 'Да, но мы много успели',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -7 * DAY + 21 * HOUR + 30 * MINUTE,
+				from: USERS.VLAD,
+				text: 'Следующая неделя будет ещё продуктивнее',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -7 * DAY + 20 * HOUR + 45 * MINUTE,
+				from: USERS.SERGEY,
+				text: 'Главное — не выгореть 😅',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -7 * DAY + 19 * HOUR + 20 * MINUTE,
+				from: USERS.OLEG,
+				text: 'Баланс работа/отдых — наше всё',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -7 * DAY + 18 * HOUR,
+				from: USERS.ME,
+				text: 'Согласен на 100% 💯',
+				status: MessageStatus.READ
+			}
+		]
+	}),
+
+	// ========================================================================
+	// 📅 ДЕНЬ 8-14: Прошлые дни (по 3-4 сообщения для теста длинного скролла)
+	// ========================================================================
+
+	...generateDayMessages({
+		dayOffset: -8,
+		label: '17 марта',
+		messages: [
+			{
+				offset: -8 * DAY + 20 * HOUR,
+				from: USERS.ANNA,
+				text: 'Планируем следующий спринт',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -8 * DAY + 19 * HOUR,
+				from: USERS.ME,
+				text: 'У меня есть пара идей для улучшения',
+				status: MessageStatus.DELIVERED
+			},
+			{
+				offset: -8 * DAY + 18 * HOUR,
+				from: USERS.VLAD,
+				text: 'Расскажи на планировании',
+				status: MessageStatus.RECEIVED
+			}
+		]
+	}),
+
+	...generateDayMessages({
+		dayOffset: -9,
+		label: '16 марта',
+		messages: [
+			{
+				offset: -9 * DAY + 21 * HOUR,
+				from: USERS.SERGEY,
+				text: 'Написал тесты для нового функционала',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -9 * DAY + 20 * HOUR + 30 * MINUTE,
+				from: USERS.ME,
+				text: 'Супер, покрытие выросло?',
+				status: MessageStatus.READ
+			},
+			{
+				offset: -9 * DAY + 19 * HOUR + 45 * MINUTE,
+				from: USERS.SERGEY,
+				text: 'С 78% до 85% 📈',
+				status: MessageStatus.RECEIVED
+			}
+		]
+	}),
+
+	...generateDayMessages({
+		dayOffset: -10,
+		label: '15 марта',
+		messages: [
+			{
+				offset: -10 * DAY + 22 * HOUR,
+				from: USERS.OLEG,
+				text: 'Обновил зависимости в проекте',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -10 * DAY + 21 * HOUR + 15 * MINUTE,
+				from: USERS.ME,
+				text: 'Были брейкинг-ченджи?',
+				status: MessageStatus.DELIVERED
+			},
+			{
+				offset: -10 * DAY + 20 * HOUR + 30 * MINUTE,
+				from: USERS.OLEG,
+				text: 'Нет, всё совместимо ✅',
+				status: MessageStatus.RECEIVED
+			}
+		]
+	}),
+
+	...generateDayMessages({
+		dayOffset: -11,
+		label: '14 марта',
+		messages: [
+			{
+				offset: -11 * DAY + 23 * HOUR,
+				from: USERS.ANNA,
+				text: 'Клиент доволен демо!',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -11 * DAY + 22 * HOUR + 20 * MINUTE,
+				from: USERS.ME,
+				text: 'Ура! 🎉 Что сказали?',
+				status: MessageStatus.READ
+			},
+			{
+				offset: -11 * DAY + 21 * HOUR + 40 * MINUTE,
+				from: USERS.ANNA,
+				text: 'Хотят запустить в прод на следующей неделе',
+				status: MessageStatus.RECEIVED
+			}
+		]
+	}),
+
+	...generateDayMessages({
+		dayOffset: -12,
+		label: '13 марта',
+		messages: [
+			{
+				offset: -12 * DAY + 20 * HOUR,
+				from: USERS.VLAD,
+				text: 'Оптимизировал загрузку аватарок',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -12 * DAY + 19 * HOUR + 30 * MINUTE,
+				from: USERS.ME,
+				text: 'Насколько быстрее стало?',
+				status: MessageStatus.DELIVERED
+			},
+			{
+				offset: -12 * DAY + 18 * HOUR + 45 * MINUTE,
+				from: USERS.VLAD,
+				text: 'На 40% меньше времени загрузки 🚀',
+				status: MessageStatus.RECEIVED
+			}
+		]
+	}),
+
+	...generateDayMessages({
+		dayOffset: -13,
+		label: '12 марта',
+		messages: [
+			{
+				offset: -13 * DAY + 21 * HOUR,
+				from: USERS.SERGEY,
+				text: 'Нашёл и пофиксил утечку памяти',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -13 * DAY + 20 * HOUR + 15 * MINUTE,
+				from: USERS.ME,
+				text: 'Отличная работа! 👏',
+				status: MessageStatus.READ
+			},
+			{
+				offset: -13 * DAY + 19 * HOUR + 30 * MINUTE,
+				from: USERS.SERGEY,
+				text: 'Теперь приложение стабильнее работает',
+				status: MessageStatus.RECEIVED
+			}
+		]
+	}),
+
+	...generateDayMessages({
+		dayOffset: -14,
+		label: '11 марта',
+		// Системное событие в начале дня
+		systemFirst: systemMsg(
+			'sys-old-start',
+			-14 * DAY + 23 * HOUR + 30 * MINUTE,
+			SystemEventType.CHAT_CREATED,
+			{
+				chatId: 'chat-test-001',
+				name: 'Тестовый чат',
+				ownerId: USERS.ME.id,
+				ownerFullName: USERS.ME.name
+			}
+		),
+		messages: [
+			{
+				offset: -14 * DAY + 22 * HOUR,
+				from: USERS.ME,
+				text: 'Создал тестовый чат для отладки',
+				status: MessageStatus.READ
+			},
+			{
+				offset: -14 * DAY + 21 * HOUR + 30 * MINUTE,
+				from: USERS.ANNA,
+				text: 'Вижу, спасибо!',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -14 * DAY + 20 * HOUR + 45 * MINUTE,
+				from: USERS.VLAD,
+				text: 'Буду тестировать скролл здесь',
+				status: MessageStatus.RECEIVED
+			},
+			{
+				offset: -14 * DAY + 19 * HOUR + 20 * MINUTE,
+				from: USERS.ME,
+				text: 'Отлично, пиши если найдёшь баги',
+				status: MessageStatus.DELIVERED
+			}
+		]
+	}),
+
+	// ========================================================================
+	// 🔹 ДОПОЛНИТЕЛЬНЫЕ СИСТЕМНЫЕ СОБЫТИЯ (разбросаны по времени)
+	// ========================================================================
+
+	// Приглашение пользователя
 	systemMsg(
-		'sys-join',
-		-22 * HOUR + 50 * MINUTE,
+		'sys-invite-1',
+		-3 * DAY + 15 * HOUR,
+		SystemEventType.MEMBER_INVITED,
+		{
+			inviterId: USERS.ANNA.id,
+			inviterName: USERS.ANNA.name,
+			invitedUserId: USERS.OLEG.id,
+			invitedUserName: USERS.OLEG.name
+		}
+	),
+
+	// Пользователь покинул чат (потом вернулся)
+	systemMsg('sys-left-1', -5 * DAY + 10 * HOUR, SystemEventType.MEMBER_LEFT, {
+		userId: USERS.VLAD.id,
+		userName: USERS.VLAD.name
+	}),
+	systemMsg(
+		'sys-join-2',
+		-5 * DAY + 10 * HOUR + 30 * MINUTE,
 		SystemEventType.MEMBER_JOINED,
 		{
 			userId: USERS.VLAD.id,
 			userName: USERS.VLAD.name,
-			joinType: 'invited',
-			inviterId: USERS.ANNA.id,
-			inviterName: USERS.ANNA.name
+			joinType: 'self'
 		}
 	),
 
-	textMsg(
-		'm11',
-		-22 * HOUR + 52 * MINUTE,
-		'Всем привет! 👋',
-		USERS.VLAD.id,
-		USERS.VLAD.name,
-		MessageStatus.RECEIVED
-	),
-
-	// 🔹 Групповые сообщения (для теста аватарок)
-	textMsg(
-		'm12',
-		-21 * HOUR,
-		'Кто будет на митинге?',
-		USERS.ANNA.id,
-		USERS.ANNA.name,
-		MessageStatus.RECEIVED
-	),
-	textMsg(
-		'm13',
-		-21 * HOUR + 2 * MINUTE,
-		'Я буду',
-		USERS.VLAD.id,
-		USERS.VLAD.name,
-		MessageStatus.RECEIVED
-	),
-	textMsg(
-		'm14',
-		-21 * HOUR + 3 * MINUTE,
-		'Тоже подключусь',
-		USERS.SERGEY.id,
-		USERS.SERGEY.name,
-		MessageStatus.RECEIVED
-	),
-	textMsg(
-		'm15',
-		-21 * HOUR + 4 * MINUTE,
-		'Ок, созвон в 15:00',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.READ
-	),
-
-	// 🔹 Длинные сообщения (тест переносов)
-	textMsg(
-		'm16',
-		-20 * HOUR,
-		'Коллеги, напоминаю повестку:\n' +
-			'1. Статус по задачам\n' +
-			'2. Блокеры и риски\n' +
-			'3. План на неделю\n' +
-			'4. Вопросы\n\n' +
-			'Подготовьте, пожалуйста, короткие апдейты. 📋',
-		USERS.ANNA.id,
-		USERS.ANNA.name,
-		MessageStatus.RECEIVED
-	),
-
-	// 🔹 Эмодзи и спецсимволы
-	textMsg(
-		'm17',
-		-19 * HOUR,
-		'Тест: 🔥✅⚠️📎 "кавычки" \'апострофы\' & <tags>',
-		USERS.VLAD.id,
-		USERS.VLAD.name,
-		MessageStatus.RECEIVED
-	),
-
-	// 📅 Разделитель: Вчера
-	systemMsg('sys-yesterday', -18 * HOUR, SystemEventType.DATE_SEPARATOR, {
-		date: new Date(NOW - 18 * HOUR),
-		label: 'Вчера'
-	}),
-
-	// 🔹 Сообщения "вчера"
-	textMsg(
-		'm18',
-		-18 * HOUR + 2 * HOUR,
-		'Доброе утро! Начнём?',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.READ
-	),
-	textMsg(
-		'm19',
-		-18 * HOUR + 2 * HOUR + 5 * MINUTE,
-		'Доброе! Да, я готов',
-		USERS.ANNA.id,
-		USERS.ANNA.name,
-		MessageStatus.RECEIVED
-	),
-
-	// 🔹 Цепочка ответов
-	textMsg(
-		'm20',
-		-18 * HOUR + 3 * HOUR,
-		'Нашёл баг в модуле авторизации',
-		USERS.SERGEY.id,
-		USERS.SERGEY.name,
-		MessageStatus.RECEIVED,
-		{
-			has_replied_message: true
-		}
-	),
-	textMsg(
-		'm21',
-		-18 * HOUR + 3 * HOUR + 2 * MINUTE,
-		'Какой именно? Скинь лог',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.DELIVERED
-	),
-	textMsg(
-		'm22',
-		-18 * HOUR + 3 * HOUR + 5 * MINUTE,
-		'📎 error_log.txt',
-		USERS.SERGEY.id,
-		USERS.SERGEY.name,
-		MessageStatus.RECEIVED,
-		{
-			files_summary: { types: ['txt'], count: 1 }
-		}
-	),
-
-	// 🔹 Закреплённое сообщение (системное)
-	systemMsg('sys-pin', -17 * HOUR, SystemEventType.MESSAGE_PINNED, {
-		messageId: 'm16',
+	// Закрепление сообщения
+	systemMsg('sys-pin-1', -2 * DAY + 12 * HOUR, SystemEventType.MESSAGE_PINNED, {
+		messageId: 'm-important',
 		pinnedByUserId: USERS.ANNA.id,
 		pinnedByUserName: USERS.ANNA.name,
-		messageContent: 'Коллеги, напоминаю повестку...'
+		messageContent: 'Важное напоминание о дедлайне!'
 	}),
 
-	// 🔹 Ещё входящие
-	textMsg(
-		'm23',
-		-16 * HOUR,
-		'Обновил документацию в Confluence',
-		USERS.VLAD.id,
-		USERS.VLAD.name,
-		MessageStatus.RECEIVED
-	),
-	textMsg(
-		'm24',
-		-16 * HOUR + 10 * MINUTE,
-		'Спасибо, посмотрю после обеда',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.SENT
-	),
-
-	// 📅 Разделитель: Прошлая дата (с годом)
-	systemMsg('sys-old', -7 * 24 * HOUR, SystemEventType.DATE_SEPARATOR, {
-		date: new Date(NOW - 7 * 24 * HOUR),
-		label: '11 января 2024'
-	}),
-
-	// 🔹 Старые сообщения
-	textMsg(
-		'm25',
-		-7 * 24 * HOUR + 5 * HOUR,
-		'Помните, обсуждали рефакторинг?',
-		USERS.ANNA.id,
-		USERS.ANNA.name,
-		MessageStatus.READ
-	),
-	textMsg(
-		'm26',
-		-7 * 24 * HOUR + 6 * HOUR,
-		'Да, начнём на следующей неделе',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.READ
-	),
-
-	// 🔹 Разные статусы для теста индикаторов
-	textMsg(
-		'm27',
-		-5 * HOUR,
-		'Статус: RECEIVED',
-		USERS.ANNA.id,
-		USERS.ANNA.name,
-		MessageStatus.RECEIVED
-	),
-	textMsg(
-		'm28',
-		-4 * HOUR + 50 * MINUTE,
-		'Статус: SENDING',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.SENDING
-	),
-	textMsg(
-		'm29',
-		-4 * HOUR + 40 * MINUTE,
-		'Статус: SENT',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.SENT
-	),
-	textMsg(
-		'm30',
-		-4 * HOUR + 30 * MINUTE,
-		'Статус: DELIVERED',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.DELIVERED
-	),
-	textMsg(
-		'm31',
-		-4 * HOUR + 20 * MINUTE,
-		'Статус: READ',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.READ
-	),
-	textMsg(
-		'm32',
-		-4 * HOUR + 10 * MINUTE,
-		'Статус: ERROR',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.ERROR
-	),
-
-	// 🔹 Сообщения с файлами разных типов
-	textMsg(
-		'm33',
-		-3 * HOUR,
-		'📎 image.png',
-		USERS.VLAD.id,
-		USERS.VLAD.name,
-		MessageStatus.RECEIVED,
-		{
-			files_summary: { types: ['image/png'], count: 1 }
-		}
-	),
-	textMsg(
-		'm34',
-		-2 * HOUR + 50 * MINUTE,
-		'📎 video.mp4, doc.pdf',
-		USERS.SERGEY.id,
-		USERS.SERGEY.name,
-		MessageStatus.RECEIVED,
-		{
-			files_summary: { types: ['video/mp4', 'application/pdf'], count: 2 }
-		}
-	),
-
-	// 🔹 Короткие / пустые / спец. случаи
-	textMsg(
-		'm35',
-		-2 * HOUR,
-		'👍',
-		USERS.ANNA.id,
-		USERS.ANNA.name,
-		MessageStatus.RECEIVED
-	),
-	textMsg(
-		'm36',
-		-1 * HOUR + 55 * MINUTE,
-		'...',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.DELIVERED
-	),
-
-	// 🔹 Системные: изменение названия чата
+	// Изменение названия чата
 	systemMsg(
-		'sys-rename',
-		-1 * HOUR + 30 * MINUTE,
+		'sys-rename-1',
+		-6 * DAY + 14 * HOUR,
 		SystemEventType.CHAT_NAME_CHANGED,
 		{
-			oldName: 'Проект Альфа',
-			newName: 'Проект Альфа 🚀',
-			changedByUserId: USERS.ANNA.id,
-			changedByUserName: USERS.ANNA.name
+			oldName: 'Рабочий чат',
+			newName: 'Рабочий чат 🚀',
+			changedByUserId: USERS.ME.id,
+			changedByUserName: USERS.ME.name
 		}
-	),
-
-	// 🔹 Последние сообщения (для теста скролла вниз)
-	textMsg(
-		'm37',
-		-30 * MINUTE,
-		'Всем хорошего дня! 👋',
-		USERS.ANNA.id,
-		USERS.ANNA.name,
-		MessageStatus.RECEIVED
-	),
-	textMsg(
-		'm38',
-		-25 * MINUTE,
-		'И вам! До завтра!',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.READ
-	),
-	textMsg(
-		'm39',
-		-20 * MINUTE,
-		'Не забудьте про митинг в 10:00 ⏰',
-		USERS.VLAD.id,
-		USERS.VLAD.name,
-		MessageStatus.RECEIVED
-	),
-	textMsg(
-		'm40',
-		-15 * MINUTE,
-		'Помню, буду вовремя ✅',
-		USERS.ME.id,
-		USERS.ME.name,
-		MessageStatus.DELIVERED
 	)
 ];
+
+// ============================================================================
+// ХЕЛПЕР: Генерация сообщений для одного дня
+// ============================================================================
+
+interface DayMessagesConfig {
+	dayOffset: number; // Отрицательное число: -1 = вчера, -7 = неделя назад
+	label: string; // Текст для разделителя
+	messages: Array<{
+		offset: number;
+		from: (typeof USERS)[keyof typeof USERS];
+		text: string;
+		status: MessageStatus;
+	}>;
+	systemFirst?: SystemMessageData; // Опциональное системное сообщение в начале
+}
+
+function generateDayMessages(config: DayMessagesConfig): Message[] {
+	const result: Message[] = [];
+	const dayStart = config.dayOffset * DAY;
+
+	// Добавляем разделитель даты
+	// Используем нормализованную дату (без времени) для корректного сравнения
+	const separatorDate = new Date(NOW + dayStart);
+	separatorDate.setHours(0, 0, 0, 0);
+
+	result.push(
+		systemMsg(
+			`sys-date-${config.dayOffset}`,
+			dayStart - HOUR, // Разделитель чуть раньше первых сообщений дня
+			SystemEventType.DATE_SEPARATOR,
+			{ date: separatorDate, label: config.label }
+		)
+	);
+
+	// Опциональное системное сообщение в начале
+	if (config.systemFirst) {
+		result.push(config.systemFirst);
+	}
+
+	// Текстовые сообщения
+	for (const msg of config.messages) {
+		result.push(
+			textMsg(
+				`msg-${config.dayOffset}-${msg.offset}`,
+				dayStart + msg.offset,
+				msg.text,
+				msg.from.id,
+				msg.from.name,
+				msg.status
+			)
+		);
+	}
+
+	return result;
+}
 
 // ============================================================================
 // ЭКСПОРТЫ ДЛЯ УДОБНОГО ИМПОРТА
@@ -539,3 +802,21 @@ export const mockPendingMessages = mockTextMessages.filter(
 		msg.senderId === USERS.ME.id &&
 		[MessageStatus.SENDING, MessageStatus.ERROR].includes(msg.status)
 );
+
+/** Сообщения по дням (для отладки) */
+export const getMessagesByDate = (dateOffset: number): Message[] => {
+	const dayStart = dateOffset * DAY;
+	const dayEnd = dayStart + DAY;
+
+	return mockMessages.filter(msg => {
+		const msgTime = msg.createdAt.getTime();
+		return msgTime >= NOW + dayStart && msgTime < NOW + dayEnd;
+	});
+};
+
+/** Получить все разделители дат */
+export const getDateSeparators = (): SystemMessageData[] => {
+	return mockSystemMessages.filter(
+		msg => msg.eventType === SystemEventType.DATE_SEPARATOR
+	);
+};

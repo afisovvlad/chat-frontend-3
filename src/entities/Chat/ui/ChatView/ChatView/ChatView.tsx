@@ -49,7 +49,6 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 	}, []);
 
 	const chatData = useMemo(() => {
-		// 1. Если нашли в моках чатов — возвращаем как есть
 		if (appConfig.USE_MOCKS) {
 			const mockChat = mockChats.find((c: Chat) => c.chat.uid === chatUid);
 			if (mockChat) {
@@ -57,12 +56,10 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 			}
 		}
 
-		// 2. Если есть в кеше RTK Query — возвращаем
 		if (chatDataFromCache) {
 			return chatDataFromCache;
 		}
 
-		// 3.  НОВОЕ: Если чата нет, но контакт есть — создаём фейковый Chat из ContactsSchema
 		const mockContact = mockContacts.find(
 			(c: ContactsSchema) => c.system_contact.uid === chatUid
 		);

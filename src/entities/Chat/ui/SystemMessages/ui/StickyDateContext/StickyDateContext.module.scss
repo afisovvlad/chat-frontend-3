@@ -1,13 +1,17 @@
-.messageList {
+.stickyDateProvider {
+	position: relative;
 	flex: 1;
 	min-height: 0;
+	overflow: hidden;
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
+}
+
+.scrollContainer {
+	flex: 1;
+	min-height: 0;
 	overflow-y: auto;
 	overflow-x: hidden;
-	contain: layout style;
-	scroll-behavior: smooth;
 
 	&::-webkit-scrollbar {
 		width: 6px;
@@ -20,12 +24,5 @@
 
 	&::-webkit-scrollbar-track {
 		background: transparent;
-	}
-}
-
-@media (max-width: 768px) {
-	.messageList {
-		padding: 12px;
-		padding-top: 45px;
 	}
 }
