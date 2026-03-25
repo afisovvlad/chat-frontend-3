@@ -40,7 +40,7 @@ interface MessagesProps {
 	userUid: string;
 }
 
-// маппинг api → локальная модель
+// маппинг api -> локальная модель
 const mapMessage = (m: MessageApi): Message => ({
 	id: m.uid,
 	text: m.content,
@@ -186,7 +186,7 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 			return;
 		}
 
-		// отменяем предыдущий запрос если пользователь быстро скроллит
+		// отменяем предыдущий запрос (если пользователь быстро скроллит)
 		if (abortControllerRef.current) {
 			abortControllerRef.current.abort();
 		}
@@ -207,7 +207,7 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 				signal: abortControllerRef.current.signal
 			});
 
-			// обработка HTTP ошибок
+			// обработка HTTP ошибок (добавлено по ревью)
 			if (!res.ok) {
 				throw new Error(`HTTP error! status: ${res.status}`);
 			}
@@ -222,11 +222,18 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 			setNextUrl(data.next);
 
 			// добавляем старые сообщения в начало
-			setMessages(prev => [...older, ...prev]);
+			// защита от дублей (race-condition с polling)
+			setMessages(prev => {
+				const prevIds = new Set(prev.map(p => p.id));
+				const uniqueOlder = older.filter(m => !prevIds.has(m.id));
+
+				return [...uniqueOlder, ...prev];
+			});
 
 			// фиксируем позицию скролла
 			requestAnimationFrame(() => {
-				if (!el || !prevHeight) {
+				// prevHeight может быть 0 -> проверяем именно undefined
+				if (!el || prevHeight === undefined) {
 					return;
 				}
 
@@ -236,15 +243,18 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 				el.scrollTop = newHeight - prevHeight;
 			});
 		} catch (error) {
-			// игнорируем abort ошибки тк это нормальное поведение
+			// игнорируем abort ошибки (это нормальное поведение)
 			if (error instanceof DOMException && error.name === 'AbortError') {
 				return;
 			}
 
-			// ошибка не теряется
+			// теперь ошибка не теряется
 			console.error('Failed to load older messages:', error);
 		} finally {
 			setIsFetchingMore(false);
+
+			// очищаем контроллер
+			abortControllerRef.current = null;
 		}
 	};
 
@@ -314,6 +324,7 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 				<button
 					className={styles.scrollButton}
 					onClick={scrollToBottom}
+					// accessibility улучшение (по ревью)
 					aria-label='Прокрутить к новым сообщениям'
 				>
 					<Down />
