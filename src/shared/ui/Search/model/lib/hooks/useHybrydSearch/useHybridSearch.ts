@@ -1,17 +1,29 @@
+'use client';
+
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useDebounce } from '@/shared/lib/hooks/useDebounce/useDebounce';
 
-export function useHybridSearch<T>(
+export interface SearchSectionData<T> {
+	title: string;
+	items: T[];
+	type: 'local' | 'global';
+	isLoading?: boolean;
+	showHeader?: boolean;
+}
+
+export function useHybridSearch<
+	T extends { uid?: string | number; id?: string | number }
+>(
 	localData: T[],
 	localFilterFn: (items: T[], searchTerm: string) => T[],
-	globalSearchFn: (searchTerm: string, signal?: AbortSignal) => Promise<T[]>,
+	globalSearchFn?: (searchTerm: string, signal?: AbortSignal) => Promise<T[]>,
 	debounceDelay: number = 300,
 	globalPrefix: string = '@',
 	globalMinLength: number = 3
 ) {
 	const [searchTerm, setSearchTerm] = useState('');
-	const [globalResults, setGlobalResults] = useState<T[]>([]);
 
+	const [globalResults, setGlobalResults] = useState<T[]>([]);
 	const [isGlobal, setIsGlobal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
@@ -26,6 +38,7 @@ export function useHybridSearch<T>(
 		};
 	}, []);
 
+	// Локальные результаты — синхронно через useMemo
 	const localResults = useMemo(() => {
 		if (!searchTerm.trim()) {
 			return localData;
@@ -33,9 +46,12 @@ export function useHybridSearch<T>(
 		return localFilterFn(localData, searchTerm);
 	}, [localData, searchTerm, localFilterFn]);
 
-	const debouncedLocalSearch = useDebounce((term: string) => {}, debounceDelay);
-
+	// Debounced глобальный поиск
 	const debouncedGlobalSearch = useDebounce(async (term: string) => {
+		if (!globalSearchFn) {
+			return;
+		}
+
 		if (abortControllerRef.current) {
 			abortControllerRef.current.abort();
 		}
@@ -87,7 +103,7 @@ export function useHybridSearch<T>(
 			const global = isGlobalSearch(trimmed);
 			setIsGlobal(global);
 
-			if (global) {
+			if (global && globalSearchFn) {
 				const searchQuery = trimmed.slice(globalPrefix.length).trim();
 
 				if (!searchQuery || searchQuery.length < globalMinLength) {
@@ -98,15 +114,15 @@ export function useHybridSearch<T>(
 
 				debouncedGlobalSearch(searchQuery);
 			} else {
-				debouncedLocalSearch(trimmed);
+				setGlobalResults([]);
 			}
 		},
 		[
 			isGlobalSearch,
 			globalPrefix,
 			globalMinLength,
-			debouncedLocalSearch,
-			debouncedGlobalSearch
+			debouncedGlobalSearch,
+			globalSearchFn
 		]
 	);
 
@@ -121,6 +137,36 @@ export function useHybridSearch<T>(
 		}
 	}, []);
 
+	//  Формируем секции для отображения
+	const sections = useMemo(() => {
+		const result: SearchSectionData<T>[] = [];
+		const hasSearchTerm = searchTerm.trim().length > 0;
+
+		//  Секция 1: Локальные контакты
+		// showHeader: false — заголовок уже рендерится в ContactsHeader
+		if (!isGlobal && localResults.length > 0 && hasSearchTerm) {
+			result.push({
+				title: 'Контакты пользователей А-чата',
+				items: localResults,
+				type: 'local',
+				showHeader: false
+			});
+		}
+
+		// Секция 2: Глобальный поиск
+		if (globalResults.length > 0) {
+			result.push({
+				title: isGlobal ? 'Глобальный поиск' : 'Пользователи А-Чата',
+				items: globalResults,
+				type: 'global',
+				isLoading: isLoading && globalResults.length === 0,
+				showHeader: true
+			});
+		}
+
+		return result;
+	}, [searchTerm, isGlobal, localResults, globalResults, isLoading]);
+
 	const combinedResults = useMemo(() => {
 		if (isGlobal) {
 			return globalResults;
@@ -128,12 +174,18 @@ export function useHybridSearch<T>(
 		return localResults;
 	}, [isGlobal, globalResults, localResults]);
 
+	const totalResults = useMemo(() => {
+		return sections.reduce((acc, section) => acc + section.items.length, 0);
+	}, [sections]);
+
 	return useMemo(
 		() => ({
+			sections,
+			totalResults,
 			searchTerm,
-			globalResults,
-			localResults,
 			results: combinedResults,
+			localResults,
+			globalResults,
 			isGlobal,
 			isLoading,
 			error,
@@ -142,10 +194,12 @@ export function useHybridSearch<T>(
 			setGlobalResults
 		}),
 		[
+			sections,
+			totalResults,
 			searchTerm,
-			globalResults,
-			localResults,
 			combinedResults,
+			localResults,
+			globalResults,
 			isGlobal,
 			isLoading,
 			error,
@@ -155,4 +209,47 @@ export function useHybridSearch<T>(
 	);
 }
 
-export type UseHybridSearchReturn<T> = ReturnType<typeof useHybridSearch<T>>;
+export type UseHybridSearchReturn<
+	T extends { uid?: string | number; id?: string | number }
+> = ReturnType<typeof useHybridSearch<T>>;
+
+export function filterContacts<
+	T extends {
+		uid?: string;
+		id?: string;
+		first_name?: string;
+		last_name?: string;
+		nickname?: string;
+		username?: string;
+		phone?: string;
+	}
+>(items: T[], searchTerm: string): T[] {
+	const term = searchTerm.toLowerCase().trim();
+
+	if (!term) {
+		return items;
+	}
+
+	const normalizedTerm = term.replace(/[\s\-\(\)]/g, '');
+
+	return items.filter(item => {
+		const firstName = item.first_name?.toLowerCase() || '';
+		const lastName = item.last_name?.toLowerCase() || '';
+		const nickname = item.nickname?.toLowerCase() || '';
+		const username = item.username?.toLowerCase() || '';
+		const phone = item.phone?.toLowerCase() || '';
+
+		const fullName = `${firstName} ${lastName}`.trim().toLowerCase();
+		const normalizedPhone = phone.replace(/[\s\-\(\)]/g, '');
+
+		return (
+			firstName.includes(term) ||
+			lastName.includes(term) ||
+			nickname.includes(term) ||
+			username.includes(term) ||
+			fullName.includes(term) ||
+			phone.includes(term) ||
+			normalizedPhone.includes(normalizedTerm)
+		);
+	});
+}

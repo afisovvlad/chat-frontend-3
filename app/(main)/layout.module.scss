@@ -5,8 +5,17 @@ body {
 .mainLayout {
 	display: flex;
 	gap: 20px;
+	padding-top: 4px;
 	flex: 1;
 	min-height: 0;
+
+	@media (max-width: 1200px) {
+		padding: 0 16px;
+	}
+
+	@media (max-width: 768px) {
+		padding: 0;
+	}
 }
 
 .content {

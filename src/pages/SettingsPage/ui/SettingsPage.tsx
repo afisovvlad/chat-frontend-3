@@ -1,5 +1,4 @@
 'use client';
-import { useState, useRef } from 'react';
 import { useDeleteProfileMutation } from '@/entities/Profile';
 import { SettingsHeaderBlock } from '@/entities/Settings';
 import { classNames } from '@/shared/lib/classNames/classNames';
@@ -20,6 +19,7 @@ import {
 	UserCardType
 } from '@/shared/ui/UserCard';
 import { Trash } from '@icons/index';
+import { useRef, useState } from 'react';
 import cls from './SettingsPage.module.scss';
 
 export const SettingsPage = () => {
