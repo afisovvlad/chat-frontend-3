@@ -38,6 +38,7 @@ interface MessagesApiResponse {
 // пропсы компонента messages
 interface MessagesProps {
 	userUid: string;
+	className: string;
 }
 
 // маппинг api -> локальная модель
@@ -48,7 +49,7 @@ const mapMessage = (m: MessageApi): Message => ({
 	status: m.from_me ? 'read' : 'received'
 });
 
-const MessagesListComponent = ({ userUid }: MessagesProps) => {
+const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 	// ===== ПОЛУЧЕНИЕ ДАННЫХ =====
 
 	// хук для получения сообщений через api
@@ -298,7 +299,7 @@ const MessagesListComponent = ({ userUid }: MessagesProps) => {
 	// ===== ОСНОВНОЙ РЕНДЕР =====
 
 	return (
-		<div className={styles.wrapper}>
+		<div className={`${styles.wrapper} ${className}`}>
 			<div
 				ref={containerRef}
 				onScroll={handleScroll}
