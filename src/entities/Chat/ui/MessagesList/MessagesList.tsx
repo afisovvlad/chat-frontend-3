@@ -1,17 +1,16 @@
 'use client';
 
 import { memo, useEffect, useRef, useState } from 'react';
-
-import { useGetMessagesQuery } from '../../api/chatApi';
-
 import { MessageBubble } from '@/entities/Chat/ui/MessageBubble/MessageBubble';
 import { Down } from '@icons/index';
+import { useGetMessagesQuery } from '@/entities/Chat/api/chatApi';
+import type { ChatMessage } from '@/entities/Chat/model/types/chat.types/chat.types';
 
 import styles from './MessagesList.module.scss';
 
 // ===== ТИПЫ =====
 
-// тип сообщения (локальный)
+// тип сообщения (локальный для UI)
 interface Message {
 	id: string;
 	text: string;
@@ -19,250 +18,210 @@ interface Message {
 	status: 'received' | 'sending' | 'unread' | 'read';
 }
 
-// тип сообщения с бэка
-interface MessageApi {
-	uid: string;
-	content: string;
-	from_me: boolean;
-	created_at: string;
-}
-
-// тип ответа с пагинацией (добавлено по ревью)
-interface MessagesApiResponse {
-	results: MessageApi[];
-	next: string | null;
-	previous?: string | null;
-	count?: number;
-}
-
-// пропсы компонента messages
+// пропсы компонента
 interface MessagesProps {
-	chatUid: string;
+	userUid: string;
 	className?: string;
 }
 
-// маппинг api -> локальная модель
-const mapMessage = (m: MessageApi): Message => ({
-	id: m.uid,
-	text: m.content,
-	time: new Date(m.created_at).getTime(),
-	status: m.from_me ? 'read' : 'received'
+// 🔹 Вспомогательная функция: конвертирует ChatMessage → локальный Message
+const toLocalMessage = (msg: ChatMessage): Message => ({
+	id: String(msg.id),
+	text: msg.content,
+	time: msg.created_at, // уже timestamp из маппера
+	status: msg.new ? 'unread' : 'read'
 });
 
-const MessagesListComponent = ({ chatUid, className }: MessagesProps) => {
-	// ===== ПОЛУЧЕНИЕ ДАННЫХ =====
+//  Вспомогательная функция: конвертирует абсолютный URL в прокси-путь
 
-	// хук для получения сообщений через api
+const toProxyPath = (url: string | null): string | null => {
+	if (!url) {
+		return null;
+	}
+	// Если уже проксированный путь — возвращаем как есть
+	if (url.startsWith('/api/proxy')) {
+		return url;
+	}
+
+	try {
+		// Парсим URL (поддерживаем и полные URL, и относительные пути)
+		const pathname = url.startsWith('http') ? new URL(url).pathname : url;
+
+		// Удаляем префикс /api/v1, т.к. прокси уже добавляет его автоматически
+		// Регулярка ^\/api\/v1 означает "начало строки + /api/v1"
+		const apiPath = pathname.replace(/^\/api\/v1/, '');
+
+		return `/api/proxy${apiPath}`;
+	} catch {
+		// Если не удалось распарсить — возвращаем null (запрос не выполнится)
+		return null;
+	}
+};
+const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
+	// ===== ПОЛУЧЕНИЕ ДАННЫХ =====
 	const { data, error, isLoading, refetch } = useGetMessagesQuery(
-		{ user_uid: chatUid },
-		{
-			// обновление каждые 4 секунды, если есть userUid
-			// pollingInterval: userUid ? 4000 : 0,
-			// пропуск запроса если нет userUid
-			skip: !chatUid
-		}
+		{ user_uid: userUid },
+		{ skip: !userUid }
 	);
 
 	// ===== REFS =====
-
-	// реф для контейнера с сообщениями
 	const containerRef = useRef<HTMLDivElement>(null);
-
-	// реф для "нижней точки" скролла
 	const bottomRef = useRef<HTMLDivElement>(null);
-
-	// реф для отслеживания позиции скролла (без лишних ререндеров)
 	const isAtBottomRef = useRef(true);
-
-	// реф для AbortController (добавлено по ревью)
-	// нужен чтобы:
-	// 1. отменять предыдущие fetch-запросы
-	// 2. не обновлять state если компонент размонтирован
+	const isLoadingHistoryRef = useRef(false);
 	const abortControllerRef = useRef<AbortController | null>(null);
 
 	// ===== STATE =====
-
-	// состояние сообщений
 	const [messages, setMessages] = useState<Message[]>([]);
-
-	// ссылка на следующую страницу (pagination с бэка)
 	const [nextUrl, setNextUrl] = useState<string | null>(null);
-
-	// флаг загрузки старых сообщений (защита от дублей запросов)
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
-
-	// состояние "пользователь внизу"
 	const [isAtBottom, setIsAtBottom] = useState(true);
-
-	// количество новых сообщений, когда пользователь не внизу
 	const [newCount, setNewCount] = useState(0);
 
-	// ===== ОБРАБОТКА ДАННЫХ С БЭКА =====
-
+	// ===== ОБРАБОТКА ДАННЫХ С БЭКА (первичная загрузка) =====
 	useEffect(() => {
 		if (!data) {
 			return;
 		}
 
-		// маппим данные в локальный формат
-		const mapped = data.results.map(mapMessage);
+		//  Конвертируем ChatMessage[] → Message[]
+		const mapped = data.results.map(toLocalMessage);
 
-		// сохраняем ссылку на следующую страницу
 		setNextUrl(data.next);
 
 		setMessages(prev => {
-			// первый рендер просто кладем все сообщения
 			if (!prev.length) {
 				return mapped;
 			}
-
-			// для быстрого сравнения id
 			const prevIds = new Set(prev.map(p => p.id));
-
-			// находим реально новые сообщения
 			const incoming = mapped.filter(m => !prevIds.has(m.id));
-
-			// если есть новые сообщения
 			if (incoming.length) {
-				// если пользователь не внизу увеличиваем счетчик
-				if (!isAtBottomRef.current) {
+				if (!isLoadingHistoryRef.current && !isAtBottomRef.current) {
 					setNewCount(c => c + incoming.length);
 				}
-
-				// добавляем новые сообщения в конец
 				return [...prev, ...incoming];
 			}
-
 			return prev;
 		});
 	}, [data]);
 
 	// ===== СКРОЛЛ =====
-
 	const handleScroll = () => {
 		const el = containerRef.current;
 		if (!el) {
 			return;
 		}
 
-		const threshold = 50; // расстояние до низа
-
-		// проверяем "находимся ли внизу"
+		const threshold = 50;
 		const isBottom =
 			el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
 
 		isAtBottomRef.current = isBottom;
 		setIsAtBottom(isBottom);
 
-		// если внизу, сбрасываем счетчик новых сообщений
 		if (isBottom) {
 			setNewCount(0);
 		}
-
-		// если пользователь долистал вверх подгружаем старые сообщения
-		// добавлен guard чтобы не дергать loadMore слишком часто
-		if (el.scrollTop < 50 && !isFetchingMore) {
+		if (el.scrollTop < 50 && !isFetchingMore && !isLoadingHistoryRef.current) {
 			loadMore();
 		}
 	};
 
 	// ===== АВТОСКРОЛЛ ВНИЗ =====
-
 	useEffect(() => {
-		// скроллим вниз только если пользователь уже был внизу
-		if (isAtBottomRef.current) {
-			bottomRef.current?.scrollIntoView({
-				behavior: 'smooth'
-			});
+		if (
+			!isLoadingHistoryRef.current &&
+			isAtBottomRef.current &&
+			messages.length > 0
+		) {
+			bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
 		}
-	}, [messages]);
+	}, [messages, isAtBottom]);
 
-	// ===== ПОДГРУЗКА СООБЩЕНИЙ (INFINITE SCROLL ВВЕРХ) =====
-
+	// ===== ПОДГРУЗКА СООБЩЕНИЙ (исправленная версия) =====
 	const loadMore = async () => {
-		// защита:
-		// - нет следующей страницы
-		// - уже идет загрузка
 		if (!nextUrl || isFetchingMore) {
 			return;
 		}
 
-		// отменяем предыдущий запрос (если пользователь быстро скроллит)
+		isLoadingHistoryRef.current = true;
+
 		if (abortControllerRef.current) {
 			abortControllerRef.current.abort();
 		}
-
-		// создаем новый контроллер
 		abortControllerRef.current = new AbortController();
-
 		setIsFetchingMore(true);
 
 		const el = containerRef.current;
 
-		// сохраняем текущую высоту списка
-		const prevHeight = el?.scrollHeight;
+		//  Сохраняем позицию скролла НЕПОСРЕДСТВЕННО перед обновлением стейта
+		// (после того как данные уже получены)
+		const saveScrollPosition = () => {
+			if (!el) {
+				return null;
+			}
+			return {
+				scrollHeight: el.scrollHeight,
+				scrollTop: el.scrollTop
+			};
+		};
 
 		try {
-			const res = await fetch(nextUrl, {
-				// передаем сигнал для возможности отмены
-				signal: abortControllerRef.current.signal
+			const fetchUrl = toProxyPath(nextUrl);
+			if (!fetchUrl) {
+				throw new Error('Invalid nextUrl');
+			}
+
+			const res = await fetch(fetchUrl, {
+				signal: abortControllerRef.current.signal,
+				redirect: 'follow',
+				credentials: 'include'
 			});
 
-			// обработка HTTP ошибок (добавлено по ревью)
 			if (!res.ok) {
 				throw new Error(`HTTP error! status: ${res.status}`);
 			}
 
-			// типизируем ответ
-			const data: MessagesApiResponse = await res.json();
+			const responseData: { results: ChatMessage[]; next: string | null } =
+				await res.json();
+			const older: Message[] = responseData.results.map(toLocalMessage);
 
-			// маппим старые сообщения
-			const older: Message[] = data.results.map(mapMessage);
+			setNextUrl(responseData.next);
 
-			// обновляем ссылку на следующую страницу
-			setNextUrl(data.next);
+			//  КЛЮЧЕВОЙ МОМЕНТ: сохраняем позицию ПЕРЕД setMessages
+			const scrollPos = saveScrollPosition();
 
-			// добавляем старые сообщения в начало
-			// защита от дублей (race-condition с polling)
 			setMessages(prev => {
 				const prevIds = new Set(prev.map(p => p.id));
 				const uniqueOlder = older.filter(m => !prevIds.has(m.id));
 
-				return [...uniqueOlder, ...prev];
-			});
-
-			// фиксируем позицию скролла
-			requestAnimationFrame(() => {
-				// prevHeight может быть 0 -> проверяем именно undefined
-				if (!el || prevHeight === undefined) {
-					return;
+				//  Корректируем скролл ТОЛЬКО если были добавлены новые старые сообщения
+				if (uniqueOlder.length > 0 && el && scrollPos) {
+					requestAnimationFrame(() => {
+						const newScrollHeight = el.scrollHeight;
+						const heightDiff = newScrollHeight - scrollPos.scrollHeight;
+						// Компенсируем добавленную высоту
+						el.scrollTop = scrollPos.scrollTop + heightDiff;
+					});
 				}
 
-				const newHeight = el.scrollHeight;
-
-				// компенсируем разницу высоты
-				el.scrollTop = newHeight - prevHeight;
+				return [...uniqueOlder, ...prev];
 			});
-		} catch (error) {
-			// игнорируем abort ошибки (это нормальное поведение)
-			if (error instanceof DOMException && error.name === 'AbortError') {
+		} catch (err) {
+			if (err instanceof DOMException && err.name === 'AbortError') {
 				return;
 			}
-
-			// теперь ошибка не теряется
-			console.error('Failed to load older messages:', error);
+			console.error('Failed to load older messages:', err);
 		} finally {
 			setIsFetchingMore(false);
-
-			// очищаем контроллер
+			isLoadingHistoryRef.current = false;
 			abortControllerRef.current = null;
 		}
 	};
 
-	// очистка при размонтировании компонента
+	// ===== ОЧИСТКА ПРИ РАЗМОНТИРОВАНИИ =====
 	useEffect(() => {
 		return () => {
-			// отменяем незавершенный запрос
 			if (abortControllerRef.current) {
 				abortControllerRef.current.abort();
 			}
@@ -270,34 +229,26 @@ const MessagesListComponent = ({ chatUid, className }: MessagesProps) => {
 	}, []);
 
 	// ===== РУЧНОЙ СКРОЛЛ ВНИЗ =====
-
 	const scrollToBottom = () => {
-		bottomRef.current?.scrollIntoView({
-			behavior: 'smooth'
-		});
-
+		bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
 		setNewCount(0);
 	};
 
 	// ===== UI СОСТОЯНИЯ =====
-
-	// состояние загрузки
-	if (isLoading) {
+	if (isLoading && messages.length === 0) {
 		return <div className={styles.emptyState}>Загрузка сообщений...</div>;
 	}
 
-	// состояние ошибки
 	if (error) {
 		return (
 			<div className={styles.emptyState}>
 				<p>Ошибка загрузки сообщений</p>
-				<button onClick={refetch}>Попробовать снова</button>
+				<button onClick={() => refetch()}>Попробовать снова</button>
 			</div>
 		);
 	}
 
 	// ===== ОСНОВНОЙ РЕНДЕР =====
-
 	return (
 		<div className={`${styles.wrapper} ${className}`}>
 			<div
@@ -315,21 +266,16 @@ const MessagesListComponent = ({ chatUid, className }: MessagesProps) => {
 						onClick={() => {}}
 					/>
 				))}
-
-				{/* якорь для скролла вниз */}
 				<div ref={bottomRef} />
 			</div>
 
-			{/* кнопка для скролла вниз, если пользователь не внизу */}
 			{!isAtBottom && (
 				<button
 					className={styles.scrollButton}
 					onClick={scrollToBottom}
-					// accessibility улучшение (по ревью)
 					aria-label='Прокрутить к новым сообщениям'
 				>
 					<Down />
-					{/* показываем количество новых сообщений */}
 					{newCount > 0 && <span>({newCount})</span>}
 				</button>
 			)}

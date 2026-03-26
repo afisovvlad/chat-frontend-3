@@ -258,7 +258,7 @@ export const ChatView = ({
 
 			{hasMessages ? (
 				<>
-					<MessagesList chatUid='user-me' className={messagesClass} />
+					<MessagesList userUid={chatUid} className={messagesClass} />
 					<MessageFormComponent />
 				</>
 			) : (

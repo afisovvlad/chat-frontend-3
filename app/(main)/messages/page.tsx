@@ -8,5 +8,5 @@ interface PageProps {
 
 export default function Page({ params }: PageProps) {
 	// 🔹 Извлекаем uid из params и передаём как chatUid (не userUid!)
-	return <MessagesList chatUid={params.uid} />;
+	return <MessagesList userUid={params.uid} />;
 }
