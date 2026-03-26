@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChatHeader, MessagesList } from '@/entities/Chat';
-import { MessageFormComponent } from '@/features/messageForm';
+import { MessageFormComponent } from '../ChatBottom/ui/MessageFormComponent/MessageFormComponent';
 import { useChatHeaderData } from '@/entities/Chat/model/lib/hooks/useChatHeaderData/useChatHeaderData';
 import {
 	selectChatByUid,
@@ -232,7 +232,7 @@ export const ChatView = ({
 					<NotMessage />
 				</div>
 
-				<MessageFormComponent />
+				<MessageFormComponent chatUid={chatUid} />
 			</section>
 		);
 	}
@@ -257,15 +257,15 @@ export const ChatView = ({
 
 			{hasMessages ? (
 				<>
-					<MessagesList userUid='user-me' className={messagesClass} />
-					<MessageFormComponent />
+					<MessagesList userUid={chatUid} className={messagesClass} />
+					<MessageFormComponent chatUid={chatUid} />
 				</>
 			) : (
 				<>
 					<div className={cls.notMessageWrapper}>
 						<NotMessage />
 					</div>
-					<MessageFormComponent />
+					<MessageFormComponent chatUid={chatUid} />
 				</>
 			)}
 		</section>

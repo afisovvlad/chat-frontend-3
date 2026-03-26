@@ -23,24 +23,26 @@
 
 .textarea {
 	width: 100%;
-	min-height: 21px;
-	max-height: 150px;
+	min-height: 21px; // Минимальная высота (1 строка)
+	max-height: 150px; // Максимальная высота (~6 строк)
 	font-family: inherit;
 	font-weight: 400;
 	font-size: 16px;
 	line-height: 130%;
 	letter-spacing: 0.4px;
 	outline: none;
-	resize: none;
-	overflow: auto;
-}
+	resize: none; // Запрет ручного изменения размера
+	overflow: auto; // 🔹 Появляется скролл при превышении max-height
 
-.textarea::-webkit-scrollbar {
-	width: 0;
-}
+	// Скрываем скроллбар для чистоты (опционально)
+	&::-webkit-scrollbar {
+		width: 4px;
+	}
 
-.textarea::-webkit-scrollbar-thumb {
-	background-color: transparent;
+	&::-webkit-scrollbar-thumb {
+		background-color: var(--color-gray-200);
+		border-radius: 2px;
+	}
 }
 
 .button {

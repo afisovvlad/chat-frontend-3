@@ -1,8 +1,10 @@
 export async function convertVoice(blob: Blob) {
+	const endpoint = process.env.NEXT_PUBLIC_VOICE_API ?? '/api/voice';
+
 	const formData = new FormData();
 	formData.append('voice', blob);
 
-	const res = await fetch('/api/voice', {
+	const res = await fetch(endpoint, {
 		method: 'POST',
 		body: formData
 	});
@@ -10,7 +12,6 @@ export async function convertVoice(blob: Blob) {
 	if (!res.ok) {
 		const text = await res.text();
 		console.error('VOICE API ERROR:', text);
-
 		throw new Error(`Voice convert failed: ${res.status}`);
 	}
 
