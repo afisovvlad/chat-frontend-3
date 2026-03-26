@@ -7,8 +7,11 @@ export interface ContactsSchema {
 		avatar_url: string | undefined;
 		avatar_webp: string | undefined;
 		avatar_webp_url: string | undefined;
+		avatar_small_url: string | undefined;
+		avatar_master_url: string | undefined;
 		is_online: boolean;
 		was_online_at: number | undefined;
+		is_deleted: boolean | false;
 	};
 	first_name: string;
 	last_name: string;
@@ -107,4 +110,39 @@ export interface ContactReadByUid {
 	uid: string;
 	first_name: string;
 	last_name: string;
+}
+
+/**
+ * Результат глобального поиска (/contact/check/list/)
+ * Плоская структура, без обёртки system_contact
+ */
+export interface GlobalSearchContact {
+	uid: string;
+	username?: string;
+	nickname?: string;
+	phone?: string;
+	first_name: string;
+	last_name: string;
+	avatar?: string | null;
+	avatar_url?: string | null;
+	avatar_webp?: string | null;
+	avatar_webp_url?: string | null;
+	avatar_small_url?: string | null;
+	avatar_master_url?: string | null;
+	additional_information?: string;
+	birthday?: string;
+	chat_id?: number;
+	is_online: boolean;
+	was_online_at?: number;
+	is_deleted?: boolean;
+}
+
+/**
+ * Пагинированный ответ глобального поиска
+ */
+export interface GlobalSearchResponse {
+	count: number;
+	next: string | null;
+	previous: string | null;
+	results: GlobalSearchContact[];
 }

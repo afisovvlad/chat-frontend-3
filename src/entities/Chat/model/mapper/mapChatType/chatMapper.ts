@@ -1,4 +1,8 @@
-import type { Chat, ChatMessage } from '../../types/chat.types/chat.types';
+import type {
+	Chat,
+	ChatMessage,
+	RawApiChatMessage
+} from '../../types/chat.types/chat.types';
 import type { IUserCard } from '@/shared/ui/UserCard';
 import {
 	ChatType,
@@ -6,14 +10,6 @@ import {
 } from '../../types/chat.types/chat.types';
 
 const mapChatType = (type: string): UserCardChatType | undefined => {
-	// Опционально: логирование неизвестных типов
-	if (!Object.values(ChatType).includes(type as ChatType)) {
-		if (process.env.NODE_ENV === 'development') {
-			console.warn(`Неизвестный тип чата: "${type}"`);
-		}
-		return undefined;
-	}
-
 	switch (type) {
 		case ChatType.CHAT:
 			return UserCardChatType.CHAT;
@@ -104,3 +100,36 @@ export const mapChatToUserCard = (chat: Chat): IUserCard => {
 			: undefined
 	};
 };
+
+/**
+ * Маппинг: RawApiChatMessage → ChatMessage
+ */
+
+export const mapApiMessageToFrontend = (
+	apiMsg: RawApiChatMessage
+): ChatMessage => ({
+	id: apiMsg.id,
+	uid: apiMsg.uid,
+	from_user: apiMsg.from_user?.uid ?? '',
+	content: apiMsg.content,
+	files_summary: apiMsg.files_list?.length
+		? {
+				types: [...new Set(apiMsg.files_list.map(f => f.file_type))].slice(
+					0,
+					3
+				),
+				count: apiMsg.files_list.length
+			}
+		: { types: [], count: 0 },
+	has_replied_message: apiMsg.replied_messages?.length > 0,
+	has_forwarded_message: apiMsg.forwarded_messages?.length > 0,
+	new: apiMsg.new ?? false,
+
+	// место конвертации: ISO string → timestamp
+	created_at: new Date(apiMsg.created_at).getTime(),
+	updated_at: new Date(apiMsg.updated_at).getTime()
+});
+
+export const mapApiMessagesList = (
+	apiResults: readonly RawApiChatMessage[]
+): ChatMessage[] => apiResults.map(mapApiMessageToFrontend);

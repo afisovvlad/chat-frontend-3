@@ -18,11 +18,9 @@ export function formatDateSeparator(date: Date): string {
 	if (messageDate.getTime() === today.getTime()) {
 		return 'Сегодня';
 	}
-
 	if (messageDate.getTime() === yesterday.getTime()) {
 		return 'Вчера';
 	}
-
 	return new Intl.DateTimeFormat('ru-RU', {
 		day: 'numeric',
 		month: 'long'
@@ -46,11 +44,15 @@ export function isSameDay(date1: Date, date2: Date): boolean {
 }
 
 export function shouldShowDateSeparator(
-	currentDate: Date,
-	previousDate?: Date
+	currentDate: number,
+	previousDate?: number
 ): boolean {
-	if (!previousDate) {
+	if (previousDate === undefined || previousDate === null) {
 		return true;
 	}
-	return !isSameDay(currentDate, previousDate);
+
+	const current = new Date(currentDate);
+	const previous = new Date(previousDate);
+
+	return !isSameDay(current, previous);
 }

@@ -4,10 +4,12 @@ import type {
 	GetContactsRequest,
 	AddContactByPhoneRequest,
 	AddContactResponse,
+	GlobalSearchResponse,
 	PaginatedResponse,
 	CheckContactRequest,
 	PaginatedContactReadByUidList,
-	BulkDeleteRequest
+	BulkDeleteRequest,
+	GlobalSearchContact
 } from '../model/types/contacts.types/contacts.types';
 
 export const contactApi = rtkApi.injectEndpoints({
@@ -38,7 +40,7 @@ export const contactApi = rtkApi.injectEndpoints({
 		}),
 
 		searchGlobalContacts: build.query<
-			PaginatedResponse<ContactsSchema>,
+			GlobalSearchResponse, // Оставляем тип с пагинацией
 			CheckContactRequest[]
 		>({
 			query: body => ({
@@ -46,7 +48,16 @@ export const contactApi = rtkApi.injectEndpoints({
 				method: 'POST',
 				body
 			}),
-			providesTags: ['GlobalContactSearch']
+			providesTags: ['GlobalContactSearch'],
+
+			transformResponse: (
+				response: GlobalSearchContact[]
+			): GlobalSearchResponse => ({
+				count: response.length,
+				next: null,
+				previous: null,
+				results: response
+			})
 		}),
 
 		addContactByPhone: build.mutation<

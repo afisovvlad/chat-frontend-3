@@ -1,20 +1,8 @@
-export interface ChatMessage {
-	id: number;
-	uid: string;
-	from_user: string;
-	content: string;
-	files_summary: {
-		types: string[];
-		count: number;
-	};
-	has_replied_message: boolean;
-	has_forwarded_message: boolean;
-	new: boolean;
-	created_at: number;
-	updated_at: number;
-}
+// ============================================================================
+//  БАЗОВЫЕ ТИПЫ ПОЛЬЗОВАТЕЛЯ
+// ============================================================================
 
-export interface ChatUser {
+export interface BaseUser {
 	uid: string;
 	username?: string;
 	nickname?: string;
@@ -23,10 +11,208 @@ export interface ChatUser {
 	patronymic?: string;
 	avatar_url: string | null;
 	avatar_webp_url: string | null;
+	avatar_small_url?: string | null;
+	avatar_master_url?: string | null;
+	is_deleted?: boolean;
+}
+
+export interface ChatUser extends BaseUser {
 	is_online: boolean;
-	was_online_at: number;
+	was_online_at: number; // timestamp
 	is_in_contacts: boolean;
 	is_blocked: boolean;
+}
+
+// ============================================================================
+//  ТИПЫ ДЛЯ ПОИСКА ПО СООБЩЕНИЯМ (useMessageSearch)
+// ============================================================================
+
+/**
+ * Базовый интерфейс сообщения для поиска
+ * Используется внутри useMessageSearch хука
+ */
+export interface BaseSearchMessage {
+	id: string; // string для ключей React
+	type: MessageType;
+	createdAt: number; // timestamp
+	updatedAt?: number;
+}
+
+/**
+ * Текстовое сообщение для поиска
+ * Отличается от ChatMessage структурой полей (плоская, для удобства фильтрации)
+ */
+export interface TextMessage extends BaseSearchMessage {
+	type: MessageType.TEXT;
+	content: string;
+	senderId: string;
+	senderName: string;
+	status: MessageStatus;
+	isEdited?: boolean;
+	has_replied_message?: boolean;
+	has_forwarded_message?: boolean;
+	replyTo?: {
+		id: string;
+		text: string;
+		senderName?: string;
+	};
+	forwardedFrom?: {
+		chatName: string;
+		author: string;
+		messageText?: string;
+	};
+	files_summary?: FilesSummary;
+	new?: boolean;
+}
+
+/**
+ * Объединённый тип сообщения для поиска
+ * Discriminated union по полю `type`
+ */
+export type Message = TextMessage | SystemMessageData;
+
+// ============================================================================
+// ВЛОЖЕНИЯ (ФАЙЛЫ)
+// ============================================================================
+
+export interface FileAttachment {
+	id: number;
+	uid: string;
+	file_url: string;
+	file_webp_url?: string;
+	file_type: string; // MIME-type
+	created_at: string; // ISO 8601
+	updated_at: string; // ISO 8601
+}
+
+export type FilesSummary = {
+	types: string[];
+	count: number;
+};
+
+// ============================================================================
+//  СООБЩЕНИЯ: ФРОНТЕНД-ФОРМАТ (после маппинга)
+// ============================================================================
+
+/**
+ * Сообщение в удобном для фронтенда формате
+ * Используется в компонентах, селекторах, сторе
+ */
+export interface ChatMessage {
+	id: number;
+	uid: string;
+	from_user: string;
+	content: string;
+	files_summary: FilesSummary;
+	has_replied_message: boolean;
+	has_forwarded_message: boolean;
+	new: boolean;
+	created_at: number;
+	updated_at: number;
+}
+
+// ============================================================================
+//  СООБЩЕНИЯ: RAW-ФОРМАТ (прямой ответ от API, до маппинга)
+// ============================================================================
+
+/**
+ * Превью сообщения для реплаев/пересылок (упрощённый формат из API)
+ */
+export interface MessagePreview {
+	id: number;
+	uid: string;
+	is_deleted?: boolean;
+	from_user: string; // UID отправителя
+	first_name: string;
+	last_name: string;
+	content: string;
+	files_list: FileAttachment[];
+}
+
+export interface ForwardedMessagePreview extends MessagePreview {
+	avatar_webp_url?: string;
+}
+
+/**
+ * Метаданные RTC-звонка
+ */
+export interface RTCMessageMeta {
+	uid: string;
+	duration: number;
+	status: 'initiated' | 'accepted' | 'missed' | 'declined' | 'ended';
+	created_at: string;
+	updated_at: string;
+}
+
+/**
+ * Сырое сообщение из API (соответствует Swagger)
+ * Используется ТОЛЬКО внутри transformResponse
+ */
+export interface RawApiChatMessage {
+	id: number;
+	uid: string;
+
+	//  Участники (полные объекты из бэка)
+	from_user: ChatUser;
+	to_user?: ChatUser;
+
+	//  Контент
+	content: string;
+
+	//  Вложения (полный массив)
+	files_list: FileAttachment[];
+
+	//  Реплаи и пересылки (массивы превью)
+	replied_messages: MessagePreview[];
+	forwarded_messages: ForwardedMessagePreview[];
+
+	//  Метаданные звонков
+	message_rtc?: RTCMessageMeta | null;
+
+	//  Контекст чата
+	chat_id?: number;
+	chat_key?: string;
+	chat_type?: ChatType;
+
+	//  Статусы
+	new: boolean;
+	is_deleted?: boolean;
+
+	//  Даты (ISO strings от бэка)
+	created_at: string;
+	updated_at: string;
+}
+
+export interface AddContactByPhoneRequest {
+	phone: string;
+	first_name: string;
+	last_name: string;
+}
+
+export interface AddContactResponse {
+	success: boolean;
+	contact?: {
+		uid: string;
+		username: string;
+		first_name: string;
+		last_name: string;
+		avatar_url: string | null;
+		is_in_contacts: boolean;
+	};
+}
+
+// ============================================================================
+//  ЧАТЫ: ОСНОВНЫЕ ТИПЫ
+// ============================================================================
+
+export enum ChatType {
+	CHAT = 'chat',
+	GROUP = 'group',
+	CHANNEL = 'channel',
+	PUBLIC_GROUP = 'public-group',
+	PRIVATE_GROUP = 'private-group',
+	PUBLIC_CHANNEL = 'public-channel',
+	PRIVATE_CHANNEL = 'private-channel'
 }
 
 export interface Chat {
@@ -39,12 +225,17 @@ export interface Chat {
 	name: string;
 	chat_type: ChatType;
 	chat_key: string;
-	last_activity_at: number;
+	last_activity_at: number; // timestamp
 	last_seen_message: ChatMessage | null;
 	last_message: ChatMessage | null;
 	first_new_message: ChatMessage | null;
 }
 
+// ============================================================================
+//  API-ЗАПРОСЫ И ОТВЕТЫ
+// ============================================================================
+
+// ─── Список чатов ─────────────────────────────────────────────────────
 export interface ChatListResponse {
 	count: number;
 	next: string | null;
@@ -62,15 +253,33 @@ export interface GetChatsRequest {
 	isActive?: boolean;
 }
 
-export enum ChatType {
-	CHAT = 'chat',
-	GROUP = 'group',
-	CHANNEL = 'channel',
-	PUBLIC_GROUP = 'public-group',
-	PRIVATE_GROUP = 'private-group',
-	PUBLIC_CHANNEL = 'public-channel',
-	PRIVATE_CHANNEL = 'private-channel'
+// ─── Сообщения: RAW-ответ от API (до маппинга) ─────────────────────────
+export interface RawMessageListResponse {
+	count: number;
+	next: string | null;
+	previous: string | null;
+	results: RawApiChatMessage[];
 }
+
+// ─── Сообщения: ФРОНТЕНД-ответ (после маппинга) ────────────────────────
+export interface MessageListResponse {
+	count: number;
+	next: string | null;
+	previous: string | null;
+	results: ChatMessage[];
+}
+
+export interface GetMessagesRequest {
+	user_uid: string;
+	page?: number;
+	page_size?: number;
+	ordering?: '-created_at' | 'created_at';
+	search?: string;
+}
+
+// ============================================================================
+// ВСПОМОГАТЕЛЬНЫЕ ТИПЫ (для UI-компонентов)
+// ============================================================================
 
 export interface ChatItemInfo {
 	uid: string;
@@ -88,46 +297,35 @@ export interface ChatItemInfo {
 	is_in_contacts: boolean;
 }
 
-interface LastMessage {
-	id: number;
-	uid: string;
-	from_user: string;
-	content: string;
-	files_summary: {
-		types: string[];
-		count: number;
-	};
-	has_replied_message: boolean;
-	has_forwarded_message: boolean;
-	new: boolean;
-	created_at: number;
-	updated_at: number;
-}
-
 export interface ChatItemSchema {
 	id: number;
 	chat: ChatItemInfo;
 	is_favorite: boolean;
 	notifications: boolean;
 	new_message_count: number;
-	new_file_count: number; // пока что не пригодится
+	new_file_count: number;
 	name: string;
 	chat_type: ChatType;
 	chat_key: string;
 	last_activity_at: number;
-	last_seen_message: {
+	last_seen_message: { id: number; uid: string };
+	first_new_message: { id: number; uid: string };
+	last_message: {
 		id: number;
 		uid: string;
+		from_user: string;
+		content: string;
+		files_summary: FilesSummary;
+		has_replied_message: boolean;
+		has_forwarded_message: boolean;
+		new: boolean;
+		created_at: number;
+		updated_at: number;
 	};
-	first_new_message: {
-		id: number;
-		uid: string;
-	};
-	last_message: LastMessage;
 }
 
 // ============================================================================
-// ОСНОВНЫЕ ТИПЫ СООБЩЕНИЙ
+//  СИСТЕМНЫЕ СООБЩЕНИЯ И СОБЫТИЯ (опционально, если используются)
 // ============================================================================
 
 export enum MessageType {
@@ -140,235 +338,166 @@ export enum MessageType {
 }
 
 export enum MessageStatus {
-	//  Уникальные значения — отражают реальное состояние в домене
-	RECEIVED = 'received', //  Входящее (от другого пользователя)
-	SENDING = 'sending', //  Отправляется
-	SENT = 'sent', // ✓ Отправлено на сервер
-	DELIVERED = 'delivered', // ✓✓ Доставлено собеседнику
-	READ = 'read', // ✓✓✓ Прочитано
-	ERROR = 'error' //  Ошибка отправки
+	RECEIVED = 'received',
+	SENDING = 'sending',
+	SENT = 'sent',
+	DELIVERED = 'delivered',
+	READ = 'read',
+	ERROR = 'error'
 }
 
-// ============================================================================
-// СИСТЕМНЫЕ СОБЫТИЯ
-// ============================================================================
-
 export enum SystemEventType {
-	// Даты и временные метки
 	DATE_SEPARATOR = 'date_separator',
-
-	// Создание/удаление чата/канала
 	CHAT_CREATED = 'chat_created',
 	CHANNEL_CREATED = 'channel_created',
 	CHAT_DELETED = 'chat_deleted',
-
-	// Действия с участниками
 	MEMBER_JOINED = 'member_joined',
 	MEMBER_LEFT = 'member_left',
 	MEMBER_KICKED = 'member_kicked',
 	MEMBER_INVITED = 'member_invited',
-
-	// Изменения в чате
 	CHAT_NAME_CHANGED = 'chat_name_changed',
 	CHAT_PHOTO_CHANGED = 'chat_photo_changed',
 	MESSAGE_PINNED = 'message_pinned',
 	MESSAGE_UNPINNED = 'message_unpinned',
-
-	// Права доступа
 	PERMISSIONS_CHANGED = 'permissions_changed',
 	ADMIN_ADDED = 'admin_added',
 	ADMIN_REMOVED = 'admin_removed'
 }
 
 // ============================================================================
-// БАЗОВЫЕ ИНТЕРФЕЙСЫ
+// 🔧 СИСТЕМНЫЕ СООБЩЕНИЯ: МИНИМАЛЬНЫЕ ТИПЫ (для SystemMessage компонента)
 // ============================================================================
 
-export interface BaseMessage {
-	id: string;
-	type: MessageType;
-	createdAt: Date;
-	updatedAt?: Date;
+/**
+ * Базовый интерфейс для данных системного события
+ * Гибкая структура — конкретные поля определяются в типах ниже
+ */
+export interface SystemEventPayload {
+	[key: string]: unknown;
 }
 
-// ============================================================================
-// СООБЩЕНИЯ ПОЛЬЗОВАТЕЛЕЙ
-// ============================================================================
-
-// src/entities/Chat/model/types/chat.types/chat.types.ts
-
-export interface TextMessage extends BaseMessage {
-	type: MessageType.TEXT;
-	content: string;
-	senderId: string;
-	senderName: string;
-	status: MessageStatus;
-	isEdited?: boolean;
-
-	// Поля для реплаев и пересылок (опциональные)
-	has_replied_message?: boolean;
-	has_forwarded_message?: boolean;
-
-	//  Данные о сообщении, на которое отвечают
-	replyTo?: {
-		id: string;
-		text: string;
-		senderName?: string;
-	};
-
-	//  Данные о пересланном сообщении
-	forwardedFrom?: {
-		chatName: string;
-		author: string;
-		messageText?: string;
-	};
-
-	//  Вложения (файлы, изображения и т.д.)
-	files_summary?: {
-		types: string[];
-		count: number;
-	};
-
-	// Флаг нового сообщения (для бейджа)
-	new?: boolean;
-}
-
-// ============================================================================
-// ДАННЫЕ СИСТЕМНЫХ СОБЫТИЙ (Payload)
-// ============================================================================
-
-// Создание чата/канала
+/**
+ * Данные события: создание чата/канала
+ */
 export interface ChatCreatedData {
-	chatId: string;
-	chatKey: string;
 	name: string;
-	description?: string;
-	chatType: ChatType; // ✅ Используем enum
-	createdBy: string;
 	ownerFullName: string;
-	avatar?: {
-		filename: string;
-		url: string;
-		webpUrl?: string;
-		smallUrl?: string;
-		masterUrl?: string;
-	};
-	addedUsers?: Array<{
-		uid: string;
-		fullName: string;
-	}>;
+	// Опциональные поля, если бэк их отдаёт
+	description?: string;
+	chatType?: ChatType;
 }
 
-// Присоединение участника
+/**
+ * Данные события: участник присоединился
+ */
 export interface MemberJoinedData {
-	userId: string;
 	userName: string;
 	joinType: 'self' | 'invited' | 'added';
-	inviterId?: string;
 	inviterName?: string;
 }
 
-// Приглашение участника
+/**
+ * Данные события: участник приглашён
+ */
 export interface MemberInvitedData {
-	inviterId: string;
 	inviterName: string;
-	invitedUserId: string;
 	invitedUserName: string;
 }
 
-// Выход участника
+/**
+ * Данные события: участник покинул чат
+ */
 export interface MemberLeftData {
-	userId: string;
 	userName: string;
-	leaveType: 'voluntary' | 'kicked';
-	kickerId?: string;
-	kickerName?: string;
 }
 
-// Исключение участника
+/**
+ * Данные события: участник удалён
+ */
 export interface MemberKickedData {
-	userId: string;
 	userName: string;
-	kickerId: string;
 	kickerName: string;
-	reason?: string;
 }
 
-// Изменение названия чата
+/**
+ * Данные события: название чата изменено
+ */
 export interface ChatNameChangedData {
 	oldName: string;
 	newName: string;
-	changedByUserId: string;
 	changedByUserName: string;
 }
 
-// Закрепление сообщения
+/**
+ * Данные события: сообщение закреплено
+ */
 export interface MessagePinnedData {
-	messageId: string;
-	pinnedByUserId: string;
 	pinnedByUserName: string;
-	messageContent: string;
+	messageContent?: string;
 }
 
-// Временная метка (разделитель дат)
-export interface DateSeparatorData {
-	date: Date;
-	label: string;
-}
-
-// ============================================================================
-// ОБЪЕДИНЁННЫЙ ТИП ДАННЫХ СОБЫТИЯ (Discriminated Union)
-// ============================================================================
-
+/**
+ * Объединённый тип для eventData в системном сообщении
+ * Discriminated union по eventType
+ */
 export type SystemEventData =
-	| { type: SystemEventType.CHAT_CREATED; payload: ChatCreatedData }
-	| { type: SystemEventType.CHANNEL_CREATED; payload: ChatCreatedData }
+	| {
+			type: SystemEventType.CHAT_CREATED | SystemEventType.CHANNEL_CREATED;
+			payload: ChatCreatedData;
+	  }
 	| { type: SystemEventType.MEMBER_JOINED; payload: MemberJoinedData }
 	| { type: SystemEventType.MEMBER_INVITED; payload: MemberInvitedData }
 	| { type: SystemEventType.MEMBER_LEFT; payload: MemberLeftData }
 	| { type: SystemEventType.MEMBER_KICKED; payload: MemberKickedData }
 	| { type: SystemEventType.CHAT_NAME_CHANGED; payload: ChatNameChangedData }
 	| { type: SystemEventType.MESSAGE_PINNED; payload: MessagePinnedData }
-	| { type: SystemEventType.DATE_SEPARATOR; payload: DateSeparatorData };
+	| { type: SystemEventType.DATE_SEPARATOR; payload: { label: string } }
+	| {
+			type: Exclude<
+				SystemEventType,
+				| SystemEventType.CHAT_CREATED
+				| SystemEventType.CHANNEL_CREATED
+				| SystemEventType.MEMBER_JOINED
+				| SystemEventType.MEMBER_INVITED
+				| SystemEventType.MEMBER_LEFT
+				| SystemEventType.MEMBER_KICKED
+				| SystemEventType.CHAT_NAME_CHANGED
+				| SystemEventType.MESSAGE_PINNED
+				| SystemEventType.DATE_SEPARATOR
+			>;
+			payload: SystemEventPayload;
+	  };
 
-// ============================================================================
-// СИСТЕМНОЕ СООБЩЕНИЕ
-// ============================================================================
-
-export interface SystemMessageData extends BaseMessage {
-	type: MessageType.SYSTEM;
-	eventType: SystemEventType;
-	eventData: SystemEventData;
+/**
+ * Системное сообщение для UI-компонентов
+ * Простой плоский интерфейс — без наследования от BaseMessage
+ */
+export interface SystemMessageData {
+	id: string; // ✅ string для ключей React
+	type: MessageType.SYSTEM; // ✅ дискриминатор
+	createdAt: number; // ✅ timestamp (как в ChatMessage)
+	eventType: SystemEventType; // ✅ тип события
+	eventData: SystemEventData; // ✅ данные события
+	displayText?: string; // ✅ опционально: готовый текст для отображения
 }
 
 // ============================================================================
-// ОБЪЕДИНЁННЫЙ ТИП СООБЩЕНИЯ
+//  УТИЛИТЫ
 // ============================================================================
 
-export type Message = TextMessage | SystemMessageData;
+export const getFilesSummary = (
+	files: readonly FileAttachment[]
+): FilesSummary => {
+	const types = [...new Set(files.map(f => f.file_type))].slice(0, 3);
+	return { types, count: files.length };
+};
 
-// ============================================================================
-// МЕТАДАННЫЕ ЧАТА
-// ============================================================================
-
-export interface ChatMetadata {
-	id: string;
-	name: string;
-	type: ChatType;
-	createdAt: Date;
-	updatedAt: Date;
-	participantsCount: number;
-	lastActivityAt: Date;
-	isArchived: boolean;
-}
-
-// Журнал событий (event log)
-export interface ChatEventLog {
-	id: string;
-	chatId: string;
-	eventType: SystemEventType;
-	eventData: SystemEventData;
-	timestamp: Date;
-	actorId?: string;
-	actorName?: string;
-}
+/**
+ * Конвертирует ISO-дату в Unix timestamp
+ * @param isoDate - строка в формате ISO 8601
+ * @returns timestamp в миллисекундах
+ */
+export const parseIsoDateToTimestamp = (isoDate: string): number => {
+	const timestamp = new Date(isoDate).getTime();
+	return Number.isNaN(timestamp) ? 0 : timestamp;
+};
