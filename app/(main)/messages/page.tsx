@@ -1,5 +1,12 @@
 import { MessagesList } from '@/entities/Chat';
 
-export default function page() {
-	return <MessagesList />;
+interface PageProps {
+	params: {
+		uid: string;
+	};
+}
+
+export default function Page({ params }: PageProps) {
+	// 🔹 Извлекаем uid из params и передаём как chatUid (не userUid!)
+	return <MessagesList chatUid={params.uid} />;
 }

@@ -37,8 +37,8 @@ interface MessagesApiResponse {
 
 // пропсы компонента messages
 interface MessagesProps {
-	userUid: string;
-	className: string;
+	chatUid: string;
+	className?: string;
 }
 
 // маппинг api -> локальная модель
@@ -49,17 +49,17 @@ const mapMessage = (m: MessageApi): Message => ({
 	status: m.from_me ? 'read' : 'received'
 });
 
-const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
+const MessagesListComponent = ({ chatUid, className }: MessagesProps) => {
 	// ===== ПОЛУЧЕНИЕ ДАННЫХ =====
 
 	// хук для получения сообщений через api
 	const { data, error, isLoading, refetch } = useGetMessagesQuery(
-		{ user_uid: userUid },
+		{ user_uid: chatUid },
 		{
 			// обновление каждые 4 секунды, если есть userUid
 			// pollingInterval: userUid ? 4000 : 0,
 			// пропуск запроса если нет userUid
-			skip: !userUid
+			skip: !chatUid
 		}
 	);
 
