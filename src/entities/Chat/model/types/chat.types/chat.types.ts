@@ -109,6 +109,7 @@ export interface ChatMessage {
 	new: boolean;
 	created_at: number;
 	updated_at: number;
+	type?: MessageType;
 }
 
 // ============================================================================
@@ -473,12 +474,12 @@ export type SystemEventData =
  * Простой плоский интерфейс — без наследования от BaseMessage
  */
 export interface SystemMessageData {
-	id: string; // ✅ string для ключей React
-	type: MessageType.SYSTEM; // ✅ дискриминатор
-	createdAt: number; // ✅ timestamp (как в ChatMessage)
-	eventType: SystemEventType; // ✅ тип события
-	eventData: SystemEventData; // ✅ данные события
-	displayText?: string; // ✅ опционально: готовый текст для отображения
+	id: string; // string для ключей React
+	type: MessageType.SYSTEM; //  дискриминатор
+	createdAt: number; //  timestamp (как в ChatMessage)
+	eventType: SystemEventType; //  тип события
+	eventData: SystemEventData; //  данные события
+	displayText?: string; //  опционально: готовый текст для отображения
 }
 
 // ============================================================================
