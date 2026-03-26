@@ -3,130 +3,170 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChatHeader, MessagesList } from '@/entities/Chat';
-import { MessageFormComponent } from '../../ChatBottom/ui/MessageFormComponent/MessageFormComponent';
+
 import { useChatHeaderData } from '@/entities/Chat/model/lib/hooks/useChatHeaderData/useChatHeaderData';
-import { selectChatByUid } from '@/entities/Chat/api/chatApi';
+import {
+	selectChatByUid,
+	useGetMessagesQuery
+} from '@/entities/Chat/api/chatApi';
 import { UserCardSkeleton } from '@/shared/ui/Skeleton';
 import { UserCardType } from '@/shared/ui/UserCard';
 import { NotMessage } from '@/shared/ui/NotMessage/NotMessage';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { RootState } from '@/app/providers/StoreProvider';
-import { Chat } from '@/entities/Chat/model/types/chat.types/chat.types';
-import { appConfig } from '@/shared/config/app.config';
-import { mockChats } from '@/entities/Chat/mock/mockData';
-import { ContactsSchema } from '@/entities/Contacts/model/types/contacts.types/contacts.types';
-import { mockContacts } from '@/entities/Contacts/mock/mockContacts';
-import { mockMessages } from '@/entities/Chat/mock/mockMessages';
+import { Chat, ChatMessage } from '../../model/types/chat.types/chat.types';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 import cls from './ChatView.module.scss';
+import { MessageFormComponent } from '../ChatBottom';
 
 interface ChatViewProps {
 	chatUid: string;
 	onBack?: () => void;
+	userDataFromSearch?: {
+		userName: string;
+		avatar?: string;
+		isOnline?: boolean;
+	};
 }
 
-export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
+const MESSAGES_PAGE_SIZE = 50;
+const MESSAGES_ORDERING = '-created_at';
+
+export const ChatView = ({
+	chatUid,
+	userDataFromSearch,
+	onBack
+}: ChatViewProps) => {
 	const isMobile = useMediaQuery();
 	const [isActionBarVisible, setIsActionBarVisible] = useState(true);
 
 	// ─────────────────────────────────────────────────────────────
-	//  DATA: Получаем чат из кеша ИЛИ создаём из контакта
+	// DATA: Чат из кеша списка (основной источник)
 	// ─────────────────────────────────────────────────────────────
 	const chatDataFromCache = useSelector((state: RootState) =>
 		selectChatByUid(state, chatUid)
 	);
 
-	//рендер моковых сообшщений
-	const messages = useMemo(() => {
-		if (!appConfig.USE_MOCKS) {
+	// ─────────────────────────────────────────────────────────────
+	// DATA: Сообщения (запрашиваем всегда, бэкенд сам обработает создание чата)
+	// ─────────────────────────────────────────────────────────────
+	const {
+		data: messagesResponse,
+		isLoading: isMessagesLoading,
+		isError: isMessagesError,
+		error: messagesError
+	} = useGetMessagesQuery(
+		{
+			user_uid: chatUid,
+			page_size: MESSAGES_PAGE_SIZE,
+			ordering: MESSAGES_ORDERING
+		},
+		{
+			skip: !chatUid
+		}
+	);
+
+	const isForbidden = (messagesError as FetchBaseQueryError)?.status === 403;
+	const hasRealError = isMessagesError && !isForbidden;
+
+	const messages = useMemo<ChatMessage[]>(() => {
+		if (isForbidden) {
 			return [];
 		}
-
-		// Для моков: возвращаем все сообщения или фильтруем по чату
-		// (в реальных моках у сообщений должен быть chatId)
-		return mockMessages;
-	}, []);
-
-	const chatData = useMemo(() => {
-		if (appConfig.USE_MOCKS) {
-			const mockChat = mockChats.find((c: Chat) => c.chat.uid === chatUid);
-			if (mockChat) {
-				return mockChat;
-			}
-		}
-
-		if (chatDataFromCache) {
-			return chatDataFromCache;
-		}
-
-		const mockContact = mockContacts.find(
-			(c: ContactsSchema) => c.system_contact.uid === chatUid
-		);
-
-		if (mockContact) {
-			return {
-				id: -1, // временный ID для новых чатов
-				chat: {
-					uid: mockContact.system_contact.uid, //  Используем uid из контакта!
-					username: '',
-					first_name: mockContact.first_name,
-					last_name: mockContact.last_name,
-					avatar_url: mockContact.system_contact.avatar_url,
-					avatar_webp_url: mockContact.system_contact.avatar_webp_url,
-					is_online: mockContact.system_contact.is_online,
-					was_online_at: mockContact.system_contact.was_online_at,
-					is_in_contacts: false, //  Ключевое: не в контактах → показываем ActionBar
-					is_blocked: false
-				},
-				is_group: false,
-				is_favorite: false,
-				notifications: false,
-				new_message_count: 0,
-				name: `${mockContact.first_name} ${mockContact.last_name}`,
-				chat_type: 'chat' as const,
-				chat_key: `chat_${chatUid}`,
-				last_activity_at: mockContact.system_contact.was_online_at ?? 0,
-				last_seen_message: null,
-				last_message: null, //  Нет сообщений → покажем NotMessage
-				first_new_message: null
-			} as Chat;
-		}
-
-		// 4. Если ничего не нашли — null (покажем скелетон)
-		return null;
-	}, [chatDataFromCache, chatUid]);
+		return messagesResponse?.results ?? [];
+	}, [messagesResponse, isForbidden]);
 
 	// ─────────────────────────────────────────────────────────────
-	// HEADER DATA: Используем хук или дефолтные значения
+	// DATA: Объединяем источники (прямой запрос чата отключён)
+	// ─────────────────────────────────────────────────────────────
+	const chatData = useMemo<Chat | null>(() => {
+		return chatDataFromCache ?? null;
+	}, [chatDataFromCache]);
+
+	// ─────────────────────────────────────────────────────────────
+	// HEADER DATA
 	// ─────────────────────────────────────────────────────────────
 	const { headerData, hasMessages } = useChatHeaderData(chatData);
 
-	//  Fallback данные: из headerData + дополнительные поля из chatData
+	const getPreviewData = (uid: string | undefined) => {
+		if (!uid) {
+			return {};
+		}
+
+		const localStorageKey = `chat_preview_${uid}`;
+		const sessionStorageKey = `chat_preview_data_${uid}`;
+
+		try {
+			const sessionRaw = sessionStorage.getItem(sessionStorageKey);
+			if (sessionRaw) {
+				return JSON.parse(sessionRaw) as {
+					userName?: string;
+					avatar?: string;
+					isOnline?: boolean;
+				};
+			}
+
+			const localRaw = localStorage.getItem(localStorageKey);
+			if (localRaw) {
+				const parsed = JSON.parse(localRaw) as {
+					userName?: string;
+					avatar?: string;
+					isOnline?: boolean;
+				};
+
+				try {
+					sessionStorage.setItem(sessionStorageKey, localRaw);
+					localStorage.removeItem(localStorageKey);
+				} catch (saveError) {
+					console.error('Preview save error:', saveError);
+				}
+				return parsed;
+			}
+		} catch (e) {
+			console.error('Preview parse error:', e);
+		}
+		return {};
+	};
+
 	const safeHeaderData = useMemo(() => {
-		// Базовые поля из хука (с защитой от null)
+		const preview = chatUid ? getPreviewData(chatUid) : {};
+
 		const baseData = {
-			userName: headerData?.userName ?? 'Неизвестный пользователь',
+			userName:
+				userDataFromSearch?.userName ??
+				preview?.userName ??
+				headerData?.userName ??
+				'Неизвестный пользователь',
+
 			userStatus: headerData?.userStatus ?? 'был(а) давно',
-			userAvatar: headerData?.userAvatar,
-			isOnline: headerData?.isOnline ?? false,
+
+			userAvatar:
+				userDataFromSearch?.avatar ?? preview?.avatar ?? headerData?.userAvatar,
+
+			isOnline:
+				userDataFromSearch?.isOnline ??
+				preview?.isOnline ??
+				headerData?.isOnline ??
+				false,
+
 			isInContacts: headerData?.isInContacts ?? false
 		};
 
-		//  Дополнительные поля для API добавления контакта — берём из chatData
 		const contactData = {
 			contactPhone: chatData?.chat?.username?.startsWith('+')
 				? chatData.chat.username
-				: undefined, // 🔹 Или бери из другого поля, если телефон хранится отдельно
+				: undefined,
 			contactFirstName: chatData?.chat?.first_name,
 			contactLastName: chatData?.chat?.last_name
 		};
 
 		return { ...baseData, ...contactData };
-	}, [headerData, chatData]); //  Добавляем chatData в зависимости
+	}, [headerData, chatData, userDataFromSearch, chatUid]);
 
 	// ─────────────────────────────────────────────────────────────
-	//  HANDLERS
+	// HANDLERS
 	// ─────────────────────────────────────────────────────────────
 	const handleBack = useCallback(() => {
 		if (onBack) {
@@ -142,18 +182,16 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 
 	const handleAddToContacts = useCallback(() => {
 		console.log('👤 Add to contacts:', chatUid);
-		//! TODO: Вызвать мутацию добавления контакта
 	}, [chatUid]);
 
 	const handleBlock = useCallback(() => {
 		console.log('🚫 Block user:', chatUid);
 	}, [chatUid]);
 
+	// RENDER: Loading State (только для сообщений)
 	// ─────────────────────────────────────────────────────────────
-	//  RENDER: Loading state (только если данных вообще нет)
-	// ─────────────────────────────────────────────────────────────
-	// Показываем скелетон ТОЛЬКО если chatData === null (не нашли ни в чатах, ни в контактах)
-	if (!chatData) {
+
+	if (isMessagesLoading && !chatData && messages.length === 0 && !isForbidden) {
 		return (
 			<section className={cls.chatView}>
 				<UserCardSkeleton count={1} type={UserCardType.CONTACT} />
@@ -162,7 +200,46 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 	}
 
 	// ─────────────────────────────────────────────────────────────
-	//  RENDER: Main Content
+	// RENDER: Error State (только реальные ошибки, не 403)
+	// ─────────────────────────────────────────────────────────────
+
+	if (hasRealError && !chatData) {
+		return (
+			<section className={cls.chatView}>
+				<div className={cls.notMessageWrapper}>
+					<NotMessage />
+				</div>
+			</section>
+		);
+	}
+
+	// ─────────────────────────────────────────────────────────────
+	// RENDER: Empty State (чат не найден в кеше ИЛИ 403)
+	// ─────────────────────────────────────────────────────────────
+
+	if (!chatData || isForbidden) {
+		return (
+			<section className={cls.chatView}>
+				<ChatHeader
+					{...safeHeaderData}
+					onCall={handleCall}
+					onAddToContacts={handleAddToContacts}
+					onBlock={handleBlock}
+					onBack={isMobile ? handleBack : undefined}
+					onActionBarVisibilityChange={setIsActionBarVisible}
+				/>
+
+				<div className={cls.notMessageWrapper}>
+					<NotMessage />
+				</div>
+
+				<MessageFormComponent />
+			</section>
+		);
+	}
+
+	// ─────────────────────────────────────────────────────────────
+	// RENDER: Main Content (чат найден, всё работает)
 	// ─────────────────────────────────────────────────────────────
 	const messagesClass = classNames(cls.messagesContent, {
 		[cls.messagesContent_noRadius]: isMobile && isActionBarVisible
@@ -179,14 +256,9 @@ export const ChatView = ({ chatUid, onBack }: ChatViewProps) => {
 				onActionBarVisibilityChange={setIsActionBarVisible}
 			/>
 
-			{/*  NotMessage или MessagesList */}
 			{hasMessages ? (
 				<>
-					<MessagesList
-						className={messagesClass}
-						messages={messages}
-						currentUserId='user-me'
-					/>
+					<MessagesList userUid='user-me' className={messagesClass} />
 					<MessageFormComponent />
 				</>
 			) : (
