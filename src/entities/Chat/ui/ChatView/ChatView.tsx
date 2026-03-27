@@ -2,8 +2,11 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ChatHeader, MessagesList } from '@/entities/Chat';
-import { MessageFormComponent } from '../ChatBottom/ui/MessageFormComponent/MessageFormComponent';
+import {
+	ChatHeader,
+	MessageFormComponent,
+	MessagesList
+} from '@/entities/Chat';
 import { useChatHeaderData } from '@/entities/Chat/model/lib/hooks/useChatHeaderData/useChatHeaderData';
 import {
 	selectChatByUid,
