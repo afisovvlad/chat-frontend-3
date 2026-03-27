@@ -60,9 +60,6 @@ const mapLastMessage = (
 	};
 };
 
-/**
- * Маппинг данных чата из API в формат UserCard
- */
 export const mapChatToUserCard = (chat: Chat): IUserCard => {
 	const chatData = chat.chat;
 	const chatName = chat.name || '';
@@ -105,10 +102,6 @@ export const mapChatToUserCard = (chat: Chat): IUserCard => {
 	};
 };
 
-/**
- * Маппинг: RawApiChatMessage → ChatMessage
- */
-
 export const mapApiMessageToFrontend = (
 	apiMsg: RawApiChatMessage
 ): ChatMessage => ({
@@ -129,7 +122,6 @@ export const mapApiMessageToFrontend = (
 	has_forwarded_message: apiMsg.forwarded_messages?.length > 0,
 	new: apiMsg.new ?? false,
 
-	// место конвертации: ISO string → timestamp
 	created_at: new Date(apiMsg.created_at).getTime(),
 	updated_at: new Date(apiMsg.updated_at).getTime()
 });
@@ -141,7 +133,6 @@ export const mapApiMessagesList = (
 export const mapChatMessageToSystemMessageData = (
 	msg: ChatMessage
 ): SystemMessageData => {
-	// ✅ Fallback-значения
 	let eventType: SystemEventType = SystemEventType.CHAT_CREATED;
 	let eventData: SystemEventData = {
 		type: SystemEventType.CHAT_CREATED,
@@ -153,7 +144,6 @@ export const mapChatMessageToSystemMessageData = (
 	let displayText: string | undefined;
 
 	try {
-		// Пытаемся распарсить content как JSON
 		const parsed = JSON.parse(msg.content) as {
 			eventType?: SystemEventType;
 			eventData?: { payload: Record<string, unknown> };
@@ -163,8 +153,6 @@ export const mapChatMessageToSystemMessageData = (
 		if (parsed.eventType && parsed.eventData?.payload) {
 			eventType = parsed.eventType;
 
-			// ✅ Создаём eventData с правильным типом через type assertion
-			// Это безопасно, т.к. мы контролируем структуру на уровне бэкенда
 			eventData = {
 				type: eventType,
 				payload: parsed.eventData.payload
@@ -175,13 +163,12 @@ export const mapChatMessageToSystemMessageData = (
 			displayText = parsed.text;
 		}
 	} catch {
-		// Если content — plain text, используем его как displayText
 		displayText = msg.content || undefined;
 	}
 
 	return {
 		id: String(msg.id),
-		// ✅ Используем значение энума напрямую (не число!)
+
 		type: MessageType.SYSTEM,
 		createdAt: msg.created_at,
 		eventType,
@@ -190,10 +177,6 @@ export const mapChatMessageToSystemMessageData = (
 	};
 };
 
-/**
- * Type guard: проверяет, является ли сообщение системным
- * ✅ Сравниваем со значением энума, а не с числом
- */
 export const isSystemMessageType = (
 	msg: ChatMessage
 ): msg is ChatMessage & { type: typeof MessageType.SYSTEM } => {

@@ -5,23 +5,21 @@ import { MessageBubble } from '@/entities/Chat/ui/MessageBubble/MessageBubble';
 import { Down } from '@icons/index';
 import { useGetMessagesQuery } from '@/entities/Chat/api/chatApi';
 import { shouldShowDateSeparator } from '@/entities/Chat/model/lib/service/dateFormating/dateFormater';
-import styles from './MessagesList.module.scss';
 import SmartDateSeparator from '../SystemMessages/ui/SmartDateSeparator/SmartDateSeparator';
 import { StickyDateProvider } from '../SystemMessages/ui/StickyDateContext/StickyDateContext';
 import SystemMessage from '../SystemMessages/ui/SystemMessages/SystemMessages';
 import {
 	SystemMessageData,
-	ChatMessage,
-	MessageType
+	ChatMessage
 } from '../../model/types/chat.types/chat.types';
 import {
 	isSystemMessageType,
 	mapChatMessageToSystemMessageData
 } from '../../model/mapper/mapChatType/chatMapper';
+import styles from './MessagesList.module.scss';
 
 // ===== ТИПЫ =====
 
-// Локальный тип обычного сообщения
 interface TextMessage {
 	id: string;
 	text: string;
@@ -40,7 +38,6 @@ interface MessagesProps {
 	className?: string;
 }
 
-//  Конвертер ChatMessage → TextMessage
 const toLocalTextMessage = (msg: ChatMessage): TextMessage => ({
 	id: String(msg.id),
 	text: msg.content,
@@ -296,7 +293,7 @@ const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 	}
 
 	// ===== РЕНДЕР =====
-	// ✅ StickyDateProvider оборачивает весь список, логика прилипания внутри
+
 	return (
 		<StickyDateProvider
 			containerRef={containerRef as React.RefObject<HTMLDivElement>}
