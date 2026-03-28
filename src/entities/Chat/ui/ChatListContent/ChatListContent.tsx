@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { Chat } from '../../model/types/chat.types/chat.types';
 import { ChatListItem } from '../ChatListItem/ChatListItem';
 
@@ -8,7 +8,10 @@ import {
 	useLazySearchGlobalContactsQuery
 } from '@/entities/Contacts';
 import { ContextMenu, useContextMenu } from '@/features/contextMenu';
+import { Button, ButtonSize, ButtonTheme } from '@/shared/ui/Button';
 import { KebabMenuItem } from '@/shared/ui/KebabMenu';
+import { Modal } from '@/shared/ui/Modal';
+import { Text, TextColor, TextSize, TextType } from '@/shared/ui/Text';
 import {
 	AddContact,
 	MessageRead,
@@ -33,11 +36,27 @@ export const ChatListContent = memo(
 		chats: Chat[];
 		selectedChatUid?: string | null;
 	}) => {
+		const [isOpen, setIsOpen] = useState(false);
+		const [chatToDelete, setChatToDelete] = useState<{
+			id: number;
+			name: string;
+		} | null>(null);
+
 		// импорт хуков
-		const [deleteChat] = useDeleteChatMutation();
+		const [deleteChat, { isLoading, error }] = useDeleteChatMutation();
 		const [addContact] = useAddContactByPhoneMutation();
 		const [getContact] = useLazySearchGlobalContactsQuery();
 		const [updateChatProperties] = useUpdateChatPropertiesMutation();
+
+		const handleDelete = useCallback(async () => {
+			if (chatToDelete) {
+				try {
+					await deleteChat(chatToDelete.id).unwrap();
+					setIsOpen(false);
+					setChatToDelete(null);
+				} catch {}
+			}
+		}, [chatToDelete, deleteChat]);
 
 		const getContextItems = useCallback(
 			(chat: Chat): KebabMenuItem[] => {
@@ -104,15 +123,17 @@ export const ChatListContent = memo(
 						text: 'Удалить чат',
 						icon: <Trash />,
 						onClick: async () => {
-							try {
-								await deleteChat(chat.id).unwrap();
-							} catch {}
+							setChatToDelete({
+								id: chat.id,
+								name: `${chat.chat.first_name} ${chat.chat.last_name}`
+							});
+							setIsOpen(true);
 						},
 						danger: true
 					}
 				];
 			},
-			[getContact, addContact, updateChatProperties, deleteChat]
+			[getContact, addContact, updateChatProperties]
 		);
 
 		const { handleContextMenu, isVisible, position, items } = useContextMenu();
@@ -131,6 +152,55 @@ export const ChatListContent = memo(
 				</div>
 
 				<ContextMenu visible={isVisible} position={position} items={items} />
+
+				<Modal
+					isOpen={isOpen}
+					onClose={() => {
+						setIsOpen(false);
+						setChatToDelete(null);
+					}}
+					size='wide'
+					className={cls.modal}
+				>
+					<Text
+						type={TextType.TITLE}
+						fontSize={TextSize.L}
+						className={cls.modalTitle}
+					>
+						Удалить чат
+					</Text>
+
+					<Text fontSize={TextSize.M} className={cls.modalText}>
+						Удалить чат с {chatToDelete?.name} без возможности восстановления?
+					</Text>
+
+					{error && (
+						<Text color={TextColor.ERROR} className={cls.modalError}>
+							Произошла ошибка при попытке удалить чат
+						</Text>
+					)}
+
+					<Modal.Actions>
+						<Button
+							onClick={() => {
+								setIsOpen(false);
+								setChatToDelete(null);
+							}}
+							size={ButtonSize.S}
+							theme={ButtonTheme.CLEAR}
+						>
+							Отмена
+						</Button>
+
+						<Button
+							onClick={handleDelete}
+							size={ButtonSize.S}
+							disabled={isLoading}
+						>
+							{isLoading ? 'Удаление...' : 'Удалить'}
+						</Button>
+					</Modal.Actions>
+				</Modal>
 			</>
 		);
 	}
