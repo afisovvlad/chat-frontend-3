@@ -15,10 +15,10 @@ const excludeHeaders = [
 ];
 
 async function handleProxy(request: NextRequest): Promise<NextResponse> {
-	const path = request.nextUrl.pathname.replace(
-		process.env.NEXT_PUBLIC_PROXY_PREFIX as string,
-		''
-	);
+	const path = request.nextUrl.pathname
+		.replace(process.env.NEXT_PUBLIC_PROXY_PREFIX as string, '')
+		.replace(/\/$/, '');
+
 	const targetUrl = `${process.env.NEXT_PUBLIC_BASE_API}${path}/`;
 
 	const accessToken = request.cookies.get('accessToken')?.value;
