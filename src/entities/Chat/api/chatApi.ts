@@ -1,14 +1,14 @@
+import { RootState } from '@/app/providers/StoreProvider';
 import { rtkApi } from '@/shared/api/rtkApi';
 import { createSelector } from '@reduxjs/toolkit';
-import { RootState } from '@/app/providers/StoreProvider';
 import { mapApiMessageToFrontend } from '../model/mapper/mapChatType/chatMapper';
 import type {
 	Chat,
 	ChatListResponse,
 	GetChatsRequest,
+	GetMessagesRequest,
 	MessageListResponse,
-	RawMessageListResponse,
-	GetMessagesRequest
+	RawMessageListResponse
 } from '../model/types/chat.types/chat.types';
 
 // ─────────────────────────────────────────────────────────────
