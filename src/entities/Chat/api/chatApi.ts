@@ -15,7 +15,7 @@ import {
 	CHATS_PAGE_SIZE,
 	MESSAGES_ORDERING,
 	MESSAGES_PAGE_SIZE
-} from '@/entities/Chat';
+} from '@/shared/model';
 
 // ─────────────────────────────────────────────────────────────
 //  RTK QUERY API

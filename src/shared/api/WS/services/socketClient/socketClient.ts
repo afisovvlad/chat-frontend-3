@@ -2,12 +2,8 @@ import type { WSRequest, WSResponse } from '@/shared/api/WS/types/wsTypes';
 import { chatApi } from '@/entities/Chat/api/chatApi';
 import { mapApiMessageToFrontend } from '@/entities/Chat/model/mapper/mapChatType/chatMapper';
 import type { AppDispatch } from '@/app/providers/StoreProvider/config/store';
-import {
-	ChatMessage,
-	MESSAGES_ORDERING,
-	MESSAGES_PAGE_SIZE,
-	RawApiChatMessage
-} from '@/entities/Chat';
+import { ChatMessage, RawApiChatMessage } from '@/entities/Chat';
+import { MESSAGES_PAGE_SIZE, MESSAGES_ORDERING } from '@/shared/model';
 
 let isConnecting = false;
 let connectPromise: Promise<WebSocket> | null = null;

@@ -5,8 +5,6 @@ import { useCallback, useMemo, useState } from 'react';
 import {
 	ChatHeader,
 	MessageFormComponent,
-	MESSAGES_ORDERING,
-	MESSAGES_PAGE_SIZE,
 	MessagesList
 } from '@/entities/Chat';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
@@ -30,6 +28,7 @@ import {
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { selectCurrentUserId } from '@/entities/Profile/model/selectors/selectCurrentUserId';
 import { useGetProfileQuery } from '@/entities/Profile/api/editProfile.api';
+import { MESSAGES_PAGE_SIZE, MESSAGES_ORDERING } from '@/shared/model';
 
 import cls from './ChatView.module.scss';
 
