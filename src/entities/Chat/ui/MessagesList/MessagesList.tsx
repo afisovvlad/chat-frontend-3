@@ -3,7 +3,7 @@
 import { memo, useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { MessageBubble } from '@/entities/Chat/ui/MessageBubble/MessageBubble';
 import { Down } from '@icons/index';
-import { useGetMessagesQuery } from '@/entities/Chat/api/chatApi';
+import { chatApi, useGetMessagesQuery } from '@/entities/Chat/api/chatApi';
 import { shouldShowDateSeparator } from '@/entities/Chat/model/lib/service/dateFormating/dateFormater';
 import SmartDateSeparator from '../SystemMessages/ui/SmartDateSeparator/SmartDateSeparator';
 import {
@@ -18,6 +18,8 @@ import {
 	GetMessagesRequest
 } from '../../model/types/chat.types/chat.types';
 import { mapChatMessageToSystemMessageData } from '../../model/mapper/mapChatType/chatMapper';
+import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
+import { preloadChatPages } from '../../model/lib/utils/fetchAllMessages/fetchAllMessages';
 
 import cls from './MessagesList.module.scss';
 
@@ -40,8 +42,6 @@ interface MessagesProps {
 	currentUserId?: string;
 	className?: string;
 }
-
-// Найдите функцию toLocalTextMessage и обновите:
 
 const toLocalTextMessage = (
 	msg: ChatMessage,
@@ -84,7 +84,6 @@ const MessagesListContent = ({
 		skip: !queryArgs
 	});
 
-	//  Получаем isAtBottom ИЗ КОНТЕКСТА (управляется StickyDateProvider)
 	const { isAtBottom } = useStickyDate();
 
 	// ===== REFS =====
@@ -93,12 +92,17 @@ const MessagesListContent = ({
 	const isAtBottomRef = useRef(true);
 	const isLoadingHistoryRef = useRef(false);
 	const abortControllerRef = useRef<AbortController | null>(null);
+	const preloadDoneRef = useRef(false);
 
 	// ===== STATE =====
+
+	const [isPreloading, setIsPreloading] = useState(false);
 	const [messages, setMessages] = useState<TextMessage[]>([]);
 	const [nextUrl, setNextUrl] = useState<string | null>(null);
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
 	const [newCount, setNewCount] = useState(0);
+
+	const dispatch = useAppDispatch();
 
 	// Синхронизируем реф с контекстным значением для логики добавления сообщений
 	useEffect(() => {
@@ -158,6 +162,81 @@ const MessagesListContent = ({
 			bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
 		}, 50);
 	}, [currentUserId, data]);
+
+	// Эффект авто-подгрузки
+
+	useEffect(() => {
+		const preloadMore = async () => {
+			// Прерываем, если:
+			if (
+				!data?.next ||
+				isFetchingMore ||
+				preloadDoneRef.current ||
+				isPreloading ||
+				!queryArgs?.user_uid
+			) {
+				return;
+			}
+
+			preloadDoneRef.current = true;
+
+			setIsPreloading(true);
+
+			try {
+				const { results: additionalResults, nextUrl: newNextUrl } =
+					await preloadChatPages(queryArgs.user_uid, {
+						pagesToLoad: 4,
+						ordering: queryArgs.ordering as
+							| '-created_at'
+							| 'created_at'
+							| undefined,
+						startPage: 2
+					});
+
+				if (additionalResults.length > 0) {
+					dispatch(
+						chatApi.util.updateQueryData('getMessages', queryArgs, draft => {
+							const existingUids = new Set(draft.results.map(m => m.uid));
+							const uniqueNew = additionalResults.filter(
+								msg => !existingUids.has(msg.uid)
+							);
+
+							if (uniqueNew.length > 0) {
+								const merged = [...draft.results, ...uniqueNew];
+								draft.results = merged.sort(
+									(a, b) => b.created_at - a.created_at
+								);
+								draft.next = newNextUrl;
+							}
+						})
+					);
+				}
+			} catch (err) {
+				console.error('❌ Preload error:', err);
+				preloadDoneRef.current = false;
+			} finally {
+				setIsPreloading(false);
+			}
+		};
+
+		if (data?.results?.length && !preloadDoneRef.current) {
+			preloadMore();
+		}
+	}, [
+		data?.results?.length,
+		data?.next,
+		queryArgs,
+		isFetchingMore,
+		isPreloading
+	]);
+
+	// 4. Сброс при смене чата
+	useEffect(() => {
+		return () => {
+			preloadDoneRef.current = false;
+			setIsPreloading(false);
+		};
+	}, [queryArgs?.user_uid]);
 
 	// ===== АВТОСКРОЛЛ ВНИЗ =====
 	useEffect(() => {
@@ -341,7 +420,7 @@ const MessagesListContent = ({
 					}
 					return (
 						<MessageBubble
-							key={item.data.uid || item.data.id}
+							key={item.data.uid}
 							id={item.data.id}
 							text={item.data.text}
 							time={item.data.time}
