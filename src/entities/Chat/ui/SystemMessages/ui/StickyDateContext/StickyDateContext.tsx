@@ -23,6 +23,7 @@ interface StickyDateContextValue {
 	activeDate: Date | null;
 	isActive: (id: string) => boolean;
 	isHidden: (id: string) => boolean;
+	isAtBottom: boolean;
 }
 
 const StickyDateContext = createContext<StickyDateContextValue | undefined>(
@@ -30,7 +31,8 @@ const StickyDateContext = createContext<StickyDateContextValue | undefined>(
 );
 
 const STICKY_OFFSET_TOP = 10;
-const STICKY_TOLERANCE = 20; // Допуск для раннего переключения
+const STICKY_TOLERANCE = 20;
+const SCROLL_THRESHOLD_BOTTOM = 50;
 
 export const StickyDateProvider: React.FC<{
 	children: React.ReactNode;
@@ -40,12 +42,17 @@ export const StickyDateProvider: React.FC<{
 	const [activeSeparatorId, setActiveSeparatorId] = useState<string | null>(
 		null
 	);
+	const [isAtBottom, setIsAtBottom] = useState(true);
+
 	const separatorsRef = useRef<Map<string, SeparatorInfo>>(new Map());
 	const internalContainerRef = useRef<HTMLDivElement>(null);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const [hiddenSeparatorIds, setHiddenSeparatorIds] = useState<Set<string>>(
 		new Set()
 	);
+
+	// Рефы для отслеживания предыдущих значений (чтобы не спамить рендерами)
+	const prevIsAtBottomRef = useRef(true);
 
 	const containerRef = externalContainerRef || internalContainerRef;
 
@@ -69,17 +76,15 @@ export const StickyDateProvider: React.FC<{
 		(id: string) => id === activeSeparatorId,
 		[activeSeparatorId]
 	);
-
 	const isHidden = useCallback(
-		(id: string) => {
-			return hiddenSeparatorIds.has(id);
-		},
+		(id: string) => hiddenSeparatorIds.has(id),
 		[hiddenSeparatorIds]
 	);
 
 	useEffect(() => {
 		const scrollContainer = scrollContainerRef.current;
 		if (!scrollContainer) {
+			console.warn('[StickyDate] scrollContainer not found');
 			return;
 		}
 
@@ -87,10 +92,8 @@ export const StickyDateProvider: React.FC<{
 			if (separatorsRef.current.size === 0) {
 				return null;
 			}
-
 			const containerRect = scrollContainer.getBoundingClientRect();
 			const threshold = containerRect.top + STICKY_OFFSET_TOP;
-
 			let bestMatch: SeparatorInfo | null = null;
 			let maxTopBelowThreshold = -Infinity;
 			const newHiddenSet = new Set<string>();
@@ -99,9 +102,7 @@ export const StickyDateProvider: React.FC<{
 				if (!sep.element.isConnected) {
 					continue;
 				}
-
 				const rect = sep.element.getBoundingClientRect();
-
 				if (
 					rect.top <= threshold + STICKY_TOLERANCE &&
 					rect.top > maxTopBelowThreshold
@@ -109,7 +110,6 @@ export const StickyDateProvider: React.FC<{
 					maxTopBelowThreshold = rect.top;
 					bestMatch = sep;
 				}
-
 				if (rect.bottom < threshold) {
 					newHiddenSet.add(sep.id);
 				}
@@ -119,19 +119,16 @@ export const StickyDateProvider: React.FC<{
 				if (prev.size !== newHiddenSet.size) {
 					return newHiddenSet;
 				}
-
 				for (const id of newHiddenSet) {
 					if (!prev.has(id)) {
 						return newHiddenSet;
 					}
 				}
-
 				for (const id of prev) {
 					if (!newHiddenSet.has(id)) {
 						return newHiddenSet;
 					}
 				}
-
 				return prev;
 			});
 
@@ -145,14 +142,12 @@ export const StickyDateProvider: React.FC<{
 					)[0];
 				return first || null;
 			}
-
 			return bestMatch;
 		};
 
 		const handleScroll = () => {
 			requestAnimationFrame(() => {
 				const active = findActiveSeparator();
-
 				if (active?.date) {
 					setActiveDate(prev =>
 						prev?.getTime() === active.date.getTime() ? prev : active.date
@@ -162,10 +157,20 @@ export const StickyDateProvider: React.FC<{
 					setActiveSeparatorId(prev => (prev === active.id ? prev : active.id));
 				}
 			});
+
+			const { scrollHeight, scrollTop, clientHeight } = scrollContainer;
+			const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+			const isBottom = distanceFromBottom < SCROLL_THRESHOLD_BOTTOM;
+
+			if (isBottom !== prevIsAtBottomRef.current) {
+				prevIsAtBottomRef.current = isBottom;
+				setIsAtBottom(isBottom);
+			}
 		};
 
+		const initTimer = setTimeout(handleScroll, 100);
+
 		scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
-		const initTimer = setTimeout(handleScroll, 0);
 
 		return () => {
 			clearTimeout(initTimer);
@@ -178,7 +183,8 @@ export const StickyDateProvider: React.FC<{
 		unregisterSeparator,
 		activeDate,
 		isActive,
-		isHidden
+		isHidden,
+		isAtBottom
 	};
 
 	return (

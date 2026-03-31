@@ -21,34 +21,55 @@
 	border-radius: 20px;
 }
 
-.textarea {
-	width: 100%;
-	min-height: 21px; // Минимальная высота (1 строка)
-	max-height: 150px; // Максимальная высота (~6 строк)
-	font-family: inherit;
-	font-weight: 400;
-	font-size: 16px;
-	line-height: 130%;
-	letter-spacing: 0.4px;
-	outline: none;
-	resize: none; // Запрет ручного изменения размера
-	overflow: auto; // 🔹 Появляется скролл при превышении max-height
-
-	// Скрываем скроллбар для чистоты (опционально)
-	&::-webkit-scrollbar {
-		width: 4px;
-	}
-
-	&::-webkit-scrollbar-thumb {
-		background-color: var(--color-gray-200);
-		border-radius: 2px;
-	}
-}
-
 .button {
 	width: 36px;
 	min-width: 36px;
 	height: 36px;
 	padding: 0;
 	color: var(--color-primary);
+}
+
+.textarea {
+	width: 100%;
+	min-height: 21px;
+	max-height: 448px;
+	height: auto;
+	font-family: inherit;
+	font-weight: 400;
+	font-size: 16px;
+	line-height: 130%;
+	letter-spacing: 0.4px;
+	outline: none;
+	resize: none;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 0;
+	box-sizing: border-box;
+
+	&:focus-visible {
+		outline: none;
+	}
+
+	// Скроллбар — вебкит
+	&::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+		border-radius: 4px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: var(--color-grey-500);
+		border-radius: 4px;
+
+		&:hover {
+			background-color: var(--color-grey-600);
+		}
+	}
+
+	// Firefox
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-grey-500) transparent;
 }

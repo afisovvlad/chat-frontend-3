@@ -1,16 +1,17 @@
 .messages {
-	overflow-y: auto;
-	height: 100%;
 	padding: 0 16px;
 	flex-grow: 1;
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
+	overflow: visible;
 }
 
 .wrapper {
-	position: relative;
+	display: flex;
+	flex-direction: column;
 	height: 100%;
+	position: relative;
 }
 
 .emptyState {
@@ -21,24 +22,54 @@
 }
 
 .scrollButton {
-	position: absolute;
-	right: 8px;
-	bottom: 8px;
+	position: sticky;
+	bottom: 24px;
+	margin-right: 24px;
+	align-self: flex-end;
 	width: 44px;
 	height: 44px;
-	display: grid;
-	place-items: center;
+	flex-shrink: 0;
+	flex-grow: 0;
+	border-radius: 50%;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	background-color: var(--color-white);
 	border: 1px solid rgba(0, 0, 0, 30%);
-	border-radius: 99px;
 	cursor: pointer;
+	transition: transform 0.2s ease;
+	z-index: 100;
 
-	svg {
-		width: 12.7px;
-		height: 22.6px;
+	&:hover {
+		transform: scale(1.05);
 	}
 
-	path {
-		fill: var(--color-primary);
+	&:active {
+		transform: scale(0.95);
 	}
+}
+
+.icon {
+	width: 16px;
+	height: 16px;
+	color: var(--color-primary);
+}
+
+.badge {
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	min-width: 18px;
+	height: 21px;
+	padding: 5px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--color-white);
+	border-radius: 50%;
+	background-color: var(--color-violet-500);
+	word-break: normal;
 }

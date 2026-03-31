@@ -1,56 +1,127 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { sendMessage } from '../../model/lib/sendMessage';
-import { VoiceFile } from '../../model/types/types';
+import { useCallback, useState, useRef } from 'react';
+import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
+import { sendMessage } from '../../../../model/lib/service/sendMessage/sendMessage';
 import { AttachmentButton } from '../AttachmentButton/AttachmentButton';
-import { MessageForm } from '../MessageForm/MessageForm';
+import { MessageForm, MessageFormRef } from '../MessageForm/MessageForm'; // 👈 импортируем тип рефа
 import { VoiceRecorder } from '../VoiceRecorder/VoiceRecorder';
 import { Button, ButtonColor, ButtonType } from '@/shared/ui/Button';
 import { SendIcon } from '@icons/index';
+import { chatApi } from '@/entities/Chat/api/chatApi';
+import {
+	ChatMessage,
+	ChatType,
+	GetMessagesRequest,
+	MessageType,
+	VoiceFile
+} from '@/entities/Chat/model/types/chat.types/chat.types';
+import { selectCurrentUserId } from '@/entities/Profile';
 
 import cls from './MessageFormComponent.module.scss';
-import { chatApi } from '@/entities/Chat/api/chatApi';
 
 export interface MessageFormComponentProps {
 	chatUid: string;
+	chatType?: ChatType;
+	messagesQueryArgs?: GetMessagesRequest | null;
+	chatKey?: string;
 }
 
-export function MessageFormComponent({ chatUid }: MessageFormComponentProps) {
-	const dispatch = useDispatch();
+export function MessageFormComponent({
+	chatUid,
+	chatType,
+	messagesQueryArgs,
+	chatKey
+}: MessageFormComponentProps) {
 	const [files, setFiles] = useState<VoiceFile[]>([]);
-	const [isTextFilled, setIsTextFilled] = useState(false); // 🔹 Состояние: есть ли текст
+	const [isTextFilled, setIsTextFilled] = useState<boolean>(false);
+	const [messageText, setMessageText] = useState('');
+
+	const formRef = useRef<MessageFormRef>(null);
+
+	const currentUserId = useAppSelector(selectCurrentUserId);
+	const dispatch = useAppDispatch();
 
 	const handleSend = useCallback(
 		async (message: string) => {
-			try {
-				await sendMessage(chatUid, {
-					content: message,
-					files: files.length ? files : []
+			if (!currentUserId) {
+				console.error('❌ No currentUserId');
+				return;
+			}
+			if (!messagesQueryArgs) {
+				console.error('❌ No messagesQueryArgs:', {
+					messagesQueryArgs,
+					chatUid
 				});
+				return;
+			}
+
+			try {
+				const optimisticMsg: ChatMessage = {
+					id: -1,
+					uid: `temp_${Date.now()}`,
+					from_user: currentUserId,
+					content: message,
+					files_summary: { types: [], count: files.length },
+					has_replied_message: false,
+					has_forwarded_message: false,
+					new: true,
+					created_at: Math.floor(Date.now() / 1000),
+					updated_at: Math.floor(Date.now() / 1000),
+					type: MessageType.TEXT
+				};
 
 				dispatch(
-					chatApi.util.invalidateTags([
-						{ type: 'Messages', id: 'LIST' },
-						{ type: 'Chats', id: 'LIST' }
-					])
+					chatApi.util.updateQueryData(
+						'getMessages',
+						messagesQueryArgs,
+						draft => {
+							draft.results.unshift(optimisticMsg);
+						}
+					)
 				);
 
+				await sendMessage(
+					chatUid,
+					chatType ?? ChatType.CHAT,
+					{ content: message, files: files.length ? files : [] },
+					currentUserId,
+					chatKey
+				);
+
+				dispatch(chatApi.util.invalidateTags([{ type: 'Chats', id: 'LIST' }]));
 				setFiles([]);
+				setMessageText(''); // очищаем состояние родителя
 			} catch (error) {
-				if (process.env.NODE_ENV === 'development') {
-					console.error('Failed to send message:', error);
-				}
+				// Не очищаем текст при ошибке
 			}
 		},
-		[chatUid, files, dispatch]
+		[
+			chatUid,
+			chatType,
+			files,
+			dispatch,
+			currentUserId,
+			messagesQueryArgs,
+			chatKey
+		]
 	);
 
 	const handleSendVoice = useCallback(
 		async (voice: VoiceFile) => {
+			if (!currentUserId) {
+				return;
+			}
+
 			try {
-				await sendMessage(chatUid, { files: [voice] });
+				await sendMessage(
+					chatUid,
+					chatType ?? ChatType.CHAT,
+					{ files: [voice] },
+					currentUserId,
+					chatKey
+				);
 
 				dispatch(
 					chatApi.util.invalidateTags([
@@ -64,7 +135,7 @@ export function MessageFormComponent({ chatUid }: MessageFormComponentProps) {
 				}
 			}
 		},
-		[chatUid, dispatch]
+		[chatUid, chatType, dispatch, currentUserId, chatKey]
 	);
 
 	return (
@@ -72,27 +143,29 @@ export function MessageFormComponent({ chatUid }: MessageFormComponentProps) {
 			<AttachmentButton setFiles={setFiles} disabled={!chatUid} />
 
 			<MessageForm
+				ref={formRef}
 				onSendContent={handleSend}
 				disabled={!chatUid}
-				onTextChanged={setIsTextFilled} // 🔹 Передаём коллбэк
+				onTextChanged={setIsTextFilled}
+				onMessageChange={setMessageText}
+				onReset={() => setMessageText('')}
 			/>
 
-			{/* 🔹 Условный рендер: микрофон ИЛИ кнопка отправки */}
 			{!isTextFilled ? (
 				<VoiceRecorder onSendVoice={handleSendVoice} disabled={!chatUid} />
 			) : (
 				<Button
-					btnType={ButtonType.SUBMIT}
+					btnType={ButtonType.BUTTON}
 					color={ButtonColor.TRANSPARENT}
 					className={cls.button}
 					aria-label='Отправить сообщение'
-					disabled={!chatUid}
+					disabled={!chatUid || !messageText.trim()}
 					onClick={() => {
-						// Триггерим отправку: находим форму и вызываем submit
-						const form = document.querySelector<HTMLFormElement>(
-							`form.${cls.messageForm}`
-						);
-						form?.requestSubmit();
+						const trimmed = messageText.trim();
+						if (trimmed) {
+							handleSend(trimmed);
+							formRef.current?.reset();
+						}
 					}}
 				>
 					<SendIcon width={36} height={36} />

@@ -1,12 +1,15 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+
 import {
 	ChatHeader,
 	MessageFormComponent,
+	MESSAGES_ORDERING,
+	MESSAGES_PAGE_SIZE,
 	MessagesList
 } from '@/entities/Chat';
+import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { useChatHeaderData } from '@/entities/Chat/model/lib/hooks/useChatHeaderData/useChatHeaderData';
 import {
 	selectChatByUid,
@@ -18,8 +21,15 @@ import { NotMessage } from '@/shared/ui/NotMessage/NotMessage';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { RootState } from '@/app/providers/StoreProvider';
-import { Chat, ChatMessage } from '../../model/types/chat.types/chat.types';
+import {
+	Chat,
+	ChatMessage,
+	ChatType,
+	GetMessagesRequest
+} from '../../model/types/chat.types/chat.types';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { selectCurrentUserId } from '@/entities/Profile/model/selectors/selectCurrentUserId';
+import { useGetProfileQuery } from '@/entities/Profile/api/editProfile.api';
 
 import cls from './ChatView.module.scss';
 
@@ -33,9 +43,6 @@ interface ChatViewProps {
 	};
 }
 
-const MESSAGES_PAGE_SIZE = 50;
-const MESSAGES_ORDERING = '-created_at';
-
 export const ChatView = ({
 	chatUid,
 	userDataFromSearch,
@@ -45,30 +52,54 @@ export const ChatView = ({
 	const [isActionBarVisible, setIsActionBarVisible] = useState(true);
 
 	// ─────────────────────────────────────────────────────────────
-	// DATA: Чат из кеша списка (основной источник)
+
+	useGetProfileQuery(undefined, { skip: !chatUid });
+
+	const currentUserId = useAppSelector(selectCurrentUserId);
+
 	// ─────────────────────────────────────────────────────────────
-	const chatDataFromCache = useSelector((state: RootState) =>
+
+	const chatDataFromCache = useAppSelector((state: RootState) =>
 		selectChatByUid(state, chatUid)
 	);
 
+	const chatData = useMemo<Chat | null>(() => {
+		return chatDataFromCache ?? null;
+	}, [chatDataFromCache]);
+
 	// ─────────────────────────────────────────────────────────────
-	// DATA: Сообщения (запрашиваем всегда, бэкенд сам обработает создание чата)
-	// ─────────────────────────────────────────────────────────────
+
+	const messagesQueryArgs = useMemo((): GetMessagesRequest | null => {
+		// Для личных чатов: chatUid — это UID собеседника, его и передаём
+		// Бэкенд сам найдёт диалог между (токен) и (user_uid)
+		if (chatUid && currentUserId && chatUid !== currentUserId) {
+			return {
+				user_uid: chatUid,
+				page_size: MESSAGES_PAGE_SIZE,
+				ordering: MESSAGES_ORDERING
+			};
+		}
+
+		// Для групп/каналов: нужен chat_key
+		if (chatData?.is_group && chatData.chat_key) {
+			return {
+				user_uid: chatData.chat_key,
+				page_size: MESSAGES_PAGE_SIZE,
+				ordering: MESSAGES_ORDERING
+			};
+		}
+
+		return null;
+	}, [chatData, chatUid, currentUserId]);
+
 	const {
 		data: messagesResponse,
 		isLoading: isMessagesLoading,
 		isError: isMessagesError,
 		error: messagesError
-	} = useGetMessagesQuery(
-		{
-			user_uid: chatUid,
-			page_size: MESSAGES_PAGE_SIZE,
-			ordering: MESSAGES_ORDERING
-		},
-		{
-			skip: !chatUid
-		}
-	);
+	} = useGetMessagesQuery(messagesQueryArgs!, { skip: !messagesQueryArgs });
+
+	// ─────────────────────────────────────────────────────────────
 
 	const isForbidden = (messagesError as FetchBaseQueryError)?.status === 403;
 	const hasRealError = isMessagesError && !isForbidden;
@@ -80,17 +111,10 @@ export const ChatView = ({
 		return messagesResponse?.results ?? [];
 	}, [messagesResponse, isForbidden]);
 
-	// ─────────────────────────────────────────────────────────────
-	// DATA: Объединяем источники (прямой запрос чата отключён)
-	// ─────────────────────────────────────────────────────────────
-	const chatData = useMemo<Chat | null>(() => {
-		return chatDataFromCache ?? null;
-	}, [chatDataFromCache]);
+	// const chatType = chatData?.chat_type;
+	const { headerData, hasMessages } = useChatHeaderData(chatData);
 
 	// ─────────────────────────────────────────────────────────────
-	// HEADER DATA
-	// ─────────────────────────────────────────────────────────────
-	const { headerData, hasMessages } = useChatHeaderData(chatData);
 
 	const getPreviewData = (uid: string | undefined) => {
 		if (!uid) {
@@ -168,8 +192,7 @@ export const ChatView = ({
 	}, [headerData, chatData, userDataFromSearch, chatUid]);
 
 	// ─────────────────────────────────────────────────────────────
-	// HANDLERS
-	// ─────────────────────────────────────────────────────────────
+
 	const handleBack = useCallback(() => {
 		if (onBack) {
 			onBack();
@@ -235,7 +258,12 @@ export const ChatView = ({
 					<NotMessage />
 				</div>
 
-				<MessageFormComponent chatUid={chatUid} />
+				<MessageFormComponent
+					chatUid={chatUid}
+					chatType={chatData?.chat_type ?? ChatType.CHAT}
+					messagesQueryArgs={messagesQueryArgs}
+					chatKey={chatData?.chat_key}
+				/>
 			</section>
 		);
 	}
@@ -260,15 +288,29 @@ export const ChatView = ({
 
 			{hasMessages ? (
 				<>
-					<MessagesList userUid={chatUid} className={messagesClass} />
-					<MessageFormComponent chatUid={chatUid} />
+					<MessagesList
+						queryArgs={messagesQueryArgs}
+						currentUserId={currentUserId || undefined}
+						className={messagesClass}
+					/>
+					<MessageFormComponent
+						chatUid={chatUid}
+						chatType={chatData?.chat_type ?? ChatType.CHAT}
+						messagesQueryArgs={messagesQueryArgs}
+						chatKey={chatData?.chat_key}
+					/>
 				</>
 			) : (
 				<>
 					<div className={cls.notMessageWrapper}>
 						<NotMessage />
 					</div>
-					<MessageFormComponent chatUid={chatUid} />
+					<MessageFormComponent
+						chatUid={chatUid}
+						chatType={chatData?.chat_type ?? ChatType.CHAT}
+						messagesQueryArgs={messagesQueryArgs}
+						chatKey={chatData?.chat_key}
+					/>
 				</>
 			)}
 		</section>

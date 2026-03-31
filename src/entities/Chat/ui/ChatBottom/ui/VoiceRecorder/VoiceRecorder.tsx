@@ -2,8 +2,9 @@
 
 import { Microphone, MicrophoneFilled } from '@icons/index';
 import { useCallback, useEffect } from 'react';
-import { useVoiceRecorder } from '../../model/hooks/useVoiceRecorder';
-import { VoiceFile } from '../../model/types/types';
+import { useVoiceRecorder } from '@/entities/Chat/model/lib/hooks/useVoiceRecorder/useVoiceRecorder';
+import { VoiceFile } from '@/entities/Chat/model/types/chat.types/chat.types';
+
 import cls from './VoiceRecorder.module.scss';
 
 type Props = {

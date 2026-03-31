@@ -6,24 +6,27 @@ import { Down } from '@icons/index';
 import { useGetMessagesQuery } from '@/entities/Chat/api/chatApi';
 import { shouldShowDateSeparator } from '@/entities/Chat/model/lib/service/dateFormating/dateFormater';
 import SmartDateSeparator from '../SystemMessages/ui/SmartDateSeparator/SmartDateSeparator';
-import { StickyDateProvider } from '../SystemMessages/ui/StickyDateContext/StickyDateContext';
+import {
+	StickyDateProvider,
+	useStickyDate
+} from '../SystemMessages/ui/StickyDateContext/StickyDateContext';
 import SystemMessage from '../SystemMessages/ui/SystemMessages/SystemMessages';
 import {
 	SystemMessageData,
-	ChatMessage
+	ChatMessage,
+	MessageType,
+	GetMessagesRequest
 } from '../../model/types/chat.types/chat.types';
-import {
-	isSystemMessageType,
-	mapChatMessageToSystemMessageData
-} from '../../model/mapper/mapChatType/chatMapper';
-import styles from './MessagesList.module.scss';
+import { mapChatMessageToSystemMessageData } from '../../model/mapper/mapChatType/chatMapper';
+
+import cls from './MessagesList.module.scss';
 
 // ===== ТИПЫ =====
-
 interface TextMessage {
 	id: string;
 	text: string;
 	time: number;
+	uid: string;
 	status: 'received' | 'sending' | 'unread' | 'read';
 }
 
@@ -32,20 +35,29 @@ type MessageListItem =
 	| { type: 'system'; data: SystemMessageData }
 	| { type: 'separator'; date: Date; id: string };
 
-// Пропсы компонента
 interface MessagesProps {
-	userUid: string;
+	queryArgs: GetMessagesRequest | null;
+	currentUserId?: string;
 	className?: string;
 }
 
-const toLocalTextMessage = (msg: ChatMessage): TextMessage => ({
-	id: String(msg.id),
-	text: msg.content,
-	time: msg.created_at,
-	status: msg.new ? 'unread' : 'read'
-});
+// Найдите функцию toLocalTextMessage и обновите:
 
-//  Прокси для URL
+const toLocalTextMessage = (
+	msg: ChatMessage,
+	currentUserId?: string
+): TextMessage => {
+	const isSentByMe = currentUserId ? msg.from_user === currentUserId : false;
+
+	return {
+		id: String(msg.id),
+		uid: msg.uid,
+		text: msg.content,
+		time: msg.created_at,
+		status: isSentByMe ? (msg.new ? 'unread' : 'read') : 'received'
+	};
+};
+
 const toProxyPath = (url: string | null): string | null => {
 	if (!url) {
 		return null;
@@ -53,7 +65,6 @@ const toProxyPath = (url: string | null): string | null => {
 	if (url.startsWith('/api/proxy')) {
 		return url;
 	}
-
 	try {
 		const pathname = url.startsWith('http') ? new URL(url).pathname : url;
 		const apiPath = pathname.replace(/^\/api\/v1/, '');
@@ -63,16 +74,22 @@ const toProxyPath = (url: string | null): string | null => {
 	}
 };
 
-const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
-	// ===== API =====
-	const { data, error, isLoading, refetch } = useGetMessagesQuery(
-		{ user_uid: userUid },
-		{ skip: !userUid }
-	);
+//  ВНУТРЕННИЙ компонент — получает данные из контекста
+const MessagesListContent = ({
+	queryArgs,
+	currentUserId,
+	className
+}: MessagesProps) => {
+	const { data, error, isLoading, refetch } = useGetMessagesQuery(queryArgs!, {
+		skip: !queryArgs
+	});
+
+	//  Получаем isAtBottom ИЗ КОНТЕКСТА (управляется StickyDateProvider)
+	const { isAtBottom } = useStickyDate();
 
 	// ===== REFS =====
-	const containerRef = useRef<HTMLDivElement>(null);
 	const bottomRef = useRef<HTMLDivElement>(null);
+	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const isAtBottomRef = useRef(true);
 	const isLoadingHistoryRef = useRef(false);
 	const abortControllerRef = useRef<AbortController | null>(null);
@@ -81,10 +98,30 @@ const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 	const [messages, setMessages] = useState<TextMessage[]>([]);
 	const [nextUrl, setNextUrl] = useState<string | null>(null);
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
-	const [isAtBottom, setIsAtBottom] = useState(true);
 	const [newCount, setNewCount] = useState(0);
 
-	// ===== ОБРАБОТКА ДАННЫХ С БЭКА =====
+	// Синхронизируем реф с контекстным значением для логики добавления сообщений
+	useEffect(() => {
+		isAtBottomRef.current = isAtBottom;
+	}, [isAtBottom]);
+
+	// ===== ПОЛУЧЕНИЕ ДОСТУПА К СКРОЛЛ-КОНТЕЙНЕРУ =====
+
+	useEffect(() => {
+		const providerEl = scrollContainerRef.current?.closest(
+			`.${cls.wrapper}`
+		)?.parentElement;
+		if (providerEl) {
+			const innerScroll = providerEl.querySelector(
+				'.scrollContainer'
+			) as HTMLDivElement;
+			if (innerScroll) {
+				scrollContainerRef.current = innerScroll;
+			}
+		}
+	}, []);
+
+	// ===== ОБРАБОТКА ДАННЫХ =====
 
 	useEffect(() => {
 		if (!data) {
@@ -92,19 +129,22 @@ const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 		}
 
 		const textMessages = data.results.filter(
-			(msg): msg is ChatMessage => !isSystemMessageType(msg)
+			(msg): msg is ChatMessage => msg.type !== MessageType.SYSTEM
 		);
 
-		const mapped = textMessages.map(toLocalTextMessage);
+		const mapped = textMessages.map(msg =>
+			toLocalTextMessage(msg, currentUserId)
+		);
 
 		setNextUrl(data.next);
-
 		setMessages(prev => {
 			if (!prev.length) {
-				return mapped;
+				return [...mapped].reverse();
 			}
+
 			const prevIds = new Set(prev.map(p => p.id));
 			const incoming = mapped.filter(m => !prevIds.has(m.id));
+
 			if (incoming.length) {
 				if (!isLoadingHistoryRef.current && !isAtBottomRef.current) {
 					setNewCount(c => c + incoming.length);
@@ -113,29 +153,11 @@ const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 			}
 			return prev;
 		});
-	}, [data]);
 
-	// ===== СКРОЛЛ =====
-	const handleScroll = useCallback(() => {
-		const el = containerRef.current;
-		if (!el) {
-			return;
-		}
-
-		const threshold = 50;
-		const isBottom =
-			el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
-
-		isAtBottomRef.current = isBottom;
-		setIsAtBottom(isBottom);
-
-		if (isBottom) {
-			setNewCount(0);
-		}
-		if (el.scrollTop < 50 && !isFetchingMore && !isLoadingHistoryRef.current) {
-			loadMore();
-		}
-	}, [isFetchingMore]);
+		setTimeout(() => {
+			bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+		}, 50);
+	}, [currentUserId, data]);
 
 	// ===== АВТОСКРОЛЛ ВНИЗ =====
 	useEffect(() => {
@@ -148,8 +170,9 @@ const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 		}
 	}, [messages, isAtBottom]);
 
-	// ===== ПОДГРУЗКА =====
-	const loadMore = async () => {
+	// ===== ПОДГРУЗКА ИСТОРИИ =====
+
+	const loadMore = useCallback(async () => {
 		if (!nextUrl || isFetchingMore) {
 			return;
 		}
@@ -160,15 +183,6 @@ const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 		}
 		abortControllerRef.current = new AbortController();
 		setIsFetchingMore(true);
-
-		const el = containerRef.current;
-
-		const saveScrollPosition = () => {
-			if (!el) {
-				return null;
-			}
-			return { scrollHeight: el.scrollHeight, scrollTop: el.scrollTop };
-		};
 
 		try {
 			const fetchUrl = toProxyPath(nextUrl);
@@ -190,23 +204,14 @@ const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 				await res.json();
 
 			const older: TextMessage[] = responseData.results
-				.filter(msg => !isSystemMessageType(msg))
-				.map(toLocalTextMessage);
+				.filter(msg => msg.type !== MessageType.SYSTEM)
+				.map(msg => toLocalTextMessage(msg, currentUserId));
 
 			setNextUrl(responseData.next);
-			const scrollPos = saveScrollPosition();
 
 			setMessages(prev => {
 				const prevIds = new Set(prev.map(p => p.id));
 				const uniqueOlder = older.filter(m => !prevIds.has(m.id));
-
-				if (uniqueOlder.length > 0 && el && scrollPos) {
-					requestAnimationFrame(() => {
-						const newScrollHeight = el.scrollHeight;
-						const heightDiff = newScrollHeight - scrollPos.scrollHeight;
-						el.scrollTop = scrollPos.scrollTop + heightDiff;
-					});
-				}
 				return [...uniqueOlder, ...prev];
 			});
 		} catch (err) {
@@ -219,7 +224,28 @@ const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 			isLoadingHistoryRef.current = false;
 			abortControllerRef.current = null;
 		}
-	};
+	}, [nextUrl, isFetchingMore, currentUserId]);
+
+	// ===== ТРИГГЕР ПОДГРУЗКИ ПРИ СКРОЛЛЕ ВВЕРХ =====
+	useEffect(() => {
+		const container = scrollContainerRef.current;
+		if (!container) {
+			return;
+		}
+
+		const handleScrollTop = () => {
+			if (
+				container.scrollTop < 50 &&
+				!isLoadingHistoryRef.current &&
+				!isFetchingMore
+			) {
+				loadMore();
+			}
+		};
+
+		container.addEventListener('scroll', handleScrollTop, { passive: true });
+		return () => container.removeEventListener('scroll', handleScrollTop);
+	}, [loadMore]);
 
 	// ===== CLEANUP =====
 	useEffect(() => {
@@ -236,31 +262,37 @@ const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 		setNewCount(0);
 	};
 
-	// ===== ФОРМИРОВАНИЕ СПИСКА С РАЗДЕЛИТЕЛЯМИ И СИСТЕМНЫМИ СООБЩЕНИЯМИ =====
+	// ===== ФОРМИРОВАНИЕ СПИСКА =====
 
 	const messagesWithSeparators = useMemo((): MessageListItem[] => {
 		if (!data?.results?.length) {
 			return [];
 		}
-
 		const result: MessageListItem[] = [];
 
-		data.results.forEach((message, index) => {
-			const prevMessage = index > 0 ? data.results[index - 1] : undefined;
+		// Фильтруем текстовые и системные сообщения
+		const textMessages = data.results.filter(
+			(m): m is ChatMessage => m.type !== MessageType.SYSTEM && 'from_user' in m
+		);
 
-			if (isSystemMessageType(message)) {
-				result.push({
-					type: 'system',
-					data: mapChatMessageToSystemMessageData(message)
-				});
-				return;
-			}
+		const systemMessages = data.results.filter(
+			(m): m is ChatMessage => m.type === MessageType.SYSTEM
+		);
 
+		const reversedTextMessages = [...textMessages].reverse();
+
+		systemMessages.forEach(msg => {
+			result.push({
+				type: 'system',
+				data: mapChatMessageToSystemMessageData(msg)
+			});
+		});
+
+		reversedTextMessages.forEach((message, index) => {
+			const prevMessage =
+				index > 0 ? reversedTextMessages[index - 1] : undefined;
+			const prevCreatedAt = prevMessage?.created_at;
 			const createdAt = message.created_at;
-			const prevCreatedAt =
-				prevMessage && !isSystemMessageType(prevMessage)
-					? prevMessage.created_at
-					: undefined;
 
 			if (shouldShowDateSeparator(createdAt, prevCreatedAt)) {
 				result.push({
@@ -272,20 +304,21 @@ const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 
 			result.push({
 				type: 'text',
-				data: toLocalTextMessage(message)
+				data: toLocalTextMessage(message, currentUserId)
 			});
 		});
 
 		return result;
-	}, [data]);
+	}, [data, currentUserId]);
+
 	// ===== UI СОСТОЯНИЯ =====
 	if (isLoading && messages.length === 0) {
-		return <div className={styles.emptyState}>Загрузка сообщений...</div>;
+		return <div className={cls.emptyState}>Загрузка сообщений...</div>;
 	}
 
 	if (error) {
 		return (
-			<div className={styles.emptyState}>
+			<div className={cls.emptyState}>
 				<p>Ошибка загрузки сообщений</p>
 				<button onClick={() => refetch()}>Попробовать снова</button>
 			</div>
@@ -293,58 +326,51 @@ const MessagesListComponent = ({ userUid, className }: MessagesProps) => {
 	}
 
 	// ===== РЕНДЕР =====
-
+	//  Важно: div.messages НЕ имеет onScroll и overflow-y: auto
 	return (
-		<StickyDateProvider
-			containerRef={containerRef as React.RefObject<HTMLDivElement>}
-		>
-			<div className={`${styles.wrapper} ${className}`}>
-				<div
-					ref={containerRef}
-					onScroll={handleScroll}
-					className={styles.messages}
-				>
-					{messagesWithSeparators.map(item => {
-						// 🔹 Разделитель даты
-						if (item.type === 'separator') {
-							return (
-								<SmartDateSeparator
-									key={item.id}
-									id={item.id}
-									date={item.date}
-								/>
-							);
-						}
-
-						if (item.type === 'system') {
-							return <SystemMessage key={item.data.id} message={item.data} />;
-						}
-
+		<div className={`${cls.wrapper} ${className}`}>
+			<div ref={scrollContainerRef} className={cls.messages}>
+				{messagesWithSeparators.map(item => {
+					if (item.type === 'separator') {
 						return (
-							<MessageBubble
-								key={item.data.id}
-								id={item.data.id}
-								text={item.data.text}
-								time={item.data.time}
-								status={item.data.status}
-								onClick={() => {}}
-							/>
+							<SmartDateSeparator key={item.id} id={item.id} date={item.date} />
 						);
-					})}
-					<div ref={bottomRef} />
-				</div>
-
-				{!isAtBottom && (
-					<button
-						className={styles.scrollButton}
-						onClick={scrollToBottom}
-						aria-label='Прокрутить к новым сообщениям'
-					>
-						<Down />
-						{newCount > 0 && <span>({newCount})</span>}
-					</button>
-				)}
+					}
+					if (item.type === 'system') {
+						return <SystemMessage key={item.data.id} message={item.data} />;
+					}
+					return (
+						<MessageBubble
+							key={item.data.uid || item.data.id}
+							id={item.data.id}
+							text={item.data.text}
+							time={item.data.time}
+							status={item.data.status}
+							onClick={() => {}}
+						/>
+					);
+				})}
+				<div ref={bottomRef} />
 			</div>
+
+			{!isAtBottom && (
+				<button
+					className={cls.scrollButton}
+					onClick={scrollToBottom}
+					aria-label='Прокрутить к новым сообщениям'
+				>
+					<Down className={cls.icon} />
+					{newCount > 0 && <span className={cls.badge}>({newCount})</span>}
+				</button>
+			)}
+		</div>
+	);
+};
+
+const MessagesListComponent = (props: MessagesProps) => {
+	return (
+		<StickyDateProvider>
+			<MessagesListContent {...props} />
 		</StickyDateProvider>
 	);
 };

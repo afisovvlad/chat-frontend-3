@@ -1,116 +1,156 @@
 'use client';
 
 import { Form, Textarea } from '@/shared/ui/FormComponent';
-import { KeyboardEvent, useEffect } from 'react';
+import {
+	KeyboardEvent,
+	useEffect,
+	forwardRef,
+	useImperativeHandle
+} from 'react';
 import { useForm } from 'react-hook-form';
-import { MessageFormTypes } from '../../model/types/types';
+import { MessageFormTypes } from '@/entities/Chat/model/types/chat.types/chat.types';
 import { EmojiPickerComponent } from '../EmojiPickerComponent/EmojiPickerComponent';
+
 import cls from './MessageForm.module.scss';
+
+//  Тип для методов, которые хотим экспортировать через ref
+export type MessageFormRef = {
+	reset: () => void;
+	focus: () => void;
+};
 
 interface MessageFormProps {
 	onSendContent: (message: string) => void;
 	disabled?: boolean;
 	onTextChanged?: (isFilled: boolean) => void;
+	onMessageChange?: (text: string) => void;
+	onReset?: () => void;
 }
 
-export function MessageForm({
-	onSendContent,
-	disabled,
-	onTextChanged
-}: MessageFormProps) {
-	const methods = useForm<MessageFormTypes>({
-		defaultValues: { message: '' }
-	});
-	const { getValues, handleSubmit, reset, watch } = methods;
-	const message = watch('message');
-	const isFilled = message.trim().length > 0;
+//  Оборачиваем компонент в forwardRef
+export const MessageForm = forwardRef<MessageFormRef, MessageFormProps>(
+	(
+		{ onSendContent, disabled, onTextChanged, onMessageChange, onReset },
+		ref
+	) => {
+		const methods = useForm<MessageFormTypes>({
+			defaultValues: { message: '' }
+		});
+		const { getValues, handleSubmit, reset, watch, setValue } = methods;
+		const message = watch('message');
+		const isFilled = message.trim().length > 0;
 
-	//  Сообщаем родителю об изменении состояния "заполнено/пусто"
-	useEffect(() => {
-		onTextChanged?.(isFilled);
-	}, [isFilled, onTextChanged]);
+		useImperativeHandle(
+			ref,
+			() => ({
+				reset: () => {
+					reset();
+					onReset?.();
 
-	// ─────────────────────────────────────────
-	//  Авто-фокус при монтировании / смене disabled
-	// ─────────────────────────────────────────
-	useEffect(() => {
-		if (disabled) {
-			return;
-		}
+					const textarea =
+						document.querySelector<HTMLTextAreaElement>('#message');
+					if (textarea) {
+						textarea.style.height = 'auto';
+						textarea.style.height = '21px';
+					}
+				},
+				focus: () => {
+					const textarea =
+						document.querySelector<HTMLTextAreaElement>('#message');
+					textarea?.focus();
+				}
+			}),
+			[reset, onReset]
+		);
 
-		const timer = setTimeout(() => {
-			const textarea = document.querySelector<HTMLTextAreaElement>('#message');
-			if (textarea) {
-				textarea.focus();
-				const len = textarea.value.length;
-				textarea.setSelectionRange(len, len);
+		useEffect(() => {
+			onTextChanged?.(isFilled);
+			onMessageChange?.(message);
+		}, [isFilled, onTextChanged, onMessageChange, message]);
+
+		useEffect(() => {
+			if (disabled) {
+				return;
 			}
-		}, 0);
 
-		return () => clearTimeout(timer);
-	}, [disabled]);
+			const timer = setTimeout(() => {
+				const textarea =
+					document.querySelector<HTMLTextAreaElement>('#message');
+				if (textarea) {
+					textarea.focus();
+					const len = textarea.value.length;
+					textarea.setSelectionRange(len, len);
+				}
+			}, 0);
 
-	const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-		if (e.key === 'Enter' && !e.shiftKey) {
-			e.preventDefault();
-			handleSubmit(onSubmit)();
-		}
-	};
+			return () => clearTimeout(timer);
+		}, [disabled]);
 
-	const onEmojiSelect = (emoji: string) => {
-		const textarea = document.querySelector<HTMLTextAreaElement>('#message');
-		if (!textarea) {
-			return;
-		}
+		const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+			if (e.key === 'Enter' && !e.shiftKey) {
+				e.preventDefault();
+				handleSubmit(onSubmit)();
+			}
+		};
 
-		const start = textarea.selectionStart;
-		const end = textarea.selectionEnd;
-		const current = getValues('message');
-		const newMessage = current.slice(0, start) + emoji + current.slice(end);
+		const onEmojiSelect = (emoji: string) => {
+			const textarea = document.querySelector<HTMLTextAreaElement>('#message');
+			if (!textarea) {
+				return;
+			}
 
-		methods.setValue('message', newMessage, {
-			shouldDirty: true,
-			shouldTouch: true
-		});
+			const start = textarea.selectionStart;
+			const end = textarea.selectionEnd;
+			const current = getValues('message');
+			const newMessage = current.slice(0, start) + emoji + current.slice(end);
 
-		requestAnimationFrame(() => {
-			const cursor = start + emoji.length;
-			textarea.selectionStart = cursor;
-			textarea.selectionEnd = cursor;
-			textarea.focus();
-		});
-	};
+			setValue('message', newMessage, {
+				shouldDirty: true,
+				shouldTouch: true
+			});
 
-	const onSubmit = async (data: MessageFormTypes) => {
-		const trimmed = data.message.trim();
-		if (!trimmed) {
-			return;
-		}
+			requestAnimationFrame(() => {
+				const cursor = start + emoji.length;
+				textarea.selectionStart = cursor;
+				textarea.selectionEnd = cursor;
+				textarea.focus();
+			});
+		};
 
-		await onSendContent(trimmed);
-		reset();
-	};
+		const onSubmit = async (data: MessageFormTypes) => {
+			const trimmed = data.message.trim();
+			if (!trimmed) {
+				return;
+			}
+			await onSendContent(trimmed);
+			reset();
+			onReset?.();
+		};
 
-	return (
-		<Form<MessageFormTypes>
-			methods={methods}
-			onSubmit={onSubmit}
-			className={cls.messageForm}
-		>
-			<div className={cls.textareaWrapper}>
-				<Textarea
-					name='message'
-					classNameTextarea={cls.textarea}
-					height='21px'
-					onKeyDown={handleKeyDown}
-					placeholder='Сообщение...'
-					disabled={disabled}
-				/>
-				<EmojiPickerComponent
-					onEmojiSelect={onEmojiSelect}
-					disabled={disabled}
-				/>
-			</div>
-		</Form>
-	);
-}
+		return (
+			<Form<MessageFormTypes>
+				methods={methods}
+				onSubmit={onSubmit}
+				className={cls.messageForm}
+			>
+				<div className={cls.textareaWrapper}>
+					<Textarea
+						name='message'
+						classNameTextarea={cls.textarea}
+						height='21px'
+						onKeyDown={handleKeyDown}
+						placeholder='Сообщение...'
+						disabled={disabled}
+						rules={{}}
+					/>
+					<EmojiPickerComponent
+						onEmojiSelect={onEmojiSelect}
+						disabled={disabled}
+					/>
+				</div>
+			</Form>
+		);
+	}
+);
+
+MessageForm.displayName = 'MessageForm';

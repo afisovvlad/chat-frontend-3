@@ -12,7 +12,10 @@ import cls from './Chats.module.scss';
 const ChatsPageComponent = () => {
 	const params = useParams();
 	const router = useRouter();
+
+	// Получаем uid из динамического сегмента [uid]
 	const chatUid = params?.uid as string | undefined;
+
 	const isMobile = useMediaQuery();
 
 	// МОБИЛЬНАЯ ЛОГИКА: показываем только один экран
@@ -22,7 +25,10 @@ const ChatsPageComponent = () => {
 				{chatUid ? (
 					// Если чат выбран → показываем сообщения (CONTENT)
 					<Container type={ContainerType.CONTENT}>
-						<ChatView chatUid={chatUid} onBack={() => router.push('/chats')} />
+						<ChatView
+							chatUid={chatUid} // ✅ Передаём uid из роута
+							onBack={() => router.push('/chats')}
+						/>
 					</Container>
 				) : (
 					// Если чат не выбран → показываем список чатов (SIDEBAR)

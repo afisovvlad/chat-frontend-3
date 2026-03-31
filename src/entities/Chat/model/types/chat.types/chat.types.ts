@@ -98,10 +98,14 @@ export type FilesSummary = {
  * Сообщение в удобном для фронтенда формате
  * Используется в компонентах, селекторах, сторе
  */
+// В types/chat.types/chat.types.ts
+
 export interface ChatMessage {
 	id: number;
 	uid: string;
 	from_user: string;
+	chat_uid?: string;
+	chat_type?: ChatType;
 	content: string;
 	files_summary: FilesSummary;
 	has_replied_message: boolean;
@@ -272,8 +276,8 @@ export interface MessageListResponse {
 
 export interface GetMessagesRequest {
 	user_uid: string;
-	page?: number;
 	page_size?: number;
+	page?: number;
 	ordering?: '-created_at' | 'created_at';
 	search?: string;
 }
@@ -496,4 +500,22 @@ export const getFilesSummary = (
 export const parseIsoDateToTimestamp = (isoDate: string): number => {
 	const timestamp = new Date(isoDate).getTime();
 	return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+export type MessageFormTypes = {
+	message: string;
+	file: VoiceFile;
+};
+
+export type VoiceFile = {
+	filename: string;
+	data: string;
+	type?: string;
+};
+
+export type SendMessageParams = {
+	content?: string;
+	files?: VoiceFile[];
+	replyIds?: string[];
+	forwardIds?: string[];
 };
