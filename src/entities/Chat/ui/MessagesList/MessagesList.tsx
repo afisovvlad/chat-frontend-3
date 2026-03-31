@@ -326,7 +326,7 @@ const MessagesListContent = ({
 	}
 
 	// ===== РЕНДЕР =====
-	//  Важно: div.messages НЕ имеет onScroll и overflow-y: auto
+
 	return (
 		<div className={`${cls.wrapper} ${className}`}>
 			<div ref={scrollContainerRef} className={cls.messages}>

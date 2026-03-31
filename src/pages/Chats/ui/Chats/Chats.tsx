@@ -26,7 +26,7 @@ const ChatsPageComponent = () => {
 					// Если чат выбран → показываем сообщения (CONTENT)
 					<Container type={ContainerType.CONTENT}>
 						<ChatView
-							chatUid={chatUid} // ✅ Передаём uid из роута
+							chatUid={chatUid} //Передаём uid из роута
 							onBack={() => router.push('/chats')}
 						/>
 					</Container>

@@ -8,7 +8,22 @@ import { MESSAGES_PAGE_SIZE, MESSAGES_ORDERING } from '@/shared/model';
 let isConnecting = false;
 let connectPromise: Promise<WebSocket> | null = null;
 let socket: WebSocket | null = null;
+
+// ─────────────────────────────────────────────────────────────
+//  НОВОЕ: Модульные переменные для интеграции с Redux
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Dispatch Redux store для обновления кэша при получении сообщений через WebSocket.
+ * Устанавливается через initWSHandlers() при инициализации приложения.
+ */
 let wsDispatch: AppDispatch | null = null;
+
+/**
+ * UID текущего авторизованного пользователя.
+ * Нужен для определения: "я отправитель или получатель?" при обновлении кэша.
+ * Обновляется через setWSCurrentUserId() при изменении авторизации.
+ */
 let currentUserId: string | null = null;
 
 const subscribers = new Map<string, Set<(data: WSResponse) => void>>();
@@ -22,20 +37,46 @@ const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECT_DELAY = 1000;
 
 // ─────────────────────────────────────────────────────────────
-//  ФУНКЦИЯ: сохранить dispatch для обработки сообщений
+//  НОВОЕ: Функции инициализации обработчиков
 // ─────────────────────────────────────────────────────────────
+
+/**
+ * Инициализирует обработчики WebSocket, сохраняя Redux dispatch.
+ * Вызывается один раз при старте приложения (например, в StoreProvider).
+ * @param dispatch - Redux dispatch из store
+ */
 
 export const initWSHandlers = (dispatch: AppDispatch) => {
 	wsDispatch = dispatch;
 };
+
+/**
+ * Обновляет UID текущего пользователя в модуле сокета.
+ * Вызывается при авторизации/смене пользователя, чтобы корректно
+ * определять направление сообщений при обновлении кэша.
+ * @param userId - UID пользователя или null при выходе
+ */
 
 export const setWSCurrentUserId = (userId: string | null) => {
 	currentUserId = userId;
 };
 
 // ─────────────────────────────────────────────────────────────
+//  НОВОЕ: Обработка входящих сообщений для обновления кэша
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Обрабатывает входящее сообщение типа 'create_text_message':
+ * 1. Определяет, какой чат затронут (личный или групповой)
+ * 2. Вычисляет queryUserUid — ключ для поиска нужного кэша в RTK Query
+ * 3. Обновляет кэш через updateQueryData, добавляя новое сообщение
+ *
+ * Использует константы MESSAGES_PAGE_SIZE/MESSAGES_ORDERING для
+ * точного совпадения с аргументами запросов в ChatView/MessagesList.
+ */
 
 const handleIncomingMessage = (response: WSResponse) => {
+	// Фильтруем только нужные действия
 	if (response.action !== 'create_text_message') {
 		return;
 	}
@@ -44,13 +85,14 @@ const handleIncomingMessage = (response: WSResponse) => {
 		return;
 	}
 
+	// Пропускаем, если обработчики ещё не инициализированы
 	if (!wsDispatch) {
 		return;
 	}
 
 	const rawMessage = response.object as RawApiChatMessage;
 
-	// Извлекаем UID пользователей (поддержка разных форматов)
+	// ─── Извлечение UID (поддержка разных форматов от бэка) ───
 	const fromUid =
 		typeof rawMessage.from_user === 'string'
 			? rawMessage.from_user
@@ -61,24 +103,34 @@ const handleIncomingMessage = (response: WSResponse) => {
 			? rawMessage.to_user
 			: rawMessage.to_user?.uid;
 
+	// ─── НОВОЕ: Определение queryUserUid для поиска кэша ───
+	/**
+	 * queryUserUid — это значение, которое используется как user_uid
+	 * в аргументах запроса getMessages. Должно точно совпадать,
+	 * иначе RTK Query не найдёт нужный кэш для обновления.
+	 */
 	let queryUserUid: string | undefined;
 
 	if (rawMessage.chat_type !== 'chat' && rawMessage.chat_key) {
+		// Группы/каналы: используем chat_key
 		queryUserUid = rawMessage.chat_key;
 	} else if (rawMessage.chat_type === 'chat' || !rawMessage.chat_key) {
+		// Личные чаты: берём UID собеседника (не свой!)
 		if (toUid && toUid !== currentUserId) {
-			queryUserUid = toUid;
+			queryUserUid = toUid; // Я получатель → ключ = отправитель
 		} else if (fromUid && fromUid !== currentUserId) {
-			queryUserUid = fromUid;
+			queryUserUid = fromUid; // Я отправитель → ключ = получатель
 		}
 	}
 
+	// ─── НОВОЕ: Обновление кэша через RTK Query ───
 	if (queryUserUid) {
 		wsDispatch(
 			chatApi.util.updateQueryData(
 				'getMessages',
 				{
 					user_uid: queryUserUid,
+					//  Важно: те же константы, что в ChatView/MessagesList!
 					page_size: MESSAGES_PAGE_SIZE,
 					ordering: MESSAGES_ORDERING
 				},
@@ -88,13 +140,15 @@ const handleIncomingMessage = (response: WSResponse) => {
 						return;
 					}
 
+					// Проверяем, нет ли уже такого сообщения (защита от дублей)
 					const exists = draft.results.some(
 						(m: ChatMessage) => m.uid === rawMessage.uid
 					);
 
 					if (!exists && rawMessage.uid) {
+						// Маппим сырой ответ бэка в формат фронтенда
 						const mapped = mapApiMessageToFrontend(rawMessage);
-
+						// Добавляем в начало списка (новые сверху)
 						draft.results.unshift(mapped);
 					}
 				}
@@ -111,6 +165,8 @@ const handleIncomingMessage = (response: WSResponse) => {
 	}
 };
 
+// ─────────────────────────────────────────────────────────────
+//  СТАРЫЕ функции (без изменений)
 // ─────────────────────────────────────────────────────────────
 
 const getAccessToken = async (): Promise<string | null> => {
@@ -176,7 +232,7 @@ const setupSocket = async (): Promise<WebSocket> => {
 						return;
 					}
 
-					// 2.  Обработка для кэша (наша новая логика)
+					// 2.  НОВОЕ: Обработка для кэша (наша новая логика)
 					handleIncomingMessage(response);
 
 					// 3. Обработка подписок (pub/sub)

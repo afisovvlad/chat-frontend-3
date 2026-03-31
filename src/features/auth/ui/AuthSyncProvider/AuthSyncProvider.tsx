@@ -12,6 +12,7 @@ interface AuthSyncProviderProps {
 /**
  * Провайдер для синхронизации user_id из профиля в Redux (auth slice).
  */
+
 export const AuthSyncProvider = ({ children }: AuthSyncProviderProps) => {
 	const dispatch = useAppDispatch();
 

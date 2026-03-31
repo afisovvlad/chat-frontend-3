@@ -38,6 +38,6 @@ export const CHATS_QUERY_DEFAULTS = {
 } as const;
 
 export const MESSAGES_QUERY_DEFAULTS = {
-	page_size: MESSAGES_PAGE_SIZE, // Обратите внимание: snake_case для бэкенда
+	page_size: MESSAGES_PAGE_SIZE,
 	ordering: MESSAGES_ORDERING
 } as const;
