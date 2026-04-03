@@ -19,9 +19,10 @@ import {
 	TitleTag,
 	TextColor
 } from '@/shared/ui/Text';
-import { ChatActionBar } from '../ChatActionBar/ChatActionBar';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { Modal } from '@/shared/ui/Modal';
+import { ChatActionBar } from '../ChatActionBar/ChatActionBar';
+import { ChatMessage } from '@/entities/Chat/model/types/chat.types/chat.types';
 
 import cls from './ChatHeader.module.scss';
 
@@ -39,6 +40,18 @@ interface ChatHeaderProps {
 	contactPhone?: string;
 	contactFirstName?: string;
 	contactLastName?: string;
+	messages?: ChatMessage[];
+	onNavigateToMessage?: (messageId: string) => void;
+
+	searchQuery?: string;
+	onSearchQueryChange?: (value: string) => void;
+	isSearchVisible?: boolean;
+	onSearchToggle?: () => void;
+	searchResultsCount?: number;
+	activeResultIndex?: number;
+	activeResultId?: string;
+	navigateToNext?: () => void;
+	navigateToPrev?: () => void;
 }
 
 export const ChatHeader = ({
@@ -50,26 +63,59 @@ export const ChatHeader = ({
 	onAddToContacts,
 	onBlock,
 	onBack,
-	onActionBarVisibilityChange
+	onActionBarVisibilityChange,
+	searchQuery = '',
+	onSearchQueryChange,
+	isSearchVisible = false,
+	onSearchToggle,
+	searchResultsCount = 0,
+	activeResultIndex = 0,
+	activeResultId,
+	navigateToNext,
+	navigateToPrev,
+	onNavigateToMessage
 }: ChatHeaderProps) => {
-	const [isSearchVisible, setIsSearchVisible] = useState(false);
-	const [searchQuery, setSearchQuery] = useState('');
-
 	const isMobile = useMediaQuery();
-
 	const [manuallyClosedActionBar, setManuallyClosedActionBar] = useState(false);
 	const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-
 	const searchRef = useRef<HTMLDivElement>(null);
 
 	const isActionBarVisible = !isInContacts && !manuallyClosedActionBar;
-
 	const isAddingContact = false;
+	const canGoPrev = (activeResultIndex ?? 0) > 0;
+	const canGoNext = (activeResultIndex ?? 0) < (searchResultsCount ?? 0) - 1;
+
+	useEffect(() => {
+		if (activeResultId && isSearchVisible && onNavigateToMessage) {
+			requestAnimationFrame(() => {
+				onNavigateToMessage(activeResultId);
+			});
+		}
+	}, [activeResultId, isSearchVisible, onNavigateToMessage]);
+
+	useEffect(() => {
+		if (!isSearchVisible || (searchResultsCount ?? 0) === 0) {
+			return;
+		}
+
+		const handler = (e: KeyboardEvent) => {
+			if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+				e.preventDefault();
+				if (e.shiftKey) {
+					navigateToPrev?.();
+				} else {
+					navigateToNext?.();
+				}
+			}
+		};
+		window.addEventListener('keydown', handler);
+		return () => window.removeEventListener('keydown', handler);
+	}, [isSearchVisible, searchResultsCount, navigateToNext, navigateToPrev]);
 
 	useClickOutside(searchRef, () => {
 		if (isSearchVisible) {
-			setIsSearchVisible(false);
-			setSearchQuery('');
+			onSearchQueryChange?.('');
+			onSearchToggle?.();
 		}
 	});
 
@@ -94,17 +140,17 @@ export const ChatHeader = ({
 	}, [isActionBarVisible, onActionBarVisibilityChange]);
 
 	const handleSearchToggle = () => {
-		if (isSearchVisible) {
-			setSearchQuery('');
-		}
-		setIsSearchVisible(!isSearchVisible);
+		onSearchToggle?.();
 	};
 
-	const handleSearchClear = useCallback((currentValue: string) => {
-		if (!currentValue) {
-			setIsSearchVisible(false);
-		}
-	}, []);
+	const handleSearchClear = useCallback(
+		(currentValue: string) => {
+			if (!currentValue) {
+				onSearchToggle?.();
+			}
+		},
+		[onSearchToggle]
+	);
 
 	const handleAddToContacts = useCallback(async () => {
 		onAddToContacts?.();
@@ -176,14 +222,23 @@ export const ChatHeader = ({
 							id='chat-search-panel'
 							role='search'
 						>
+							{/*  Поле поиска с навигацией внутри */}
 							<Search
 								value={searchQuery}
-								onChange={setSearchQuery}
+								onChange={onSearchQueryChange || (() => {})}
 								onClear={handleSearchClear}
 								placeholder='Поиск в чате...'
 								alwaysShowClear={true}
 								showIcon={true}
 								autoFocus={true}
+								className={cls.searchInput}
+								showNavigation={true}
+								onNavigatePrev={navigateToPrev}
+								onNavigateNext={navigateToNext}
+								searchResultsCount={searchResultsCount}
+								activeResultIndex={activeResultIndex}
+								canGoPrev={canGoPrev}
+								canGoNext={canGoNext}
 							/>
 						</div>
 					)}
@@ -222,6 +277,21 @@ export const ChatHeader = ({
 					</div>
 				)}
 			</header>
+
+			{/* Панель результатов: пропсы из ChatView */}
+			{isSearchVisible &&
+				searchQuery.trim() &&
+				(searchResultsCount ?? 0) > 0 && (
+					<div
+						className={cls.searchResultsPanel}
+						role='status'
+						aria-live='polite'
+					>
+						<Text type={TextType.TEXT} tag={TextTag.SPAN} fontSize={TextSize.S}>
+							Результаты: {(activeResultIndex ?? 0) + 1} из {searchResultsCount}
+						</Text>
+					</div>
+				)}
 
 			{isActionBarVisible && (
 				<div className={cls.actionBarContainer}>

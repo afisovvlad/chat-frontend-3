@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChatHeader, MessagesList } from '@/entities/Chat';
 
@@ -15,11 +15,18 @@ import { NotMessage } from '@/shared/ui/NotMessage/NotMessage';
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { RootState } from '@/app/providers/StoreProvider';
-import { Chat, ChatMessage } from '../../model/types/chat.types/chat.types';
+import {
+	Chat,
+	ChatMessage,
+	Message,
+	MessageStatus,
+	MessageType
+} from '../../model/types/chat.types/chat.types';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { MessageFormComponent } from '../ChatBottom';
+import { useMessageSearch } from '../../model/lib/hooks/useMessageSearch/useMessageSearch';
 
 import cls from './ChatView.module.scss';
-import { MessageFormComponent } from '../ChatBottom';
 
 interface ChatViewProps {
 	chatUid: string;
@@ -41,17 +48,73 @@ export const ChatView = ({
 }: ChatViewProps) => {
 	const isMobile = useMediaQuery();
 	const [isActionBarVisible, setIsActionBarVisible] = useState(true);
+	const [searchQuery, setSearchQuery] = useState('');
+	const [isSearchVisible, setIsSearchVisible] = useState(false);
+
+	const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+	const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
 	// ─────────────────────────────────────────────────────────────
-	// DATA: Чат из кеша списка (основной источник)
-	// ─────────────────────────────────────────────────────────────
+
+	const handleContainerReady = useCallback(
+		(container: HTMLDivElement | null) => {
+			const scrollContainer = container?.querySelector(
+				'.messages'
+			) as HTMLDivElement;
+			messagesContainerRef.current = scrollContainer || container;
+		},
+		[]
+	);
+
+	const handleScrollContainerReady = useCallback(
+		(container: HTMLDivElement | null) => {
+			scrollContainerRef.current = container;
+		},
+		[]
+	);
+
+	const handleNavigateToMessage = useCallback((messageId: string) => {
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				const messageElement = document.querySelector(
+					`[data-message-id="${messageId}"]`
+				);
+
+				const container = scrollContainerRef.current;
+
+				if (messageElement && container) {
+					messageElement.scrollIntoView({
+						behavior: 'smooth',
+						block: 'center',
+						inline: 'nearest'
+					});
+
+					messageElement.classList.add(cls.messageBubble_active);
+					setTimeout(() => {
+						messageElement.classList.remove(cls.messageBubble_active);
+					}, 2500);
+
+					if (messageElement instanceof HTMLElement) {
+						messageElement.setAttribute('tabindex', '-1');
+						messageElement.focus({ preventScroll: true });
+					}
+				} else {
+					console.warn('[ChatView] Scroll failed:', {
+						hasElement: !!messageElement,
+						hasContainer: !!container,
+						messageId
+					});
+				}
+			});
+		});
+	}, []);
+
 	const chatDataFromCache = useSelector((state: RootState) =>
 		selectChatByUid(state, chatUid)
 	);
 
 	// ─────────────────────────────────────────────────────────────
-	// DATA: Сообщения (запрашиваем всегда, бэкенд сам обработает создание чата)
-	// ─────────────────────────────────────────────────────────────
+
 	const {
 		data: messagesResponse,
 		isLoading: isMessagesLoading,
@@ -79,15 +142,13 @@ export const ChatView = ({
 	}, [messagesResponse, isForbidden]);
 
 	// ─────────────────────────────────────────────────────────────
-	// DATA: Объединяем источники (прямой запрос чата отключён)
-	// ─────────────────────────────────────────────────────────────
+
 	const chatData = useMemo<Chat | null>(() => {
 		return chatDataFromCache ?? null;
 	}, [chatDataFromCache]);
 
 	// ─────────────────────────────────────────────────────────────
-	// HEADER DATA
-	// ─────────────────────────────────────────────────────────────
+
 	const { headerData, hasMessages } = useChatHeaderData(chatData);
 
 	const getPreviewData = (uid: string | undefined) => {
@@ -166,8 +227,7 @@ export const ChatView = ({
 	}, [headerData, chatData, userDataFromSearch, chatUid]);
 
 	// ─────────────────────────────────────────────────────────────
-	// HANDLERS
-	// ─────────────────────────────────────────────────────────────
+
 	const handleBack = useCallback(() => {
 		if (onBack) {
 			onBack();
@@ -175,6 +235,47 @@ export const ChatView = ({
 			window.history.back();
 		}
 	}, [onBack]);
+
+	const searchMessages = useMemo((): Message[] => {
+		return messages.map(msg => ({
+			id: String(msg.id),
+
+			type: MessageType.TEXT as MessageType.TEXT,
+
+			content: msg.content || '',
+			senderId: String(msg.from_user),
+			senderName: '',
+
+			status: MessageStatus.RECEIVED as MessageStatus,
+
+			createdAt: msg.created_at,
+			updatedAt: msg.updated_at,
+			has_replied_message: msg.has_replied_message || false,
+			has_forwarded_message: msg.has_forwarded_message || false,
+
+			isEdited: false,
+			replyTo: undefined,
+			forwardedFrom: undefined,
+			files_summary: msg.files_summary,
+			new: msg.new
+		}));
+	}, [messages]);
+
+	const {
+		activeResultId,
+		searchResultsCount,
+		activeResultIndex,
+		navigateToNext,
+		navigateToPrev,
+		getActiveOccurrencesForMessage
+	} = useMessageSearch({
+		messages: searchMessages,
+		searchQuery,
+		caseSensitive: false,
+		searchInSender: true,
+		searchInSystemText: false,
+		debounceDelay: 300
+	});
 
 	const handleCall = useCallback(() => {
 		console.log('📞 Call initiated for chat:', chatUid);
@@ -188,7 +289,6 @@ export const ChatView = ({
 		console.log('🚫 Block user:', chatUid);
 	}, [chatUid]);
 
-	// RENDER: Loading State (только для сообщений)
 	// ─────────────────────────────────────────────────────────────
 
 	if (isMessagesLoading && !chatData && messages.length === 0 && !isForbidden) {
@@ -199,8 +299,6 @@ export const ChatView = ({
 		);
 	}
 
-	// ─────────────────────────────────────────────────────────────
-	// RENDER: Error State (только реальные ошибки, не 403)
 	// ─────────────────────────────────────────────────────────────
 
 	if (hasRealError && !chatData) {
@@ -214,19 +312,35 @@ export const ChatView = ({
 	}
 
 	// ─────────────────────────────────────────────────────────────
-	// RENDER: Empty State (чат не найден в кеше ИЛИ 403)
-	// ─────────────────────────────────────────────────────────────
 
 	if (!chatData || isForbidden) {
 		return (
 			<section className={cls.chatView}>
 				<ChatHeader
-					{...safeHeaderData}
+					userName={safeHeaderData.userName}
+					userStatus={safeHeaderData.userStatus}
+					userAvatar={safeHeaderData.userAvatar}
+					isOnline={safeHeaderData.isOnline}
+					isInContacts={safeHeaderData.isInContacts}
+					contactPhone={safeHeaderData.contactPhone}
+					contactFirstName={safeHeaderData.contactFirstName}
+					contactLastName={safeHeaderData.contactLastName}
 					onCall={handleCall}
 					onAddToContacts={handleAddToContacts}
 					onBlock={handleBlock}
 					onBack={isMobile ? handleBack : undefined}
 					onActionBarVisibilityChange={setIsActionBarVisible}
+					messages={messages}
+					onNavigateToMessage={handleNavigateToMessage}
+					searchQuery={searchQuery}
+					onSearchQueryChange={setSearchQuery}
+					isSearchVisible={isSearchVisible}
+					onSearchToggle={() => setIsSearchVisible(!isSearchVisible)}
+					searchResultsCount={searchResultsCount}
+					activeResultIndex={activeResultIndex}
+					activeResultId={activeResultId}
+					navigateToNext={navigateToNext}
+					navigateToPrev={navigateToPrev}
 				/>
 
 				<div className={cls.notMessageWrapper}>
@@ -239,8 +353,7 @@ export const ChatView = ({
 	}
 
 	// ─────────────────────────────────────────────────────────────
-	// RENDER: Main Content (чат найден, всё работает)
-	// ─────────────────────────────────────────────────────────────
+
 	const messagesClass = classNames(cls.messagesContent, {
 		[cls.messagesContent_noRadius]: isMobile && isActionBarVisible
 	});
@@ -248,17 +361,43 @@ export const ChatView = ({
 	return (
 		<section className={cls.chatView}>
 			<ChatHeader
-				{...safeHeaderData}
+				userName={safeHeaderData.userName}
+				userStatus={safeHeaderData.userStatus}
+				userAvatar={safeHeaderData.userAvatar}
+				isOnline={safeHeaderData.isOnline}
+				isInContacts={safeHeaderData.isInContacts}
+				contactPhone={safeHeaderData.contactPhone}
+				contactFirstName={safeHeaderData.contactFirstName}
+				contactLastName={safeHeaderData.contactLastName}
 				onCall={handleCall}
 				onAddToContacts={handleAddToContacts}
 				onBlock={handleBlock}
 				onBack={isMobile ? handleBack : undefined}
 				onActionBarVisibilityChange={setIsActionBarVisible}
+				messages={messages}
+				onNavigateToMessage={handleNavigateToMessage}
+				searchQuery={searchQuery}
+				onSearchQueryChange={setSearchQuery}
+				isSearchVisible={isSearchVisible}
+				onSearchToggle={() => setIsSearchVisible(!isSearchVisible)}
+				searchResultsCount={searchResultsCount}
+				activeResultIndex={activeResultIndex}
+				activeResultId={activeResultId}
+				navigateToNext={navigateToNext}
+				navigateToPrev={navigateToPrev}
 			/>
 
 			{hasMessages ? (
 				<>
-					<MessagesList userUid={chatUid} className={messagesClass} />
+					<MessagesList
+						userUid={chatUid}
+						className={messagesClass}
+						activeResultId={activeResultId}
+						searchQuery={searchQuery}
+						onContainerReady={handleContainerReady}
+						onScrollContainerReady={handleScrollContainerReady}
+						getActiveOccurrencesForMessage={getActiveOccurrencesForMessage}
+					/>
 					<MessageFormComponent />
 				</>
 			) : (

@@ -35,7 +35,12 @@ const STICKY_TOLERANCE = 20; // Допуск для раннего перекл�
 export const StickyDateProvider: React.FC<{
 	children: React.ReactNode;
 	containerRef?: React.RefObject<HTMLDivElement>;
-}> = ({ children, containerRef: externalContainerRef }) => {
+	onScrollContainerReady?: (container: HTMLDivElement | null) => void;
+}> = ({
+	children,
+	containerRef: externalContainerRef,
+	onScrollContainerReady
+}) => {
 	const [activeDate, setActiveDate] = useState<Date | null>(null);
 	const [activeSeparatorId, setActiveSeparatorId] = useState<string | null>(
 		null
@@ -77,6 +82,22 @@ export const StickyDateProvider: React.FC<{
 		[hiddenSeparatorIds]
 	);
 
+	useEffect(() => {
+		if (onScrollContainerReady) {
+			let called = false;
+
+			const timer = setTimeout(() => {
+				if (!called && scrollContainerRef.current) {
+					called = true;
+					onScrollContainerReady(scrollContainerRef.current);
+				}
+			}, 100);
+
+			return () => {
+				clearTimeout(timer);
+			};
+		}
+	}, [onScrollContainerReady]);
 	useEffect(() => {
 		const scrollContainer = scrollContainerRef.current;
 		if (!scrollContainer) {

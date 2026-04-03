@@ -70,3 +70,5 @@ export { default as VolumeOff } from './VolumeOff.svg';
 export { default as VolumeOn } from './VolumeOn.svg';
 export { default as CreateChanel } from './СreateChanel.svg';
 export { default as CancelSelection } from './СancelSelection.svg';
+export { default as ShevronUp } from './UpShevron.svg';
+export { default as ShevronDown } from './DownShevron.svg';
