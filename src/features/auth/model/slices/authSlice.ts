@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AuthSchema } from '../types/AuthSchema';
+import { AuthSchema, PhoneSessionData } from '../types/AuthSchema';
 import { AuthStep } from '../types/authStep';
 
 const initialState: AuthSchema = {
@@ -21,7 +21,6 @@ const authSlice = createSlice({
 	reducers: {
 		// Флаг для предотвращения race condition при refresh
 		setRefreshing: (state, action: PayloadAction<boolean>) => {
-			state.isRefreshing = action.payload;
 			state.isRefreshing = action.payload;
 		},
 
@@ -51,8 +50,13 @@ const authSlice = createSlice({
 			state.phone_number = action.payload.phone_number;
 		},
 
+		setPhoneSession: (state, action: PayloadAction<PhoneSessionData>) => {
+			state.phoneSession = action.payload;
+		},
+
 		clearPhoneData: state => {
 			delete state.phone_number;
+			delete state.phoneSession;
 		},
 
 		setStep: (state, action: PayloadAction<AuthStep>) => {
