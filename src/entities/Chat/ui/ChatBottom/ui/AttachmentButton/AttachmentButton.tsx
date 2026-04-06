@@ -38,7 +38,9 @@ export function AttachmentButton({
 				}
 			]);
 		} catch (error) {
-			console.error('File conversion error:', error);
+			if (process.env.NODE_ENV === 'development') {
+				console.error('File conversion error:', error);
+			}
 		}
 
 		if (imageInputRef.current) {

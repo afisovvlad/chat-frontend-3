@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
 	ChatHeader,
@@ -31,6 +31,7 @@ import { useGetProfileQuery } from '@/entities/Profile/api/editProfile.api';
 import { MESSAGES_PAGE_SIZE, MESSAGES_ORDERING } from '@/shared/model';
 
 import cls from './ChatView.module.scss';
+import { connectChat } from '@/shared/api/WS/services/socketClient/socketClient';
 
 interface ChatViewProps {
 	chatUid: string;
@@ -55,6 +56,16 @@ export const ChatView = ({
 	useGetProfileQuery(undefined, { skip: !chatUid });
 
 	const currentUserId = useAppSelector(selectCurrentUserId);
+
+	// В ChatView.tsx — добавь этот эффект:
+
+	useEffect(() => {
+		if (!chatUid) {
+			return;
+		}
+		connectChat();
+		return () => {};
+	}, [chatUid]);
 
 	// ─────────────────────────────────────────────────────────────
 

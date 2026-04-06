@@ -1,7 +1,7 @@
 import {
 	ChatType,
 	SendMessageParams
-} from '@/entities/Chat/model/types/chat.types/chat.types';
+} from '../../../types/chat.types/chat.types';
 import { sendWS } from '@/shared/api/WS/services/socketClient/socketClient';
 
 // ─────────────────────────────────────────────────────────────

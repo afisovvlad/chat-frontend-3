@@ -3,13 +3,11 @@
 import { useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { persistor, store } from '../config/store';
 import { AuthSyncProvider } from '@/features/auth';
 import { selectCurrentUserId } from '@/entities/Profile/model/selectors/selectCurrentUserId';
-import {
-	initWSHandlers,
-	setWSCurrentUserId
-} from '@/shared/api/WS/services/socketClient/socketClient';
+import { persistor, store } from '..';
+import { initWSHandlers, setWSCurrentUserId } from '@/shared/api';
+
 interface StoreProviderProps {
 	children: React.ReactNode;
 }
@@ -18,7 +16,6 @@ export function StoreProvider({ children }: StoreProviderProps) {
 	const isWsInitialized = useRef(false);
 
 	useEffect(() => {
-		// Подписываемся на изменения currentUserId в сторе
 		const unsubscribe = store.subscribe(() => {
 			const userId = selectCurrentUserId(store.getState());
 			if (userId) {

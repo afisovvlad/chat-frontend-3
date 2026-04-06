@@ -3,7 +3,10 @@
 import { memo, useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { MessageBubble } from '@/entities/Chat/ui/MessageBubble/MessageBubble';
 import { Down } from '@icons/index';
-import { chatApi, useGetMessagesQuery } from '@/entities/Chat/api/chatApi';
+import {
+	useGetMessagesQuery,
+	useLazyGetMessagesQuery
+} from '@/entities/Chat/api/chatApi';
 import { shouldShowDateSeparator } from '@/entities/Chat/model/lib/service/dateFormating/dateFormater';
 import SmartDateSeparator from '../SystemMessages/ui/SmartDateSeparator/SmartDateSeparator';
 import {
@@ -18,8 +21,6 @@ import {
 	GetMessagesRequest
 } from '../../model/types/chat.types/chat.types';
 import { mapChatMessageToSystemMessageData } from '../../model/mapper/mapChatType/chatMapper';
-import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
-import { preloadChatPages } from '../../model/lib/utils/fetchAllMessages/fetchAllMessages';
 
 import cls from './MessagesList.module.scss';
 
@@ -58,22 +59,6 @@ const toLocalTextMessage = (
 	};
 };
 
-const toProxyPath = (url: string | null): string | null => {
-	if (!url) {
-		return null;
-	}
-	if (url.startsWith('/api/proxy')) {
-		return url;
-	}
-	try {
-		const pathname = url.startsWith('http') ? new URL(url).pathname : url;
-		const apiPath = pathname.replace(/^\/api\/v1/, '');
-		return `/api/proxy${apiPath}`;
-	} catch {
-		return null;
-	}
-};
-
 //  ВНУТРЕННИЙ компонент — получает данные из контекста
 const MessagesListContent = ({
 	queryArgs,
@@ -92,22 +77,25 @@ const MessagesListContent = ({
 	const isAtBottomRef = useRef(true);
 	const isLoadingHistoryRef = useRef(false);
 	const abortControllerRef = useRef<AbortController | null>(null);
-	const preloadDoneRef = useRef(false);
+	const isFetchingMoreRef = useRef(false);
 
 	// ===== STATE =====
 
-	const [isPreloading, setIsPreloading] = useState(false);
 	const [messages, setMessages] = useState<TextMessage[]>([]);
 	const [nextUrl, setNextUrl] = useState<string | null>(null);
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
 	const [newCount, setNewCount] = useState(0);
 
-	const dispatch = useAppDispatch();
+	const [triggerGetMessages] = useLazyGetMessagesQuery();
 
 	// Синхронизируем реф с контекстным значением для логики добавления сообщений
 	useEffect(() => {
 		isAtBottomRef.current = isAtBottom;
 	}, [isAtBottom]);
+
+	useEffect(() => {
+		isFetchingMoreRef.current = isFetchingMore;
+	}, [isFetchingMore]);
 
 	// ===== ПОЛУЧЕНИЕ ДОСТУПА К СКРОЛЛ-КОНТЕЙНЕРУ =====
 
@@ -124,8 +112,6 @@ const MessagesListContent = ({
 			}
 		}
 	}, []);
-
-	// ===== ОБРАБОТКА ДАННЫХ =====
 
 	useEffect(() => {
 		if (!data) {
@@ -146,8 +132,8 @@ const MessagesListContent = ({
 				return [...mapped].reverse();
 			}
 
-			const prevIds = new Set(prev.map(p => p.id));
-			const incoming = mapped.filter(m => !prevIds.has(m.id));
+			const prevIds = new Set(prev.map(p => p.uid));
+			const incoming = mapped.filter(m => !prevIds.has(m.uid));
 
 			if (incoming.length) {
 				if (!isLoadingHistoryRef.current && !isAtBottomRef.current) {
@@ -163,78 +149,13 @@ const MessagesListContent = ({
 		}, 50);
 	}, [currentUserId, data]);
 
-	// Эффект авто-подгрузки
-
-	useEffect(() => {
-		const preloadMore = async () => {
-			// Прерываем, если:
-			if (
-				!data?.next ||
-				isFetchingMore ||
-				preloadDoneRef.current ||
-				isPreloading ||
-				!queryArgs?.user_uid
-			) {
-				return;
-			}
-
-			preloadDoneRef.current = true;
-
-			setIsPreloading(true);
-
-			try {
-				const { results: additionalResults, nextUrl: newNextUrl } =
-					await preloadChatPages(queryArgs.user_uid, {
-						pagesToLoad: 4,
-						ordering: queryArgs.ordering as
-							| '-created_at'
-							| 'created_at'
-							| undefined,
-						startPage: 2
-					});
-
-				if (additionalResults.length > 0) {
-					dispatch(
-						chatApi.util.updateQueryData('getMessages', queryArgs, draft => {
-							const existingUids = new Set(draft.results.map(m => m.uid));
-							const uniqueNew = additionalResults.filter(
-								msg => !existingUids.has(msg.uid)
-							);
-
-							if (uniqueNew.length > 0) {
-								const merged = [...draft.results, ...uniqueNew];
-								draft.results = merged.sort(
-									(a, b) => b.created_at - a.created_at
-								);
-								draft.next = newNextUrl;
-							}
-						})
-					);
-				}
-			} catch (err) {
-				console.error('❌ Preload error:', err);
-				preloadDoneRef.current = false;
-			} finally {
-				setIsPreloading(false);
-			}
-		};
-
-		if (data?.results?.length && !preloadDoneRef.current) {
-			preloadMore();
-		}
-	}, [
-		data?.results?.length,
-		data?.next,
-		queryArgs,
-		isFetchingMore,
-		isPreloading
-	]);
-
-	// 4. Сброс при смене чата
+	// Сбрасываем локальный стейт при смене чата
 	useEffect(() => {
 		return () => {
-			preloadDoneRef.current = false;
-			setIsPreloading(false);
+			setMessages([]);
+			setNextUrl(null);
+			setNewCount(0);
+			isLoadingHistoryRef.current = false;
 		};
 	}, [queryArgs?.user_uid]);
 
@@ -252,58 +173,44 @@ const MessagesListContent = ({
 	// ===== ПОДГРУЗКА ИСТОРИИ =====
 
 	const loadMore = useCallback(async () => {
-		if (!nextUrl || isFetchingMore) {
+		if (!nextUrl || isFetchingMoreRef.current || !queryArgs?.user_uid) {
 			return;
 		}
 
+		const url = new URL(nextUrl, window.location.origin);
+		const page = url.searchParams.get('page');
+
+		// 🔹 Обновляем и стейт, и ref
 		isLoadingHistoryRef.current = true;
-		if (abortControllerRef.current) {
-			abortControllerRef.current.abort();
-		}
-		abortControllerRef.current = new AbortController();
+		isFetchingMoreRef.current = true;
 		setIsFetchingMore(true);
 
 		try {
-			const fetchUrl = toProxyPath(nextUrl);
-			if (!fetchUrl) {
-				throw new Error('Invalid nextUrl');
-			}
+			const result = await triggerGetMessages({
+				user_uid: queryArgs.user_uid,
+				page_size: queryArgs.page_size,
+				ordering: queryArgs.ordering,
+				search: queryArgs.search,
+				page: page ? parseInt(page, 10) : undefined
+			}).unwrap();
 
-			const res = await fetch(fetchUrl, {
-				signal: abortControllerRef.current.signal,
-				redirect: 'follow',
-				credentials: 'include'
-			});
-
-			if (!res.ok) {
-				throw new Error(`HTTP error! status: ${res.status}`);
-			}
-
-			const responseData: { results: ChatMessage[]; next: string | null } =
-				await res.json();
-
-			const older: TextMessage[] = responseData.results
-				.filter(msg => msg.type !== MessageType.SYSTEM)
+			const older = result.results
+				.filter((msg): msg is ChatMessage => msg.type !== MessageType.SYSTEM)
 				.map(msg => toLocalTextMessage(msg, currentUserId));
 
-			setNextUrl(responseData.next);
-
+			setNextUrl(result.next);
 			setMessages(prev => {
-				const prevIds = new Set(prev.map(p => p.id));
-				const uniqueOlder = older.filter(m => !prevIds.has(m.id));
+				const prevUids = new Set(prev.map(p => p.uid));
+				const uniqueOlder = older.filter(m => !prevUids.has(m.uid));
 				return [...uniqueOlder, ...prev];
 			});
 		} catch (err) {
-			if (err instanceof DOMException && err.name === 'AbortError') {
-				return;
-			}
 			console.error('Failed to load older messages:', err);
 		} finally {
+			isFetchingMoreRef.current = false;
 			setIsFetchingMore(false);
-			isLoadingHistoryRef.current = false;
-			abortControllerRef.current = null;
 		}
-	}, [nextUrl, isFetchingMore, currentUserId]);
+	}, [nextUrl, currentUserId, queryArgs, triggerGetMessages]);
 
 	// ===== ТРИГГЕР ПОДГРУЗКИ ПРИ СКРОЛЛЕ ВВЕРХ =====
 	useEffect(() => {
@@ -316,7 +223,7 @@ const MessagesListContent = ({
 			if (
 				container.scrollTop < 50 &&
 				!isLoadingHistoryRef.current &&
-				!isFetchingMore
+				!isFetchingMoreRef.current
 			) {
 				loadMore();
 			}
@@ -325,8 +232,8 @@ const MessagesListContent = ({
 		container.addEventListener('scroll', handleScrollTop, { passive: true });
 		return () => container.removeEventListener('scroll', handleScrollTop);
 	}, [loadMore]);
-
 	// ===== CLEANUP =====
+
 	useEffect(() => {
 		return () => {
 			if (abortControllerRef.current) {

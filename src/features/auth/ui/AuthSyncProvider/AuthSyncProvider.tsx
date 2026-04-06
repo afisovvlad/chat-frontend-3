@@ -9,18 +9,20 @@ interface AuthSyncProviderProps {
 	children: React.ReactNode;
 }
 
-/**
- * Провайдер для синхронизации user_id из профиля в Redux (auth slice).
- */
-
 export const AuthSyncProvider = ({ children }: AuthSyncProviderProps) => {
 	const dispatch = useAppDispatch();
 
 	const { data: profileData } = useGetProfileQuery(undefined);
 
 	useEffect(() => {
-		if (profileData?.uid) {
-			dispatch(authActions.setCurrentUserId(profileData.uid));
+		const uid = profileData?.uid;
+
+		if (uid) {
+			dispatch(authActions.setCurrentUserId(uid));
+
+			import('@/shared/api').then(({ setWSCurrentUserId }) => {
+				setWSCurrentUserId(uid);
+			});
 		}
 	}, [profileData?.uid, dispatch]);
 

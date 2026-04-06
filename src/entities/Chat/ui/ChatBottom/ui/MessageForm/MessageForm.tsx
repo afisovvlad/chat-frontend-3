@@ -5,7 +5,8 @@ import {
 	KeyboardEvent,
 	useEffect,
 	forwardRef,
-	useImperativeHandle
+	useImperativeHandle,
+	useRef
 } from 'react';
 import { useForm } from 'react-hook-form';
 import { MessageFormTypes } from '@/entities/Chat/model/types/chat.types/chat.types';
@@ -13,7 +14,6 @@ import { EmojiPickerComponent } from '../EmojiPickerComponent/EmojiPickerCompone
 
 import cls from './MessageForm.module.scss';
 
-//  Тип для методов, которые хотим экспортировать через ref
 export type MessageFormRef = {
 	reset: () => void;
 	focus: () => void;
@@ -27,7 +27,6 @@ interface MessageFormProps {
 	onReset?: () => void;
 }
 
-//  Оборачиваем компонент в forwardRef
 export const MessageForm = forwardRef<MessageFormRef, MessageFormProps>(
 	(
 		{ onSendContent, disabled, onTextChanged, onMessageChange, onReset },
@@ -40,6 +39,8 @@ export const MessageForm = forwardRef<MessageFormRef, MessageFormProps>(
 		const message = watch('message');
 		const isFilled = message.trim().length > 0;
 
+		const textareaRef = useRef<HTMLTextAreaElement>(null);
+
 		useImperativeHandle(
 			ref,
 			() => ({
@@ -47,17 +48,13 @@ export const MessageForm = forwardRef<MessageFormRef, MessageFormProps>(
 					reset();
 					onReset?.();
 
-					const textarea =
-						document.querySelector<HTMLTextAreaElement>('#message');
-					if (textarea) {
-						textarea.style.height = 'auto';
-						textarea.style.height = '21px';
+					if (textareaRef.current) {
+						textareaRef.current.style.height = 'auto';
+						textareaRef.current.style.height = '21px';
 					}
 				},
 				focus: () => {
-					const textarea =
-						document.querySelector<HTMLTextAreaElement>('#message');
-					textarea?.focus();
+					textareaRef.current?.focus();
 				}
 			}),
 			[reset, onReset]
@@ -74,12 +71,10 @@ export const MessageForm = forwardRef<MessageFormRef, MessageFormProps>(
 			}
 
 			const timer = setTimeout(() => {
-				const textarea =
-					document.querySelector<HTMLTextAreaElement>('#message');
-				if (textarea) {
-					textarea.focus();
-					const len = textarea.value.length;
-					textarea.setSelectionRange(len, len);
+				if (textareaRef.current) {
+					textareaRef.current.focus();
+					const len = textareaRef.current.value.length;
+					textareaRef.current.setSelectionRange(len, len);
 				}
 			}, 0);
 
@@ -94,13 +89,12 @@ export const MessageForm = forwardRef<MessageFormRef, MessageFormProps>(
 		};
 
 		const onEmojiSelect = (emoji: string) => {
-			const textarea = document.querySelector<HTMLTextAreaElement>('#message');
-			if (!textarea) {
+			if (!textareaRef.current) {
 				return;
 			}
 
-			const start = textarea.selectionStart;
-			const end = textarea.selectionEnd;
+			const start = textareaRef.current.selectionStart;
+			const end = textareaRef.current.selectionEnd;
 			const current = getValues('message');
 			const newMessage = current.slice(0, start) + emoji + current.slice(end);
 
@@ -111,9 +105,11 @@ export const MessageForm = forwardRef<MessageFormRef, MessageFormProps>(
 
 			requestAnimationFrame(() => {
 				const cursor = start + emoji.length;
-				textarea.selectionStart = cursor;
-				textarea.selectionEnd = cursor;
-				textarea.focus();
+				if (textareaRef.current) {
+					textareaRef.current.selectionStart = cursor;
+					textareaRef.current.selectionEnd = cursor;
+					textareaRef.current.focus();
+				}
 			});
 		};
 
@@ -141,6 +137,7 @@ export const MessageForm = forwardRef<MessageFormRef, MessageFormProps>(
 						onKeyDown={handleKeyDown}
 						placeholder='Сообщение...'
 						disabled={disabled}
+						textareaRef={textareaRef}
 						rules={{}}
 					/>
 					<EmojiPickerComponent

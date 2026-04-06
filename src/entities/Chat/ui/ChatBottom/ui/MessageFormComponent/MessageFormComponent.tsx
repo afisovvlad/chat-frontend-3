@@ -1,11 +1,11 @@
 'use client';
 
-import { useCallback, useState, useRef } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { sendMessage } from '../../../../model/lib/service/sendMessage/sendMessage';
 import { AttachmentButton } from '../AttachmentButton/AttachmentButton';
-import { MessageForm, MessageFormRef } from '../MessageForm/MessageForm'; // 👈 импортируем тип рефа
+import { MessageForm, MessageFormRef } from '../MessageForm/MessageForm';
 import { VoiceRecorder } from '../VoiceRecorder/VoiceRecorder';
 import { Button, ButtonColor, ButtonType } from '@/shared/ui/Button';
 import { SendIcon } from '@icons/index';
@@ -39,21 +39,22 @@ export function MessageFormComponent({
 	const [messageText, setMessageText] = useState('');
 
 	const formRef = useRef<MessageFormRef>(null);
-
+	const invalidateChatsTimerRef = useRef<NodeJS.Timeout>(null);
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const dispatch = useAppDispatch();
 
+	useEffect(() => {
+		return () => {
+			if (invalidateChatsTimerRef.current) {
+				clearTimeout(invalidateChatsTimerRef.current);
+			}
+		};
+	}, []);
+
 	const handleSend = useCallback(
 		async (message: string) => {
-			if (!currentUserId) {
-				console.error('❌ No currentUserId');
-				return;
-			}
-			if (!messagesQueryArgs) {
-				console.error('❌ No messagesQueryArgs:', {
-					messagesQueryArgs,
-					chatUid
-				});
+			// Ранний выход без логов (защита от невалидных данных)
+			if (!currentUserId || !messagesQueryArgs) {
 				return;
 			}
 
@@ -72,6 +73,7 @@ export function MessageFormComponent({
 					type: MessageType.TEXT
 				};
 
+				// Оптимистичное обновление кеша сообщений
 				dispatch(
 					chatApi.util.updateQueryData(
 						'getMessages',
@@ -90,11 +92,24 @@ export function MessageFormComponent({
 					chatKey
 				);
 
-				dispatch(chatApi.util.invalidateTags([{ type: 'Chats', id: 'LIST' }]));
+				// Debounce инвалидации списка чатов
+				if (invalidateChatsTimerRef.current) {
+					clearTimeout(invalidateChatsTimerRef.current);
+				}
+
+				invalidateChatsTimerRef.current = setTimeout(() => {
+					dispatch(
+						chatApi.util.invalidateTags([{ type: 'Chats', id: 'LIST' }])
+					);
+				}, 1500);
+
 				setFiles([]);
-				setMessageText(''); // очищаем состояние родителя
+				setMessageText('');
 			} catch (error) {
-				// Не очищаем текст при ошибке
+				//  Тихо игнорируем ошибку (или можно добавить модадку)
+				if (process.env.NODE_ENV === 'development') {
+					console.error('Failed to send message:', error);
+				}
 			}
 		},
 		[
@@ -122,13 +137,18 @@ export function MessageFormComponent({
 					currentUserId,
 					chatKey
 				);
-
 				dispatch(
-					chatApi.util.invalidateTags([
-						{ type: 'Messages', id: 'LIST' },
-						{ type: 'Chats', id: 'LIST' }
-					])
+					chatApi.util.invalidateTags([{ type: 'Messages', id: 'LIST' }])
 				);
+
+				if (invalidateChatsTimerRef.current) {
+					clearTimeout(invalidateChatsTimerRef.current);
+				}
+				invalidateChatsTimerRef.current = setTimeout(() => {
+					dispatch(
+						chatApi.util.invalidateTags([{ type: 'Chats', id: 'LIST' }])
+					);
+				}, 1500);
 			} catch (error) {
 				if (process.env.NODE_ENV === 'development') {
 					console.error('Failed to send voice:', error);
