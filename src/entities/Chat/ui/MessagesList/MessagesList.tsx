@@ -1,38 +1,26 @@
 'use client';
 
-import { memo, useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { memo, useEffect, useRef, useCallback } from 'react';
 import { MessageBubble } from '@/entities/Chat/ui/MessageBubble/MessageBubble';
 import { Down } from '@icons/index';
-import { useGetMessagesQuery } from '@/entities/Chat/api/chatApi';
-import { shouldShowDateSeparator } from '@/entities/Chat/model/lib/service/dateFormating/dateFormater';
 import { classNames } from '@/shared/lib/classNames/classNames';
-import SmartDateSeparator from '../SystemMessages/ui/SmartDateSeparator/SmartDateSeparator';
+import { SmartDateSeparator } from '../SystemMessages/ui/SmartDateSeparator/SmartDateSeparator';
 import { StickyDateProvider } from '../SystemMessages/ui/StickyDateContext/StickyDateContext';
 import SystemMessage from '../SystemMessages/ui/SystemMessages/SystemMessages';
 import {
-	SystemMessageData,
-	ChatMessage
-} from '../../model/types/chat.types/chat.types';
+	useMessagesData,
+	type TextMessage
+} from '../../model/lib/hooks/useMessagesData/useMessagesData';
+import { useInfiniteScroll } from '../../model/lib/hooks/useInfiniteScroll/useInfiniteScroll';
+import { toProxyPath } from '../../model/lib/service/toProxyPath/toProxyPath';
 import {
-	isSystemMessageType,
-	mapChatMessageToSystemMessageData
-} from '../../model/mapper/mapChatType/chatMapper';
+	SCROLL_BOTTOM_THRESHOLD,
+	MESSAGES_QUERY_DEFAULTS
+} from '@/shared/model';
+import { isSystemMessageType } from '../../model/mapper/mapChatType/chatMapper';
+import { ChatMessage } from '../../model/types/chat.types/chat.types';
 
 import cls from './MessagesList.module.scss';
-
-// ===== ТИПЫ =====
-
-interface TextMessage {
-	id: string;
-	text: string;
-	time: number;
-	status: 'received' | 'sending' | 'unread' | 'read';
-}
-
-type MessageListItem =
-	| { type: 'text'; data: TextMessage }
-	| { type: 'system'; data: SystemMessageData }
-	| { type: 'separator'; date: Date; id: string };
 
 interface MessagesProps {
 	userUid: string;
@@ -40,37 +28,9 @@ interface MessagesProps {
 	activeResultId?: string;
 	searchQuery?: string;
 	onContainerReady?: (container: HTMLDivElement | null) => void;
-	getActiveOccurrencesForMessage?: (messageId: string) => number[];
 	onScrollContainerReady?: (container: HTMLDivElement | null) => void;
+	getActiveOccurrencesForMessage?: (messageId: string) => number[] | undefined;
 }
-
-// ===== УТИЛИТЫ =====
-
-const toLocalTextMessage = (msg: ChatMessage): TextMessage => ({
-	id: String(msg.id),
-	text: msg.content,
-	time: msg.created_at,
-	status: msg.new ? 'unread' : 'read'
-});
-
-const toProxyPath = (url: string | null): string | null => {
-	if (!url) {
-		return null;
-	}
-	if (url.startsWith('/api/proxy')) {
-		return url;
-	}
-
-	try {
-		const pathname = url.startsWith('http') ? new URL(url).pathname : url;
-		const apiPath = pathname.replace(/^\/api\/v1/, '');
-		return `/api/proxy${apiPath}`;
-	} catch {
-		return null;
-	}
-};
-
-// ===== КОМПОНЕНТ =====
 
 const MessagesListComponent = ({
 	userUid,
@@ -81,123 +41,29 @@ const MessagesListComponent = ({
 	getActiveOccurrencesForMessage,
 	onScrollContainerReady
 }: MessagesProps) => {
-	// ─────────────────────────────────────────────────────────────
-	// API
-	// ─────────────────────────────────────────────────────────────
-	const { data, error, isLoading, refetch } = useGetMessagesQuery(
-		{ user_uid: userUid },
-		{ skip: !userUid }
-	);
+	const {
+		messages,
+		messagesWithSeparators,
+		nextUrl,
+		isLoading,
+		isError,
+		refetch,
+		isEmpty
+	} = useMessagesData({
+		userUid,
+		pageSize: MESSAGES_QUERY_DEFAULTS.page_size,
+		ordering: MESSAGES_QUERY_DEFAULTS.ordering
+	});
 
-	// ─────────────────────────────────────────────────────────────
-	// REFS
-	// ─────────────────────────────────────────────────────────────
 	const containerRef = useRef<HTMLDivElement>(null);
-	const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-	const scrollHandlerRef = useRef<(() => void) | null>(null);
-	const messagesRef = useRef<HTMLDivElement>(null);
-	const bottomRef = useRef<HTMLDivElement>(null);
-	const isAtBottomRef = useRef(true);
-	const isLoadingHistoryRef = useRef(false);
-	const abortControllerRef = useRef<AbortController | null>(null);
+	const isFetchingMoreRef = useRef(false);
 
-	// ─────────────────────────────────────────────────────────────
-	// STATE
-	// ─────────────────────────────────────────────────────────────
-	const [messages, setMessages] = useState<TextMessage[]>([]);
-	const [nextUrl, setNextUrl] = useState<string | null>(null);
-	const [isFetchingMore, setIsFetchingMore] = useState(false);
-	const [isAtBottom, setIsAtBottom] = useState(true);
-	const [newCount, setNewCount] = useState(0);
-
-	// ─────────────────────────────────────────────────────────────
-	// SCROLL HANDLERS
-	// ─────────────────────────────────────────────────────────────
-
-	const scrollToBottom = useCallback(() => {
-		bottomRef.current?.scrollIntoView({
-			behavior: 'smooth',
-			block: 'end'
-		});
-		setNewCount(0);
-	}, []);
-
-	const handleScroll = useCallback(() => {
-		const el = messagesRef.current;
-		if (!el) {
+	const loadMore = useCallback(async () => {
+		if (!nextUrl || isFetchingMoreRef.current) {
 			return;
 		}
-
-		const threshold = 50;
-		const isBottom =
-			el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
-
-		if (isAtBottomRef.current !== isBottom) {
-			isAtBottomRef.current = isBottom;
-			setIsAtBottom(isBottom);
-		}
-
-		if (isBottom) {
-			setNewCount(0);
-		}
-
-		if (el.scrollTop < 50 && !isFetchingMore && !isLoadingHistoryRef.current) {
-			void loadMore();
-		}
-	}, [isFetchingMore]);
-
-	// Синхронизация рефа с хендлером
-	useEffect(() => {
-		scrollHandlerRef.current = handleScroll;
-	}, [handleScroll]);
-
-	const setupScrollListener = useCallback(() => {
-		const el = messagesRef.current;
-		if (!el) {
-			return;
-		}
-
-		const onScroll = () => {
-			scrollHandlerRef.current?.();
-		};
-
-		el.addEventListener('scroll', onScroll, { passive: true });
-
-		requestAnimationFrame(() => {
-			requestAnimationFrame(() => {
-				onScroll();
-			});
-		});
-
-		return () => {
-			el.removeEventListener('scroll', onScroll);
-		};
-	}, []);
-
-	// ─────────────────────────────────────────────────────────────
-	// PAGINATION: Load More
-	// ─────────────────────────────────────────────────────────────
-
-	const loadMore = async () => {
-		if (!nextUrl || isFetchingMore || isLoadingHistoryRef.current) {
-			return;
-		}
-
-		isLoadingHistoryRef.current = true;
-		if (abortControllerRef.current) {
-			abortControllerRef.current.abort();
-		}
-		abortControllerRef.current = new AbortController();
-		setIsFetchingMore(true);
-
-		const el = containerRef.current;
-
-		const saveScrollPosition = () => {
-			if (!el) {
-				return null;
-			}
-			return { scrollHeight: el.scrollHeight, scrollTop: el.scrollTop };
-		};
+		isFetchingMoreRef.current = true;
+		const controller = new AbortController();
 
 		try {
 			const fetchUrl = toProxyPath(nextUrl);
@@ -206,7 +72,7 @@ const MessagesListComponent = ({
 			}
 
 			const res = await fetch(fetchUrl, {
-				signal: abortControllerRef.current.signal,
+				signal: controller.signal,
 				redirect: 'follow',
 				credentials: 'include'
 			});
@@ -215,178 +81,106 @@ const MessagesListComponent = ({
 				throw new Error(`HTTP error! status: ${res.status}`);
 			}
 
-			const responseData: { results: ChatMessage[]; next: string | null } =
+			const { results, next }: { results: ChatMessage[]; next: string | null } =
 				await res.json();
 
-			const older: TextMessage[] = responseData.results
+			const older: TextMessage[] = results
 				.filter((msg): msg is ChatMessage => !isSystemMessageType(msg))
-				.map(toLocalTextMessage);
+				.map(msg => ({
+					id: String(msg.id),
+					text: msg.content,
+					time: msg.created_at,
+					status: msg.new ? 'unread' : 'read'
+				}));
 
-			setNextUrl(responseData.next);
-			const scrollPos = saveScrollPosition();
+			if (older.length > 0) {
+				const el = containerRef.current?.closest(
+					'[data-scroll-container]'
+				) as HTMLDivElement | null;
+				if (el) {
+					const prevScrollHeight = el.scrollHeight;
+					const prevScrollTop = el.scrollTop;
 
-			setMessages(prev => {
-				const prevIds = new Set(prev.map(p => p.id));
-				const uniqueOlder = older.filter(m => !prevIds.has(m.id));
-
-				if (uniqueOlder.length > 0 && el && scrollPos) {
 					requestAnimationFrame(() => {
-						const newScrollHeight = el.scrollHeight;
-						const heightDiff = newScrollHeight - scrollPos.scrollHeight;
-						el.scrollTop = scrollPos.scrollTop + heightDiff;
+						const heightDiff = el.scrollHeight - prevScrollHeight;
+						el.scrollTop = prevScrollTop + heightDiff;
 					});
 				}
-				return [...uniqueOlder, ...prev];
-			});
+			}
 		} catch (err) {
 			if (err instanceof DOMException && err.name === 'AbortError') {
 				return;
 			}
-			console.error('Failed to load older messages:', err);
 		} finally {
-			setIsFetchingMore(false);
-			isLoadingHistoryRef.current = false;
-			abortControllerRef.current = null;
+			isFetchingMoreRef.current = false;
 		}
-	};
+	}, [nextUrl]);
 
-	// ─────────────────────────────────────────────────────────────
-	// DATA PROCESSING
-	// ─────────────────────────────────────────────────────────────
+	const {
+		scrollRef,
+		anchorRef,
+		isAtBottom,
+		newCount,
+		scrollToBottom,
+		incrementNewCount
+	} = useInfiniteScroll({
+		loadMore,
+		threshold: SCROLL_BOTTOM_THRESHOLD,
+		loadThreshold: SCROLL_BOTTOM_THRESHOLD
+	});
 
 	useEffect(() => {
-		if (!data) {
-			return;
+		if (!isAtBottom && messages.length > 0) {
+			const lastMessage = messages[messages.length - 1];
+			if (lastMessage?.status === 'unread') {
+				incrementNewCount();
+			}
 		}
-
-		const textMessages = data.results.filter(
-			(msg): msg is ChatMessage => !isSystemMessageType(msg)
-		);
-		const mapped = textMessages.map(toLocalTextMessage);
-
-		setNextUrl(data.next);
-
-		setMessages(prev => {
-			if (!prev.length) {
-				return mapped;
-			}
-
-			const prevIds = new Set(prev.map(p => p.id));
-			const incoming = mapped.filter(m => !prevIds.has(m.id));
-
-			if (incoming.length) {
-				if (!isLoadingHistoryRef.current && !isAtBottomRef.current) {
-					setNewCount(c => c + incoming.length);
-				}
-				return [...prev, ...incoming];
-			}
-			return prev;
-		});
-	}, [data]);
-
-	const messagesWithSeparators = useMemo((): MessageListItem[] => {
-		if (!data?.results?.length) {
-			return [];
-		}
-
-		const result: MessageListItem[] = [];
-
-		data.results.forEach((message, index) => {
-			const prevMessage = index > 0 ? data.results[index - 1] : undefined;
-
-			if (isSystemMessageType(message)) {
-				result.push({
-					type: 'system',
-					data: mapChatMessageToSystemMessageData(message)
-				});
-				return;
-			}
-
-			const createdAt = message.created_at;
-			const prevCreatedAt =
-				prevMessage && !isSystemMessageType(prevMessage)
-					? prevMessage.created_at
-					: undefined;
-
-			if (shouldShowDateSeparator(createdAt, prevCreatedAt)) {
-				result.push({
-					type: 'separator',
-					date: new Date(createdAt),
-					id: `separator-${createdAt}-${index}`
-				});
-			}
-
-			result.push({
-				type: 'text',
-				data: toLocalTextMessage(message)
-			});
-		});
-
-		return result;
-	}, [data]);
-
-	// ─────────────────────────────────────────────────────────────
-	// EFFECTS
-	// ─────────────────────────────────────────────────────────────
+	}, [messages, isAtBottom, incrementNewCount]);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
-			const scrollContainer = scrollContainerRef.current;
+			const scrollContainer = scrollRef.current?.closest(
+				'[data-scroll-container]'
+			) as HTMLDivElement | null;
 			onScrollContainerReady?.(scrollContainer);
 			onContainerReady?.(scrollContainer);
 		}, 100);
 		return () => clearTimeout(timer);
-	}, [onContainerReady, onScrollContainerReady]);
+	}, [onContainerReady, onScrollContainerReady, scrollRef]);
 
 	useEffect(() => {
-		if (messages.length > 0 && isAtBottomRef.current) {
+		if (messages.length > 0 && isAtBottom) {
 			requestAnimationFrame(() => {
 				scrollToBottom();
-				scrollHandlerRef.current?.();
 			});
 		}
-	}, [messages.length, scrollToBottom]);
+	}, [messages.length, isAtBottom, scrollToBottom]);
 
-	useEffect(() => {
-		return () => {
-			if (abortControllerRef.current) {
-				abortControllerRef.current.abort();
-			}
-		};
-	}, []);
-
-	// ─────────────────────────────────────────────────────────────
-	// EARLY RETURNS
-	// ─────────────────────────────────────────────────────────────
-
-	if (isLoading && messages.length === 0) {
-		return <div className={cls.emptyState}>Загрузка сообщений...</div>;
-	}
-
-	if (error) {
+	if (isLoading && isEmpty) {
 		return (
-			<div className={cls.emptyState}>
-				<p>Ошибка загрузки сообщений</p>
-				<button onClick={() => refetch()}>Попробовать снова</button>
+			<div className={cls.emptyState} role='status' aria-live='polite'>
+				Загрузка сообщений...
 			</div>
 		);
 	}
 
-	// ─────────────────────────────────────────────────────────────
-	// RENDER
-	// ─────────────────────────────────────────────────────────────
+	if (isError) {
+		return (
+			<div className={cls.emptyState} role='alert'>
+				<p>Ошибка загрузки сообщений</p>
+				<button onClick={refetch}>Попробовать снова</button>
+			</div>
+		);
+	}
 
 	return (
 		<StickyDateProvider
 			containerRef={containerRef as React.RefObject<HTMLDivElement>}
-			onScrollContainerReady={container => {
-				scrollContainerRef.current = container;
-				onScrollContainerReady?.(container);
-				setupScrollListener();
-			}}
+			onScrollContainerReady={onScrollContainerReady}
 		>
 			<div className={`${cls.wrapper} ${className}`}>
-				<div className={cls.messages} ref={messagesRef}>
+				<div className={cls.messages} ref={scrollRef}>
 					{messagesWithSeparators.map(item => {
 						if (item.type === 'separator') {
 							return (
@@ -426,17 +220,18 @@ const MessagesListComponent = ({
 							/>
 						);
 					})}
-					<div ref={bottomRef} />
+
+					<div ref={anchorRef} className={cls.scrollAnchor} />
 				</div>
 
 				{!isAtBottom && (
 					<button
 						className={cls.scrollButton}
 						onClick={scrollToBottom}
-						aria-label='Прокрутить к новым сообщениям'
+						aria-label={`Прокрутить к новым сообщениям${newCount > 0 ? `, ${newCount} новых` : ''}`}
 					>
 						<Down />
-						{newCount > 0 && <span>({newCount})</span>}
+						{newCount > 0 && <span aria-hidden='true'>({newCount})</span>}
 					</button>
 				)}
 			</div>

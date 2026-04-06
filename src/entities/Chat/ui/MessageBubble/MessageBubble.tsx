@@ -22,7 +22,7 @@ interface MessageBubbleProps {
 	className?: string;
 	'data-message-id'?: string;
 	searchQuery?: string;
-	getActiveOccurrencesForMessage?: (messageId: string) => number[];
+	getActiveOccurrencesForMessage?: (messageId: string) => number[] | undefined;
 }
 
 export const MessageBubble = ({

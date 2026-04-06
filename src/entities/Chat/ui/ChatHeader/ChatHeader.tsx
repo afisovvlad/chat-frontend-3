@@ -22,37 +22,9 @@ import {
 import { useMediaQuery } from '@/shared/lib/hooks/useMediaQuery/useMediaQuery';
 import { Modal } from '@/shared/ui/Modal';
 import { ChatActionBar } from '../ChatActionBar/ChatActionBar';
-import { ChatMessage } from '@/entities/Chat/model/types/chat.types/chat.types';
+import { ChatHeaderProps } from '../../model/types/chat.types/chat.types';
 
 import cls from './ChatHeader.module.scss';
-
-interface ChatHeaderProps {
-	userName?: string;
-	userStatus?: string;
-	userAvatar?: string;
-	isOnline?: boolean;
-	isInContacts?: boolean;
-	onCall: () => void;
-	onAddToContacts?: () => void;
-	onBlock?: () => void;
-	onBack?: () => void;
-	onActionBarVisibilityChange?: (isVisible: boolean) => void;
-	contactPhone?: string;
-	contactFirstName?: string;
-	contactLastName?: string;
-	messages?: ChatMessage[];
-	onNavigateToMessage?: (messageId: string) => void;
-
-	searchQuery?: string;
-	onSearchQueryChange?: (value: string) => void;
-	isSearchVisible?: boolean;
-	onSearchToggle?: () => void;
-	searchResultsCount?: number;
-	activeResultIndex?: number;
-	activeResultId?: string;
-	navigateToNext?: () => void;
-	navigateToPrev?: () => void;
-}
 
 export const ChatHeader = ({
 	userName = 'Неизвестный пользователь',
@@ -222,7 +194,6 @@ export const ChatHeader = ({
 							id='chat-search-panel'
 							role='search'
 						>
-							{/*  Поле поиска с навигацией внутри */}
 							<Search
 								value={searchQuery}
 								onChange={onSearchQueryChange || (() => {})}
@@ -278,7 +249,6 @@ export const ChatHeader = ({
 				)}
 			</header>
 
-			{/* Панель результатов: пропсы из ChatView */}
 			{isSearchVisible &&
 				searchQuery.trim() &&
 				(searchResultsCount ?? 0) > 0 && (
