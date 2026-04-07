@@ -4,26 +4,17 @@ import { mapApiMessageToFrontend } from '@/entities/Chat/model/mapper/mapChatTyp
 import type { AppDispatch } from '@/app/providers/StoreProvider/config/store';
 import { ChatMessage, RawApiChatMessage } from '@/entities/Chat';
 import { MESSAGES_PAGE_SIZE, MESSAGES_ORDERING } from '@/shared/model';
+import { authActions } from '@/features/auth';
+import { logger } from '@/shared/lib/logger/logger';
 
 let isConnecting = false;
 let connectPromise: Promise<WebSocket> | null = null;
 let socket: WebSocket | null = null;
+let isSocketInitialized = false;
+let abortController: AbortController | null = null;
 
-// ─────────────────────────────────────────────────────────────
-//  НОВОЕ: Модульные переменные для интеграции с Redux
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Dispatch Redux store для обновления кэша при получении сообщений через WebSocket.
- * Устанавливается через initWSHandlers() при инициализации приложения.
- */
 let wsDispatch: AppDispatch | null = null;
 
-/**
- * UID текущего авторизованного пользователя.
- * Нужен для определения: "я отправитель или получатель?" при обновлении кэша.
- * Обновляется через setWSCurrentUserId() при изменении авторизации.
- */
 let currentUserId: string | null = null;
 
 const subscribers = new Map<string, Set<(data: WSResponse) => void>>();
@@ -36,47 +27,15 @@ let reconnectAttempts = 0;
 const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECT_DELAY = 1000;
 
-// ─────────────────────────────────────────────────────────────
-//  НОВОЕ: Функции инициализации обработчиков
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Инициализирует обработчики WebSocket, сохраняя Redux dispatch.
- * Вызывается один раз при старте приложения (например, в StoreProvider).
- * @param dispatch - Redux dispatch из store
- */
-
 export const initWSHandlers = (dispatch: AppDispatch) => {
 	wsDispatch = dispatch;
 };
-
-/**
- * Обновляет UID текущего пользователя в модуле сокета.
- * Вызывается при авторизации/смене пользователя, чтобы корректно
- * определять направление сообщений при обновлении кэша.
- * @param userId - UID пользователя или null при выходе
- */
 
 export const setWSCurrentUserId = (userId: string | null) => {
 	currentUserId = userId;
 };
 
-// ─────────────────────────────────────────────────────────────
-//  НОВОЕ: Обработка входящих сообщений для обновления кэша
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Обрабатывает входящее сообщение типа 'create_text_message':
- * 1. Определяет, какой чат затронут (личный или групповой)
- * 2. Вычисляет queryUserUid — ключ для поиска нужного кэша в RTK Query
- * 3. Обновляет кэш через updateQueryData, добавляя новое сообщение
- *
- * Использует константы MESSAGES_PAGE_SIZE/MESSAGES_ORDERING для
- * точного совпадения с аргументами запросов в ChatView/MessagesList.
- */
-
 const handleIncomingMessage = (response: WSResponse) => {
-	// Фильтруем только нужные действия
 	if (response.action !== 'create_text_message') {
 		return;
 	}
@@ -85,14 +44,12 @@ const handleIncomingMessage = (response: WSResponse) => {
 		return;
 	}
 
-	// Пропускаем, если обработчики ещё не инициализированы
 	if (!wsDispatch) {
 		return;
 	}
 
 	const rawMessage = response.object as RawApiChatMessage;
 
-	// ─── Извлечение UID (поддержка разных форматов от бэка) ───
 	const fromUid =
 		typeof rawMessage.from_user === 'string'
 			? rawMessage.from_user
@@ -103,12 +60,6 @@ const handleIncomingMessage = (response: WSResponse) => {
 			? rawMessage.to_user
 			: rawMessage.to_user?.uid;
 
-	// ─── НОВОЕ: Определение queryUserUid для поиска кэша ───
-	/**
-	 * queryUserUid — это значение, которое используется как user_uid
-	 * в аргументах запроса getMessages. Должно точно совпадать,
-	 * иначе RTK Query не найдёт нужный кэш для обновления.
-	 */
 	let queryUserUid: string | undefined;
 
 	if (rawMessage.chat_type !== 'chat' && rawMessage.chat_key) {
@@ -123,39 +74,36 @@ const handleIncomingMessage = (response: WSResponse) => {
 		}
 	}
 
-	// ─── НОВОЕ: Обновление кэша через RTK Query ───
 	if (queryUserUid) {
 		wsDispatch(
 			chatApi.util.updateQueryData(
 				'getMessages',
 				{
 					user_uid: queryUserUid,
-					//  Важно: те же константы, что в ChatView/MessagesList!
+
 					page_size: MESSAGES_PAGE_SIZE,
 					ordering: MESSAGES_ORDERING
 				},
 				draft => {
 					if (!draft?.results) {
-						console.warn('⚠️ No draft.results');
+						logger.warn('⚠️ No draft.results');
 						return;
 					}
 
-					// Проверяем, нет ли уже такого сообщения (защита от дублей)
 					const exists = draft.results.some(
 						(m: ChatMessage) => m.uid === rawMessage.uid
 					);
 
 					if (!exists && rawMessage.uid) {
-						// Маппим сырой ответ бэка в формат фронтенда
 						const mapped = mapApiMessageToFrontend(rawMessage);
-						// Добавляем в начало списка (новые сверху)
+
 						draft.results.unshift(mapped);
 					}
 				}
 			)
 		);
 	} else {
-		console.warn('⚠️ Could not determine queryUserUid', {
+		logger.warn('⚠️ Could not determine queryUserUid', {
 			chat_type: rawMessage.chat_type,
 			chat_key: rawMessage.chat_key,
 			fromUid,
@@ -164,10 +112,6 @@ const handleIncomingMessage = (response: WSResponse) => {
 		});
 	}
 };
-
-// ─────────────────────────────────────────────────────────────
-//  СТАРЫЕ функции (без изменений)
-// ─────────────────────────────────────────────────────────────
 
 const getAccessToken = async (): Promise<string | null> => {
 	try {
@@ -198,10 +142,15 @@ const ensureFreshToken = async (): Promise<string> => {
 	return token;
 };
 
-const setupSocket = async (): Promise<WebSocket> => {
+export const setupSocket = async (): Promise<WebSocket> => {
+	if (abortController) {
+		abortController.abort();
+	}
+	abortController = new AbortController();
+
 	const token = await ensureFreshToken();
 
-	if (socket && socket.readyState === WebSocket.OPEN) {
+	if (isSocketInitialized && socket?.readyState === WebSocket.OPEN) {
 		return socket;
 	}
 
@@ -219,12 +168,17 @@ const setupSocket = async (): Promise<WebSocket> => {
 		socket = new WebSocket(wsUrl);
 
 		socket.onopen = () => {
-			//  Устанавливаем onmessage один раз при подключении
+			if (abortController?.signal.aborted) {
+				socket?.close();
+				return;
+			}
+
+			isSocketInitialized = true;
+			reconnectAttempts = 0;
 			socket!.onmessage = event => {
 				try {
 					const response: WSResponse = JSON.parse(event.data);
 
-					// 1. Обработка ожидающих запросов (request/response)
 					const pendingCb = pendingRequests.get(response.request_uid);
 					if (pendingCb) {
 						pendingCb(response);
@@ -232,13 +186,11 @@ const setupSocket = async (): Promise<WebSocket> => {
 						return;
 					}
 
-					// 2.  НОВОЕ: Обработка для кэша (наша новая логика)
 					handleIncomingMessage(response);
 
-					// 3. Обработка подписок (pub/sub)
 					subscribers.get(response.action)?.forEach(cb => cb(response));
 				} catch (err) {
-					console.error('❌ WS onmessage error:', err);
+					logger.error('❌ WS onmessage error:', err);
 				}
 			};
 
@@ -251,6 +203,7 @@ const setupSocket = async (): Promise<WebSocket> => {
 			isConnecting = false;
 			connectPromise = null;
 			socket = null;
+			logger.error('WS connection failed');
 			reject(new Error('WS connection failed'));
 
 			if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
@@ -265,6 +218,24 @@ const setupSocket = async (): Promise<WebSocket> => {
 			if (socket && socket.readyState !== WebSocket.OPEN) {
 				socket = null;
 			}
+			if (e.code !== 1000) {
+				isSocketInitialized = false;
+			}
+
+			if (e.code === 4001 || e.code === 4003) {
+				logger.warn('🔐 Auth error on WS, logging out');
+				if (wsDispatch) {
+					wsDispatch(authActions.logout());
+				}
+				isSocketInitialized = false;
+				return;
+			}
+
+			if (e.code !== 1000 && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+				reconnectAttempts++;
+				setTimeout(() => setupSocket(), RECONNECT_DELAY * reconnectAttempts);
+			}
+
 			pendingRequests.forEach((rejectCb, uid) => {
 				rejectCb({
 					request_uid: uid,
@@ -337,18 +308,20 @@ export const disconnectWS = () => {
 	socket?.close();
 	socket = null;
 	currentToken = null;
+	isSocketInitialized = false;
+	abortController?.abort();
+	abortController = null;
 	subscribers.clear();
 	pendingRequests.clear();
 };
 
-// Helpers
-export const connectChat = () => sendWS({ action: '_connect' });
+// export const connectChat = () => sendWS({ action: '_connect' });
 
-export const createTextMessageForChat = (chatKey: string, content: string) =>
-	sendWS({
-		action: 'create_text_message',
-		object: { chat_key: chatKey, content }
-	});
+// export const createTextMessageForChat = (chatKey: string, content: string) =>
+// 	sendWS({
+// 		action: 'create_text_message',
+// 		object: { chat_key: chatKey, content }
+// 	});
 
 export const addMembersToChat = (chatKey: string, uids: string[]) =>
 	sendWS({

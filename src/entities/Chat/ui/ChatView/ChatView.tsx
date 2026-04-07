@@ -31,7 +31,7 @@ import { useGetProfileQuery } from '@/entities/Profile/api/editProfile.api';
 import { MESSAGES_PAGE_SIZE, MESSAGES_ORDERING } from '@/shared/model';
 
 import cls from './ChatView.module.scss';
-import { connectChat } from '@/shared/api/WS/services/socketClient/socketClient';
+import { logger } from '@/shared/lib/logger/logger';
 
 interface ChatViewProps {
 	chatUid: string;
@@ -57,13 +57,11 @@ export const ChatView = ({
 
 	const currentUserId = useAppSelector(selectCurrentUserId);
 
-	// В ChatView.tsx — добавь этот эффект:
-
 	useEffect(() => {
 		if (!chatUid) {
 			return;
 		}
-		connectChat();
+
 		return () => {};
 	}, [chatUid]);
 
@@ -80,8 +78,6 @@ export const ChatView = ({
 	// ─────────────────────────────────────────────────────────────
 
 	const messagesQueryArgs = useMemo((): GetMessagesRequest | null => {
-		// Для личных чатов: chatUid — это UID собеседника, его и передаём
-		// Бэкенд сам найдёт диалог между (токен) и (user_uid)
 		if (chatUid && currentUserId && chatUid !== currentUserId) {
 			return {
 				user_uid: chatUid,
@@ -90,7 +86,6 @@ export const ChatView = ({
 			};
 		}
 
-		// Для групп/каналов: нужен chat_key
 		if (chatData?.is_group && chatData.chat_key) {
 			return {
 				user_uid: chatData.chat_key,
@@ -156,12 +151,12 @@ export const ChatView = ({
 					sessionStorage.setItem(sessionStorageKey, localRaw);
 					localStorage.removeItem(localStorageKey);
 				} catch (saveError) {
-					console.error('Preview save error:', saveError);
+					logger.error('Preview save error:', saveError);
 				}
 				return parsed;
 			}
 		} catch (e) {
-			console.error('Preview parse error:', e);
+			logger.error('Preview parse error:', e);
 		}
 		return {};
 	};

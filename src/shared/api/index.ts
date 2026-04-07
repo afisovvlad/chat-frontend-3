@@ -4,5 +4,5 @@ export {
 	subscribeWS,
 	sendWS,
 	disconnectWS,
-	connectChat
+	setupSocket
 } from './WS/services/socketClient/socketClient';

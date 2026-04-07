@@ -23,6 +23,7 @@ import {
 import { mapChatMessageToSystemMessageData } from '../../model/mapper/mapChatType/chatMapper';
 
 import cls from './MessagesList.module.scss';
+import { logger } from '@/shared/lib/logger/logger';
 
 // ===== ТИПЫ =====
 interface TextMessage {
@@ -59,7 +60,6 @@ const toLocalTextMessage = (
 	};
 };
 
-//  ВНУТРЕННИЙ компонент — получает данные из контекста
 const MessagesListContent = ({
 	queryArgs,
 	currentUserId,
@@ -96,8 +96,6 @@ const MessagesListContent = ({
 	useEffect(() => {
 		isFetchingMoreRef.current = isFetchingMore;
 	}, [isFetchingMore]);
-
-	// ===== ПОЛУЧЕНИЕ ДОСТУПА К СКРОЛЛ-КОНТЕЙНЕРУ =====
 
 	useEffect(() => {
 		const providerEl = scrollContainerRef.current?.closest(
@@ -149,7 +147,6 @@ const MessagesListContent = ({
 		}, 50);
 	}, [currentUserId, data]);
 
-	// Сбрасываем локальный стейт при смене чата
 	useEffect(() => {
 		return () => {
 			setMessages([]);
@@ -159,7 +156,6 @@ const MessagesListContent = ({
 		};
 	}, [queryArgs?.user_uid]);
 
-	// ===== АВТОСКРОЛЛ ВНИЗ =====
 	useEffect(() => {
 		if (
 			!isLoadingHistoryRef.current &&
@@ -170,8 +166,6 @@ const MessagesListContent = ({
 		}
 	}, [messages, isAtBottom]);
 
-	// ===== ПОДГРУЗКА ИСТОРИИ =====
-
 	const loadMore = useCallback(async () => {
 		if (!nextUrl || isFetchingMoreRef.current || !queryArgs?.user_uid) {
 			return;
@@ -180,7 +174,6 @@ const MessagesListContent = ({
 		const url = new URL(nextUrl, window.location.origin);
 		const page = url.searchParams.get('page');
 
-		// 🔹 Обновляем и стейт, и ref
 		isLoadingHistoryRef.current = true;
 		isFetchingMoreRef.current = true;
 		setIsFetchingMore(true);
@@ -205,14 +198,13 @@ const MessagesListContent = ({
 				return [...uniqueOlder, ...prev];
 			});
 		} catch (err) {
-			console.error('Failed to load older messages:', err);
+			logger.error('Failed to load older messages:', err);
 		} finally {
 			isFetchingMoreRef.current = false;
 			setIsFetchingMore(false);
 		}
 	}, [nextUrl, currentUserId, queryArgs, triggerGetMessages]);
 
-	// ===== ТРИГГЕР ПОДГРУЗКИ ПРИ СКРОЛЛЕ ВВЕРХ =====
 	useEffect(() => {
 		const container = scrollContainerRef.current;
 		if (!container) {
@@ -310,8 +302,6 @@ const MessagesListContent = ({
 			</div>
 		);
 	}
-
-	// ===== РЕНДЕР =====
 
 	return (
 		<div className={`${cls.wrapper} ${className}`}>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useRef, useEffect } from 'react';
+import { useCallback, useState, useRef } from 'react'; // ← useEffect больше не нужен для cleanup
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
 import { useAppSelector } from '@/shared/lib/hooks/useAppSelector/useAppSelector';
 import { sendMessage } from '../../../../model/lib/service/sendMessage/sendMessage';
@@ -18,6 +18,7 @@ import {
 	VoiceFile
 } from '@/entities/Chat/model/types/chat.types/chat.types';
 import { selectCurrentUserId } from '@/entities/Profile';
+import { logger } from '@/shared/lib/logger/logger';
 
 import cls from './MessageFormComponent.module.scss';
 
@@ -39,21 +40,12 @@ export function MessageFormComponent({
 	const [messageText, setMessageText] = useState('');
 
 	const formRef = useRef<MessageFormRef>(null);
-	const invalidateChatsTimerRef = useRef<NodeJS.Timeout>(null);
+
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const dispatch = useAppDispatch();
 
-	useEffect(() => {
-		return () => {
-			if (invalidateChatsTimerRef.current) {
-				clearTimeout(invalidateChatsTimerRef.current);
-			}
-		};
-	}, []);
-
 	const handleSend = useCallback(
 		async (message: string) => {
-			// Ранний выход без логов (защита от невалидных данных)
 			if (!currentUserId || !messagesQueryArgs) {
 				return;
 			}
@@ -73,7 +65,6 @@ export function MessageFormComponent({
 					type: MessageType.TEXT
 				};
 
-				// Оптимистичное обновление кеша сообщений
 				dispatch(
 					chatApi.util.updateQueryData(
 						'getMessages',
@@ -92,24 +83,10 @@ export function MessageFormComponent({
 					chatKey
 				);
 
-				// Debounce инвалидации списка чатов
-				if (invalidateChatsTimerRef.current) {
-					clearTimeout(invalidateChatsTimerRef.current);
-				}
-
-				invalidateChatsTimerRef.current = setTimeout(() => {
-					dispatch(
-						chatApi.util.invalidateTags([{ type: 'Chats', id: 'LIST' }])
-					);
-				}, 1500);
-
 				setFiles([]);
 				setMessageText('');
 			} catch (error) {
-				//  Тихо игнорируем ошибку (или можно добавить модадку)
-				if (process.env.NODE_ENV === 'development') {
-					console.error('Failed to send message:', error);
-				}
+				logger.error('Failed to send message:', error);
 			}
 		},
 		[
@@ -137,22 +114,12 @@ export function MessageFormComponent({
 					currentUserId,
 					chatKey
 				);
+
 				dispatch(
 					chatApi.util.invalidateTags([{ type: 'Messages', id: 'LIST' }])
 				);
-
-				if (invalidateChatsTimerRef.current) {
-					clearTimeout(invalidateChatsTimerRef.current);
-				}
-				invalidateChatsTimerRef.current = setTimeout(() => {
-					dispatch(
-						chatApi.util.invalidateTags([{ type: 'Chats', id: 'LIST' }])
-					);
-				}, 1500);
 			} catch (error) {
-				if (process.env.NODE_ENV === 'development') {
-					console.error('Failed to send voice:', error);
-				}
+				logger.error('Failed to send voice:', error);
 			}
 		},
 		[chatUid, chatType, dispatch, currentUserId, chatKey]

@@ -534,4 +534,5 @@ export type SendMessageParams = {
 	files?: VoiceFile[];
 	replyIds?: string[];
 	forwardIds?: string[];
+	attachmentUids?: string[];
 };
