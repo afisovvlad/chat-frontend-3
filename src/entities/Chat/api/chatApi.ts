@@ -8,7 +8,9 @@ import type {
 	GetChatsRequest,
 	GetMessagesRequest,
 	MessageListResponse,
-	RawMessageListResponse
+	RawMessageListResponse,
+	UpdateChatPropertiesRequest,
+	UpdateChatPropertiesResponse
 } from '../model/types/chat.types/chat.types';
 
 // ─────────────────────────────────────────────────────────────
@@ -89,6 +91,28 @@ export const chatApi = rtkApi.injectEndpoints({
 				...response,
 				results: response.results.map(mapApiMessageToFrontend)
 			})
+		}),
+
+		deleteChat: build.mutation({
+			query: (id: number) => ({
+				url: `/chat/list/${id}/`,
+				method: 'DELETE'
+			}),
+
+			invalidatesTags: ['Chats']
+		}),
+
+		updateChatProperties: build.mutation<
+			UpdateChatPropertiesResponse,
+			{ id: number } & Partial<UpdateChatPropertiesRequest>
+		>({
+			query: ({ id, ...body }) => ({
+				url: `/chat/list/${id}/`,
+				method: 'POST',
+				body
+			}),
+
+			invalidatesTags: (result, error, { id }) => [{ type: 'Chats', id }]
 		})
 	}),
 	overrideExisting: false
@@ -104,6 +128,8 @@ export const {
 	useGetChatByIdQuery,
 	useGetMessagesQuery,
 	useLazyGetMessagesQuery,
+	useDeleteChatMutation,
+	useUpdateChatPropertiesMutation,
 	endpoints: { getChats, getChatById, getMessages }
 } = chatApi;
 
