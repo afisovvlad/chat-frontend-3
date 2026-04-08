@@ -40,10 +40,6 @@ export function Textarea<TFormValues extends FieldValues>({
 	const { fieldState } = useController({ name });
 	const isError = !!fieldState.error;
 
-	console.log('isError in Textarea', isError);
-
-	console.log('Я - Textarea');
-
 	return (
 		<textarea
 			{...register(name, rules)}
