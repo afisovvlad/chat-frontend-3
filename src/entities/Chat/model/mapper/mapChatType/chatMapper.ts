@@ -2,12 +2,14 @@ import type { IUserCard } from '@/shared/ui/UserCard';
 import type {
 	Chat,
 	ChatMessage,
+	Message,
 	RawApiChatMessage,
 	SystemEventData,
 	SystemMessageData
 } from '../../types/chat.types/chat.types';
 import {
 	ChatType,
+	MessageStatus,
 	MessageType,
 	SystemEventType,
 	ChatType as UserCardChatType
@@ -183,3 +185,24 @@ export const isSystemMessageType = (
 ): msg is ChatMessage & { type: typeof MessageType.SYSTEM } => {
 	return msg.type === MessageType.SYSTEM;
 };
+
+// функция адаптации
+export function mapChatMessageToSearchMessage(msg: ChatMessage): Message {
+	return {
+		id: String(msg.uid || msg.id),
+
+		type: MessageType.TEXT,
+		content: msg.content || '',
+		senderId: String(msg.from_user),
+		senderName: '',
+		status: MessageStatus.RECEIVED,
+
+		createdAt: msg.created_at,
+		updatedAt: msg.updated_at,
+
+		// Опциональные поля:
+		isEdited: false,
+		has_replied_message: msg.has_replied_message || false,
+		has_forwarded_message: msg.has_forwarded_message || false
+	};
+}

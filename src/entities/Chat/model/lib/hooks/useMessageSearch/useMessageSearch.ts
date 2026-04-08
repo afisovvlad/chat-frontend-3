@@ -4,28 +4,11 @@ import {
 	Message,
 	MessageType,
 	TextMessage,
-	SystemMessageData
+	SystemMessageData,
+	MessageOccurrence,
+	UseMessageSearchOptions,
+	UseMessageSearchReturn
 } from '../../../types/chat.types/chat.types';
-
-export interface UseMessageSearchReturn {
-	filteredMessages: Message[];
-	matchingIndices: number[];
-	activeResultIndex: number;
-	activeResultId: string | undefined;
-	searchResultsCount: number;
-	navigateToNext: () => void;
-	navigateToPrev: () => void;
-	setActiveResultIndex: (index: number) => void;
-}
-
-export interface UseMessageSearchOptions {
-	messages: Message[];
-	searchQuery: string;
-	caseSensitive?: boolean;
-	searchInSender?: boolean;
-	searchInSystemText?: boolean;
-	debounceDelay?: number;
-}
 
 export function useMessageSearch({
 	messages,
@@ -35,27 +18,22 @@ export function useMessageSearch({
 	searchInSystemText = false,
 	debounceDelay = 300
 }: UseMessageSearchOptions): UseMessageSearchReturn {
-	const [activeResultIndex, setActiveResultIndex] = useState(0);
 	const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
 
-	//  Дебаунс-функция для обновления debouncedQuery
 	const debouncedSetQuery = useDebounce(
 		(value: string) => setDebouncedQuery(value),
 		debounceDelay
 	);
 
-	//  Синхронизация searchQuery → debouncedQuery
 	useEffect(() => {
 		debouncedSetQuery(searchQuery);
 	}, [searchQuery, debouncedSetQuery]);
 
-	//  Нормализация текста
 	const normalize = useCallback(
 		(text: string) => (caseSensitive ? text : text.toLowerCase()),
 		[caseSensitive]
 	);
 
-	//  Проверка соответствия сообщения запросу
 	const messageMatches = useCallback(
 		(message: Message, query: string): boolean => {
 			if (!query.trim()) {
@@ -88,8 +66,6 @@ export function useMessageSearch({
 		},
 		[normalize, searchInSender, searchInSystemText]
 	);
-
-	//  Фильтрация сообщений
 	const filteredMessages = useMemo(() => {
 		if (!debouncedQuery.trim()) {
 			return messages;
@@ -97,7 +73,6 @@ export function useMessageSearch({
 		return messages.filter(msg => messageMatches(msg, debouncedQuery));
 	}, [messages, debouncedQuery, messageMatches]);
 
-	//  Индексы совпадений в исходном массиве
 	const matchingIndices = useMemo(() => {
 		if (!debouncedQuery.trim()) {
 			return [];
@@ -107,40 +82,131 @@ export function useMessageSearch({
 			.filter((idx): idx is number => idx !== -1);
 	}, [messages, debouncedQuery, messageMatches]);
 
-	//  Навигация по результатам
-	const navigateToNext = useCallback(() => {
-		if (matchingIndices.length === 0) {
+	const findAllOccurrences = useCallback(
+		(text: string, query: string): number[] => {
+			if (!query.trim()) {
+				return [];
+			}
+
+			const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			const regex = new RegExp(escapedQuery, 'gi');
+			const indices: number[] = [];
+
+			let match;
+			while ((match = regex.exec(text)) !== null) {
+				indices.push(match.index);
+			}
+
+			return indices;
+		},
+		[]
+	);
+
+	const occurrences = useMemo((): MessageOccurrence[] => {
+		if (!debouncedQuery.trim()) {
+			return [];
+		}
+
+		const allOccurrences: MessageOccurrence[] = [];
+		let globalIndex = 0;
+
+		filteredMessages.forEach(message => {
+			if (message.type !== MessageType.TEXT) {
+				return;
+			}
+
+			const textMsg = message as TextMessage;
+
+			const indices = findAllOccurrences(textMsg.content, debouncedQuery);
+
+			indices.forEach((position, occurrenceIndex) => {
+				allOccurrences.push({
+					messageId: message.id,
+					occurrenceIndex,
+					globalIndex: globalIndex++,
+					content: textMsg.content
+				});
+			});
+		});
+
+		return allOccurrences;
+	}, [filteredMessages, debouncedQuery, findAllOccurrences]);
+
+	const [activeOccurrenceIndex, setActiveOccurrenceIndex] = useState(0);
+
+	const activeOccurrence = useMemo(() => {
+		if (occurrences.length === 0) {
+			return null;
+		}
+
+		const safeIndex = Math.max(
+			0,
+			Math.min(activeOccurrenceIndex, occurrences.length - 1)
+		);
+		return occurrences[safeIndex];
+	}, [occurrences, activeOccurrenceIndex]);
+
+	const goToNextOccurrence = useCallback(() => {
+		if (occurrences.length === 0) {
 			return;
 		}
-		setActiveResultIndex(prev =>
-			prev >= matchingIndices.length - 1 ? 0 : prev + 1
-		);
-	}, [matchingIndices]);
+		setActiveOccurrenceIndex(prev => (prev + 1) % occurrences.length);
+	}, [occurrences.length]);
 
-	const navigateToPrev = useCallback(() => {
-		if (matchingIndices.length === 0) {
+	const goToPrevOccurrence = useCallback(() => {
+		if (occurrences.length === 0) {
 			return;
 		}
-		setActiveResultIndex(prev =>
-			prev <= 0 ? matchingIndices.length - 1 : prev - 1
+		setActiveOccurrenceIndex(
+			prev => (prev - 1 + occurrences.length) % occurrences.length
 		);
-	}, [matchingIndices]);
+	}, [occurrences.length]);
 
-	//  ID активного результата
-	const activeResultId = useMemo(() => {
-		const idx = matchingIndices[activeResultIndex];
-		return idx !== undefined ? messages[idx]?.id : undefined;
-	}, [matchingIndices, activeResultIndex, messages]);
+	const getActiveOccurrencesForMessage = useCallback(
+		(messageId: string): number[] => {
+			if (!activeOccurrence || activeOccurrence.messageId !== messageId) {
+				return [];
+			}
 
-	//  Возвращаем все необходимые значения + сеттер для ручного управления
-	return {
-		filteredMessages,
-		matchingIndices,
-		activeResultIndex,
-		activeResultId,
-		searchResultsCount: matchingIndices.length,
-		navigateToNext,
-		navigateToPrev,
-		setActiveResultIndex
-	};
+			return [activeOccurrence.occurrenceIndex];
+		},
+		[activeOccurrence]
+	);
+
+	useEffect(() => {
+		setActiveOccurrenceIndex(0);
+	}, [debouncedQuery]);
+
+	return useMemo(
+		() => ({
+			filteredMessages,
+			matchingIndices,
+
+			occurrences,
+			activeOccurrenceIndex,
+			activeOccurrence,
+			totalOccurrences: occurrences.length,
+			goToNextOccurrence,
+			goToPrevOccurrence,
+			getActiveOccurrencesForMessage,
+
+			activeResultIndex: activeOccurrenceIndex,
+			activeResultId: activeOccurrence?.messageId,
+			searchResultsCount: occurrences.length,
+
+			navigateToNext: goToNextOccurrence,
+			navigateToPrev: goToPrevOccurrence,
+			setActiveResultIndex: setActiveOccurrenceIndex
+		}),
+		[
+			filteredMessages,
+			matchingIndices,
+			activeOccurrenceIndex,
+			activeOccurrence,
+			occurrences,
+			goToNextOccurrence,
+			goToPrevOccurrence,
+			getActiveOccurrencesForMessage
+		]
+	);
 }

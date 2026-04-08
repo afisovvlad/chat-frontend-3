@@ -1,7 +1,8 @@
 .messages {
+	flex: 1 1 auto;
+	min-height: 0;
 	overflow-y: auto;
 	height: 100%;
-	flex-grow: 1;
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
@@ -9,6 +10,11 @@
 
 .wrapper {
 	position: relative;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
 	height: 100%;
 }
 
@@ -21,16 +27,21 @@
 
 .scrollButton {
 	position: absolute;
-	right: 8px;
-	bottom: 8px;
+	right: 25px;
+	bottom: 10px;
 	width: 44px;
 	height: 44px;
-	display: grid;
-	place-items: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	background-color: var(--color-white);
 	border: 1px solid rgba(0, 0, 0, 30%);
-	border-radius: 99px;
+	border-radius: 50%;
 	cursor: pointer;
+	padding: 0;
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
 
 	svg {
 		width: 12.7px;
@@ -39,5 +50,50 @@
 
 	path {
 		fill: var(--color-primary);
+	}
+
+	span {
+		position: absolute;
+		top: 0;
+		right: 0;
+		transform: translate(50%, -50%);
+		min-width: 18px;
+		height: 18px;
+		padding: 0 4px;
+		font-size: 11px;
+		font-weight: 600;
+		line-height: 18px;
+		text-align: center;
+		color: var(--color-white);
+		background-color: var(--color-primary);
+		border-radius: 10px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 15%);
+		pointer-events: none;
+	}
+
+	&:hover {
+		transform: scale(1.05);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 15%);
+	}
+}
+
+.messageBubble_active {
+	border-radius: 12px;
+	z-index: 10;
+	position: relative;
+
+	&::before {
+		content: '';
+		position: absolute;
+		left: -6px;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 3px;
+		height: 60%;
+		border-radius: 2px;
+	}
+
+	&:focus-visible {
+		outline: none;
 	}
 }

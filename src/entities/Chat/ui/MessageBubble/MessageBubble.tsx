@@ -3,8 +3,9 @@ import { formatUnixToLocalTime } from '@/shared/lib/formatUnixToLocalTime/format
 import { FontWeight, Text, TextColor, TextSize } from '@/shared/ui/Text';
 import { MessageStatusNode } from './MessageStatusNode';
 import { classNames } from '@/shared/lib/classNames/classNames';
-import styles from './MessageBubble.module.scss';
+import { highlightText } from '../../model/lib/service/highlightText/highlightText';
 
+import styles from './MessageBubble.module.scss';
 interface MessageBubbleProps {
 	id: string;
 	time: number;
@@ -18,6 +19,10 @@ interface MessageBubbleProps {
 
 	isFirstInGroup?: boolean;
 	isLastInGroup?: boolean;
+	className?: string;
+	'data-message-id'?: string;
+	searchQuery?: string;
+	getActiveOccurrencesForMessage?: (messageId: string) => number[] | undefined;
 }
 
 export const MessageBubble = ({
@@ -31,7 +36,11 @@ export const MessageBubble = ({
 	senderName,
 	senderAvatar,
 	isFirstInGroup = false,
-	isLastInGroup = false
+	isLastInGroup = false,
+	className,
+	'data-message-id': dataMessageId,
+	searchQuery = '',
+	getActiveOccurrencesForMessage
 }: MessageBubbleProps) => {
 	const isGroupReceived = isGroupChat && status === 'received';
 	const showName = isGroupReceived && senderName && isFirstInGroup;
@@ -51,7 +60,14 @@ export const MessageBubble = ({
 	});
 
 	return (
-		<div className={styles.messageWrapper}>
+		<div
+			className={classNames(
+				styles.messageWrapper,
+				{},
+				[className].filter(Boolean)
+			)}
+			data-message-id={dataMessageId}
+		>
 			<div className={styles.messageRow}>
 				{isGroupReceived && (
 					<div className={avatarSlotClass}>
@@ -96,7 +112,15 @@ export const MessageBubble = ({
 							color={TextColor.BLACK}
 							className={styles.message__text}
 						>
-							{text}
+							{searchQuery
+								? highlightText(text, {
+										query: searchQuery,
+										activeIndices: getActiveOccurrencesForMessage?.(id) || [],
+										baseClassName: styles.searchHighlight,
+										activeClassName: styles.searchHighlight_active,
+										caseSensitive: false
+									})
+								: text}
 						</Text>
 
 						<div className={styles.message__meta}>
