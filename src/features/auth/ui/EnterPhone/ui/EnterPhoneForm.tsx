@@ -82,13 +82,11 @@ export const EnterPhoneForm = ({
 		}
 	}, [isModalOpen]);
 
-	// ЗАПРОС НА ПРОВЕРКУ СТАТУСА - ТОЛЬКО ЕСЛИ УЖЕ ЕСТЬ ДАННЫЕ СЕССИИ
 	useEffect(() => {
 		if (!phoneSession?.session_uid || !phoneSession.session_secret) {
 			return;
 		}
 
-		// Если statusData есть И сессия завершена — НЕ поллить
 		if (
 			statusData &&
 			(statusData.status === 'consumed' ||
@@ -125,7 +123,6 @@ export const EnterPhoneForm = ({
 		statusData
 	]);
 
-	// ЗАПРОС НА ПОЛУЧЕНИЕ ТОКЕНОВ - ЕСЛИ status верифицированный
 	const claimTokens = useCallback(async () => {
 		if (!phoneSession?.session_uid || !phoneSession.session_secret) {
 			return;
