@@ -1,5 +1,4 @@
-import { GetMessagesRequest, MessagesList } from '@/entities/Chat';
-import { MESSAGES_ORDERING, MESSAGES_PAGE_SIZE } from '@/shared/model';
+import { MessagesList } from '@/entities/Chat';
 
 interface PageProps {
 	params: {
@@ -8,11 +7,5 @@ interface PageProps {
 }
 
 export default function Page({ params }: PageProps) {
-	const queryArgs: GetMessagesRequest = {
-		user_uid: params.uid,
-		page_size: MESSAGES_PAGE_SIZE,
-		ordering: MESSAGES_ORDERING
-	};
-
-	return <MessagesList queryArgs={queryArgs} />;
+	return <MessagesList userUid={params.uid} />;
 }
