@@ -33,9 +33,20 @@ export const StickyDateProvider: React.FC<{
 	containerRef: externalContainerRef,
 	onScrollContainerReady
 }) => {
+	// ─────────────────────────────────────────────────────────────
+	// Рефы: разделение ответственности
+	// ─────────────────────────────────────────────────────────────
+
+	// Контейнер для позиционирования (может быть внешним)
 	const internalContainerRef = useRef<HTMLDivElement>(null);
 	const containerRef = externalContainerRef || internalContainerRef;
+
+	// Скролл-контейнер (всегда внутренний, на него вешается логика)
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+	// ─────────────────────────────────────────────────────────────
+	// Делегируем всю логику хуку
+	// ─────────────────────────────────────────────────────────────
 
 	const { activeDate, register, unregister, isActive, isHidden } =
 		useStickyDate({
@@ -44,11 +55,19 @@ export const StickyDateProvider: React.FC<{
 			tolerance: 20
 		});
 
+	// ─────────────────────────────────────────────────────────────
+	// Callback для родителя (например, MessagesList)
+	// ─────────────────────────────────────────────────────────────
+
 	useEffect(() => {
 		if (onScrollContainerReady && scrollContainerRef.current) {
 			onScrollContainerReady(scrollContainerRef.current);
 		}
 	}, [onScrollContainerReady]);
+
+	// ─────────────────────────────────────────────────────────────
+	// Реф-коллбэк для скролл-контейнера
+	// ─────────────────────────────────────────────────────────────
 
 	const handleScrollContainerRef = useCallback(
 		(node: HTMLDivElement | null) => {
@@ -57,6 +76,10 @@ export const StickyDateProvider: React.FC<{
 		[]
 	);
 
+	// ─────────────────────────────────────────────────────────────
+	// Значение контекста (без isAtBottom!)
+	// ─────────────────────────────────────────────────────────────
+
 	const value: StickyDateContextValue = {
 		activeDate,
 		registerSeparator: register,
@@ -64,6 +87,10 @@ export const StickyDateProvider: React.FC<{
 		isActive,
 		isHidden
 	};
+
+	// ─────────────────────────────────────────────────────────────
+	// Рендер
+	// ─────────────────────────────────────────────────────────────
 
 	return (
 		<StickyDateContext.Provider value={value}>

@@ -43,10 +43,15 @@ const mapLastMessage = (
 		return undefined;
 	}
 
+	const fromUserUid =
+		typeof message.from_user === 'string'
+			? message.from_user
+			: message.from_user?.uid || '';
+
 	return {
 		id: message.id,
 		uid: message.uid,
-		from_user: message.from_user,
+		from_user: fromUserUid,
 		content: message.content,
 		files_summary: message.files_summary
 			? {
@@ -136,12 +141,17 @@ export const mapApiMessagesList = (
 export const mapChatMessageToSystemMessageData = (
 	msg: ChatMessage
 ): SystemMessageData => {
+	const ownerFullName =
+		typeof msg.from_user === 'string'
+			? msg.from_user
+			: msg.from_user?.uid || 'Неизвестный пользователь';
+
 	let eventType: SystemEventType = SystemEventType.CHAT_CREATED;
 	let eventData: SystemEventData = {
 		type: SystemEventType.CHAT_CREATED,
 		payload: {
 			name: 'Чат',
-			ownerFullName: msg.from_user
+			ownerFullName
 		}
 	};
 	let displayText: string | undefined;
@@ -171,7 +181,6 @@ export const mapChatMessageToSystemMessageData = (
 
 	return {
 		id: String(msg.id),
-
 		type: MessageType.SYSTEM,
 		createdAt: msg.created_at,
 		eventType,
@@ -186,21 +195,23 @@ export const isSystemMessageType = (
 	return msg.type === MessageType.SYSTEM;
 };
 
-// функция адаптации
 export function mapChatMessageToSearchMessage(msg: ChatMessage): Message {
+	const senderId =
+		typeof msg.from_user === 'string'
+			? msg.from_user
+			: msg.from_user?.uid || '';
+
 	return {
 		id: String(msg.uid || msg.id),
-
+		uid: msg.uid || '',
 		type: MessageType.TEXT,
 		content: msg.content || '',
-		senderId: String(msg.from_user),
+		text: msg.content || '',
+		senderId,
 		senderName: '',
 		status: MessageStatus.RECEIVED,
-
 		createdAt: msg.created_at,
 		updatedAt: msg.updated_at,
-
-		// Опциональные поля:
 		isEdited: false,
 		has_replied_message: msg.has_replied_message || false,
 		has_forwarded_message: msg.has_forwarded_message || false

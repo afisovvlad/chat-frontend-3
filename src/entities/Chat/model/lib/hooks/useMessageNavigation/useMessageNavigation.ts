@@ -11,6 +11,8 @@ export const useMessageNavigation = ({
 	activeClass = ''
 }: UseMessageNavigationOptions) => {
 	const highlightTimeoutRef = useRef<NodeJS.Timeout>(null);
+	const retryCountRef = useRef(0);
+	const MAX_RETRIES = 3;
 
 	const navigateToMessage = useCallback(
 		(messageId: string) => {
@@ -20,18 +22,26 @@ export const useMessageNavigation = ({
 				) as HTMLElement;
 				const container = scrollContainerRef.current;
 
-				if (!messageEl || !container) {
+				if (!container && retryCountRef.current < MAX_RETRIES) {
+					retryCountRef.current += 1;
+					requestAnimationFrame(scrollToElement);
 					return;
 				}
+
+				if (!messageEl || !container) {
+					retryCountRef.current = 0;
+					return;
+				}
+
+				retryCountRef.current = 0;
+
 				messageEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
 				if (activeClass) {
 					messageEl.classList.add(activeClass);
-
 					if (highlightTimeoutRef.current) {
 						clearTimeout(highlightTimeoutRef.current);
 					}
-
 					highlightTimeoutRef.current = setTimeout(() => {
 						messageEl.classList.remove(activeClass);
 					}, MESSAGE_HIGHLIGHT_DURATION);

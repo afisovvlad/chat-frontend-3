@@ -55,7 +55,7 @@ export interface Chat {
 export interface ChatMessage {
 	id: number;
 	uid: string;
-	from_user: string;
+	from_user: string | { uid: string };
 	content: string;
 	files_summary: FilesSummary;
 	has_replied_message: boolean;
@@ -166,8 +166,8 @@ export interface GetChatsRequest {
 
 export interface GetMessagesRequest {
 	user_uid: string;
-	page?: number;
 	page_size?: number;
+	page?: number;
 	ordering?: '-created_at' | 'created_at';
 	search?: string;
 }
@@ -266,6 +266,7 @@ export interface ChatHeaderProps {
 // ─── MessageBubble / MessagesList ──────────────────────────────────────────
 export interface TextMessageUI {
 	id: string;
+	uid: string;
 	text: string;
 	time: number; // timestamp
 	status: 'received' | 'sending' | 'unread' | 'read';
@@ -321,6 +322,7 @@ export interface ChatItemSchema {
 
 export interface BaseSearchMessage {
 	id: string;
+	uid: string;
 	type: MessageType;
 	createdAt: number;
 	updatedAt?: number;
@@ -329,6 +331,7 @@ export interface BaseSearchMessage {
 export interface TextMessage extends BaseSearchMessage {
 	type: MessageType.TEXT;
 	content: string;
+	text: string;
 	senderId: string;
 	senderName: string;
 	status: MessageStatus;
@@ -350,6 +353,7 @@ export interface MessageOccurrence {
 	occurrenceIndex: number;
 	globalIndex: number;
 	content: string;
+	position: number;
 }
 
 export interface UseMessageSearchOptions {
@@ -374,6 +378,13 @@ export interface UseMessageSearchReturn {
 	navigateToPrev: () => void;
 	setActiveResultIndex: (index: number) => void;
 	getActiveOccurrencesForMessage: (messageId: string) => number[];
+}
+
+export interface ApiMessageListResponse {
+	results: ChatMessage[];
+	next: string | null;
+	previous?: string | null;
+	count?: number;
 }
 
 // ─── useInfiniteScroll ─────────────────────────────────────────────────────
@@ -540,6 +551,7 @@ export enum MessageStatus {
 	SENT = 'sent',
 	DELIVERED = 'delivered',
 	READ = 'read',
+	UNREAD = 'unread',
 	ERROR = 'error'
 }
 
@@ -572,4 +584,23 @@ export const getFilesSummary = (
 export const parseIsoDateToTimestamp = (isoDate: string): number => {
 	const timestamp = new Date(isoDate).getTime();
 	return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+export type MessageFormTypes = {
+	message: string;
+	file: VoiceFile;
+};
+
+export type VoiceFile = {
+	filename: string;
+	data: string;
+	type?: string;
+};
+
+export type SendMessageParams = {
+	content?: string;
+	files?: VoiceFile[];
+	replyIds?: string[];
+	forwardIds?: string[];
+	attachmentUids?: string[];
 };

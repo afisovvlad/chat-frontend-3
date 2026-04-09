@@ -1,7 +1,10 @@
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo } from 'react'; // ✅ useState и useEffect больше не нужны для messages
 import {
 	ChatMessage,
-	SystemMessageData
+	MessageStatus,
+	MessageType,
+	SystemMessageData,
+	TextMessage
 } from '../../../types/chat.types/chat.types';
 import {
 	isSystemMessageType,
@@ -12,13 +15,6 @@ import { useGetMessagesQuery } from '@/entities/Chat/api/chatApi';
 import { MESSAGES_QUERY_DEFAULTS } from '@/shared/model';
 import { MessageOrdering } from '../../../../../../shared/model/constants/chat.constants';
 
-export interface TextMessage {
-	id: string;
-	text: string;
-	time: number;
-	status: 'received' | 'sending' | 'unread' | 'read';
-}
-
 export type MessageListItem =
 	| { type: 'text'; data: TextMessage }
 	| { type: 'system'; data: SystemMessageData }
@@ -26,6 +22,7 @@ export type MessageListItem =
 
 export interface UseMessagesDataOptions {
 	userUid: string;
+	currentUserId?: string;
 	pageSize?: number;
 	ordering?: string;
 	skip?: boolean;
@@ -43,15 +40,36 @@ export interface UseMessagesDataReturn {
 	isEmpty: boolean;
 }
 
-const toLocalTextMessage = (msg: ChatMessage): TextMessage => ({
-	id: String(msg.id),
-	text: msg.content,
-	time: msg.created_at,
-	status: msg.new ? 'unread' : 'read'
-});
+const toLocalTextMessage = (
+	msg: ChatMessage,
+	currentUserId?: string
+): TextMessage => {
+	const fromUserUid =
+		typeof msg.from_user === 'string' ? msg.from_user : msg.from_user?.uid;
+	const isSentByMe = currentUserId ? fromUserUid === currentUserId : false;
+
+	return {
+		id: String(msg.id),
+		uid: msg.uid || '',
+
+		type: MessageType.TEXT,
+		createdAt: msg.created_at,
+
+		content: msg.content,
+		text: msg.content,
+		senderId: fromUserUid || '',
+		senderName: '',
+		status: isSentByMe
+			? msg.new
+				? MessageStatus.UNREAD
+				: MessageStatus.READ
+			: MessageStatus.RECEIVED
+	};
+};
 
 export const useMessagesData = ({
 	userUid,
+	currentUserId,
 	pageSize = MESSAGES_QUERY_DEFAULTS.page_size,
 	ordering = MESSAGES_QUERY_DEFAULTS.ordering,
 	skip = false
@@ -71,44 +89,31 @@ export const useMessagesData = ({
 		{ skip: skip || !userUid }
 	);
 
-	const [messages, setMessages] = useState<TextMessage[]>([]);
-	const nextUrl = useMemo(() => response?.next ?? null, [response?.next]);
-
-	useEffect(() => {
+	const textMessages = useMemo((): TextMessage[] => {
 		if (!response?.results) {
-			return;
+			return [];
 		}
 
-		const textMessages = response.results
+		return response.results
 			.filter((msg): msg is ChatMessage => !isSystemMessageType(msg))
-			.map(toLocalTextMessage);
+			.map(msg => toLocalTextMessage(msg, currentUserId));
+	}, [response, currentUserId]);
 
-		// Это валидный кейс: мы аккумулируем пагинированные данные с бэка,
-		// фильтруя дубликаты и сохраняя порядок. Это нельзя сделать через useMemo.
-		// eslint-disable-next-line react-hooks/set-state-in-effect
-		setMessages(prev => {
-			if (!prev.length) {
-				return textMessages;
-			}
-			const prevIds = new Set(prev.map(p => p.id));
-			const newMessages = textMessages.filter(m => !prevIds.has(m.id));
-
-			if (newMessages.length) {
-				return [...prev, ...newMessages];
-			}
-			return prev;
-		});
-	}, [response]);
+	const messages = useMemo((): TextMessage[] => {
+		return [...textMessages].reverse();
+	}, [textMessages]);
 
 	const messagesWithSeparators = useMemo((): MessageListItem[] => {
 		if (!response?.results?.length) {
 			return [];
 		}
-
 		const result: MessageListItem[] = [];
 
-		response.results.forEach((message: ChatMessage, index: number) => {
-			const prevMessage = index > 0 ? response.results[index - 1] : undefined;
+		const chronologicalResults = [...response.results].reverse();
+
+		chronologicalResults.forEach((message: ChatMessage, index: number) => {
+			const prevMessage =
+				index > 0 ? chronologicalResults[index - 1] : undefined;
 
 			if (isSystemMessageType(message)) {
 				result.push({
@@ -132,15 +137,19 @@ export const useMessagesData = ({
 				});
 			}
 
-			result.push({
-				type: 'text',
-				data: toLocalTextMessage(message)
-			});
+			const mappedMsg = messages.find(m => m.uid === message.uid);
+			if (mappedMsg) {
+				result.push({
+					type: 'text',
+					data: mappedMsg
+				});
+			}
 		});
 
 		return result;
-	}, [response]);
+	}, [response, messages]);
 
+	const nextUrl = useMemo(() => response?.next ?? null, [response?.next]);
 	const hasMore = useMemo(() => !!nextUrl, [nextUrl]);
 	const isEmpty = useMemo(
 		() => messages.length === 0 && !isLoading,

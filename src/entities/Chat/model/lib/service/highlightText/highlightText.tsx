@@ -46,6 +46,7 @@ export const highlightText = (
 
 		if (isMatch) {
 			const isActive = activeIndices.includes(occurrenceCounter);
+
 			occurrenceCounter++;
 
 			return (

@@ -4,13 +4,14 @@ import { FontWeight, Text, TextColor, TextSize } from '@/shared/ui/Text';
 import { MessageStatusNode } from './MessageStatusNode';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { highlightText } from '../../model/lib/service/highlightText/highlightText';
+import { MessageStatus } from '../../model/types/chat.types/chat.types';
 
 import styles from './MessageBubble.module.scss';
 interface MessageBubbleProps {
 	id: string;
 	time: number;
 	text: string;
-	status: 'received' | 'sending' | 'unread' | 'read';
+	status: MessageStatus | 'received' | 'sending' | 'unread' | 'read';
 	onClick: (id: string) => void;
 
 	isGroupChat?: boolean;
@@ -66,7 +67,7 @@ export const MessageBubble = ({
 				{},
 				[className].filter(Boolean)
 			)}
-			data-message-id={dataMessageId}
+			data-message-id={dataMessageId || id}
 		>
 			<div className={styles.messageRow}>
 				{isGroupReceived && (

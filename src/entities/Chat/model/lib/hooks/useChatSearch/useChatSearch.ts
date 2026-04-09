@@ -25,21 +25,33 @@ export const useChatSearch = (messages: ChatMessage[]): UseChatSearchReturn => {
 	const [isSearchVisible, setIsSearchVisible] = useState(false);
 
 	const searchMessages = useMemo((): Message[] => {
-		return messages.map(msg => ({
-			id: String(msg.id),
-			type: MessageType.TEXT,
-			content: msg.content || '',
-			senderId: String(msg.from_user),
-			senderName: '',
-			status: MessageStatus.RECEIVED,
-			createdAt: msg.created_at,
-			updatedAt: msg.updated_at,
-			has_replied_message: msg.has_replied_message || false,
-			has_forwarded_message: msg.has_forwarded_message || false,
-			isEdited: false,
-			files_summary: msg.files_summary,
-			new: msg.new
-		}));
+		return messages.map(msg => {
+			// 🔹 Извлекаем senderId корректно
+			const senderId =
+				typeof msg.from_user === 'string'
+					? msg.from_user
+					: msg.from_user?.uid || '';
+
+			return {
+				id: String(msg.id),
+				uid: msg.uid || '',
+				type: MessageType.TEXT,
+				createdAt: msg.created_at,
+				updatedAt: msg.updated_at,
+
+				content: msg.content || '',
+				text: msg.content || '',
+				senderId,
+				senderName: '',
+				status: MessageStatus.RECEIVED,
+
+				has_replied_message: msg.has_replied_message || false,
+				has_forwarded_message: msg.has_forwarded_message || false,
+				isEdited: false,
+				files_summary: msg.files_summary,
+				new: msg.new
+			};
+		});
 	}, [messages]);
 
 	const searchHook = useMessageSearch({

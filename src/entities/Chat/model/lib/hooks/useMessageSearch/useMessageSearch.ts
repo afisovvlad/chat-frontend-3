@@ -1,5 +1,4 @@
 import { useMemo, useCallback, useState, useEffect } from 'react';
-import { useDebounce } from '@/shared/lib/hooks/useDebounce/useDebounce';
 import {
 	Message,
 	MessageType,
@@ -15,20 +14,8 @@ export function useMessageSearch({
 	searchQuery,
 	caseSensitive = false,
 	searchInSender = true,
-	searchInSystemText = false,
-	debounceDelay = 300
+	searchInSystemText = false
 }: UseMessageSearchOptions): UseMessageSearchReturn {
-	const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
-
-	const debouncedSetQuery = useDebounce(
-		(value: string) => setDebouncedQuery(value),
-		debounceDelay
-	);
-
-	useEffect(() => {
-		debouncedSetQuery(searchQuery);
-	}, [searchQuery, debouncedSetQuery]);
-
 	const normalize = useCallback(
 		(text: string) => (caseSensitive ? text : text.toLowerCase()),
 		[caseSensitive]
@@ -46,91 +33,83 @@ export function useMessageSearch({
 				const contentMatch = normalize(textMsg.content).includes(
 					normalizedQuery
 				);
-
 				if (searchInSender && textMsg.senderName) {
-					const senderMatch = normalize(textMsg.senderName).includes(
-						normalizedQuery
+					return (
+						contentMatch ||
+						normalize(textMsg.senderName).includes(normalizedQuery)
 					);
-					return contentMatch || senderMatch;
 				}
 				return contentMatch;
 			}
 
 			if (message.type === MessageType.SYSTEM && searchInSystemText) {
 				const sysMsg = message as SystemMessageData;
-				const systemText = JSON.stringify(sysMsg.eventData).toLowerCase();
-				return normalize(systemText).includes(normalizedQuery);
+				return normalize(JSON.stringify(sysMsg.eventData)).includes(
+					normalizedQuery
+				);
 			}
 
 			return false;
 		},
 		[normalize, searchInSender, searchInSystemText]
 	);
+
 	const filteredMessages = useMemo(() => {
-		if (!debouncedQuery.trim()) {
+		if (!searchQuery.trim()) {
 			return messages;
 		}
-		return messages.filter(msg => messageMatches(msg, debouncedQuery));
-	}, [messages, debouncedQuery, messageMatches]);
-
-	const matchingIndices = useMemo(() => {
-		if (!debouncedQuery.trim()) {
-			return [];
-		}
-		return messages
-			.map((msg, idx) => (messageMatches(msg, debouncedQuery) ? idx : -1))
-			.filter((idx): idx is number => idx !== -1);
-	}, [messages, debouncedQuery, messageMatches]);
+		return messages.filter(msg => messageMatches(msg, searchQuery));
+	}, [messages, searchQuery, messageMatches]);
 
 	const findAllOccurrences = useCallback(
 		(text: string, query: string): number[] => {
 			if (!query.trim()) {
 				return [];
 			}
-
-			const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-			const regex = new RegExp(escapedQuery, 'gi');
+			const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			const regex = new RegExp(escaped, 'gi');
 			const indices: number[] = [];
-
 			let match;
 			while ((match = regex.exec(text)) !== null) {
 				indices.push(match.index);
 			}
-
 			return indices;
 		},
 		[]
 	);
 
 	const occurrences = useMemo((): MessageOccurrence[] => {
-		if (!debouncedQuery.trim()) {
+		if (!searchQuery.trim()) {
 			return [];
 		}
 
-		const allOccurrences: MessageOccurrence[] = [];
+		const all: MessageOccurrence[] = [];
 		let globalIndex = 0;
 
-		filteredMessages.forEach(message => {
+		filteredMessages.forEach((message, msgIdx) => {
 			if (message.type !== MessageType.TEXT) {
 				return;
 			}
 
 			const textMsg = message as TextMessage;
 
-			const indices = findAllOccurrences(textMsg.content, debouncedQuery);
+			const indices = findAllOccurrences(textMsg.content, searchQuery);
 
 			indices.forEach((position, occurrenceIndex) => {
-				allOccurrences.push({
-					messageId: message.id,
+				const messageId = String(message.id);
+
+				all.push({
+					messageId,
 					occurrenceIndex,
 					globalIndex: globalIndex++,
-					content: textMsg.content
+					content: textMsg.content || '',
+					position
 				});
 			});
 		});
 
-		return allOccurrences;
-	}, [filteredMessages, debouncedQuery, findAllOccurrences]);
+		return all;
+	}, [filteredMessages, searchQuery, findAllOccurrences]);
 
 	const [activeOccurrenceIndex, setActiveOccurrenceIndex] = useState(0);
 
@@ -138,12 +117,11 @@ export function useMessageSearch({
 		if (occurrences.length === 0) {
 			return null;
 		}
-
-		const safeIndex = Math.max(
+		const safe = Math.max(
 			0,
 			Math.min(activeOccurrenceIndex, occurrences.length - 1)
 		);
-		return occurrences[safeIndex];
+		return occurrences[safe];
 	}, [occurrences, activeOccurrenceIndex]);
 
 	const goToNextOccurrence = useCallback(() => {
@@ -164,24 +142,33 @@ export function useMessageSearch({
 
 	const getActiveOccurrencesForMessage = useCallback(
 		(messageId: string): number[] => {
-			if (!activeOccurrence || activeOccurrence.messageId !== messageId) {
-				return [];
-			}
+			const result =
+				!activeOccurrence || activeOccurrence.messageId !== messageId
+					? []
+					: [activeOccurrence.occurrenceIndex];
 
-			return [activeOccurrence.occurrenceIndex];
+			return result;
 		},
 		[activeOccurrence]
 	);
 
+	const matchingIndices = useMemo(() => {
+		if (!searchQuery.trim()) {
+			return [];
+		}
+		return messages
+			.map((msg, idx) => (messageMatches(msg, searchQuery) ? idx : -1))
+			.filter((idx): idx is number => idx !== -1);
+	}, [messages, searchQuery, messageMatches]);
+
 	useEffect(() => {
 		setActiveOccurrenceIndex(0);
-	}, [debouncedQuery]);
+	}, [searchQuery]);
 
 	return useMemo(
 		() => ({
 			filteredMessages,
 			matchingIndices,
-
 			occurrences,
 			activeOccurrenceIndex,
 			activeOccurrence,
@@ -189,11 +176,9 @@ export function useMessageSearch({
 			goToNextOccurrence,
 			goToPrevOccurrence,
 			getActiveOccurrencesForMessage,
-
 			activeResultIndex: activeOccurrenceIndex,
 			activeResultId: activeOccurrence?.messageId,
 			searchResultsCount: occurrences.length,
-
 			navigateToNext: goToNextOccurrence,
 			navigateToPrev: goToPrevOccurrence,
 			setActiveResultIndex: setActiveOccurrenceIndex
@@ -201,9 +186,9 @@ export function useMessageSearch({
 		[
 			filteredMessages,
 			matchingIndices,
+			occurrences,
 			activeOccurrenceIndex,
 			activeOccurrence,
-			occurrences,
 			goToNextOccurrence,
 			goToPrevOccurrence,
 			getActiveOccurrencesForMessage

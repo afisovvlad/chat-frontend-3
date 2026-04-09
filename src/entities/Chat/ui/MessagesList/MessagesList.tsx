@@ -1,29 +1,24 @@
 'use client';
 
-import { memo, useEffect, useRef, useCallback } from 'react';
-import { MessageBubble } from '@/entities/Chat/ui/MessageBubble/MessageBubble';
+import { memo, useEffect } from 'react';
 import { Down } from '@icons/index';
-import { classNames } from '@/shared/lib/classNames/classNames';
 import { SmartDateSeparator } from '../SystemMessages/ui/SmartDateSeparator/SmartDateSeparator';
 import { StickyDateProvider } from '../SystemMessages/ui/StickyDateContext/StickyDateContext';
 import SystemMessage from '../SystemMessages/ui/SystemMessages/SystemMessages';
-import {
-	useMessagesData,
-	type TextMessage
-} from '../../model/lib/hooks/useMessagesData/useMessagesData';
+import { useMessagesData } from '../../model/lib/hooks/useMessagesData/useMessagesData';
 import { useInfiniteScroll } from '../../model/lib/hooks/useInfiniteScroll/useInfiniteScroll';
-import { toProxyPath } from '../../model/lib/service/toProxyPath/toProxyPath';
 import {
 	SCROLL_BOTTOM_THRESHOLD,
 	MESSAGES_QUERY_DEFAULTS
 } from '@/shared/model';
-import { isSystemMessageType } from '../../model/mapper/mapChatType/chatMapper';
-import { ChatMessage } from '../../model/types/chat.types/chat.types';
+import { useMessagePagination } from '../../model/lib/hooks/useMessagePagination/useMessagePagination';
+import { MessageListItem } from './MessageListItem';
 
 import cls from './MessagesList.module.scss';
 
 interface MessagesProps {
 	userUid: string;
+	currentUserId?: string;
 	className?: string;
 	activeResultId?: string;
 	searchQuery?: string;
@@ -34,6 +29,7 @@ interface MessagesProps {
 
 const MessagesListComponent = ({
 	userUid,
+	currentUserId,
 	className,
 	activeResultId,
 	searchQuery,
@@ -51,70 +47,12 @@ const MessagesListComponent = ({
 		isEmpty
 	} = useMessagesData({
 		userUid,
+		currentUserId,
 		pageSize: MESSAGES_QUERY_DEFAULTS.page_size,
 		ordering: MESSAGES_QUERY_DEFAULTS.ordering
 	});
 
-	const containerRef = useRef<HTMLDivElement>(null);
-	const isFetchingMoreRef = useRef(false);
-
-	const loadMore = useCallback(async () => {
-		if (!nextUrl || isFetchingMoreRef.current) {
-			return;
-		}
-		isFetchingMoreRef.current = true;
-		const controller = new AbortController();
-
-		try {
-			const fetchUrl = toProxyPath(nextUrl);
-			if (!fetchUrl) {
-				throw new Error('Invalid nextUrl');
-			}
-
-			const res = await fetch(fetchUrl, {
-				signal: controller.signal,
-				redirect: 'follow',
-				credentials: 'include'
-			});
-
-			if (!res.ok) {
-				throw new Error(`HTTP error! status: ${res.status}`);
-			}
-
-			const { results, next }: { results: ChatMessage[]; next: string | null } =
-				await res.json();
-
-			const older: TextMessage[] = results
-				.filter((msg): msg is ChatMessage => !isSystemMessageType(msg))
-				.map(msg => ({
-					id: String(msg.id),
-					text: msg.content,
-					time: msg.created_at,
-					status: msg.new ? 'unread' : 'read'
-				}));
-
-			if (older.length > 0) {
-				const el = containerRef.current?.closest(
-					'[data-scroll-container]'
-				) as HTMLDivElement | null;
-				if (el) {
-					const prevScrollHeight = el.scrollHeight;
-					const prevScrollTop = el.scrollTop;
-
-					requestAnimationFrame(() => {
-						const heightDiff = el.scrollHeight - prevScrollHeight;
-						el.scrollTop = prevScrollTop + heightDiff;
-					});
-				}
-			}
-		} catch (err) {
-			if (err instanceof DOMException && err.name === 'AbortError') {
-				return;
-			}
-		} finally {
-			isFetchingMoreRef.current = false;
-		}
-	}, [nextUrl]);
+	const { loadMore, containerRef } = useMessagePagination(nextUrl);
 
 	const {
 		scrollRef,
@@ -196,31 +134,16 @@ const MessagesListComponent = ({
 							return <SystemMessage key={item.data.id} message={item.data} />;
 						}
 
-						const isActiveResult = activeResultId === item.data.id;
-						const hasSearchQuery =
-							!!searchQuery && searchQuery.trim().length > 0;
-
-						const bubbleClassName = classNames('', {
-							[cls.messageBubble_active]: isActiveResult,
-							[cls.messageBubble_hasQuery]: hasSearchQuery && !isActiveResult
-						});
-
 						return (
-							<MessageBubble
-								key={item.data.id}
-								id={item.data.id}
-								text={item.data.text}
-								time={item.data.time}
-								status={item.data.status}
-								onClick={() => {}}
-								className={bubbleClassName}
-								data-message-id={item.data.id}
+							<MessageListItem
+								key={item.data.uid}
+								item={item}
+								activeResultId={activeResultId}
 								searchQuery={searchQuery}
 								getActiveOccurrencesForMessage={getActiveOccurrencesForMessage}
 							/>
 						);
 					})}
-
 					<div ref={anchorRef} className={cls.scrollAnchor} />
 				</div>
 
