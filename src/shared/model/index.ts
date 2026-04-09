@@ -24,3 +24,12 @@ export {
 } from './constants/contacts.constants';
 
 export type { ContactsOrdering } from './constants/contacts.constants';
+
+// src/entities/Chat/model/constants/index.ts
+export {
+	MESSAGE_HIGHLIGHT_DURATION,
+	SCROLL_BOTTOM_THRESHOLD,
+	AUTO_SCROLL_DELAY,
+	SCROLL_RAF_COUNT,
+	CHAT_VIEW_CONFIG
+} from './constants/chatView.constants';

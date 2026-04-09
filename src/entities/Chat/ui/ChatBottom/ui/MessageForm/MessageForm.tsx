@@ -51,6 +51,9 @@ export const MessageForm = forwardRef<MessageFormRef, MessageFormProps>(
 					if (textareaRef.current) {
 						textareaRef.current.style.height = 'auto';
 						textareaRef.current.style.height = '21px';
+						textareaRef.current.dispatchEvent(
+							new Event('input', { bubbles: true })
+						);
 					}
 				},
 				focus: () => {

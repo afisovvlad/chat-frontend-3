@@ -37,7 +37,8 @@ export function Textarea<TFormValues extends FieldValues>({
 	textareaRef
 }: TextareaProps<TFormValues>) {
 	const { register } = useFormContext<TFormValues>();
-	const { fieldState } = useController({ name });
+
+	const { field, fieldState } = useController({ name });
 	const isError = !!fieldState.error;
 	const internalRef = useRef<HTMLTextAreaElement | null>(null);
 	const { ref: registerRef, ...registerRest } = register(name, rules);
@@ -71,7 +72,7 @@ export function Textarea<TFormValues extends FieldValues>({
 
 			return () => textarea.removeEventListener('input', autoResize);
 		}
-	}, [height]);
+	}, [field.value, height]);
 
 	return (
 		<textarea
