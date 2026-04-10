@@ -58,8 +58,6 @@ export const EnterPhoneForm = ({
 	const overlayMode = isMobile ? 'full' : 'container';
 	const borderRadius = isMobile ? '8px' : '16px';
 
-	// const methods = useFormContext<LoginPhoneForm>();
-	// const { setFocus } = methods;
 	const methods = useForm<LoginPhoneForm>({
 		defaultValues: {
 			phone_number: formattedPhone || ''
@@ -76,7 +74,7 @@ export const EnterPhoneForm = ({
 
 	useEffect(() => {
 		setFocus('phone_number');
-	}, []);
+	}, [setFocus]);
 
 	useEffect(() => {
 		if (isModalOpen && confirmBtnRef.current) {
@@ -84,13 +82,11 @@ export const EnterPhoneForm = ({
 		}
 	}, [isModalOpen]);
 
-	// ЗАПРОС НА ПРОВЕРКУ СТАТУСА - ТОЛЬКО ЕСЛИ УЖЕ ЕСТЬ ДАННЫЕ СЕССИИ
 	useEffect(() => {
 		if (!phoneSession?.session_uid || !phoneSession.session_secret) {
 			return;
 		}
 
-		// Если statusData есть И сессия завершена — НЕ поллить
 		if (
 			statusData &&
 			(statusData.status === 'consumed' ||
@@ -110,7 +106,11 @@ export const EnterPhoneForm = ({
 					session_uid: phoneSession.session_uid!,
 					session_secret: phoneSession.session_secret!
 				});
-			} catch {}
+			} catch (error) {
+				if (process.env.NODE_ENV === 'development') {
+					console.error('claimTokens error:', error);
+				}
+			}
 		}, intervalMs);
 
 		return () => clearInterval(interval);
@@ -123,7 +123,6 @@ export const EnterPhoneForm = ({
 		statusData
 	]);
 
-	// ЗАПРОС НА ПОЛУЧЕНИЕ ТОКЕНОВ - ЕСЛИ status верифицированный
 	const claimTokens = useCallback(async () => {
 		if (!phoneSession?.session_uid || !phoneSession.session_secret) {
 			return;
