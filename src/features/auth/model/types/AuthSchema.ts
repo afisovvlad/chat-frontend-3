@@ -25,4 +25,6 @@ export interface AuthSchema {
 	is_filled: boolean;
 	blockingTime: number | undefined;
 	attemptCounter: number;
+	accessToken: string | null;
+	currentUserId: string | null;
 }

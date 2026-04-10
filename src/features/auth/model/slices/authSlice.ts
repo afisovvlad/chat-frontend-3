@@ -12,7 +12,9 @@ const initialState: AuthSchema = {
 	isDisabledCodeAttempts: false,
 	blockingTime: 0,
 	attemptCounter: 0,
-	is_filled: false
+	is_filled: false,
+	accessToken: null,
+	currentUserId: null
 };
 
 const authSlice = createSlice({
@@ -55,8 +57,8 @@ const authSlice = createSlice({
 		},
 
 		clearPhoneData: state => {
-			delete state.phone_number;
-			delete state.phoneSession;
+			state.phone_number = undefined;
+			state.phoneSession = undefined;
 		},
 
 		setStep: (state, action: PayloadAction<AuthStep>) => {
@@ -66,6 +68,14 @@ const authSlice = createSlice({
 				state.stepHistory.push(nextStep);
 				state.step = nextStep;
 			}
+		},
+		setCurrentUserId: (state, action: PayloadAction<string>) => {
+			state.currentUserId = action.payload;
+		},
+
+		// Опционально: маркер авторизации
+		setAuthStatus: (state, action: PayloadAction<{ accessToken: string }>) => {
+			state.accessToken = action.payload.accessToken;
 		},
 
 		goBack: state => {
